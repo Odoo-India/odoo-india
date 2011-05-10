@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="account_vouch_line_form_tds" model="ir.ui.view">
+            <field name="name">account.vouch.line.form.tds</field>
+            <field name="model">account.voucher.line</field>
+            <field name="inherit_id" ref="account_voucher."></field>/field>
+            <field name="arch" type="xml">
+                <form string="Fiscalyear">

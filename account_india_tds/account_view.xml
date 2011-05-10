@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    
+    <!--
+        <record id="account_account_tds_form" model="ir.ui.view">
+            <field name="name">account.account.tds.form</field>
+            <field name="model">account.account.tds</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="TDS Nature">
+                            <field name="tds_nature_id"/>
+                            
+                            <field name="tds_lines" widget="one2many_list"/>
+
+                </form>
+            </field>
+        </record>
+        
+        
+        <record id="account_account_tds_tree" model="ir.ui.view">
+            <field name="name">account.account.tds.tree</field>
+            <field name="model">account.account.tds</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="TDS Nature">
+                            <field name="tds_nature_id"/>
+
+                </tree>
+            </field>
+        </record>
+        -->
+        
+        
+
+
+        <record id="account_account_tds_line_form" model="ir.ui.view">
+            <field name="name">account.account.tds.line.form</field>
+            <field name="model">account.account.tds.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="TDS ">
+                            <field name="tds_section_id"/>                            
+                            <field name='cert'/>
+                            <field name='date_from'/>                            
+                            <field name='date_to'/>
+                            <field name='tds_rate'/>                            
+                            <field name='sur_rate'/>
+                            <field name='ed_cess_rate'/>                            
+                            <field name='sec_ed_cess_rate'/>
+                            
+                </form>
+            </field>
+        </record>
+        
+
+        <record id="account_account_tds_line_tree" model="ir.ui.view">
+            <field name="name">account.account.tds.line.tree</field>
+            <field name="model">account.account.tds.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="TDS Nature">
+                            <field name="tds_section_id"/>                            
+                            <field name='tds_rate'/>                            
+                            <field name='sur_rate'/>
+                            <field name='ed_cess_rate'/>                            
+                            <field name='sec_ed_cess_rate'/>
+                            
+                </tree>
+            </field>
+        </record>
+
+<record model="ir.ui.view" id="acc_acc_form_tds">
+    <field name="name">acc.acc.form.tds</field>
+    <field name="model">account.account</field>
+    <field name="inherit_id" ref="account.view_account_form"/>
+    <field name="arch" type="xml">
+      
+        <data>
+        <xpath expr="//field[@name='company_id']" position="after">
+            <field name='is_tds'/>
+            <field name='tds_nature_id'  attrs="{'required': [('advanced_tds','=',True)]}"/>
+            <field name='tds_deductee_id'/>
+            <field name='advanced_tds'/>
+            
+        </xpath>
+        <xpath expr="//page[@string='Notes']" position="before">
+                        <page string="TDS"  attrs="{'invisible': [('advanced_tds','=',False)]}">
+                            <field colspan="4" name="account_tds" widget="one2many_list"/>                            
+                        </page>
+            
+        </xpath>
+        
+        </data>
+    </field>
+    
+</record>
+
+
+
+
+<record model="ir.ui.view" id="acc_inv_line_form_tds">
+    <field name="name">acc.inv.line.form.tds</field>
+    <field name="model">account.invoice.line</field>
+    <field name="inherit_id" ref="account.view_invoice_line_form"/>
+    <field name="arch" type="xml">      
+      <data>
+          <xpath expr="//field[@name='invoice_line_tax_id']" position="after">
+            <field name='is_tds'/>
+            <field name='tds_deduct'/>  
+            <separator colspan="4" string="TDS"/>
+            <field name='tds_ids' colspan="4" nolabel="1" attrs="{'invisible': [('account_id.is_tds','=',False)]}"/>  
+                      
+          </xpath>
+      </data>
+    </field>    
+</record>
+
+<record model="ir.ui.view" id="acc_inv_form_tds">
+    <field name="name">acc.invform.tds</field>
+    <field name="model">account.invoice</field>
+    <field name="inherit_id" ref="account.invoice_supplier_form"/>
+    <field name="arch" type="xml">      
+      <data>
+          <xpath expr="//button[@name='invoice_open']" position="after">  
+                    
+              <button name="tds_generate" states="draft,proforma2" string="Gen TDS" icon="terp-camera_test" type="object"/>                    
+          </xpath>
+          <xpath expr="//field[@name='amount_tax']" position="after">                      
+                                   <field name="amount_tds"/>
+          </xpath>
+                     
+      </data>
+    </field>    
+</record>
+
+</data>
+</openerp>

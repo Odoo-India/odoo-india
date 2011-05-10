@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+
+<report id="report_acc_invoice_endicus2"
+  string="TDS REPORT"
+  model="account.accoumt"
+  name="Account_TDS_Report"
+  rml="account_tds_report/report/tds_report_form16a.rml/"
+  auto="False"
+
+  multi="True"
+  />
+
+
+</data>
+</openerp>
+
+
+

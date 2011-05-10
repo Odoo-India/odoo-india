@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+
+        <record id="view_account_tds_helper_form" model="ir.ui.view">
+            <field name="name">account.tds.helper.form</field>
+            <field name="model">account.tds.helper</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+	            <form string="TDS Report">
+                            <field name='date'/>
+       <field name='section_id'/>
+       <field name='tds_nature_id'/>
+	                <field name="deductee_status" />
+	                <field name="account_id" />
+	                <field name="period_id" />
+	                <field name="journal_id" />
+
+                        <button special="cancel" string="Cancel" icon="gtk-cancel"/>
+                    <button name="account_create_voucher" string="Create Payment Voucher" type="object" icon="gtk-go-forward"/>
+
+				</form>
+			</field>
+        </record>
+
+        <record id="action_tds_helper" model="ir.actions.act_window">
+            <field name="name">Generate Voucher</field>
+            <field name="res_model">account.tds.helper</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_account_tds_helper_form"/>
+            <field name="target">new</field>
+        </record>
+
+
+        <menuitem action="action_tds_helper"
+            id="tds_helper_1"
+		name="TDS Helper"
+            parent="account.menu_finance_payables" />
+</data>
+</openerp>

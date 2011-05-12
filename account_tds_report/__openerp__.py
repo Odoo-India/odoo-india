@@ -20,8 +20,8 @@
     "name" : "Account TDS Report",
     "version" : "1.0",
     "depends" : ["base","account","account_base"],
-    "author" : "Karl Marx",
-    "description": """ TDS report create
+    "author" : "Selvam,Karl Marx",
+    "description": """ TDS reports like form16,form26,form27 and annexures.
     """,
     'website': 'http://e-ndicus.com',
     'init_xml': [],

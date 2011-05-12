@@ -62,7 +62,7 @@ Reversal of TDS
 Accounting changes in TDS %
 Any statment filed field in 26Q and 27Q
      """,
-    'author': 'Selvam,Karlmarx',
+    'author': 'Selvam(selvam@e-ndicus.com)',
     'website': 'http://e-ndicus.com',
     'depends': ['base','account','account_voucher','account_voucher_cheque'],
     'init_xml': [

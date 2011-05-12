@@ -21,6 +21,25 @@ import time
 import pooler
 
 
+class account_tds_section(osv.osv):
+       _name = 'account.tds.section'
+       _columns = {
+          'name': fields.char('Name',size=256),
+          'code': fields.integer('Code'),
+          'description': fields.char('Description',size=256)
+        }
+account_tds_section()
+
+class account_tds_nature(osv.osv):
+       _name = 'account.tds.nature'
+       _columns = {
+          'code': fields.integer('Code'),
+          'name': fields.char('name',size=256),
+          'tds_section_id': fields.many2one('account.tds.section','section'),
+          'payment_code': fields.integer('Payment Code'),
+          'account_id': fields.many2one('account.account', "Duties Account",required=True),
+        }
+account_tds_nature()
 
 class account_tds_deductee_type(osv.osv):
        _name = 'account.tds.deductee.type'
@@ -86,25 +105,6 @@ class account_tds_tax(osv.osv):
         }
 account_tds_tax()
 
-class account_tds_section(osv.osv):
-       _name = 'account.tds.section'
-       _columns = {
-          'name': fields.char('Name',size=256),
-          'code': fields.integer('Code'),
-          'description': fields.char('Description',size=256)
-        }
-account_tds_section()
-
-class account_tds_nature(osv.osv):
-       _name = 'account.tds.nature'
-       _columns = {
-          'code': fields.integer('Code'),
-          'name': fields.char('name',size=256),
-          'tds_section_id': fields.many2one('account.tds.section','section'),
-          'payment_code': fields.integer('Payment Code'),
-          'account_id': fields.many2one('account.account', "Duties Account",required=True),
-        }
-account_tds_nature()
 
 class account_tds(osv.osv):
        _name = 'account.tds'

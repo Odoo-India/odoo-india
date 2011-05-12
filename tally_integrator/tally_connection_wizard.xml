@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    <!-- wizard  Form View  -->
+
+	<record id="view_tally_connection_form" model="ir.ui.view">
+		<field name="name">tally.connection.form</field>
+		<field name="model">tally.connection</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form string="Migrate Data From Tally" >
+				<group colspan="4" >
+     				<field name="url" colspan="4" width="400"/>
+     				<!--field name="open_bal" colspan="4"/-->
+     				<field name="company" colspan="4"/>
+     			</group>
+				<separator string="" colspan="4" />
+					<group colspan="4">
+						<label string ="" colspan = "2" />
+    					<button  icon="gtk-cancel" special="cancel" string="Cancel" colspan = "1"/>
+						<button  name="tally_main" icon="gtk-apply" string="Migrate Data" type="object" colspan = "1"  />
+					</group>
+			</form>
+		</field>
+	</record>
+
+
+    <record id="action_tally_connection_form" model="ir.actions.act_window">
+            <field name="name">Tally Integrator</field>
+            <field name="res_model">tally.connection</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+           <field name="view_id" ref="view_tally_connection_form"/>
+           <field name="target">new</field>
+           <field name="context">{'model': 'tally.connection'}</field>
+        </record>  
+
+
+<menuitem id="menu_tally_connection" action="action_tally_connection_form" name="Tally Integrator" parent="base.menu_administration" sequence="1"/>
+
+	</data>
+</openerp>

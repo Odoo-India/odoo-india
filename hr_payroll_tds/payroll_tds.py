@@ -21,6 +21,7 @@ class payroll_tds(osv.osv):
     _name = _inherit = 'hr.allounce.deduction.categoty'
     _columns = {
         'tds':fields.boolean('TDS ?',help="Is it a TDS deduction ?"),
+        'tds_nature_id':fields.many2one("account.tds.nature","Nature of payment")
     }
 payroll_tds()    
 
@@ -180,6 +181,27 @@ class hr_payslip(osv.osv):
                         raise osv.except_osv(_('Configuration Error !'), _('Please Configure Partners Receivable Account!!'))
                     rec['credit'] = amount
                     total_deduct += amount
+                    #selvam linking to tds entires                
+                    if line.category_id.tds:
+                        tds =  self.pool.get("account.tds")
+                        tds_line =  self.pool.get("account.tds.line")
+                        g_ids = self.pool.get('res.partner').search(cr,uid,[('name','=','GOVT')])
+                        if not g_ids:
+                            osv.raise_osv('Govt','You need to have GOVT partner for enconding TDS deduction')
+                        """
+                        nature_ids = self.pool.get('account.tds.nature').search(cr,uid,[('name','=','Salary')])
+                        if not nature_ids:
+                            osv.raise_osv('Nature of payment','You need to have a nature of payment called: "Salary"')
+                        """
+                        tds_line=[{'tds_tax':'ic','rate':line.amount,'debit':0.0,'credit':amount,'base':value}]
+                        tds_line_id = tds_line.create(cr,uid,tds_line)
+                        tds_id = tds.create(cr,uid,{'date':slip.date,'inv_line_id':line.id,'name':'TDS from salary',
+                                            'tds_nature_id':line.category_id.tds_nature_id.id,'tds_acc_id': line.account_id.id,'amount':value,
+                                            'tds_amount':amount,'tds_payable':(value-amount),                                        
+                                            'tds_line_id':[(6,0,[tds_line_id])],'type':'cr','paid':False,'state':'confirmed','zero':False,
+                                            'partner_id':partner_id,'invoice_partner_id':partner_ids                                            
+                                            
+                                            })
                     ded_rec = {
                         'move_id': move_id,
                         'name': name,
@@ -193,7 +215,11 @@ class hr_payslip(osv.osv):
                         'period_id': period_id,
                         'ref': slip.number
                     }
-                    line_ids += [movel_pool.create(cr, uid, ded_rec, context=context)]
+                    if line.category_id.tds:
+                        ded_rec.update({'tds_id':tds_id})
+                    ml_id =movel_pool.create(cr, uid, ded_rec, context=context)                                            
+                    line_ids += [ml_id]
+
 
                 line_ids += [movel_pool.create(cr, uid, rec, context=context)]
 
@@ -296,7 +322,7 @@ class hr_payslip(osv.osv):
                         print "Creating reg line",contrib.register_id.account_id
                     
                         register_line_pool.create(cr, uid, reg_line)
-                        #Post contibution into respective Payable and expense accounts
+                        #Selvam - Post contibution into respective Payable and expense accounts
                         ded_rec = {
                         'move_id': move_id,
                         'name': name,
@@ -314,7 +340,8 @@ class hr_payslip(osv.osv):
                         line_ids += [movel_pool.create(cr, uid, ded_rec, context=context)]
                         g_ids = self.pool.get('res.partner').search(cr,uid,[('name','=','GOVT')])
                         if not g_ids:
-                            osv.raise_osv('Govt','You need to have GOVT partner for enconding tds payment')
+                            osv.raise_osv('Govt','You need to have GOVT partner for enconding employer contribution')
+
                         ded_rec = {
                         'move_id': move_id,
                         'name': name,
@@ -328,7 +355,9 @@ class hr_payslip(osv.osv):
                         'period_id': period_id,
                         'ref': slip.number
                         }
-                        line_ids += [movel_pool.create(cr, uid, ded_rec, context=context)]
+                        curr_ml_id = movel_pool.create(cr, uid, ded_rec, context=context)
+                        
+                        line_ids += [curr_ml_id]
 
             """selvam ends """
             self.write(cr, uid, [slip.id], rec, context=context)

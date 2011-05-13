@@ -226,7 +226,7 @@ class account_invoice(osv.osv):
                                             'tds_amount':tds_amount,'tds_payable':(line.price_subtotal-tds_amount),                                        
                                             'tds_line_id':[(6,0,line_ids)],'type':'cr','paid':False,'state':state,'zero':zero,
                                             'partner_id':inv.partner_id.id,'invoice_partner_id':inv.partner_id.id,
-                                            'tds_deductee_id':deductee .id
+                                            'tds_deductee_id':deductee.id
                                             
                                             })
                                     

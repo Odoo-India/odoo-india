@@ -12,6 +12,7 @@
         <data>
         <xpath expr="//field[@name='sequence']" position="after">
             <field name='tds'/>            
+            <field name='tds_nature_id' attrs="{'invisible':[('tds','!=',True)],'required':[('tds','=',True)]}"/>
         </xpath>
         </data>
     </field>    

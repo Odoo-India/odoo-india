@@ -132,44 +132,48 @@ class company_account_merge(osv.osv_memory):
         account_obj = self.pool.get("account.account")
         account_type_obj = self.pool.get("account.account.type")
 
-        company_ids = []
-
         data = self.read(cr, uid, ids, [])[0]
 
         new_company_name = company_obj.browse(cr, uid, context['company_id'], context=context).name
         account_type_id = account_type_obj.search(cr, uid,[('name','=','View')])
+
+        account_code_id = account_obj.search(cr, uid, [('company_id','in',data['merge_companies_ids']),('parent_id','=',None)])
+        account_code = account_obj.browse(cr, uid, account_code_id[0], context=context)
+        print "==code========",account_code.code
 
         #Created main parent account
         main_account_id = account_obj.create(cr, uid, {
                                             'name':new_company_name,
                                             'user_type': account_type_id[0],
                                             'type': 'view',
-                                            'code': '0',
+                                            'code': account_code.code,
                                             'company_id': context['company_id']
                                         })
 
-        for compan_id in data['merge_companies_ids']:
-            company_ids.append(compan_id)
-
-        # account list of type view
-        account_views_ids = account_obj.search(cr, uid, [('company_id','in',company_ids),('type','=','view'),('parent_id','!=',None)], order="parent_id" )
-
-        # account list of type not view
-        account_conso_ids = account_obj.search(cr, uid, [('company_id','in',company_ids),('type','!=','view'),('parent_id','!=',None)], order="parent_id" )
+        # account list of views
+        account_views_ids = account_obj.search(cr, uid, [('company_id','in',data['merge_companies_ids']),('parent_id','!=',None)], order="parent_id" )
 
         # create account of type view account
         for account_view_id in account_views_ids:
+            consolidation_child = []
             view_data = account_obj.browse(cr, uid, account_view_id, context=context)
             view_account_id = account_obj.search(cr, uid, [('company_id','=', context['company_id']),('name','=',view_data.name)], order='parent_id')
+
             if view_account_id:
                 continue
+
             view_account_parent_id = account_obj.search(cr, uid, [('company_id','=', context['company_id']),('name','=',view_data.parent_id.name),('code','=',view_data.parent_id.code)])
+
             if view_account_parent_id:
                 account_parent_id = view_account_parent_id[0]
             else:
                 account_parent_id = main_account_id
 
-            account_obj.create(cr, uid, {
+            consolidation_child_ids = account_obj.search(cr, uid, [('company_id','in',data['merge_companies_ids']),('type','!=','view'),('name','=',view_data.name),('code','=',view_data.code)])
+
+            #creating view type account
+            if view_data.type == 'view':
+                account_obj.create(cr, uid, {
                                         'name': view_data.name,
                                         'company_id':context['company_id'],
                                         'code': view_data.code,
@@ -178,31 +182,15 @@ class company_account_merge(osv.osv_memory):
                                         'parent_id': account_parent_id
                                         }
                                    )
-        # Create consolidate account of without type view
-        for account_consol_id in account_conso_ids:
-            consolidation_child = []
-            consol_parent_id = False
-            account_conslol_parent_id = False
-
-            consol_data = account_obj.browse(cr, uid, account_consol_id, context=context)
-            consol_act_id = account_obj.search(cr, uid, [('company_id','=', context['company_id']),('name','=',consol_data.name)])
-            if consol_act_id:
-                continue
-
-            consol_parent_id = account_obj.search(cr, uid, [('company_id','=', context['company_id']),('name','=',consol_data.parent_id.name),('code','=',consol_data.parent_id.code)])
-
-            if consol_parent_id:
-                account_conslol_parent_id = consol_parent_id[0]
-
-            consolidation_child_ids = account_obj.search(cr, uid, [('company_id','in',company_ids),('type','!=','view'),('name','=',consol_data.name),('code','=',consol_data.code)])
-
-            account_obj.create(cr, uid, {
-                                    'name': consol_data.name,
+            #creating consolidate type account
+            else:
+                account_obj.create(cr, uid, {
+                                    'name': view_data.name,
                                     'company_id':context['company_id'],
-                                    'code': consol_data.code,
-                                    'user_type': consol_data.user_type.id,
+                                    'code': view_data.code,
+                                    'user_type': view_data.user_type.id,
                                     'type': 'consolidation',
-                                    'parent_id': account_conslol_parent_id,
+                                    'parent_id': account_parent_id,
                                     'child_consol_ids':[(6,0,consolidation_child_ids)]
                                     })
         return {}

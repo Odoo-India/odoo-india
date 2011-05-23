@@ -150,13 +150,15 @@ class company_account_merge(osv.osv_memory):
                                         })
 
         # account list of views
-        account_views_ids = account_obj.search(cr, uid, [('company_id','in',data['merge_companies_ids']),('parent_id','!=',None)], order="parent_id")
+        cr.execute("""SELECT id, type, name, parent_id, type, user_type,company_id FROM account_account WHERE company_id in %s AND parent_id IS NOT NULL""", [tuple(data['merge_companies_ids'])])
+        result = sorted(cr.dictfetchall(), key=lambda x: x['parent_id'])
+        account_views_ids = map(lambda x: x['id'], result)
 
         # create account of type view account
         for account_view_id in account_views_ids:
             consolidation_child = []
             view_data = account_obj.browse(cr, uid, account_view_id, context=context)
-            view_account_id = account_obj.search(cr, uid, [('company_id','=', context['company_id']),('name','=',view_data.name)])
+            view_account_id = account_obj.search(cr, uid, [('company_id','=', context['company_id']),('name','=',view_data.name),('code','=',view_data.code)])
 
             if view_account_id:
                 continue

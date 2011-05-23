@@ -59,7 +59,7 @@
 					</group>
 					<button special="cancel" string="_Close" icon="gtk-cancel"/>
 					<button  icon="gtk-go-forward" name="execute" string="Next" type="object"/>
-				</group>    
+				</group>
 			</form>
 		</field>
 	</record>
@@ -74,7 +74,7 @@
 		<field name="target">new</field>
 	</record>
 
-	<menuitem name="Merge Company" id="menu_setup_company_merge" parent="account.menu_finance" 		action="action_setup_company_merge" sequence="30"/>
+	<menuitem name="Merge Company" id="menu_setup_company_merge" parent="account.menu_finance" action="action_setup_company_merge" sequence="30"/>
 
     </data>
 </openerp>

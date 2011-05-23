@@ -139,7 +139,6 @@ class company_account_merge(osv.osv_memory):
 
         account_code_id = account_obj.search(cr, uid, [('company_id','in',data['merge_companies_ids']),('parent_id','=',None)])
         account_code = account_obj.browse(cr, uid, account_code_id[0], context=context)
-        print "==code========",account_code.code
 
         #Created main parent account
         main_account_id = account_obj.create(cr, uid, {
@@ -151,13 +150,13 @@ class company_account_merge(osv.osv_memory):
                                         })
 
         # account list of views
-        account_views_ids = account_obj.search(cr, uid, [('company_id','in',data['merge_companies_ids']),('parent_id','!=',None)], order="parent_id" )
+        account_views_ids = account_obj.search(cr, uid, [('company_id','in',data['merge_companies_ids']),('parent_id','!=',None)], order="parent_id")
 
         # create account of type view account
         for account_view_id in account_views_ids:
             consolidation_child = []
             view_data = account_obj.browse(cr, uid, account_view_id, context=context)
-            view_account_id = account_obj.search(cr, uid, [('company_id','=', context['company_id']),('name','=',view_data.name)], order='parent_id')
+            view_account_id = account_obj.search(cr, uid, [('company_id','=', context['company_id']),('name','=',view_data.name)])
 
             if view_account_id:
                 continue

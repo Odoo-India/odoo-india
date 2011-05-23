@@ -135,24 +135,22 @@ class company_account_merge(osv.osv_memory):
         data = self.read(cr, uid, ids, [])[0]
 
         new_company_name = company_obj.browse(cr, uid, context['company_id'], context=context).name
-        account_type_id = account_type_obj.search(cr, uid,[('name','=','View')])
 
         account_code_id = account_obj.search(cr, uid, [('company_id','in',data['merge_companies_ids']),('parent_id','=',None)])
-        account_code = account_obj.browse(cr, uid, account_code_id[0], context=context)
+        main_account_data = account_obj.browse(cr, uid, account_code_id[0], context=context)
 
         #Created main parent account
         main_account_id = account_obj.create(cr, uid, {
                                             'name':new_company_name,
-                                            'user_type': account_type_id[0],
-                                            'type': 'view',
-                                            'code': account_code.code,
+                                            'user_type': main_account_data.user_type.id,
+                                            'type': main_account_data.type,
+                                            'code': main_account_data.code,
                                             'company_id': context['company_id']
                                         })
 
         # account list of views
-        cr.execute("""SELECT id, type, name, parent_id, type, user_type,company_id FROM account_account WHERE company_id in %s AND parent_id IS NOT NULL""", [tuple(data['merge_companies_ids'])])
-        result = sorted(cr.dictfetchall(), key=lambda x: x['parent_id'])
-        account_views_ids = map(lambda x: x['id'], result)
+        cr.execute("""SELECT id, parent_id, company_id FROM account_account WHERE company_id in %s AND parent_id IS NOT NULL order by parent_id """, [tuple(data['merge_companies_ids'])])
+        account_views_ids = map(lambda x: x['id'], cr.dictfetchall())
 
         # create account of type view account
         for account_view_id in account_views_ids:

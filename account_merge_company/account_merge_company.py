@@ -155,6 +155,7 @@ class company_account_merge(osv.osv_memory):
         # create account of type view account
         for account_view_id in account_views_ids:
             consolidation_child = []
+            account_parent_id = False
             view_data = account_obj.browse(cr, uid, account_view_id, context=context)
             view_account_id = account_obj.search(cr, uid, [('company_id','=', context['company_id']),('name','=',view_data.name),('code','=',view_data.code)])
 

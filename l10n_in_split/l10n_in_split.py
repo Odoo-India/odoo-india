@@ -55,14 +55,14 @@ class split_company_data(osv.osv_memory):
         partner_obj = self.pool.get('res.partner')
 
         main_company_data = company_obj.browse(cr, uid, old_company_id, context=context)
-        root_account_id = account_obj.search(cr, uid, [('name','=',main_company_data.name)], context=context)
+        root_account_id = account_obj.search(cr, uid, [('name','=',main_company_data.name),('company_id','=',old_company_id)], context=context)
 
         root_account_data = account_obj.browse(cr, uid, root_account_id[0], context=context)
 
         comp_main_account_id = account_obj.create(cr, uid, {
                                             'name':name,
                                             'user_type': root_account_data.user_type.id,
-                                            'type': 'view',
+                                            'type': root_account_data.type,
                                             'code': root_account_data.code,
                                             'company_id': new_company_id
                                         })
@@ -73,6 +73,7 @@ class split_company_data(osv.osv_memory):
         # create account of for the first company
         for account_id in account_ids:
             account_parent_id = False
+            new_child_consol_ids = []
             data = account_obj.browse(cr, uid, account_id, context=context)
             account_id = account_obj.search(cr, uid, [('company_id','=', new_company_id),('name','=',data.name), ('code','=',data.code)])
 
@@ -81,6 +82,12 @@ class split_company_data(osv.osv_memory):
 
             if data.parent_id:
                 account_parent_id = account_obj.search(cr, uid, [('company_id','=', new_company_id),('name','=',data.parent_id.name),('code','=',data.parent_id.code)])
+
+            if data.child_consol_ids:
+                for child_consol_data in data.child_consol_ids:
+                    child_consol_id = account_obj.search(cr, uid, [('company_id','=', new_company_id),('name','=',child_consol_data.name), ('code','=',child_consol_data.code)])
+                    if child_consol_id:
+                        new_child_consol_ids.append(child_consol_id[0])
 
             if account_parent_id:
                 account_parent_id = account_parent_id[0]
@@ -93,7 +100,11 @@ class split_company_data(osv.osv_memory):
                                         'code': data.code,
                                         'user_type': data.user_type.id,
                                         'type': data.type,
-                                        'parent_id': account_parent_id
+                                        'parent_id': account_parent_id,
+                                        'reconcile': data.reconcile,
+                                        'currency_mode':data.currency_mode,
+                                        'currency_id':data.currency_id.id,
+                                        'child_consol_ids':new_child_consol_ids,
                                         }
                                    )
         return True
@@ -253,7 +264,7 @@ class split_company_data(osv.osv_memory):
                                                     }, context=context)
 
             move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
-
+            reconcile_line_ids = []
             for move_line_id in move_line_ids:
                 move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
 
@@ -273,10 +284,14 @@ class split_company_data(osv.osv_memory):
                                                                   'credit': move_line_data.credit,
                                                                   'partner_id': move_line_data.partner_id.id,
                                                                   'currency_id': move_line_data.currency_id.id,
+                                                                  'amount_currency': move_line_data.amount_currency,
+                                                                  'date': move_line_data.date,
+                                                                  'date_maturity': move_line_data.date_maturity,
                                                                   'move_id': new_move_id,
                                                                   }, context=context)
-
-            move_obj.write(cr, uid, [new_move_id], {'state':'posted'}, context=context)
+            #Post entry
+            move_obj.post(cr, uid, [new_move_id], context=context) # To post entry
+        # TODO Reconcile entry
 
         return True
 
@@ -316,7 +331,7 @@ class split_company_data(osv.osv_memory):
                                                     }, context=context)
 
             move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
-
+            reconcile_line_ids = []
             for move_line_id in move_line_ids:
                 move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
                 #Account for the move line
@@ -331,12 +346,42 @@ class split_company_data(osv.osv_memory):
                                                                   'credit': (move_line_data.credit * percent / 100),
                                                                   'partner_id': move_line_data.partner_id.id,
                                                                   'currency_id': move_line_data.currency_id.id,
+                                                                  'amount_currency': move_line_data.amount_currency,
+                                                                  'date': move_line_data.date,
+                                                                  'date_maturity': move_line_data.date_maturity,
                                                                   'move_id': new_move_id,
                                                                   }, context=context)
-
-            move_obj.write(cr, uid, [new_move_id], {'state':'posted'}, context=context)
-
+            #Post entry
+            move_obj.post(cr, uid, [new_move_id], context=context) # To post entry
+            # TODO Reconcile entry
         return True
+
+    def assign_property_account(self, cr, uid, company_id, company_name, context=None):
+        if context is None:
+            context={}
+
+        property_obj = self.pool.get('ir.property')
+        partner_obj = self.pool.get('res.partner')
+        account_obj = self.pool.get('account.account')
+
+        partner_id = partner_obj.search(cr, uid,[('name','=',company_name)])
+        partner_data = partner_obj.browse(cr, uid, partner_id, context=context)
+
+        rec_pro_id = property_obj.search(cr,uid,[('name','=','property_account_receivable'),('company_id','=',company_id)])
+        pay_pro_id = property_obj.search(cr,uid,[('name','=','property_account_payable'),('company_id','=',company_id)])
+
+        old_rec_pro_id = property_obj.browse(cr, uid, rec_pro_id[0], context=context).value_reference.id
+        old_pay_pro_id = property_obj.browse(cr, uid, pay_pro_id[0], context=context).value_reference.id
+
+        account_rec = account_obj.browse(cr, uid, old_rec_pro_id, context=context)
+        account_pay = account_obj.browse(cr, uid, old_pay_pro_id, context=context)
+
+        return {
+                'property_rec_name':account_rec.name,
+                'property_rec_code':account_rec.code,
+                'property_pay_name':account_pay.name,
+                'property_pay_code':account_pay.code
+                }
 
     def split_data(self, cr, uid, ids, context=None):
         if context is None:
@@ -394,10 +439,20 @@ class split_company_data(osv.osv_memory):
         #Created journal for the second company
         self.create_account_journal(cr, uid,  data['company_id'], second_company_id, context=context)
 
+        # Assing property account to companies partner
+        prorperty_account = self.assign_property_account(cr, uid, data['company_id'], main_company_data.name, context=context)
+        first_comp_rec_acc = account_obj.search(cr, uid, [('company_id','=', first_company_id),('name','=',prorperty_account['property_rec_name']),('code','=',prorperty_account['property_rec_code'])])
+        first_comp_pay_acc = account_obj.search(cr, uid, [('company_id','=', first_company_id),('name','=',prorperty_account['property_pay_name']),('code','=',prorperty_account['property_pay_code'])])
+
+        second_comp_rec_acc = account_obj.search(cr, uid, [('company_id','=', second_company_id),('name','=',prorperty_account['property_rec_name']),('code','=',prorperty_account['property_rec_code'])])
+        second_comp_pay_acc = account_obj.search(cr, uid, [('company_id','=', second_company_id),('name','=',prorperty_account['property_pay_name']),('code','=',prorperty_account['property_pay_code'])])
+
+        partner_obj.write(cr, uid, [first_part_id], {'property_account_receivable':first_comp_rec_acc[0],'property_account_payable':first_comp_pay_acc[0]})
+        partner_obj.write(cr, uid, [second_part_id], {'property_account_receivable':second_comp_rec_acc[0],'property_account_payable':second_comp_pay_acc[0]})
+
         # Created account move entry on the base of period
         if data['type'] == 'period':
             self.create_account_move_entry(cr, uid, data['company_id'], first_company_id, second_company_id, main_period, context=context)
-
         #Created account on the base of percentage
         else:
             if (data['first_comp_percent'] + data['second_comp_percent']) > 100:

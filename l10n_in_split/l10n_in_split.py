@@ -128,11 +128,9 @@ class split_company_data(osv.osv_memory):
             new_analytic_journal_id = False
 
             journal_data = journal_obj.browse(cr, uid, journal_id, context=context)
-
             new_journal_id = journal_obj.search(cr, uid, [('company_id','=',new_company_id),('name','=',journal_data.name),('code','=',journal_data.code)], context=context)
 
             if not new_journal_id:
-
                 if journal_data.default_credit_account_id:
                     account_data = account_obj.browse(cr, uid, journal_data.default_credit_account_id.id, context=context)
                     credit_account_id = account_obj.search(cr, uid, [('name','=',account_data.name),('code','=',account_data.code),('company_id','=',new_company_id)])
@@ -163,9 +161,7 @@ class split_company_data(osv.osv_memory):
                         'prefix':seq_data.prefix,
                         'company_id':new_company_id,
                         }
-
                     new_seq_id = sequence_obj.create(cr, uid, vals_seq, context=context)
-
                 vals_journal = {
                         'name': journal_data.name,
                         'code': journal_data.code,
@@ -177,7 +173,6 @@ class split_company_data(osv.osv_memory):
                         'default_credit_account_id':new_default_credit_account_id,
                         'default_debit_account_id':new_default_debit_account_id,
                         }
-
                 journal_obj.create(cr, uid, vals_journal, context=context)
 
         return True
@@ -228,6 +223,7 @@ class split_company_data(osv.osv_memory):
         journal_obj = self.pool.get('account.journal')
         period_obj = self.pool.get('account.period')
         obj_sequence = self.pool.get('ir.sequence')
+        reconcile_obj = self.pool.get('account.move.reconcile')
 
         move_ids = move_obj.search(cr, uid, [('company_id','=',old_company_id)])
 
@@ -244,7 +240,6 @@ class split_company_data(osv.osv_memory):
                 new_period_id = period_obj.search(cr, uid, [('name','=',move_data.period_id.name),('company_id','=',new_company_id1)], context=context)
             else:
                 new_period_id = period_obj.search(cr, uid, [('name','=',move_data.period_id.name),('company_id','=',new_company_id2)], context=context)
-
 
             # Find jorunal for new company
             journal_data = journal_obj.browse(cr, uid, move_data.journal_id.id, context=context)
@@ -264,7 +259,7 @@ class split_company_data(osv.osv_memory):
                                                     }, context=context)
 
             move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
-            reconcile_line_ids = []
+
             for move_line_id in move_line_ids:
                 move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
 
@@ -291,7 +286,6 @@ class split_company_data(osv.osv_memory):
                                                                   }, context=context)
             #Post entry
             move_obj.post(cr, uid, [new_move_id], context=context) # To post entry
-        # TODO Reconcile entry
 
         return True
 
@@ -313,7 +307,7 @@ class split_company_data(osv.osv_memory):
             new_period_id = False
             new_journal_id = False
             move_line_journal_id = False
-            name = False
+
             # find period for the new company
             period_data = period_obj.browse(cr, uid, move_data.period_id.id, context=context)
             new_period_id = period_obj.search(cr, uid, [('name','=',period_data.name),('company_id','=',new_company_id)], context=context)
@@ -323,7 +317,8 @@ class split_company_data(osv.osv_memory):
             new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id)], context=context)
 
             new_move_id = move_obj.create(cr, uid, {
-                                                    'name': '/',
+                                                    'name': move_data.name,
+                                                    'ref': move_data.ref,
                                                     'period_id': new_period_id[0],
                                                     'journal_id': new_journal_id[0],
                                                     'date': move_data.date,
@@ -331,7 +326,6 @@ class split_company_data(osv.osv_memory):
                                                     }, context=context)
 
             move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
-            reconcile_line_ids = []
             for move_line_id in move_line_ids:
                 move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
                 #Account for the move line
@@ -353,7 +347,39 @@ class split_company_data(osv.osv_memory):
                                                                   }, context=context)
             #Post entry
             move_obj.post(cr, uid, [new_move_id], context=context) # To post entry
-            # TODO Reconcile entry
+
+        return True
+
+    def reconcile_move_line_entry(self, cr, uid, old_company_id, new_company_id, context=None):
+        #To reconcile entry
+        if context is None:
+            context = {}
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        old_move_line_ids = move_line_obj.search(cr, uid, [('company_id','=',old_company_id)])
+        for old_move_line_id in old_move_line_ids:
+            move_line_data = move_line_obj.browse(cr, uid, old_move_line_id, context=context)
+            to_reconcile = []
+            to_partial_reconcile = []
+            if move_line_data.reconcile_id:
+                for line_reconcile_id in move_line_data.reconcile_id.line_id:
+                    rec_line_id = move_line_obj.search(cr, uid, [('name','=',line_reconcile_id.name),('company_id','=',new_company_id),('ref','=',line_reconcile_id.ref)], context=context)
+                    if rec_line_id:
+                        to_reconcile.append(rec_line_id[0])
+                    old_move_line_ids.remove(line_reconcile_id.id)
+                if to_reconcile:
+                    move_line_obj.reconcile(cr, uid, to_reconcile, type='auto', context=context)
+
+            elif move_line_data.reconcile_partial_id:
+                for line_par_reconcile_id in move_line_data.reconcile_partial_id.line_partial_ids:
+                    partial_rec_line_id = move_line_obj.search(cr, uid, [('name','=',line_par_reconcile_id.name),('company_id','=',new_company_id),('ref','=',line_par_reconcile_id.ref)], context=context)
+                    if partial_rec_line_id:
+                        to_partial_reconcile.append(partial_rec_line_id[0])
+                    old_move_line_ids.remove(line_par_reconcile_id.id)
+
+                if to_partial_reconcile:
+                    move_line_obj.reconcile_partial(cr, uid, to_partial_reconcile, type='auto', context=context)
+
         return True
 
     def assign_property_account(self, cr, uid, company_id, company_name, context=None):
@@ -461,6 +487,13 @@ class split_company_data(osv.osv_memory):
             self.create_account_move_entry_percent(cr, uid, data['company_id'], first_company_id, data['first_comp_percent'], context=context)
             # for second company percentage entry
             self.create_account_move_entry_percent(cr, uid, data['company_id'], second_company_id, data['second_comp_percent'], context=context)
+
+        # Reconcilation of first company
+        self.reconcile_move_line_entry(cr, uid, data['company_id'], first_company_id, context=context)
+
+        # Reconcilation of second company
+        self.reconcile_move_line_entry(cr, uid, data['company_id'], second_company_id, context=context)
+
 
         return {}
 

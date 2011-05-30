@@ -22,6 +22,42 @@ from osv import osv
 from osv import fields
 from tools.translate import _
 import datetime
+import time
+
+class account_fiscalyear(osv.osv):
+    _inherit = "account.fiscalyear"
+
+    def find(self, cr, uid, dt=None, exception=True, context=None):
+        if context is None:
+            context = {}
+        company_id = self.pool.get('res.users').browse(cr, uid, uid, context=context).company_id.id
+        if not dt:
+            dt = time.strftime('%Y-%m-%d')
+        ids = self.search(cr, uid, [('date_start', '<=', dt), ('date_stop', '>=', dt),('company_id','=',company_id)])
+        if not ids:
+            if exception:
+                raise osv.except_osv(_('Error !'), _('No fiscal year defined for this date !\nPlease create one.'))
+            else:
+                return False
+        return ids[0]
+
+account_fiscalyear()
+
+class account_period(osv.osv):
+    _inherit = "account.period"
+
+    def find(self, cr, uid, dt=None, context=None):
+        if context is None:
+            context = {}
+        company_id = self.pool.get('res.users').browse(cr, uid, uid, context=context).company_id.id
+        if not dt:
+            dt = time.strftime('%Y-%m-%d')
+        ids = self.search(cr, uid, [('date_start','<=',dt),('date_stop','>=',dt),('company_id','=',company_id)])
+        if not ids:
+            raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create a fiscal year.')%dt)
+        return ids
+
+account_period()
 
 class split_company_data(osv.osv_memory):
     _name = 'account.split.company.data'
@@ -83,12 +119,6 @@ class split_company_data(osv.osv_memory):
             if data.parent_id:
                 account_parent_id = account_obj.search(cr, uid, [('company_id','=', new_company_id),('name','=',data.parent_id.name),('code','=',data.parent_id.code)])
 
-            if data.child_consol_ids:
-                for child_consol_data in data.child_consol_ids:
-                    child_consol_id = account_obj.search(cr, uid, [('company_id','=', new_company_id),('name','=',child_consol_data.name), ('code','=',child_consol_data.code)])
-                    if child_consol_id:
-                        new_child_consol_ids.append(child_consol_id[0])
-
             if account_parent_id:
                 account_parent_id = account_parent_id[0]
             else:
@@ -104,9 +134,53 @@ class split_company_data(osv.osv_memory):
                                         'reconcile': data.reconcile,
                                         'currency_mode':data.currency_mode,
                                         'currency_id':data.currency_id.id,
-                                        'child_consol_ids':new_child_consol_ids,
-                                        }
-                                   )
+                                        })
+        return True
+
+    def create_tax_code_account(self, cr, uid, old_company_id, new_company_id, name, context=None):
+        if context is None:
+            context = {}
+
+        context.update({'new_company_id':new_company_id})
+        account_tax_code_obj = self.pool.get('account.tax.code')
+
+        parent_code_id = account_tax_code_obj.search(cr, uid, [('company_id','=',old_company_id), ('parent_id','=',False)],context=context)
+        parent_data = account_tax_code_obj.browse(cr, uid, parent_code_id[0], context=context)
+
+        root_tax_code = account_tax_code_obj.create(cr, uid, {
+                                            'name':name,
+                                            'info':parent_data.info,
+                                            'company_id':new_company_id,
+                                            'sign':parent_data.sign,
+                                            'notprintable':parent_data.notprintable,
+                                            },context=context)
+
+        tax_code_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',old_company_id), ('parent_id','!=',False)], order='parent_id', context=context)
+
+        for tax_code_id in tax_code_ids:
+            account_tax_parent_id = False
+            account_tax_data = account_tax_code_obj.browse(cr, uid, tax_code_id, context=context)
+
+            tax_code_id = account_tax_code_obj.search(cr, uid, [('name','=',account_tax_data.name),('company_id','=',new_company_id),('code','=',account_tax_data.parent_id.code)])
+            if tax_code_id:
+                continue
+
+            if account_tax_data.parent_id:
+                tax_parent_ids = account_tax_code_obj.search(cr, uid, [('company_id','=', new_company_id),('name','=',account_tax_data.parent_id.name),('code','=',account_tax_data.parent_id.code)])
+                if tax_parent_ids:
+                    account_tax_parent_id = tax_parent_ids[0]
+                else:
+                    account_tax_parent_id = root_tax_code
+
+            tax_code_id = account_tax_code_obj.create(cr, uid, {
+                                                                'name':account_tax_data.name,
+                                                                'code':account_tax_data.code,
+                                                                'info':account_tax_data.info,
+                                                                'parent_id':account_tax_parent_id,
+                                                                'company_id':new_company_id,
+                                                                'sign':account_tax_data.sign,
+                                                                'notprintable':account_tax_data.notprintable,
+                                                                }, context=context)
         return True
 
     def create_account_journal(self, cr, uid, old_company_id, new_company_id, context=None):
@@ -162,6 +236,7 @@ class split_company_data(osv.osv_memory):
                         'company_id':new_company_id,
                         }
                     new_seq_id = sequence_obj.create(cr, uid, vals_seq, context=context)
+
                 vals_journal = {
                         'name': journal_data.name,
                         'code': journal_data.code,
@@ -223,7 +298,7 @@ class split_company_data(osv.osv_memory):
         journal_obj = self.pool.get('account.journal')
         period_obj = self.pool.get('account.period')
         obj_sequence = self.pool.get('ir.sequence')
-        reconcile_obj = self.pool.get('account.move.reconcile')
+        account_tax_code_obj = self.pool.get('account.tax.code')
 
         move_ids = move_obj.search(cr, uid, [('company_id','=',old_company_id)])
 
@@ -262,13 +337,35 @@ class split_company_data(osv.osv_memory):
 
             for move_line_id in move_line_ids:
                 move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
-
+                new_tax_account = False
                 # Find Account for move line entry
                 move_line_account_data = account_obj.browse(cr, uid, move_line_data.account_id.id, context=context)
                 if move_data.period_id.date_stop < period_data.date_start:
                     move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id1)])
                 else:
                     move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id2)])
+
+                # Find tax code account
+                if move_line_data.tax_code_id:
+                    account_tax_code_data = account_tax_code_obj.browse(cr, uid, move_line_data.tax_code_id.id, context=context)
+                    if move_data.period_id.date_stop < period_data.date_start:
+                        new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id1),('name','=',account_tax_code_data.name)])
+                        if new_tax_account_ids:
+                            new_tax_account = new_tax_account_ids[0]
+                        else:
+                            tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id1).name
+                            main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
+                            if main_tax_accont_ids:
+                                new_tax_account = main_tax_accont_ids[0]
+                    else:
+                        new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id2),('name','=',account_tax_code_data.name)])[0]
+                        if new_tax_account_ids:
+                            new_tax_account = new_tax_account_ids[0]
+                        else:
+                            tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id2).name
+                            main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
+                            if main_tax_accont_ids:
+                                new_tax_account = main_tax_accont_ids[0]
 
                 new_move_line_id = move_line_obj.create(cr, uid, {
                                                                   'name': move_line_data.name,
@@ -282,6 +379,8 @@ class split_company_data(osv.osv_memory):
                                                                   'amount_currency': move_line_data.amount_currency,
                                                                   'date': move_line_data.date,
                                                                   'date_maturity': move_line_data.date_maturity,
+                                                                  'tax_code_id':new_tax_account,
+                                                                  'tax_amount':move_line_data.tax_amount,
                                                                   'move_id': new_move_id,
                                                                   }, context=context)
             #Post entry
@@ -299,20 +398,21 @@ class split_company_data(osv.osv_memory):
         journal_obj = self.pool.get('account.journal')
         period_obj = self.pool.get('account.period')
         obj_sequence = self.pool.get('ir.sequence')
+        account_tax_code_obj = self.pool.get('account.tax.code')
 
         move_ids = move_obj.search(cr, uid, [('company_id','=',old_company_id)])
-
+        context.update({'new_company_id':new_company_id})
         for move_id in move_ids:
             move_data = move_obj.browse(cr, uid, move_id, context=context)
             new_period_id = False
             new_journal_id = False
             move_line_journal_id = False
 
-            # find period for the new company
+            # find period for new company
             period_data = period_obj.browse(cr, uid, move_data.period_id.id, context=context)
             new_period_id = period_obj.search(cr, uid, [('name','=',period_data.name),('company_id','=',new_company_id)], context=context)
 
-            # find jorunal for tne new company
+            # find jorunal for new company
             journal_data = journal_obj.browse(cr, uid, move_data.journal_id.id, context=context)
             new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id)], context=context)
 
@@ -327,10 +427,24 @@ class split_company_data(osv.osv_memory):
 
             move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
             for move_line_id in move_line_ids:
+                new_tax_account = False
                 move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
                 #Account for the move line
                 move_line_account_data = account_obj.browse(cr, uid, move_line_data.account_id.id, context=context)
                 move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id)])
+
+                #Find tax code account
+                if move_line_data.tax_code_id:
+                    account_tax_code_data = account_tax_code_obj.browse(cr, uid, move_line_data.tax_code_id.id, context=context)
+                    new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id),('name','=',account_tax_code_data.name)])
+                    if new_tax_account_ids:
+                        new_tax_account = new_tax_account_ids[0]
+                    else:
+                        tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id1).name
+                        main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
+                        if main_tax_accont_ids:
+                            new_tax_account = main_tax_accont_ids[0]
+
                 new_move_line_id = move_line_obj.create(cr, uid, {
                                                                   'name': move_line_data.name,
                                                                   'journal_id': new_journal_id[0],
@@ -343,6 +457,8 @@ class split_company_data(osv.osv_memory):
                                                                   'amount_currency': move_line_data.amount_currency,
                                                                   'date': move_line_data.date,
                                                                   'date_maturity': move_line_data.date_maturity,
+                                                                  'tax_code_id':new_tax_account,
+                                                                  'tax_amount':(move_line_data.tax_amount * percent / 100),
                                                                   'move_id': new_move_id,
                                                                   }, context=context)
             #Post entry
@@ -476,6 +592,13 @@ class split_company_data(osv.osv_memory):
         partner_obj.write(cr, uid, [first_part_id], {'property_account_receivable':first_comp_rec_acc[0],'property_account_payable':first_comp_pay_acc[0]})
         partner_obj.write(cr, uid, [second_part_id], {'property_account_receivable':second_comp_rec_acc[0],'property_account_payable':second_comp_pay_acc[0]})
 
+        context.update({'new_company_id1':first_company_id,'new_company_id2':second_company_id})
+        # For first company tax code generation
+        self.create_tax_code_account(cr, uid, data['company_id'], first_company_id, data['first_company_name'], context=context)
+
+        # For second company tax code generation
+        self.create_tax_code_account(cr, uid, data['company_id'], second_company_id, data['second_company_name'], context=context)
+
         # Created account move entry on the base of period
         if data['type'] == 'period':
             self.create_account_move_entry(cr, uid, data['company_id'], first_company_id, second_company_id, main_period, context=context)
@@ -493,7 +616,6 @@ class split_company_data(osv.osv_memory):
 
         # Reconcilation of second company
         self.reconcile_move_line_entry(cr, uid, data['company_id'], second_company_id, context=context)
-
 
         return {}
 

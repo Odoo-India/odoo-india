@@ -440,7 +440,7 @@ class split_company_data(osv.osv_memory):
                     if new_tax_account_ids:
                         new_tax_account = new_tax_account_ids[0]
                     else:
-                        tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id1).name
+                        tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id).name
                         main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
                         if main_tax_accont_ids:
                             new_tax_account = main_tax_accont_ids[0]

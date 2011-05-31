@@ -258,33 +258,33 @@ class split_company_data(osv.osv_memory):
 
         fiscal_obj = self.pool.get('account.fiscalyear')
         account_obj = self.pool.get('account.account')
-
         diff_days = 0.0
+        old_fiscal_ids = fiscal_obj.search(cr, uid, [('company_id', '=', old_company_id)], context=context)
 
-        old_fiscal_id = fiscal_obj.search(cr, uid, [('company_id', '=', old_company_id)], context=context)[0]
-        old_fiscal_data = fiscal_obj.browse(cr, uid, old_fiscal_id, context=context)
-        new_fiscal_id = fiscal_obj.search(cr, uid, [('date_start', '<=', old_fiscal_data.date_start), ('date_stop', '>=', old_fiscal_data.date_stop), ('company_id', '=', new_company_id)], context=context)
+        for old_fiscal_id in old_fiscal_ids:
+            fyname = False
+            old_fiscal_data = fiscal_obj.browse(cr, uid, old_fiscal_id, context=context)
+            new_fiscal_id = fiscal_obj.search(cr, uid, [('date_start', '<=', old_fiscal_data.date_start), ('date_stop', '>=', old_fiscal_data.date_stop), ('company_id', '=', new_company_id)], context=context)
+            if not new_fiscal_id:
+                fyname = 'Fiscal Year' + ' ' + old_fiscal_data.date_start[:4] + '('+name+')'
+                code = 'FY' + old_fiscal_data.date_start[:4]
+                vals = {
+                    'name': fyname,
+                    'code': code,
+                    'date_start': old_fiscal_data.date_start,
+                    'date_stop': old_fiscal_data.date_stop,
+                    'company_id': new_company_id
+                }
 
-        if not new_fiscal_id:
-            name = old_fiscal_data.date_start[:4] + '('+name+')'
-            code = 'FY' + old_fiscal_data.date_start[:4]
-            vals = {
-                'name': name,
-                'code': code,
-                'date_start': old_fiscal_data.date_start,
-                'date_stop': old_fiscal_data.date_stop,
-                'company_id': new_company_id
-            }
-
-            # Creation of Period monthly or Quarterly
-            new_fiscal_id = fiscal_obj.create(cr, uid, vals, context=context)
-            period_data_start =  datetime.datetime.strptime(old_fiscal_data.period_ids[0].date_start, "%Y-%m-%d")
-            period_data_stop =  datetime.datetime.strptime(old_fiscal_data.period_ids[0].date_stop, "%Y-%m-%d")
-            diff_days = (period_data_stop - period_data_start).days
-            if diff_days > 31:
-                fiscal_obj.create_period3(cr, uid, [new_fiscal_id])
-            else:
-                fiscal_obj.create_period(cr, uid, [new_fiscal_id])
+                # Creation of Period monthly or Quarterly
+                new_fiscal_id = fiscal_obj.create(cr, uid, vals, context=context)
+                period_data_start =  datetime.datetime.strptime(old_fiscal_data.period_ids[0].date_start, "%Y-%m-%d")
+                period_data_stop =  datetime.datetime.strptime(old_fiscal_data.period_ids[0].date_stop, "%Y-%m-%d")
+                diff_days = (period_data_stop - period_data_start).days
+                if diff_days > 31:
+                    fiscal_obj.create_period3(cr, uid, [new_fiscal_id])
+                else:
+                    fiscal_obj.create_period(cr, uid, [new_fiscal_id])
 
         return True
 

@@ -259,7 +259,7 @@ class split_company_data(osv.osv_memory):
         fiscal_obj = self.pool.get('account.fiscalyear')
         account_obj = self.pool.get('account.account')
         diff_days = 0.0
-        old_fiscal_ids = fiscal_obj.search(cr, uid, [('company_id', '=', old_company_id)], context=context)
+        old_fiscal_ids = fiscal_obj.search(cr, uid, [('company_id', '=', old_company_id), ('state', '=', 'draft')], context=context)
 
         for old_fiscal_id in old_fiscal_ids:
             fyname = False
@@ -310,81 +310,81 @@ class split_company_data(osv.osv_memory):
             name = False
             # Find period for the new company
             period_data = period_obj.browse(cr, uid, period_id, context=context)
-
-            if move_data.period_id.date_stop < period_data.date_start:
-                new_period_id = period_obj.search(cr, uid, [('name','=',move_data.period_id.name),('company_id','=',new_company_id1)], context=context)
-            else:
-                new_period_id = period_obj.search(cr, uid, [('name','=',move_data.period_id.name),('company_id','=',new_company_id2)], context=context)
-
-            # Find jorunal for new company
-            journal_data = journal_obj.browse(cr, uid, move_data.journal_id.id, context=context)
-
-            if move_data.period_id.date_stop < period_data.date_start:
-                new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id1)], context=context)
-            else:
-                new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id2)], context=context)
-
-            new_move_id = move_obj.create(cr, uid, {
-                                                    'name': move_data.name,
-                                                    'ref': move_data.ref,
-                                                    'period_id': new_period_id[0],
-                                                    'journal_id': new_journal_id[0],
-                                                    'date': move_data.date,
-                                                    'state': 'draft',
-                                                    }, context=context)
-
-            move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
-
-            for move_line_id in move_line_ids:
-                move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
-                new_tax_account = False
-                # Find Account for move line entry
-                move_line_account_data = account_obj.browse(cr, uid, move_line_data.account_id.id, context=context)
+            if move_data.period_id.state == 'draft':
                 if move_data.period_id.date_stop < period_data.date_start:
-                    move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id1)])
+                    new_period_id = period_obj.search(cr, uid, [('name','=',move_data.period_id.name),('company_id','=',new_company_id1)], context=context)
                 else:
-                    move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id2)])
+                    new_period_id = period_obj.search(cr, uid, [('name','=',move_data.period_id.name),('company_id','=',new_company_id2)], context=context)
 
-                # Find tax code account
-                if move_line_data.tax_code_id:
-                    account_tax_code_data = account_tax_code_obj.browse(cr, uid, move_line_data.tax_code_id.id, context=context)
+                # Find jorunal for new company
+                journal_data = journal_obj.browse(cr, uid, move_data.journal_id.id, context=context)
+
+                if move_data.period_id.date_stop < period_data.date_start:
+                    new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id1)], context=context)
+                else:
+                    new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id2)], context=context)
+
+                new_move_id = move_obj.create(cr, uid, {
+                                                        'name': move_data.name,
+                                                        'ref': move_data.ref,
+                                                        'period_id': new_period_id[0],
+                                                        'journal_id': new_journal_id[0],
+                                                        'date': move_data.date,
+                                                        'state': 'draft',
+                                                        }, context=context)
+
+                move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
+
+                for move_line_id in move_line_ids:
+                    move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
+                    new_tax_account = False
+                    # Find Account for move line entry
+                    move_line_account_data = account_obj.browse(cr, uid, move_line_data.account_id.id, context=context)
                     if move_data.period_id.date_stop < period_data.date_start:
-                        new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id1),('name','=',account_tax_code_data.name)])
-                        if new_tax_account_ids:
-                            new_tax_account = new_tax_account_ids[0]
-                        else:
-                            tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id1).name
-                            main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
-                            if main_tax_accont_ids:
-                                new_tax_account = main_tax_accont_ids[0]
+                        move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id1)])
                     else:
-                        new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id2),('name','=',account_tax_code_data.name)])[0]
-                        if new_tax_account_ids:
-                            new_tax_account = new_tax_account_ids[0]
-                        else:
-                            tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id2).name
-                            main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
-                            if main_tax_accont_ids:
-                                new_tax_account = main_tax_accont_ids[0]
+                        move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id2)])
 
-                new_move_line_id = move_line_obj.create(cr, uid, {
-                                                                  'name': move_line_data.name,
-                                                                  'journal_id': new_journal_id[0],
-                                                                  'period_id': new_period_id[0],
-                                                                  'account_id': move_line_account_id[0],
-                                                                  'debit': move_line_data.debit,
-                                                                  'credit': move_line_data.credit,
-                                                                  'partner_id': move_line_data.partner_id.id,
-                                                                  'currency_id': move_line_data.currency_id.id,
-                                                                  'amount_currency': move_line_data.amount_currency,
-                                                                  'date': move_line_data.date,
-                                                                  'date_maturity': move_line_data.date_maturity,
-                                                                  'tax_code_id':new_tax_account,
-                                                                  'tax_amount':move_line_data.tax_amount,
-                                                                  'move_id': new_move_id,
-                                                                  }, context=context)
-            #Post entry
-            move_obj.post(cr, uid, [new_move_id], context=context) # To post entry
+                    # Find tax code account
+                    if move_line_data.tax_code_id:
+                        account_tax_code_data = account_tax_code_obj.browse(cr, uid, move_line_data.tax_code_id.id, context=context)
+                        if move_data.period_id.date_stop < period_data.date_start:
+                            new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id1),('name','=',account_tax_code_data.name)])
+                            if new_tax_account_ids:
+                                new_tax_account = new_tax_account_ids[0]
+                            else:
+                                tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id1).name
+                                main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
+                                if main_tax_accont_ids:
+                                    new_tax_account = main_tax_accont_ids[0]
+                        else:
+                            new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id2),('name','=',account_tax_code_data.name)])[0]
+                            if new_tax_account_ids:
+                                new_tax_account = new_tax_account_ids[0]
+                            else:
+                                tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id2).name
+                                main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
+                                if main_tax_accont_ids:
+                                    new_tax_account = main_tax_accont_ids[0]
+
+                    new_move_line_id = move_line_obj.create(cr, uid, {
+                                                                      'name': move_line_data.name,
+                                                                      'journal_id': new_journal_id[0],
+                                                                      'period_id': new_period_id[0],
+                                                                      'account_id': move_line_account_id[0],
+                                                                      'debit': move_line_data.debit,
+                                                                      'credit': move_line_data.credit,
+                                                                      'partner_id': move_line_data.partner_id.id,
+                                                                      'currency_id': move_line_data.currency_id.id,
+                                                                      'amount_currency': move_line_data.amount_currency,
+                                                                      'date': move_line_data.date,
+                                                                      'date_maturity': move_line_data.date_maturity,
+                                                                      'tax_code_id':new_tax_account,
+                                                                      'tax_amount':move_line_data.tax_amount,
+                                                                      'move_id': new_move_id,
+                                                                      }, context=context)
+                #Post entry
+                move_obj.post(cr, uid, [new_move_id], context=context) # To post entry
 
         return True
 
@@ -408,61 +408,62 @@ class split_company_data(osv.osv_memory):
             new_journal_id = False
             move_line_journal_id = False
 
-            # find period for new company
-            period_data = period_obj.browse(cr, uid, move_data.period_id.id, context=context)
-            new_period_id = period_obj.search(cr, uid, [('name','=',period_data.name),('company_id','=',new_company_id)], context=context)
+            if move_data.period_id.state == 'draft':
+                # find period for new company
+                period_data = period_obj.browse(cr, uid, move_data.period_id.id, context=context)
+                new_period_id = period_obj.search(cr, uid, [('name','=',period_data.name),('company_id','=',new_company_id)], context=context)
 
-            # find jorunal for new company
-            journal_data = journal_obj.browse(cr, uid, move_data.journal_id.id, context=context)
-            new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id)], context=context)
+                # find jorunal for new company
+                journal_data = journal_obj.browse(cr, uid, move_data.journal_id.id, context=context)
+                new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id)], context=context)
 
-            new_move_id = move_obj.create(cr, uid, {
-                                                    'name': move_data.name,
-                                                    'ref': move_data.ref,
-                                                    'period_id': new_period_id[0],
-                                                    'journal_id': new_journal_id[0],
-                                                    'date': move_data.date,
-                                                    'state': 'draft',
-                                                    }, context=context)
+                new_move_id = move_obj.create(cr, uid, {
+                                                        'name': move_data.name,
+                                                        'ref': move_data.ref,
+                                                        'period_id': new_period_id[0],
+                                                        'journal_id': new_journal_id[0],
+                                                        'date': move_data.date,
+                                                        'state': 'draft',
+                                                        }, context=context)
 
-            move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
-            for move_line_id in move_line_ids:
-                new_tax_account = False
-                move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
-                #Account for the move line
-                move_line_account_data = account_obj.browse(cr, uid, move_line_data.account_id.id, context=context)
-                move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id)])
+                move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
+                for move_line_id in move_line_ids:
+                    new_tax_account = False
+                    move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
+                    #Account for the move line
+                    move_line_account_data = account_obj.browse(cr, uid, move_line_data.account_id.id, context=context)
+                    move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id)])
 
-                #Find tax code account
-                if move_line_data.tax_code_id:
-                    account_tax_code_data = account_tax_code_obj.browse(cr, uid, move_line_data.tax_code_id.id, context=context)
-                    new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id),('name','=',account_tax_code_data.name)])
-                    if new_tax_account_ids:
-                        new_tax_account = new_tax_account_ids[0]
-                    else:
-                        tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id).name
-                        main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
-                        if main_tax_accont_ids:
-                            new_tax_account = main_tax_accont_ids[0]
+                    #Find tax code account
+                    if move_line_data.tax_code_id:
+                        account_tax_code_data = account_tax_code_obj.browse(cr, uid, move_line_data.tax_code_id.id, context=context)
+                        new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id),('name','=',account_tax_code_data.name)])
+                        if new_tax_account_ids:
+                            new_tax_account = new_tax_account_ids[0]
+                        else:
+                            tax_name = self.pool.get('res.company').browse(cr, uid, new_company_id).name
+                            main_tax_accont_ids = account_tax_code_obj.search(cr, uid, [('name','=',tax_name)])
+                            if main_tax_accont_ids:
+                                new_tax_account = main_tax_accont_ids[0]
 
-                new_move_line_id = move_line_obj.create(cr, uid, {
-                                                                  'name': move_line_data.name,
-                                                                  'journal_id': new_journal_id[0],
-                                                                  'period_id': new_period_id[0],
-                                                                  'account_id': move_line_account_id[0],
-                                                                  'debit': (move_line_data.debit * percent / 100),
-                                                                  'credit': (move_line_data.credit * percent / 100),
-                                                                  'partner_id': move_line_data.partner_id.id,
-                                                                  'currency_id': move_line_data.currency_id.id,
-                                                                  'amount_currency': move_line_data.amount_currency,
-                                                                  'date': move_line_data.date,
-                                                                  'date_maturity': move_line_data.date_maturity,
-                                                                  'tax_code_id':new_tax_account,
-                                                                  'tax_amount':(move_line_data.tax_amount * percent / 100),
-                                                                  'move_id': new_move_id,
-                                                                  }, context=context)
-            #Post entry
-            move_obj.post(cr, uid, [new_move_id], context=context) # To post entry
+                    new_move_line_id = move_line_obj.create(cr, uid, {
+                                                                      'name': move_line_data.name,
+                                                                      'journal_id': new_journal_id[0],
+                                                                      'period_id': new_period_id[0],
+                                                                      'account_id': move_line_account_id[0],
+                                                                      'debit': (move_line_data.debit * percent / 100),
+                                                                      'credit': (move_line_data.credit * percent / 100),
+                                                                      'partner_id': move_line_data.partner_id.id,
+                                                                      'currency_id': move_line_data.currency_id.id,
+                                                                      'amount_currency': move_line_data.amount_currency,
+                                                                      'date': move_line_data.date,
+                                                                      'date_maturity': move_line_data.date_maturity,
+                                                                      'tax_code_id':new_tax_account,
+                                                                      'tax_amount':(move_line_data.tax_amount * percent / 100),
+                                                                      'move_id': new_move_id,
+                                                                      }, context=context)
+                #Post entry
+                move_obj.post(cr, uid, [new_move_id], context=context) # To post entry
 
         return True
 
@@ -475,26 +476,27 @@ class split_company_data(osv.osv_memory):
         old_move_line_ids = move_line_obj.search(cr, uid, [('company_id','=',old_company_id)])
         for old_move_line_id in old_move_line_ids:
             move_line_data = move_line_obj.browse(cr, uid, old_move_line_id, context=context)
-            to_reconcile = []
-            to_partial_reconcile = []
-            if move_line_data.reconcile_id:
-                for line_reconcile_id in move_line_data.reconcile_id.line_id:
-                    rec_line_id = move_line_obj.search(cr, uid, [('name','=',line_reconcile_id.name),('company_id','=',new_company_id),('ref','=',line_reconcile_id.ref)], context=context)
-                    if rec_line_id:
-                        to_reconcile.append(rec_line_id[0])
-                    old_move_line_ids.remove(line_reconcile_id.id)
-                if to_reconcile:
-                    move_line_obj.reconcile(cr, uid, to_reconcile, type='auto', context=context)
+            if move_line_data.period_id.state == 'draft':
+                to_reconcile = []
+                to_partial_reconcile = []
+                if move_line_data.reconcile_id:
+                    for line_reconcile_id in move_line_data.reconcile_id.line_id:
+                        rec_line_id = move_line_obj.search(cr, uid, [('name','=',line_reconcile_id.name),('company_id','=',new_company_id),('ref','=',line_reconcile_id.ref)], context=context)
+                        if rec_line_id:
+                            to_reconcile.append(rec_line_id[0])
+                        old_move_line_ids.remove(line_reconcile_id.id)
+                    if to_reconcile:
+                        move_line_obj.reconcile(cr, uid, to_reconcile, type='auto', context=context)
 
-            elif move_line_data.reconcile_partial_id:
-                for line_par_reconcile_id in move_line_data.reconcile_partial_id.line_partial_ids:
-                    partial_rec_line_id = move_line_obj.search(cr, uid, [('name','=',line_par_reconcile_id.name),('company_id','=',new_company_id),('ref','=',line_par_reconcile_id.ref)], context=context)
-                    if partial_rec_line_id:
-                        to_partial_reconcile.append(partial_rec_line_id[0])
-                    old_move_line_ids.remove(line_par_reconcile_id.id)
+                elif move_line_data.reconcile_partial_id:
+                    for line_par_reconcile_id in move_line_data.reconcile_partial_id.line_partial_ids:
+                        partial_rec_line_id = move_line_obj.search(cr, uid, [('name','=',line_par_reconcile_id.name),('company_id','=',new_company_id),('ref','=',line_par_reconcile_id.ref)], context=context)
+                        if partial_rec_line_id:
+                            to_partial_reconcile.append(partial_rec_line_id[0])
+                        old_move_line_ids.remove(line_par_reconcile_id.id)
 
-                if to_partial_reconcile:
-                    move_line_obj.reconcile_partial(cr, uid, to_partial_reconcile, type='auto', context=context)
+                    if to_partial_reconcile:
+                        move_line_obj.reconcile_partial(cr, uid, to_partial_reconcile, type='auto', context=context)
 
         return True
 

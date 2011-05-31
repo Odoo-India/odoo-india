@@ -310,18 +310,15 @@ class split_company_data(osv.osv_memory):
             name = False
             # Find period for the new company
             period_data = period_obj.browse(cr, uid, period_id, context=context)
+            # Find journal for new company
+            journal_data = journal_obj.browse(cr, uid, move_data.journal_id.id, context=context)
+
             if move_data.period_id.state == 'draft':
                 if move_data.period_id.date_stop < period_data.date_start:
                     new_period_id = period_obj.search(cr, uid, [('name','=',move_data.period_id.name),('company_id','=',new_company_id1)], context=context)
-                else:
-                    new_period_id = period_obj.search(cr, uid, [('name','=',move_data.period_id.name),('company_id','=',new_company_id2)], context=context)
-
-                # Find jorunal for new company
-                journal_data = journal_obj.browse(cr, uid, move_data.journal_id.id, context=context)
-
-                if move_data.period_id.date_stop < period_data.date_start:
                     new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id1)], context=context)
                 else:
+                    new_period_id = period_obj.search(cr, uid, [('name','=',move_data.period_id.name),('company_id','=',new_company_id2)], context=context)
                     new_journal_id = journal_obj.search(cr, uid, [('name','=',journal_data.name),('code','=',journal_data.code),('company_id','=',new_company_id2)], context=context)
 
                 new_move_id = move_obj.create(cr, uid, {

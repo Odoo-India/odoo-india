@@ -303,8 +303,7 @@ class split_company_data(osv.osv_memory):
 
         move_ids = move_obj.search(cr, uid, [('company_id','=',old_company_id)])
 
-        for move_id in move_ids:
-            move_data = move_obj.browse(cr, uid, move_id, context=context)
+        for move_data in move_obj.browse(cr, uid, move_ids, context=context):
             new_period_id = False
             new_journal_id = False
             move_line_journal_id = False
@@ -331,10 +330,9 @@ class split_company_data(osv.osv_memory):
                                                         'state': 'draft',
                                                         }, context=context)
 
-                move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
+                move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_data.id)])
 
-                for move_line_id in move_line_ids:
-                    move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
+                for move_line_data in move_line_obj.browse(cr, uid, move_line_ids, context=context):
                     new_tax_account = False
                     # Find Account for move line entry
                     move_line_account_data = account_obj.browse(cr, uid, move_line_data.account_id.id, context=context)
@@ -356,7 +354,7 @@ class split_company_data(osv.osv_memory):
                                 if main_tax_accont_ids:
                                     new_tax_account = main_tax_accont_ids[0]
                         else:
-                            new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id2),('name','=',account_tax_code_data.name)])[0]
+                            new_tax_account_ids = account_tax_code_obj.search(cr, uid, [('company_id','=',new_company_id2),('name','=',account_tax_code_data.name)])
                             if new_tax_account_ids:
                                 new_tax_account = new_tax_account_ids[0]
                             else:
@@ -400,8 +398,7 @@ class split_company_data(osv.osv_memory):
 
         move_ids = move_obj.search(cr, uid, [('company_id','=',old_company_id)])
 
-        for move_id in move_ids:
-            move_data = move_obj.browse(cr, uid, move_id, context=context)
+        for move_data in move_obj.browse(cr, uid, move_ids, context=context):
             new_period_id = False
             new_journal_id = False
             move_line_journal_id = False
@@ -424,10 +421,10 @@ class split_company_data(osv.osv_memory):
                                                         'state': 'draft',
                                                         }, context=context)
 
-                move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id)])
-                for move_line_id in move_line_ids:
+                move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_data.id)])
+
+                for move_line_data in move_line_obj.browse(cr, uid, move_line_ids, context=context):
                     new_tax_account = False
-                    move_line_data = move_line_obj.browse(cr, uid, move_line_id, context=context)
                     #Account for the move line
                     move_line_account_data = account_obj.browse(cr, uid, move_line_data.account_id.id, context=context)
                     move_line_account_id = account_obj.search(cr, uid, [('name','=',move_line_account_data.name),('code','=',move_line_account_data.code),('company_id','=',new_company_id)])
@@ -472,6 +469,7 @@ class split_company_data(osv.osv_memory):
         move_obj = self.pool.get('account.move')
         move_line_obj = self.pool.get('account.move.line')
         old_move_line_ids = move_line_obj.search(cr, uid, [('company_id','=',old_company_id)])
+
         for old_move_line_id in old_move_line_ids:
             move_line_data = move_line_obj.browse(cr, uid, old_move_line_id, context=context)
             if move_line_data.period_id.state == 'draft':

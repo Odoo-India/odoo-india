@@ -531,6 +531,9 @@ class split_company_data(osv.osv_memory):
         main_period = data['period_id']
         main_company_data = company_obj.browse(cr, uid, data['company_id'], context=context)
         root_account_id = account_obj.search(cr, uid, [('name','=',main_company_data.name)], context=context)
+        if not root_account_id:
+            raise osv.except_osv(_('Error !'), _('Cannot find any chart of account for selected company!'))
+
         root_account_data = account_obj.browse(cr, uid, root_account_id[0], context=context)
 
         # created first company partner

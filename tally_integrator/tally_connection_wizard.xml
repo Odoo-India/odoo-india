@@ -1,25 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-    <!-- wizard  Form View  -->
+    <!-- Wizard  Form View  -->
 
 	<record id="view_tally_connection_form" model="ir.ui.view">
 		<field name="name">tally.connection.form</field>
 		<field name="model">tally.connection</field>
 		<field name="type">form</field>
 		<field name="arch" type="xml">
-			<form string="Migrate Data From Tally" >
+			<form string="Migrate A Data From Tally Into OpenERP">
 				<group colspan="4" >
      				<field name="url" colspan="4" width="400"/>
-     				<!--field name="open_bal" colspan="4"/-->
-     				<field name="company" colspan="4"/>
+     				<field name="company" colspan="4" attrs="{'required':['|',('ledgers','=',True),'|',('groups','=',True),'|',('vouchers','=',True),('employees','=',True)]}"/>
+     				<separator string="Select Appropriate Option(s) To Migrate Data" colspan="4" />
+					<group colspan="4">
+						<separator string="Accounts..." colspan="4"/>
+						<group colspan="4" col="6">
+							<field name="vouchers" colspan="2" on_change="onchange_vouchers_option(vouchers)"/>
+							<field name="ledgers" colspan="2" attrs="{'readonly':[('vouchers','=',True)]}" on_change="onchange_ledgers_option(ledgers)" />
+							<field name="groups" colspan="2" attrs="{'readonly':[('ledgers','=',True)]}"/>
+						</group>
+						<separator string="Products..." colspan="4"/>
+						<group colspan="4" col="6">
+							<field name="inventory_master" colspan="2" on_change="onchange_inventory_master_option(inventory_master)"/>
+							<field name="stock_items" colspan="2" attrs="{'readonly':[('inventory_master','=',True)]}" on_change="onchange_stock_items_option(stock_items)"/>
+							<field name="stock_groups" colspan="2" attrs="{'readonly':[('stock_items','=',True)]}"/>
+							<field name="units" colspan="2" attrs="{'readonly':[('stock_items','=',True)]}"/>
+							<field name="godowns" colspan="2" attrs="{'readonly':[('stock_items','=',True)]}"/>
+						</group>
+						<separator string="Employees..." colspan="4"/>
+						<group colspan="4">
+							<field name="employees" colspan="2" />
+						</group>
+						
+					</group>
      			</group>
 				<separator string="" colspan="4" />
-					<group colspan="4">
-						<label string ="" colspan = "2" />
-    					<button  icon="gtk-cancel" special="cancel" string="Cancel" colspan = "1"/>
-						<button  name="tally_main" icon="gtk-apply" string="Migrate Data" type="object" colspan = "1"  />
-					</group>
+				<group colspan="4">
+					<label string ="" colspan = "2" />
+					<button  icon="gtk-cancel" special="cancel" string="Cancel" colspan = "1"/>
+					<button  name="tally_main" icon="gtk-apply" string="Migrate Data" type="object" colspan = "1"  />
+				</group>
 			</form>
 		</field>
 	</record>
@@ -35,8 +56,9 @@
            <field name="context">{'model': 'tally.connection'}</field>
         </record>  
 
+	<menuitem id="menu_integration" name="Integration Of Tally9 With OpenERP" parent="base.menu_administration" sequence="0"/>
 
-<menuitem id="menu_tally_connection" action="action_tally_connection_form" name="Tally Integrator" parent="base.menu_administration" sequence="1"/>
+	<menuitem id="menu_tally_connection" action="action_tally_connection_form" name="Tally Integrator" parent="menu_integration" sequence="1"/>
 
 	</data>
 </openerp>

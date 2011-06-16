@@ -1,5 +1,7 @@
 from xml.etree import ElementTree
 
+
+
 class XmlDictObject(dict):
     """
     Adds object like functionality to the standard dictionary.
@@ -50,7 +52,8 @@ class XmlDictObject(dict):
 def _ConvertXmlToDictRecurse(node, dictclass):
     nodedict = dictclass()
     if node.attrib:
-        nodedict['VOUCHERTYPENAME'] = node.attrib['NAME']
+        if node.attrib.has_key('NAME'):
+            nodedict['VOUCHERTYPENAME'] = node.attrib['NAME']
     if len(node.items()) > 0:
         # if we have attributes, set them
         nodedict.update(dict(node.items()))

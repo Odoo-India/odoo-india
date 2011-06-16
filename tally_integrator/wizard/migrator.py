@@ -1,111 +1,100 @@
-from psycopg2 import IntegrityError
-from osv import osv
-import string
 import pooler
+import sys
+from osv import osv
+import ledgers
+import stock
+import employee
 
-code = 0
+
+
+class migrator():
+	def getPoolObj(self, cr):
+		return pooler.get_pool(cr.dbname)
+
+	def getAccountObj(self, pool):
+		account = pool.get('account.account')
+		acc_type = pool.get('account.account.type')
+		return account, acc_type
+
+	def getStockObj(self, pool):
+		uom = pool.get('product.uom')
+		prod = pool.get('product.product')
+		prodCat = pool.get('product.category')
+		currency = pool.get('res.currency')
+		return uom, prod, prodCat, currency
+
+	def getStockLocationObj(self, pool):
+		return pool.get('stock.location')
 	
-def getAccountObj(cr):
-	pool = pooler.get_pool(cr.dbname)
-	account = pool.get('account.account')
-	acc_type = pool.get('account.account.type')
-	return account, acc_type
+	def getEmployeeObj(self,pool):
+		return pool.get('hr.employee')
 
-
-def insertRecords(cr, uid, dic, com, account, acc_type):
-	global code 
+	def insertData(self, cr, uid, com, tallyData):
+		a = tallyData
 	
-	if dic.has_key('PARENT') and dic['PARENT']:
-		domain = [('name','=',dic['PARENT']),('company_id','=',com.id)]
+		pool = self.getPoolObj(cr)
+		account, acc_type = self.getAccountObj(pool)
+		uomObj, prodObj, prodCatObj, currencyObj = self.getStockObj(pool)
+		godownObj = self.getStockLocationObj(pool)
+		empObj = self.getEmployeeObj(pool)
+	
+		if a.has_key('TALLYMESSAGE'):
+			l = len(a['TALLYMESSAGE'])
+			dic = {}
 		
-	else:
-		domain = [('name','=',com.name)]
-		
-		
-		
-	code += 1		
-	parent_id = account.search(cr, uid, domain)
-	if not parent_id:
-		#raise osv.except_osv(('Error !'), ('Specified Company not Found in account.account records!!!'))
-		data = {'name':com.name, 'code':string.upper(com.name[0:3]), 'type':'view', 'currency_mode':'current', 'user_type':1, 'company_id':com.id}
-		try:
-			parent_id = account.create(cr, uid, data)
-		except:
-			raise osv.except_osv(('Error !'), ('Company code already exist please use another company name.'))
-	else:
-		
-		obj = account.browse(cr, uid, parent_id[0])
-		p_code = obj.code
-		typ = 0
-		usr_typ = 0
-		
-		if dic.has_key('PARENT') and dic['PARENT']:
-			usr_typ = obj.user_type.id
-			typ = obj.type
-		else:
-			if dic.has_key('ISREVENUE') and dic.has_key('ISDEEMEDPOSITIVE'):
-				if dic['ISREVENUE']=='Yes' and dic['ISDEEMEDPOSITIVE']=='Yes':
-					usr_typ = acc_type.search(cr, uid, [('code','=','expense')])
-					typ = 'other'
-				elif dic['ISREVENUE']=='Yes':
-					usr_typ = acc_type.search(cr, uid, [('code','=','income')])
-					typ = 'other'
-				elif dic['ISDEEMEDPOSITIVE']=='Yes':
-					usr_typ = acc_type.search(cr, uid, [('code','=','asset')])
-					typ = 'receivable'
-				elif dic['ISREVENUE']=='No' and dic['ISDEEMEDPOSITIVE']=='No':
-					usr_typ = acc_type.search(cr, uid, [('code','=','liability')])
-					typ = 'payable'
-				usr_typ = usr_typ[0]
-			else: 
-				usr_typ = obj.user_type.id
-				typ = obj.type
-		
-		data = {'name':dic['NAME'], 'code':p_code + str(code), 'type':typ, 'parent_id':parent_id[0], 'currency_mode':'current', 'user_type':usr_typ, 'company_id':com.id}
-
-		
-		try:
-			p_id = account.create(cr, uid, data)
-
-		except IntegrityError, e:
-			code += 50
-			raise osv.except_osv(('Unique Code Constraint Error'), ('Please Retry the Data Migration.'))
-
-
-		
-def insertData(cr, uid, com, tallyData):
-	global code
-	a = tallyData
-	account, acc_type = getAccountObj(cr)
-	if a.has_key('TALLYMESSAGE'):
-		l = len(a['TALLYMESSAGE'])
-		dic = {}
-		
-		if l<=0:
-			print "Sorry! There are no records."
+			if l<=0:
+				pass
 			
-		elif l<2:  #for single record [TALLYMESSAGE] is dictionary.
-			k = a['TALLYMESSAGE'].keys()[0]
-			if (k=='GROUP' or k=='LEDGER'):
+			elif l<2:  #for single record [TALLYMESSAGE] is dictionary.
+				k = a['TALLYMESSAGE'].keys()[0]
 				dic = a['TALLYMESSAGE'][k]
-				if dic.has_key('NAME') and dic['NAME']:
-					domain = [('name','=',dic['NAME']),('company_id','=',com.id)]
-					search_id = account.search(cr, uid, domain)
-					if not search_id:
-						insertRecords(cr, uid, dic, com, account, acc_type)
-					else:
-						code += 1
-			
-		else:    #for multiple records [TALLYMESSAGE] is list of dictionaries.
-			for i in a['TALLYMESSAGE']:
-				k = i.keys()[0]
 				if (k=='GROUP' or k=='LEDGER'):
-					dic = i[k]		
 					if dic.has_key('NAME') and dic['NAME']:
-						domain = [('name','=',dic['NAME']),('company_id','=',com.id)]
-						search_id = account.search(cr, uid, domain)
-						if not search_id:
-							insertRecords(cr, uid, dic, com, account, acc_type)
-						else:
-							code += 1
-				
+						obj_ledgers = ledgers.ledgers()
+						obj_ledgers.insertRecords(cr, uid, dic, com, account, acc_type)
+				elif (k=='UNIT'):
+					obj_stock = stock.stock()
+					obj_stock.insertUnits(cr, uid, uomObj, dic)
+				elif (k=='STOCKGROUP'):
+					obj_stock = stock.stock()
+					obj_stock.insertStockGroups(cr, uid, prodCatObj, dic)
+				elif (k=='STOCKITEM'):
+					obj_stock = stock.stock()
+					obj_stock.insertStockItems(cr, uid, prodObj, uomObj, prodCatObj, dic, com)
+				elif (k=='CURRENCY'):
+					obj_stock = stock.stock()
+					obj_stock.insertCurrencies(cr, uid, currencyObj, dic, com)
+				elif (k=='GODOWN'):
+					obj_stock = stock.stock()
+					obj_stock.insertGodowns(cr, uid, godownObj, dic, com)
+				elif (k=='COSTCENTRE'):
+					obj_employee = employee.employee()
+					obj_employee.insertEmployees(cr, uid, empObj, dic, com)
+			
+			else:    #for multiple records [TALLYMESSAGE] is list of dictionaries.
+				for i in a['TALLYMESSAGE']:
+					k = i.keys()[0]
+					dic = i[k]
+					if (k=='GROUP' or k=='LEDGER'):		
+						if dic.has_key('NAME') and dic['NAME']:
+							obj_ledgers = ledgers.ledgers()
+							obj_ledgers.insertRecords(cr, uid, dic, com, account, acc_type)
+					elif (k=='UNIT'):
+						obj_stock = stock.stock()
+						obj_stock.insertUnits(cr, uid, uomObj, dic)
+					elif (k=='STOCKGROUP'):
+						obj_stock = stock.stock()
+						obj_stock.insertStockGroups(cr, uid, prodCatObj, dic)
+					elif (k=='STOCKITEM'):
+						obj_stock = stock.stock()
+						obj_stock.insertStockItems(cr, uid, prodObj, uomObj, prodCatObj, dic, com)
+					elif (k=='CURRENCY'):
+						obj_stock = stock.stock()
+						obj_stock.insertCurrencies(cr, uid, currencyObj, dic, com)
+					elif (k=='GODOWN'):
+						obj_stock = stock.stock()
+						obj_stock.insertGodowns(cr, uid, godownObj, dic, com)
+					elif (k=='COSTCENTRE'):
+						obj_employee = employee.employee()
+						obj_employee.insertEmployees(cr, uid, empObj, dic, com)
+

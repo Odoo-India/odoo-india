@@ -1,26 +1,58 @@
 from osv import osv,fields
 import os
-import httplib
 import etree_parser
 import migrator
 import connection
+import voucher
 
 class tally_connection(osv.osv_memory):
 
 	_name = 'tally.connection'
 	_description = 'Tally Connection'
 	
+	def onchange_vouchers_option(self, cr, uid, ids, vouchers):
+		if vouchers == True:
+			return {'value':{'ledgers': True, 'groups': True}}
+		else:
+			return {'value':{'ledgers': False, 'groups': False}}
+	
+	def onchange_ledgers_option(self, cr, uid, ids, ledgers):
+		if ledgers == True:
+			return {'value':{'groups': True}}
+		else:
+			return {'value':{'groups': False}}
+
+	def onchange_inventory_master_option(self, cr, uid, ids, inventory_master):
+		if inventory_master == True:
+			return {'value':{'stock_items': True, 'stock_groups': True, 'units': True, 'godowns': True}}
+		else:
+			return {'value':{'stock_items': False, 'stock_groups': False, 'units': False ,'godowns': False}}
+
+	def onchange_stock_items_option(self, cr, uid, ids, stock_items):
+		if stock_items == True:
+			return {'value':{'stock_groups': True, 'units': True, 'godowns': True}}
+		else:
+			return {'value':{'stock_groups': False, 'units': False ,'godowns': False}}
+
 
 	_columns = {
 		'url': fields.char('Tally URL With Port', size=256, required=True),
-		'company': fields.many2one("res.company", "Migrate Data Into Company", required=True),
-			
+		'company': fields.many2one("res.company", "Migrate Data Into Company"),
+		'ledgers': fields.boolean('Ledgers'),
+		'groups': fields.boolean('Groups'),
+		'vouchers': fields.boolean('Vouchers'),
+		'inventory_master': fields.boolean('All Inventory Masters'),
+		'stock_items': fields.boolean('Stock Items'),
+		'stock_groups': fields.boolean('Stock Groups'),
+		'units': fields.boolean('Unit of Measure'),
+		'employees' : fields.boolean('Employees'),
+		'godowns' : fields.boolean('Godowns'),
 	}
 	
 	_defaults={'url':lambda * a:'http://localhost:9000',
 	}
 	
-
+	
 	def getData(self,reportType,conn):
 		headers = {"Content-type": "text/xml", "Accept": "text/xml"}
 		params = """<ENVELOPE>
@@ -43,7 +75,7 @@ class tally_connection(osv.osv_memory):
 		try:
 			conn.request("POST", "/", params, headers)
 		except:
-			raise osv.except_osv(('Error !'), ('Error occured while connecting with Tally.'))
+			raise osv.except_osv(('Error !'), ('Error Occured While Connecting With Tally.'))
 		
 		r1 = conn.getresponse()
 		return r1.read()
@@ -58,6 +90,7 @@ class tally_connection(osv.osv_memory):
 	def deleteTempFile(self):
 		os.remove(os.path.abspath('temp.xml'))
 		return True
+		 
 
 
 	def tally_main(self, cr, uid, ids, context=None):
@@ -67,30 +100,59 @@ class tally_connection(osv.osv_memory):
 		conn = connection.make_connection(obj.url)
 		company = obj.company
 		
-		#s = self.self.getData("Voucher types",conn)
-		#s = self.getData("Units",conn)
-		#s = self.getData("All Acctg. Masters",conn)
-		#s = self.getData("All Inventory Masters",conn)
-		#s = self.getData("All Statutory Masters",conn)
-		s = self.getData("Ledgers",conn)
-		#s = self.getData("Groups",conn)
-		#s = self.getData("Cost Categories",conn)
-		#s = self.getData("Cost Centers",conn)
-		#s = self.getData("Godowns",conn)
-		#s = self.getData("Stock Items",conn)
-		#s = self.getData("Stock Groups",conn)
-		#s = self.getData("Stock Categories",conn)  #{}
-		#s = self.getData("Curriencies",conn)
-		#s = self.getData("Employees",conn)
-		#s = self.getData("Budgets & Scenarios",conn)  #{'LINEERROR': 'No XML Wrap!', '_text': 'Semi-colon ; expected.'}
-		#s = self.getData("All Masters",conn)
+		def _processData(s):
+			f = self.createTempFile(s)
+			configdict = etree_parser.ConvertXmlToDict(f.name)
+			if not configdict:
+				return {}
+			tallyData = dict(configdict)
+			obj_migrator = migrator.migrator()
+			obj_migrator.insertData(cr, uid, company, tallyData)
+			self.deleteTempFile()
 		
+		if obj.ledgers:
+			s = self.getData("Ledgers",conn)
+			_processData(s)
+		elif obj.groups:
+			s = self.getData("Groups",conn)
+			_processData(s)
+			
+		if obj.vouchers:
+			s = self.getData("Ledgers",conn)
+			_processData(s)
+			try:
+				configdict = etree_parser.ConvertXmlToDict('/home/mdi/.wine/dosdevices/c:/Tally/DayBook.xml')
+			except Exception, e:
+				raise osv.except_osv(('No such file or directory'), str(e))
+			if not configdict:
+				return {}
+			tallyData = dict(configdict)
+			obj_voucher = voucher.voucher(cr)
+			obj_voucher.insertVoucherData(cr, uid, company, tallyData)
 
-		f = self.createTempFile(s)
-		configdict = etree_parser.ConvertXmlToDict(f.name)
-		tallyData = dict(configdict)
-		migrator.insertData(cr, uid, company, tallyData)
-		self.deleteTempFile() 
+		if obj.inventory_master:
+			s = self.getData("All Inventory Masters",conn)
+			_processData(s)	
+		elif obj.stock_items:
+			s = self.getData("Stock Items",conn)
+			_processData(s)	
+		elif obj.stock_groups:
+			s = self.getData("Stock Groups",conn)
+			_processData(s)
+
+		
+		if obj.units and not obj.stock_items and not obj.inventory_master:
+			s = self.getData("Units",conn)
+			_processData(s)
+		
+		if obj.godowns:
+			s = self.getData("Godowns",conn)
+			_processData(s)	
+			
+		if obj.employees:
+			s = self.getData("Employees",conn)
+			_processData(s)
+					
 		return {}   
 
 tally_connection()

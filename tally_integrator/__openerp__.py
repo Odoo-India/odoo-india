@@ -24,9 +24,9 @@
     "author": "OpenERP SA",
     "website": "http://www.openerp.com",
     "category": 'Generic Modules/Accounting',
-    "depends": ["base","account_voucher"],
+    "depends": ["base","account_voucher",'account_accountant','multi_company','hr','stock','sale'],
     "description": """
-    This module will load the Chart Of account from Tally
+    This module will load the Chart Of account from Tally.
  
     """,
     "init_xml": [],

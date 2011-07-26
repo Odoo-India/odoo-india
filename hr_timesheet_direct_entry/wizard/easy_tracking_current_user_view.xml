@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      <record id="view_easy_tracking_current_open" model="ir.ui.view">
+        <field name="name">easy.tracking.current.user.form</field>
+        <field name="model">easy.tracking.current.user</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Direct Timesheet">
+               <separator string="It will open your current Tracking" colspan="4" />
+               <field name="user_id" />
+               <field name="timesheet_date" />
+               <group colspan="4" col="6">
+                    <button  icon="gtk-cancel" special="cancel" string="Cancel"/>
+                    <button  icon="terp-camera_test" name="open_tracking" string="Open" type="object"/>
+               </group>
+           </form>
+        </field>
+    </record>
+
+    <record id="action_easy_tracking_current_open" model="ir.actions.act_window">
+        <field name="name">Easy Time Tracking</field>
+        <field name="res_model">easy.tracking.current.user</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_easy_tracking_current_open"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem action="action_easy_tracking_current_open" icon="STOCK_NEW" id="menu_act_easy_tracking_form_my_current" parent="hr_attendance.menu_hr_time_tracking" sequence="1"/>
+
+    </data>
+</openerp>

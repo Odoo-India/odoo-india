@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_easy_tracking_form" model="ir.ui.view">
+            <field name="name">easy.tracking.form</field>
+            <field name="model">easy.tracking</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Easy Tracking">
+                    <field name="employee_id"/>
+                    <field colspan="4" mode="tree,form" name="tracking_line_ids" nolabel="1" widget="one2many_list">
+                        <form string="Tracking Lines">
+                            <field name="project_id"/>
+                            <field name="monday" />
+                            <field name="tuesday" />
+                            <field name="wednesday" />
+                            <field name="thursday" />
+                            <field name="friday" />
+                            <field name="saturday" />
+                            <field name="sunday" />
+                        </form>
+                        <tree string="Tracking Lines" editable="top">
+                            <field name="project_id"/>
+                            <field name="monday" />
+                            <field name="tuesday" />
+                            <field name="wednesday" />
+                            <field name="thursday" />
+                            <field name="friday" />
+                            <field name="saturday" />
+                            <field name="sunday" />
+                        </tree>
+                    </field>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</openerp>

@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
 
 total = 0
 class stock():
@@ -84,9 +104,8 @@ class stock():
             opening_value = dic['OPENINGVALUE']
             if float(opening_value) < 0:
                 opening_value = (float(opening_value) * (-1))
-            print "Opening Balance H/W & S/W",opening_value,dic['NAME']
             total = total + float(opening_value) 
-        print "Total Opening Balance",total
+       
            
         if dic.has_key('OPENINGRATE') and dic['OPENINGRATE']:
             std_price = float(dic['OPENINGRATE'].split('/')[0])
@@ -120,6 +139,8 @@ class stock():
             prodObj.write(cr, uid, sid[0], data)
         else:    
             return prodObj.create(cr, uid, data)
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
         
         
         

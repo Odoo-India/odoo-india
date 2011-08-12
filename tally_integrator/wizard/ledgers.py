@@ -1,3 +1,24 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
 from psycopg2 import IntegrityError
 from osv import osv
 import string
@@ -6,16 +27,13 @@ import migrator
 import voucher
 from datetime import datetime
 
-
 code = 0
 class ledgers():
 	
-
 	def insertRecords(self, cr, uid, dic, com, account, acc_type):
 		global code
 		parent = ""
 		name = dic['NAME']
-
 		
 		if dic.has_key('PARENT') and dic['PARENT']:
 			parent = dic['PARENT']
@@ -23,7 +41,6 @@ class ledgers():
 		else:
 			#searching for the 'account' of the company.
 			domain = [('name','=',com.name)]
-			
 		
 		code += 1		
 		parent_id = account.search(cr, uid, domain)
@@ -38,7 +55,6 @@ class ledgers():
 			except:
 				raise osv.except_osv(('Error !'), ('Company code already exist please use another company name.'))
 
-			
 			
 			# creating acc receivable and acc payable for specified company partner.
 			migratorObj = migrator.migrator()
@@ -78,7 +94,6 @@ class ledgers():
 				journalObj.write(cr, uid, open_id, OpenJournalData)
 			else:
 				open_id = journalObj.create(cr, uid, OpenJournalData)
-			
 				
 		else:
 		
@@ -113,7 +128,6 @@ class ledgers():
 					
 			if name[:4] == 'Bank':
 				typ = 'other'
-			
 			
 			# creating double accounts(credit a/c and debit a/c) for res.partners and sales/purchase journals 
 			contra_p_id	= []	
@@ -165,7 +179,6 @@ class ledgers():
 				#here we change the name, because related entry is created at below
 				name = name + ' (Debtors)'
 				 
-			
 			#creating the account of ledger
 			data = {'name':name, 'code':p_code + str(code), 'type':typ, 'parent_id':parent_id[0], 'currency_mode':'current', 'user_type':usr_typ, 'company_id':com.id}
 		
@@ -277,8 +290,7 @@ class ledgers():
 						
 			except Exception, e:
 				raise osv.except_osv(('Error!!!'), str(e))
-			
-			
+
 			
 			if dic.has_key('OPENINGBALANCE') and dic['OPENINGBALANCE']:
 				opening_balance = float(dic['OPENINGBALANCE'])
@@ -293,7 +305,6 @@ class ledgers():
 				domain = [('type','=','situation'),('company_id','=',com.id)]
 				search_id = journalObj.search(cr, uid, domain)
 
-
 				#If 'OPENINGBALANCE' is positive then 'credit'
 				#If 'OPENINGBALANCE' is negative then 'debit'
 				voucherLineData = {'AMOUNT':opening_balance, 'LEDGERNAME':name, 'ISPARTYLEDGER':'Yes'}
@@ -302,7 +313,7 @@ class ledgers():
 				voucherObj = voucher.voucher(cr)
 				voucherObj.insertVouchers(cr, uid, voucherData ,com)
 
-
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 				
 					
 					

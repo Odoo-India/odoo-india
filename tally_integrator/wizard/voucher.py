@@ -1,3 +1,24 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
 import pooler
 import time
 from datetime import datetime
@@ -21,7 +42,6 @@ class voucher():
 		self.partnerObj = self.poolObj.get('res.partner')
 		self.jrObj = self.poolObj.get('account.journal')
 		
-
 	# Creates 'fiscal year' and its 12 'periods'
 	def createFY(self, cr, uid, dt, company):
 		fiscalYrObj = self.poolObj.get('account.fiscalyear')
@@ -50,8 +70,6 @@ class voucher():
 		    ds = ds + relativedelta(months=1)
 		return fy_id
 	
-	
-	
 	def createAccountMoveLine(self, cr, uid, dic, move_id, period_id, journal_id, VTYPE, com):
 		vtype = VTYPE
 		if vtype == 'Sale' or vtype == 'Purchase':
@@ -65,7 +83,6 @@ class voucher():
 					credit = amount
 				else:
 					debit = amount * (-1)
-			
 			
 				name = i[0]['LEDGERNAME']
 			
@@ -81,8 +98,6 @@ class voucher():
 					accMoveLineObj.create(cr, uid, data)
 				except Exception, e:
 					raise osv.except_osv(('Move Line Creation Error!!!'), str(e))
-				
-				
 					
 		else: #if vtype == 'Payment' or vtype == 'Receipt':
 			
@@ -115,11 +130,8 @@ class voucher():
 						accMoveLineObj.create(cr, uid, data)
 					except Exception, e:
 						raise osv.except_osv(('Move Line Creation Error!!!'), str(e))
-
 					
 		return True
-	
-	
 	
 	def createAccountMove(self, cr, uid, dic, period_id, VTYPE, com):
 		
@@ -146,7 +158,6 @@ class voucher():
 		else:
 			journal_id = journalObj.create(cr, uid, GeneralJournalData)
 
-
 		data = {'period_id':period_id, 'journal_id':journal_id, 'date':date, 'narration':narration}
 
 		#creating entries in 'account.move'		
@@ -156,10 +167,6 @@ class voucher():
 		self.createAccountMoveLine(cr, uid, dic, move_id, period_id, journal_id, VTYPE, com)
 		
 		return True
-	
-	
-	
-	
 	
 	def createAccountVoucherLine(self, cr, uid, dic, com, voucher_id, vtype):
 		
@@ -188,7 +195,6 @@ class voucher():
 					accVhrLineObj.create(cr, uid, data)
 				except Exception, e:
 					raise osv.except_osv(('Voucher Line Creation Error!!!'), str(e))
-				
 			
 			if dic.has_key('ALLLEDGERENTRIES.LIST') and dic['ALLLEDGERENTRIES.LIST']:
 				entries = dic['ALLLEDGERENTRIES.LIST']
@@ -221,7 +227,6 @@ class voucher():
 						accVhrLineObj.create(cr, uid, data)
 					except Exception, e:
 						raise osv.except_osv(('Voucher Line Creation Error!!!'), str(e))
-					
 					
 		elif vtype == 'Payment' or vtype == 'Receipt':
 			
@@ -256,7 +261,6 @@ class voucher():
 					accVhrLineObj.create(cr, uid, data)
 				except Exception, e:
 					raise osv.except_osv(('Voucher Line Creation Error!!!'), str(e))
-				
 				
 		else:
 			vtype = 'Receipt'
@@ -294,8 +298,6 @@ class voucher():
 	
 		return True
 	
-	
-
 	def insertVouchers(self, cr, uid, dic, com):
 		
 		vtype = ''
@@ -303,7 +305,6 @@ class voucher():
 		NARRATION = ''
 		ACC_ID = ''
 		JR_ID = ''
-
 
 		#'Date' is used to create 'fiscal year' and its related 'periods'
 		if dic.has_key('DATE') and dic['DATE']: #for date and fiscal year & periods
@@ -322,8 +323,6 @@ class voucher():
 			else:
 				period_id = self.poolObj.get('account.period').search(cr, uid, [('code','=',DATE[4:6]+'/'+DATE[:4]),('fiscalyear_id','=',fy_id[0])])
 		
-		
-		
 		# deciding partner name for the 'Accounting Voucher'.
 		#if 'PARTYLEDGERNAME' is there then search for the partner.
 		if dic.has_key('PARTYLEDGERNAME') and dic['PARTYLEDGERNAME']: 
@@ -335,9 +334,6 @@ class voucher():
 		else:
 			partner_id = self.partnerObj.search(cr, uid, [('name','=',com.name),('company_id','=',com.id)])
 			part_obj = self.partnerObj.browse(cr, uid, partner_id[0])
-		
-		
-		
 		
 		# deciding 'voucher type' for the 'Accounting Voucher'
 		#for journal and account selection	
@@ -373,7 +369,6 @@ class voucher():
 				ledgerName = dic['ALLLEDGERENTRIES.LIST'][i]['LEDGERNAME']
 				journalName = string.upper(ledgerName)+" - ("+com.name+")"
 				JR_ID = self.jrObj.search(cr, uid, [('name','=',journalName)])
-
 		
 		#deciding the entry :: is it misc. income/expence or indirect income/expence or not?? 
 		if dic.has_key('ALLLEDGERENTRIES.LIST') and dic['ALLLEDGERENTRIES.LIST']:
@@ -388,8 +383,6 @@ class voucher():
 			NARRATION = dic['NARRATION']
 		if dic.has_key('JOURNALID') and dic['JOURNALID']:
 			JR_ID = [dic['JOURNALID']]
-			
-		
 
 		data = {'type':vtype, 'date':DATE, 'journal_id':JR_ID[0], 'narration':NARRATION, 'company_id':com.id, 'state':'draft', 'account_id':ACC_ID, 'partner_id': part_obj.id, 'period_id':period_id[0]}
 		
@@ -397,8 +390,6 @@ class voucher():
 		self.createAccountVoucherLine(cr, uid, dic, com, vid, VTYPE)
 		
 		return True
-		
-		
 
 	def insertVoucherData(self, cr, uid, com, tallyData):
 
@@ -427,3 +418,5 @@ class voucher():
 						self.insertVouchers(cr, uid, dic ,com)
 
 		return True
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

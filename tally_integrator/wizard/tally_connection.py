@@ -1,3 +1,24 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
 from osv import osv,fields
 import os
 import etree_parser
@@ -34,10 +55,10 @@ class tally_connection(osv.osv_memory):
 		else:
 			return {'value':{'stock_groups': False, 'units': False ,'godowns': False}}
 
-
 	_columns = {
 		'url': fields.char('Tally URL With Port', size=256, required=True),
 		'company': fields.many2one("res.company", "Migrate Data Into Company"),
+		'daybook': fields.char('Path To DayBook', size=256,  help='Export the DayBook in XML Format, and give the path of DayBook.xml file.'),
 		'ledgers': fields.boolean('Ledgers'),
 		'groups': fields.boolean('Groups'),
 		'vouchers': fields.boolean('Vouchers'),
@@ -49,9 +70,10 @@ class tally_connection(osv.osv_memory):
 		'godowns' : fields.boolean('Godowns'),
 	}
 	
-	_defaults={'url':lambda * a:'http://localhost:9000',
+	_defaults={
+		'url':lambda * a:'http://localhost:9000',
+		'daybook': '/home/mdi/.wine/dosdevices/c:/Tally/DayBook.xml'
 	}
-	
 	
 	def getData(self,reportType,conn):
 		headers = {"Content-type": "text/xml", "Accept": "text/xml"}
@@ -80,7 +102,6 @@ class tally_connection(osv.osv_memory):
 		r1 = conn.getresponse()
 		return r1.read()
 
-
 	def createTempFile(self,s):
 		f = open('temp.xml','w')
 		f.write(s)
@@ -90,8 +111,6 @@ class tally_connection(osv.osv_memory):
 	def deleteTempFile(self):
 		os.remove(os.path.abspath('temp.xml'))
 		return True
-		 
-
 
 	def tally_main(self, cr, uid, ids, context=None):
 		
@@ -99,6 +118,7 @@ class tally_connection(osv.osv_memory):
 		obj = form_obj.browse(cr, uid, ids[0], context=context)
 		conn = connection.make_connection(obj.url)
 		company = obj.company
+		daybook = obj.daybook
 		
 		def _processData(s):
 			f = self.createTempFile(s)
@@ -121,7 +141,7 @@ class tally_connection(osv.osv_memory):
 			s = self.getData("Ledgers",conn)
 			_processData(s)
 			try:
-				configdict = etree_parser.ConvertXmlToDict('/home/mdi/.wine/dosdevices/c:/Tally/DayBook.xml')
+				configdict = etree_parser.ConvertXmlToDict(daybook)
 			except Exception, e:
 				raise osv.except_osv(('No such file or directory'), str(e))
 			if not configdict:
@@ -140,7 +160,6 @@ class tally_connection(osv.osv_memory):
 			s = self.getData("Stock Groups",conn)
 			_processData(s)
 
-		
 		if obj.units and not obj.stock_items and not obj.inventory_master:
 			s = self.getData("Units",conn)
 			_processData(s)
@@ -156,3 +175,5 @@ class tally_connection(osv.osv_memory):
 		return {}   
 
 tally_connection()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

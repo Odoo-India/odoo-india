@@ -27,14 +27,31 @@
     "depends": ["base","account_voucher",'account_accountant','multi_company','hr','stock','sale'],
     "description": """
     This module will load the Chart Of account from Tally.
- 
+    A Module support the following integration capabilities:
+    
+    ********** Accounting Information ***********
+    1. Vouchers Information
+    2. Ledgers Information
+    3. Groups Information
+    
+    ********** Inventory Information ***********
+    4. All Inventory Masters Information
+    5. Stock Items Information
+    6. Stock Groups Information
+    7. Unit Of Measure Information
+    8. Godowns Information
+    
+    ********** Employee Information ***********
+    9. Employee Information
+    
     """,
     "init_xml": [],
-    "update_xml": ['tally_connection_wizard.xml'
+    "update_xml": [
+        'tally_connection_wizard.xml'
     ],
     'demo_xml': [
     ],
     'installable': True,
-    'active': True,
+    'active': False,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

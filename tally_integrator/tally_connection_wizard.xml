@@ -12,6 +12,7 @@
 				<group colspan="4" >
      				<field name="url" colspan="4" width="400"/>
      				<field name="company" colspan="4" attrs="{'required':['|',('ledgers','=',True),'|',('groups','=',True),'|',('vouchers','=',True),('employees','=',True)]}"/>
+     				<field name="daybook" colspan="4" attrs="{'required':[('vouchers','=',True)]}"/>
      				<separator string="Select Appropriate Option(s) To Migrate Data" colspan="4" />
 					<group colspan="4">
 						<separator string="Accounts..." colspan="4"/>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!--  Compute Schedulers -->
+
+		<record id="view_compute_scheduler_wizard" model="ir.ui.view">
+            <field name="name">Compute Scheduler</field>
+            <field name="model">project.launchpad.scheduler</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Scheduler">
+                		<button name="process_merge_proposals" string="Compute Scheduler"
+                			colspan="1" type="object" icon="gtk-ok" />
+                </form>
+            </field>
+        </record>
+
+        <act_window name="Compute Scheduler"
+		    res_model="project.launchpad.scheduler"
+		    src_model="project.task"
+		    view_mode="form"
+		    target="new"
+            key2="client_action_multi"
+		    id="action_schedule_task"/>
+
+        
+        <menuitem action="action_schedule_task" id="menu_project_merge_proposal_schedulers" parent="project.menu_project_management" sequence="20" />
+
+	</data>
+</openerp>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+ <data>
+
+        <record id="view_task_work_form" model="ir.ui.view">
+            <field name="name">project.task.work.form</field>
+            <field name="model">project.task.work</field>
+            <field name="type">form</field>
+            <field name="sequence">1</field>
+            <field name="arch" type="xml">
+                <form string="Task Work">
+
+                    <field name="name" />
+                    <field name="hours"  widget="float_time"/>
+                    <field name="date_started" />
+                    <field name="date" />
+
+
+                    <field name="user_id" />
+                    <field name="user_name" />
+                    <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                    <notebook colspan="4">
+                    <page string="Details">
+                    <field name="source_branch_link" />
+                    <field name="target_branch_link" />
+                    <field name="diff_new_lines" />
+                    <field name="diff_rem_lines" />
+                    <field name="diff_modification_files" />
+                    <field name="diff_modification_lines" />
+                    <separator string="Description" colspan="4"/>
+                    <field name="description" colspan="4" nolabel="1"/>
+
+
+                    </page>
+                    <page string="Review Details">
+                    <field colspan="4" name="review_ids" nolabel="1" mode="tree,form"  attrs="{'readonly':[('state','in',['done','draft'])]}">
+                        <form string="Work Review">
+                            <field name="user_id" />
+                            <field name="user_name" />
+                            <field name="date" />
+                            <field name="hours" widget="float_time" sum="Spent Hours"/>
+                            <field name="name"/>
+                            <field name="state" readonly="1"/>
+                            <field name="description" nolabel="1" colspan="4"/>
+                        </form>
+                        <tree string="Work Review">
+                            <field name="date" />
+                            <field name="user_id" />
+                            <field name="state" readonly="1"/>
+                        </tree>
+                    </field>
+                    </page>
+
+                    </notebook>
+                    <field name="state" readonly="1"/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_task_work_tree" model="ir.ui.view">
+            <field name="name">project.task.work.tree</field>
+            <field name="model">project.task.work</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree editable="top" string="Task Work">
+                    <field name="date"/>
+                    <field name="name"/>
+                    <field name="hours" widget="float_time"/>
+                    <field name="user_id"/>
+                    <field name="diff_new_lines" sum="Added Lines" invisible="1"/>
+                    <field name="diff_rem_lines" sum="Removed Lines" invisible="1"/>
+                    <field name="diff_modification_files" sum="Modified Files" invisible="1"/>
+                    <field name="diff_modification_lines" sum="Modified Lines" invisible="1"/>
+                    <field name="state" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="view_task_work_search_form" model="ir.ui.view">
+            <field name="name">project.task.work.search.form</field>
+            <field name="model">project.task.work</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+               <search string="work details">
+                    <group>
+                        <filter name="need_review" string="Need Review" domain="[('state','=','needs_review')]" help="Need Review" icon="terp-check"/>
+                        <filter name="in_reviewing" string="In Review" domain="[('state','=','in_reviewing')]" help="In Review" icon="terp-camera_test"/>
+                        <filter string="Rejected" domain="[('state','=','rejected')]" help="Rejected" icon="terp-gtk-media-pause"/>
+                        <separator orientation="vertical"/>
+                        <field name="date"/>
+                        <separator orientation="vertical"/>
+                        <field name="name"/>
+
+                        <field name="user_id">
+                            <filter domain="[('user_id','=',uid)]"  help="My Works" icon="terp-personal" />
+                        </field>
+                        <field name="user_name"/>
+                    </group>
+                    <newline/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Users" name="group_user_id" icon="terp-personal" domain="[]"  context="{'group_by':'user_id'}"/>
+                        <filter string="Users By Name" name="group_user_id" icon="terp-personal" domain="[]"  context="{'group_by':'user_name'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="State" name="group_state" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_view_task_work" model="ir.actions.act_window">
+            <field name="name">Works</field>
+            <field name="res_model">project.task.work</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field eval="False" name="filter"/>
+            <field name="view_id" ref="view_task_work_tree"/>
+            <field name="context">{"search_default_need_review": 1}</field>
+            <field name="search_view_id" ref="view_task_work_search_form"/>
+        </record>
+
+        <menuitem action="action_view_task_work" id="menu_action_view_task_work" parent="project.menu_project_management" sequence="3"/>
+
+
+</data>
+</openerp>

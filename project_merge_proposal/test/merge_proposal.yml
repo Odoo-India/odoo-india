@@ -1,0 +1,8 @@
+-
+  process merge proposal
+-
+  !python {model: project.launchpad.scheduler}: |
+    self.process_merge_proposals(cr, uid, [], context=context)
+
+
+

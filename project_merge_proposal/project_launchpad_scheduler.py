@@ -189,7 +189,7 @@ class project_launchpad_scheduler(osv.osv_memory):
                     'date': commit['date'],
                     'state': commit.get('vote', 'none') or 'none',
                     'user_id': user_id,
-                    'user_email': commit['author_name'],
+                    'user_name': commit['author_name'],
                     'work_id': work_id,
             }
             ids = task_work_review.search(cr, uid, [('ref_id','=', commit['id'])])

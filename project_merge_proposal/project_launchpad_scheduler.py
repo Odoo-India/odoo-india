@@ -26,9 +26,15 @@ from datetime import datetime, date
 from bzrlib.branch import Branch
 import os
 
-MERGE_STATUS = {'Needs review': 'needs_review', 'Code failed to merge':'code_failed', 'Work in progress':'in_reviewing', 'Approved': 'ready', 'Rejected':'rejected' } # 'Queued': 'pending', 'Superseded':'cancelled', 'Merged':'done' }
+MERGE_STATUS = {}
+MERGE_STATUS_FILTERS = []#'rejected', 'pending', 'cancelled', 'done']
+MERGE_STATUS.update({'Rejected':'rejected' , 'Queued': 'pending', 'Superseded':'cancelled', 'Merged':'done' })
+MERGE_STATUS.update({'Needs review': 'needs_review', 'Code failed to merge':'code_failed', 'Work in progress':'in_reviewing', 'Approved': 'ready' })
 
-BRANCH_STATUS = {'Experimental':'experimental', 'Development': 'development', 'Mature':'mature'} #'Merged':'merged', 'Abandoned':'cancelled'}
+BRANCH_STATUS = {}
+BRANCH_STATUS.update({'Merged':'merged', 'Abandoned':'cancelled'})
+BRANCH_STATUS.update({'Experimental':'experimental', 'Development': 'development', 'Mature':'mature'})
+
 COMMENT_STATUS = { 'Resubmit':'resubmit',
                    'Approve': 'approved',
                    'Needs Fixing': 'need_fixing',
@@ -37,8 +43,8 @@ COMMENT_STATUS = { 'Resubmit':'resubmit',
 DEFAULT_LOGIN = 'hmo-tinyerp'
 DEFAULT_CACHE_PATH = "~/.launchpadlib/cache"
 
-TEAMS = ['openerp-dev'] #,'openobject-training', 'openerp-opw']
-PROJECTS = ['openerp', 'openobject-addons', 'openobject-client', 'openerp-web']
+TEAMS = ['openerp', 'openerp-dev'] #,'openobject-training', 'openerp-opw']
+PROJECTS = ['openerp', 'openobject-addons', 'openobject-client', 'openerp-web', 'openobject-server','openobject-client-web']
 
 LP_API_LINK = "https://api.edge.launchpad.net/1.0/"
 def get_lp():
@@ -52,8 +58,15 @@ class project_launchpad_scheduler(osv.osv_memory):
     def get_email_address(self, people):
         return [email_address.email for email_address in people.confirmed_email_addresses]
 
-    def load_link(self, link):
-        return self.launchpad.load(link)
+    def lp_load_link(self, link):
+        if self.launchpad is None:
+            self.launchpad = get_lp()
+        res = False
+        try:
+            res = self.launchpad.load(link)
+        except Exception, e:
+            print e
+        return res
 
     def get_lp_people(self, people):
         if self.launchpad is None:
@@ -75,47 +88,59 @@ class project_launchpad_scheduler(osv.osv_memory):
     def get_lp_branches(self, people):
         return people.getBranches(status=BRANCH_STATUS.keys())
 
+    def _lp_merge_proposal(self, proposal, from_date=False):
+        merge_request = {}
+        if proposal is None:
+            return merge_request
+        proposal_date = proposal.date_created
+        
+        if from_date and datetime(proposal_date.year, proposal_date.month, proposal_date.day) <= datetime(from_date.year, from_date.month, from_date.day):
+            return merge_request
+        
+        merge_request['date_created'] = proposal_date
+        merge_request['date_merged'] = proposal.date_merged
+        preview_diff = proposal.preview_diff #_link and self.load_link(proposal.preview_diff_link) or None
 
-    def get_lp_merge_proposal(self, branch, from_date=False):
+        merge_request['added_lines_count'] = preview_diff and preview_diff.added_lines_count or 0
+        merge_request['remove_lines_count'] = preview_diff and preview_diff.removed_lines_count or 0
+        merge_request['diff_lines_count'] = preview_diff and preview_diff.diff_lines_count or 0
+        merge_request['diffstat'] = preview_diff and (preview_diff.diffstat or {}) or {}
+        merge_request['diffstat_files_count'] = len(merge_request['diffstat'].keys())
+        merge_request['description'] = proposal.description
+        merge_request['state'] = MERGE_STATUS.get(proposal.queue_status)
+        merge_request['name'] = proposal.self_link.replace(LP_API_LINK, "")
+        merge_request['source_branch_link'] = proposal.source_branch_link.replace(LP_API_LINK, "")
+        merge_request['date_created_branch'] = proposal.source_branch.date_created
+        merge_request['target_branch_link'] = proposal.target_branch_link.replace(LP_API_LINK, "")
+        merge_request['registrant_name'] = proposal.registrant.name
+        merge_request['merge_reporter'] =  proposal.merge_reporter and proposal.merge_reporter.name or False
+        merge_request['registrant_email_address'] = self.get_email_address(proposal.registrant)
+
+        comments = []
+        for review in proposal.all_comments_collection:
+            comment = {}
+            comment['date'] = review.date_created
+            comment['author_name'] = review.author.name
+            comment['author_email'] = self.get_email_address(review.author)
+            comment['message'] = review.message_body
+            comment['title'] = review.title
+            comment['id'] = review.id
+            comment['vote'] = COMMENT_STATUS.get(review.vote)
+            comment['branch'] = proposal.source_branch_link
+            comments.append(comment)
+        merge_request['comments'] = comments
+        return merge_request
+
+    def get_lp_merge_proposal(self, team, from_date=False):
         merge_requests = []
-        for proposal in branch.getMergeProposals(status=MERGE_STATUS.keys()):
-            proposal_date = proposal.date_created
-            branch_date = branch.date_created
-            if from_date and datetime(proposal_date.year, proposal_date.month, proposal_date.day) <= datetime(from_date.year, from_date.month, from_date.day):
+        merge_state = []
+        for key, value in MERGE_STATUS.items():
+            if value in MERGE_STATUS_FILTERS:
                 continue
-            merge_request = {}
-            merge_request['date_created'] = proposal_date
-            merge_request['date_created_branch'] = branch_date
-            preview_diff = proposal.preview_diff #_link and self.load_link(proposal.preview_diff_link) or None
+            merge_state.append(key)
 
-            merge_request['added_lines_count'] = preview_diff and preview_diff.added_lines_count or 0
-            merge_request['remove_lines_count'] = preview_diff and preview_diff.removed_lines_count or 0
-            merge_request['diff_lines_count'] = preview_diff and preview_diff.diff_lines_count or 0
-            merge_request['diffstat'] = preview_diff and (preview_diff.diffstat or {}) or {}
-            merge_request['diffstat_files_count'] = len(merge_request['diffstat'].keys())
-            merge_request['description'] = proposal.description
-            merge_request['state'] = MERGE_STATUS.get(proposal.queue_status)
-            merge_request['name'] = proposal.self_link.replace(LP_API_LINK, "")
-            merge_request['source_branch_link'] = proposal.source_branch_link.replace(LP_API_LINK, "")
-            merge_request['target_branch_link'] = proposal.target_branch_link.replace(LP_API_LINK, "")
-            merge_request['registrant_name'] = proposal.registrant.name
-            merge_request['registrant_email_address'] = self.get_email_address(proposal.registrant)
-
-            comments = []
-            for review in proposal.all_comments_collection:
-                comment = {}
-                comment['date'] = review.date_created
-                comment['author_name'] = review.author.name
-                comment['author_email'] = self.get_email_address(review.author)
-                comment['message'] = review.message_body
-                comment['title'] = review.title
-                comment['id'] = review.id
-                comment['vote'] = COMMENT_STATUS.get(review.vote)
-                comment['branch'] = proposal.source_branch_link
-                comments.append(comment)
-            merge_request['comments'] = comments
-            merge_requests.append(merge_request)
-
+        for proposal in team.getMergeProposals(status=merge_state):
+            merge_requests.append(self._lp_merge_proposal(proposal, from_date))
         return merge_requests
 
     def get_revisions(self, branch_name, location, from_date=False):
@@ -143,6 +168,8 @@ class project_launchpad_scheduler(osv.osv_memory):
         return commits
 
     def get_user_by_launchpad_login(self, cr, uid, launchpad_login):
+        if not launchpad_login:
+            return False
         res_users = self.pool.get('res.users')
         login = launchpad_login.split('-')
         user_ids = res_users.search(cr, uid, [('login','=',login[0])])
@@ -156,7 +183,7 @@ class project_launchpad_scheduler(osv.osv_memory):
         for commit in commits:
             user_id = self.get_user_by_launchpad_login(cr, uid, commit['author_name'])
             vals = {
-                    'ref': commit['id'],
+                    'ref_id': commit['id'],
                     'name': commit['title'],
                     'description': commit['message'],
                     'date': commit['date'],
@@ -165,13 +192,12 @@ class project_launchpad_scheduler(osv.osv_memory):
                     'user_email': commit['author_name'],
                     'work_id': work_id,
             }
-            ids = task_work_review.search(cr, uid, [('ref','=', commit['id'])])
+            ids = task_work_review.search(cr, uid, [('ref_id','=', commit['id'])])
             if ids and len(ids):
                 task_work_review.write(cr, uid, ids, vals, context=context)
                 new_id = ids[0]
             else:
                 new_id = task_work_review.create(cr, uid, vals, context=context)
-            #print '>>>>>> line:', new_id, user_id, commit['author_name'], commit['title'], commit.get('vote', 'none') or 'none'
             new_ids.append(new_id)
         return new_ids
 
@@ -180,12 +206,16 @@ class project_launchpad_scheduler(osv.osv_memory):
         new_ids = []
         for merge_proposal in merge_proposals:
             user_id = self.get_user_by_launchpad_login(cr, uid, merge_proposal['registrant_name'])
+            reporter_user_id = self.get_user_by_launchpad_login(cr, uid, merge_proposal['merge_reporter'])
             vals = {
                      'name':merge_proposal['name'],
                      'date':merge_proposal['date_created'],
                      'date_started': merge_proposal['date_created_branch'],
+                     'date_done': merge_proposal['date_merged'],
                      'user_id':user_id,
+                     'reporter_user_id': reporter_user_id,
                      'user_name': merge_proposal['registrant_name'],
+                     'reporter_name': merge_proposal['merge_reporter'],
                      'description':merge_proposal['description'],
                      'state':merge_proposal['state'],
                      'source_branch_link': merge_proposal['source_branch_link'],
@@ -195,37 +225,48 @@ class project_launchpad_scheduler(osv.osv_memory):
                      'diff_modification_files':merge_proposal['diffstat_files_count'],
                      'diff_modification_lines':merge_proposal['diff_lines_count']
             }
-            ids = task_work.search(cr, uid, [('name','like', merge_proposal['name'])])
+            ids = task_work.search(cr, uid, [('name','=', merge_proposal['name'])])
             if ids and len(ids):
                 task_work.write(cr, uid, ids, vals, context=context)
                 new_id = ids[0]
             else:
                 new_id = task_work.create(cr, uid, vals, context=context)
             # Take all comments of merge  proposal
-            #print '>>>>>> work:', new_id, user_id, merge_proposal['registrant_name'], merge_proposal['name'], merge_proposal['state']
             self._create_work_review(cr, uid, new_id, merge_proposal['comments'], context=context)
             new_ids.append(new_id)
         return new_ids
 
-    def process_merge_proposals(self, cr, uid, ids=None, context=None):
-        #print 'started process...'
-        for team in TEAMS:
-            lp_people = self.get_lp_people(team)
-            lp_branches = self.get_lp_branches(lp_people)
-            for lp_branch in lp_branches:
-                lp_project = self.get_lp_project(lp_branch.project_link)
-                if not lp_project:
-                    continue
-                if lp_project.name not in PROJECTS:
-                    continue
-                # take all commit from lp for the employee
-                #commits = project_lp.get_revisions(lp_branch.name, lp_branch.web_link, from_date=FROM_DATE)
-                #self._create_timesheet_line(cr, uid, commits, context=context)
-
-                #take all  merge proposal from lp which is sent by contributors
-                merge_proposals = self.get_lp_merge_proposal(lp_branch)
+    def update_merge_proposals(self, cr, uid, ids=None, context=None):
+        task_work = self.pool.get('project.task.work')
+        merge_state = []
+        for key, value in MERGE_STATUS.items():
+            if value in MERGE_STATUS_FILTERS:
+                continue
+            merge_state.append(value)
+        work_ids = task_work.search(cr, uid, [('state', 'in', merge_state)])
+        for work in task_work.browse(cr, uid, work_ids, context=context):
+            proposal_link = "%s%s"%(LP_API_LINK, work.name)
+            proposal = self.lp_load_link(proposal_link)
+            if proposal:
+                merge_proposals = [self._lp_merge_proposal(proposal)]
                 self._create_work(cr, uid, merge_proposals, context=context)
-                cr.commit()
         return True
 
+    def process_merge_proposals(self, cr, uid, ids=None, context=None):
+        print 'started process...'
+        #update details of current merge proposals
+        self.update_merge_proposals(cr, uid, ids=ids, context=context)
+        
+        #take merge new proposals from LP
+        for team in TEAMS:
+            lp_people = self.get_lp_people(team)
+            #take all  merge proposal from lp which is sent by contributors
+            try:
+                merge_proposals = self.get_lp_merge_proposal(lp_people)
+                self._create_work(cr, uid, merge_proposals, context=context)
+                cr.commit()
+            except Exception, ex:
+                print 'ERROR::::', ex
+        print 'end process...'
+        return True
 project_launchpad_scheduler()

@@ -89,7 +89,7 @@ class project_merge_proposal(osv.osv):
                 'diff_modification_files': fields.integer('Diff. Modification Files'),
                 'diff_modification_lines': fields.integer('Diff. Modification Lines'),
                 'approve_ratio': fields.function(_compute, string='Ratio of Approved', multi='approve_ratio'),
-                'need_fixing_ratio': fields.function(_compute, string='Ration of Need Fixing', multi='need_fixing_ratio'),
+                'need_fixing_ratio': fields.function(_compute, string='Ratio of Need Fixing', multi='need_fixing_ratio'),
                 'resubmit_ratio': fields.function(_compute, string='Ratio of Resubmit', multi='resubmit_ratio'),
                 
     }

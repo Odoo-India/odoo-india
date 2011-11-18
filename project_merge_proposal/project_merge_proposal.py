@@ -54,6 +54,22 @@ project_work_review()
 
 class project_merge_proposal(osv.osv):
     _inherit = "project.task.work"
+    def _compute(self, cr, uid, ids, fields, arg, context=None):
+        res = {}
+        for work in self.browse(cr, uid, ids, context=context):
+            approved = 0.000
+            need_fixing = 0.000
+            resubmit = 0.000
+            for review in work.review_ids:
+                if review.state == 'approved': approved += 1.000
+                if review.state == 'need_fixing': need_fixing += 1.000
+                if review.state == 'resubmit': resubmit += 1.000
+            res[work.id] = {
+                'approve_ratio': len(work.review_ids) and approved/len(work.review_ids) or 0.000,
+                'need_fixing_ratio': len(work.review_ids) and need_fixing/len(work.review_ids) or 0.000,
+                'resubmit_ratio': len(work.review_ids) and resubmit/len(work.review_ids) or 0.000,
+            }
+        return res
     _columns = {
                 'review_ids': fields.one2many('project.task.work.review', 'work_id', 'Reviews'),
                 'task_id': fields.many2one('project.task', 'Task'),
@@ -72,6 +88,10 @@ class project_merge_proposal(osv.osv):
                 'diff_rem_lines': fields.integer('Diff. Remove Lines'),
                 'diff_modification_files': fields.integer('Diff. Modification Files'),
                 'diff_modification_lines': fields.integer('Diff. Modification Lines'),
+                'approve_ratio': fields.function(_compute, string='Ratio of Approved', multi='approve_ratio'),
+                'need_fixing_ratio': fields.function(_compute, string='Ration of Need Fixing', multi='need_fixing_ratio'),
+                'resubmit_ratio': fields.function(_compute, string='Ratio of Resubmit', multi='resubmit_ratio'),
+                
     }
     _defaults = {
         'state': 'draft',

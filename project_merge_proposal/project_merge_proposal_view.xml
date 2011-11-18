@@ -28,6 +28,9 @@
                     <field name="diff_modification_lines" />
                     <separator string="Feedback" colspan="4"/>
                     <group colspan="4" col="6">
+                        <field name="approve_ratio"/>
+                        <field name="need_fixing_ratio"/>
+                        <field name="resubmit_ratio"/>
                         <field name="date_done" attrs="{'invisible': [('state','!=','done')]}"/>
                         <field name="reporter_user_id" attrs="{'invisible': [('state','!=','done')]}"/>
                         <field name="reporter_name" attrs="{'invisible': [('state','!=','done')]}"/>
@@ -69,15 +72,18 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Task Work">
-                    <field name="date"/>
                     <field name="name"/>
-                    <field name="hours" widget="float_time"/>
-                    <field name="user_id"/>
-                    <field name="user_name"/>
                     <field name="diff_new_lines" sum="Added Lines"/>
                     <field name="diff_rem_lines" sum="Removed Lines"/>
                     <field name="diff_modification_files" sum="Modified Files"/>
                     <field name="diff_modification_lines" sum="Modified Lines"/>
+                    <field name="approve_ratio"/>
+                    <field name="need_fixing_ratio"/>
+                    <field name="resubmit_ratio"/>
+                    <field name="user_id"/>
+                    <field name="user_name"/>
+                    <field name="date"/>
+                    <field name="hours" widget="float_time"/>
                     <field name="state" readonly="1"/>
                 </tree>
             </field>
@@ -91,11 +97,10 @@
             <field name="arch" type="xml">
                <search string="work details">
                     <group>
-                        <filter name="need_review" string="Need Review" domain="[('state','=','needs_review')]" help="Need Review" icon="terp-check"/>
-                        <filter name="in_reviewing" string="In Review" domain="[('state','=','in_reviewing')]" help="In Review" icon="terp-camera_test"/>
+                        <filter string="This Month" icon="terp-go-month" name="month" domain="[('date','&lt;=',(datetime.date.today()+relativedelta(day=31)).strftime('%%Y-%%m-%%d')),('date','&gt;=',(datetime.date.today()-relativedelta(day=1)).strftime('%%Y-%%m-%%d'))]"/>
                         <separator orientation="vertical"/>
-                        <filter string="Done" domain="[('state','=','done')]" help="Done" icon="terp-dialog-close"/>
-                        <filter string="Ready" domain="[('state','=','ready')]" help="Ready/Approve" icon="gtk-media-play"/>
+                        <filter name="need_review" string="Need Review" domain="[('state','=','needs_review')]" help="Need Review" icon="terp-check"/>
+                        <filter string="Done" domain="[('state','=','done')]" name="done" help="Done" icon="terp-dialog-close"/>
                         <filter string="Rejected" domain="[('state','=','rejected')]" help="Rejected" icon="gtk-cancel"/>
                         <separator orientation="vertical"/>
                         <field name="date"/>
@@ -127,7 +132,7 @@
             <field name="view_mode">tree,form</field>
 
             <field name="view_id" ref="view_task_work_tree"/>
-            <field name="context">{"search_default_need_review": 1}</field>
+            <field name="context">{"search_default_month": 1, "search_default_done": 1}</field>
             <field name="search_view_id" ref="view_task_work_search_form"/>
         </record>
 

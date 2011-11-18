@@ -27,7 +27,7 @@ from bzrlib.branch import Branch
 import os
 
 MERGE_STATUS = {}
-MERGE_STATUS_FILTERS = []#'rejected', 'pending', 'cancelled', 'done']
+MERGE_STATUS_FILTERS = ['rejected', 'pending', 'cancelled', 'done']
 MERGE_STATUS.update({'Rejected':'rejected' , 'Queued': 'pending', 'Superseded':'cancelled', 'Merged':'done' })
 MERGE_STATUS.update({'Needs review': 'needs_review', 'Code failed to merge':'code_failed', 'Work in progress':'in_reviewing', 'Approved': 'ready' })
 
@@ -246,16 +246,20 @@ class project_launchpad_scheduler(osv.osv_memory):
         work_ids = task_work.search(cr, uid, [('state', 'in', merge_state)])
         for work in task_work.browse(cr, uid, work_ids, context=context):
             proposal_link = "%s%s"%(LP_API_LINK, work.name)
-            proposal = self.lp_load_link(proposal_link)
-            if proposal:
-                merge_proposals = [self._lp_merge_proposal(proposal)]
-                self._create_work(cr, uid, merge_proposals, context=context)
+            try:
+                proposal = self.lp_load_link(proposal_link)
+                if proposal:
+                    merge_proposals = [self._lp_merge_proposal(proposal)]
+                    self._create_work(cr, uid, merge_proposals, context=context)
+            except Exception, e:
+                print 'Error on Updatation:::', e
         return True
 
     def process_merge_proposals(self, cr, uid, ids=None, context=None):
         print 'started process...'
         #update details of current merge proposals
-        self.update_merge_proposals(cr, uid, ids=ids, context=context)
+        if len(MERGE_STATUS_FILTERS):
+            self.update_merge_proposals(cr, uid, ids=ids, context=context)
         
         #take merge new proposals from LP
         for team in TEAMS:

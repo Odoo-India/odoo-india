@@ -21,6 +21,8 @@
 
 from osv import osv, fields
 import datetime
+import time
+from tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
 WORK_STATE = [('draft', 'New'), ('open', 'In Progress'), ('needs_review', 'Needs review'), ('code_failed', 'Code failed to merge'), ('pending', 'Pending'),('in_reviewing','Review in progress'), ('ready', 'Approved'), ('done', 'Done'), ('cancelled', 'Cancelled'), ('rejected', 'Rejected')]
 
@@ -56,10 +58,21 @@ class project_merge_proposal(osv.osv):
     _inherit = "project.task.work"
     def _compute(self, cr, uid, ids, fields, arg, context=None):
         res = {}
+        resource_calendar = self.pool.get('resource.calendar')
+        resource_calendar_id = False
         for work in self.browse(cr, uid, ids, context=context):
             approved = 0.000
             need_fixing = 0.000
             resubmit = 0.000
+            hours = 0.0
+            if work.date_started and work.date:
+                date_started = datetime.datetime.strptime(work.date_started, DEFAULT_SERVER_DATETIME_FORMAT + ".%f")
+                date = datetime.datetime.strptime(work.date, DEFAULT_SERVER_DATETIME_FORMAT + ".%f")
+                resource_calendar_id = (work.task_id and work.task_id.project_id) and work.task_id.project_id.resource_calendar_id or False
+                if resource_calendar_id:
+                    hours = resource_calendar.interval_hours_get(cr, uid, resource_calendar_id.id, date_started, date, resource=work.user_id and work.user_id.id or False)
+                else:
+                    hours = (time.mktime(date.timetuple()) - time.mktime(date_started.timetuple()))/3600
             for review in work.review_ids:
                 if review.state == 'approved': approved += 1.000
                 if review.state == 'need_fixing': need_fixing += 1.000
@@ -68,6 +81,7 @@ class project_merge_proposal(osv.osv):
                 'approve_ratio': len(work.review_ids) and approved/len(work.review_ids) or 0.000,
                 'need_fixing_ratio': len(work.review_ids) and need_fixing/len(work.review_ids) or 0.000,
                 'resubmit_ratio': len(work.review_ids) and resubmit/len(work.review_ids) or 0.000,
+                'hours': hours
             }
         return res
     _columns = {
@@ -88,10 +102,10 @@ class project_merge_proposal(osv.osv):
                 'diff_rem_lines': fields.integer('Diff. Remove Lines'),
                 'diff_modification_files': fields.integer('Diff. Modification Files'),
                 'diff_modification_lines': fields.integer('Diff. Modification Lines'),
-                'approve_ratio': fields.function(_compute, string='Ratio of Approved', multi='approve_ratio'),
-                'need_fixing_ratio': fields.function(_compute, string='Ratio of Need Fixing', multi='need_fixing_ratio'),
-                'resubmit_ratio': fields.function(_compute, string='Ratio of Resubmit', multi='resubmit_ratio'),
-                
+                'approve_ratio': fields.function(_compute, string='Ratio of Approved', multi='approve_ratio', help="Ratio = No. of Approved Review / Total Reviews"),
+                'need_fixing_ratio': fields.function(_compute, string='Ratio of Need Fixing', multi='need_fixing_ratio', help="Ratio = No. of Need Fixing Review / Total Reviews"),
+                'resubmit_ratio': fields.function(_compute, string='Ratio of Resubmit', multi='resubmit_ratio', help="Ratio = No. of ReSubmit / Total Reviews"),
+                'hours': fields.function(_compute, string='Time Spent', multi='hours', help="Hours = Start Date - Submmitted Date"),
     }
     _defaults = {
         'state': 'draft',

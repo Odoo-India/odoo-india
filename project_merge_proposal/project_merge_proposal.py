@@ -65,9 +65,9 @@ class project_merge_proposal(osv.osv):
             need_fixing = 0.000
             resubmit = 0.000
             hours = 0.0
-            if work.date_started and work.date:
-                date_started = datetime.datetime.strptime(work.date_started, DEFAULT_SERVER_DATETIME_FORMAT + ".%f")
-                date = datetime.datetime.strptime(work.date, DEFAULT_SERVER_DATETIME_FORMAT + ".%f")
+            if 'hours' in fields and work.date_started and work.date:
+                date_started = datetime.datetime.strptime(work.date_started, DEFAULT_SERVER_DATETIME_FORMAT)
+                date = datetime.datetime.strptime(work.date, DEFAULT_SERVER_DATETIME_FORMAT)
                 resource_calendar_id = (work.task_id and work.task_id.project_id) and work.task_id.project_id.resource_calendar_id or False
                 if resource_calendar_id:
                     hours = resource_calendar.interval_hours_get(cr, uid, resource_calendar_id.id, date_started, date, resource=work.user_id and work.user_id.id or False)
@@ -105,7 +105,7 @@ class project_merge_proposal(osv.osv):
                 'approve_ratio': fields.function(_compute, string='Ratio of Approved', multi='approve_ratio', help="Ratio = No. of Approved Review / Total Reviews"),
                 'need_fixing_ratio': fields.function(_compute, string='Ratio of Need Fixing', multi='need_fixing_ratio', help="Ratio = No. of Need Fixing Review / Total Reviews"),
                 'resubmit_ratio': fields.function(_compute, string='Ratio of Resubmit', multi='resubmit_ratio', help="Ratio = No. of ReSubmit / Total Reviews"),
-                'hours': fields.function(_compute, string='Time Spent', multi='hours', help="Hours = Start Date - Submmitted Date"),
+                #'hours': fields.function(_compute, string='Time Spent', multi='hours', help="Hours = Start Date - Submmitted Date"),
     }
     _defaults = {
         'state': 'draft',

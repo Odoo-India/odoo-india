@@ -6,7 +6,6 @@
             <field name="name">project.task.work.form</field>
             <field name="model">project.task.work</field>
             <field name="type">form</field>
-            <field name="sequence">1</field>
             <field name="arch" type="xml">
                 <form string="Task Work">
                     <group colspan="4" col="6">

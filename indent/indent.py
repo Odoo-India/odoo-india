@@ -65,8 +65,9 @@ class indent_product_lines(osv.Model):
         'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
         'product_uos_qty': fields.float('Quantity (UoS)' ,digits_compute= dp.get_precision('Product UoS')),
         'product_uos': fields.many2one('product.uom', 'Product UoS'),
+        'qty_available': fields.float('Stock'),
+        'name': fields.text('Purpose', required=True),
         'specification': fields.text('Specification'),
-        'purpose': fields.text('Purpose'),
     }
 
     def _get_uom_id(self, cr, uid, *args):
@@ -140,6 +141,7 @@ class indent_product_lines(osv.Model):
             uom2 = product_obj.uom_id
 
         result['type'] = product_obj.procure_method
+        result['stock_real'] = product_obj.qty_available
         if warning_msgs:
             warning = {
                        'title': _('Configuration Error!'), 'message' : warning_msgs

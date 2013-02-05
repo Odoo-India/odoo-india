@@ -39,8 +39,10 @@ class indent_indent(osv.Model):
         'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products'),
         'description': fields.text('Description'),
+        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting','Waiting For Approval'), ('inprogress','Inprogress'), ('done','Done'), ('cancel','Cancel')], 'State', readonly=True)
     }
     _defaults = {
+        'state': 'draft',
         'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
         'indent_date': fields.date.context_today,
         'required_date': fields.date.context_today,
@@ -48,6 +50,26 @@ class indent_indent(osv.Model):
         'requirement': 'ordinary',
         'type': 'new'
     }
+
+    def indent_draft(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state' : 'draft'}, context=context)
+        return True
+
+    def indent_confirm(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state' : 'confirm'}, context=context)
+        return True
+
+    def indent_validate(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state' : 'waiting'}, context=context)
+        return True
+
+    def indent_approve(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state' : 'inprogress'}, context=context)
+        return True
+
+    def indent_done(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state' : 'done'}, context=context)
+        return True
 
 indent_indent()
 

@@ -8,6 +8,13 @@
             <field name="model">indent.indent</field>
             <field name="arch" type="xml">
                 <form string="Indents" version="7.0">
+                    <header>
+                        <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight" type="object"/>
+                        <button name="indent_validate" string="Validate" states="confirm" class="oe_highlight" type="object"/>
+                        <button name="indent_approve" string="Approve" states="waiting" class="oe_highlight" type="object"/>
+                        <button name="indent_done" string="Done" states="inprogress" class="oe_highlight" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting,inprogress,done" statusbar_colors='{"cancel":"red"}'/>
+                    </header>
                     <sheet>
                         <h1>
                             <label for="name" class="oe_edit_only"/>

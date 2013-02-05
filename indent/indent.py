@@ -20,6 +20,7 @@
 ##############################################################################
 
 import time
+
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 
@@ -28,7 +29,7 @@ class indent_indent(osv.Model):
     _description = 'Indent'
 
     _columns = {
-        'name': fields.char('Name', size=64, required=True, translate=True),
+        'name': fields.char('Name', size=256, required=True),
         'indent_date': fields.date('Indent Date', required=True),
         'required_date': fields.date('Required Date', required=True),
         'indentor_id': fields.many2one('res.users','Indentor', required=True),
@@ -40,6 +41,7 @@ class indent_indent(osv.Model):
         'description': fields.text('Description'),
     }
     _defaults = {
+        'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
         'indent_date': fields.date.context_today,
         'required_date': fields.date.context_today,
         'indentor_id': lambda self, cr, uid, context: uid,

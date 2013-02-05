@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <!-- Indent Form View -->
+        <record id='view_indent_indent_form' model='ir.ui.view'>
+            <field name="name">indent.indent.form</field>
+            <field name="model">indent.indent</field>
+            <field name="arch" type="xml">
+                <form string="Indents" version="7.0">
+                    <sheet>
+                        <h1>
+                            <label for="name" class="oe_edit_only"/>
+                            <field name="name"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="indent_date"/>
+                            </group>
+                            <group>
+                                <field name="required_date"/>
+                            </group>
+                        </group>
+                        <group string="Indent Details">
+                            <group>
+                                <field name="indentor_id"/>
+                                <field name="department_id"/>
+                                <field name="analytic_account_id"/>
+                            </group>
+                            <group>
+                                <field name="requirement"/>
+                                <field name="type"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="product_lines">
+                                    <form string="Products" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field name="product_id"
+                                                    groups="base.group_user"
+                                                    on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field
+                                                        name="product_uom_qty" class="oe_inline"
+                                                        on_change="product_id_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.indent_date)"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
+                                                        on_change="product_uom_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.indent_date)"/>
+                                                </div>
+                                                <label for="product_uos_qty" groups="product.group_uos"/>
+                                                <div groups="product.group_uos">
+                                                    <field name="product_uos_qty" class="oe_inline"/>
+                                                    <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="type"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                    </form>
+                                    <tree string="Products">
+                                        <field name="product_id"
+                                            groups="base.group_user" 
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"/>
+                                        <field name="product_uom"
+                                            on_change="product_uom_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"
+                                            groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="product_uos_qty" groups="product.group_uos" invisible="1"/>
+                                        <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                        <label for="description"/>
+                        <field name="description"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Indent Tree View -->
+        <record id='view_indent_indent_tree' model='ir.ui.view'>
+            <field name="name">indent.indent.tree</field>
+            <field name="model">indent.indent</field>
+            <field name="arch" type="xml">
+                <tree string="Indents">
+                    <field name="indentor_id"/>
+                    <field name="indent_date"/>
+                    <field name="required_date"/>
+                    <field name="department_id"/>
+                    <field name="analytic_account_id"/>
+                    <field name="requirement"/>
+                    <field name="type"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Indent Action -->
+        <record id='action_indent_indent' model='ir.actions.act_window'>
+            <field name="name">Indents</field>
+            <field name="res_model">indent.indent</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new indent. 
+                </p>
+            </field>
+        </record>
+
+        <!-- Indent Menu -->
+        <menuitem name="Indents" parent="stock.menu_stock_root" id="menu_indent_indent_main" sequence="1"/>
+        <menuitem action="action_indent_indent" name="Indents" parent="menu_indent_indent_main" id="menu_indent_indent" sequence="1"/>
+        <menuitem id="stock.menu_stock_warehouse_mgmt" name="Receive/Deliver By Orders" parent="stock.menu_stock_root" sequence="2"/>
+        <menuitem id="stock.menu_stock_products_moves" name="Receive/Deliver Products" parent="stock.menu_stock_root" sequence="3"/>
+
+    </data>
+</openerp>

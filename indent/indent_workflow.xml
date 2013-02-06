@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- General structure of a workflow XML file -->
+        <record model="workflow" id="wkf_indent">
+            <field name="name">workflow.indent</field>
+            <field name="osv">indent.indent</field>
+            <field name="on_create">True</field>
+        </record>
+
+        <!-- Indent Workflow Activities -->
+        <record model="workflow.activity" id="act_draft">
+            <field name="wkf_id" ref="wkf_indent" />
+            <field name="name">activity.draft</field>
+            <field name="flow_start">True</field>
+        </record>
+
+        <record model="workflow.activity" id="act_confirm">
+            <field name="wkf_id" ref="wkf_indent"/>
+            <field name="name">activity.confirm</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state': 'confirm'})</field>
+        </record>
+
+        <record model="workflow.activity" id="act_waiting_approval">
+            <field name="wkf_id" ref="wkf_indent"/>
+            <field name="name">activity.waiting.approval</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state': 'waiting_approval'})</field>
+        </record>
+
+        <record model="workflow.activity" id="act_approved">
+            <field name="wkf_id" ref="wkf_indent"/>
+            <field name="name">activity.approved</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state': 'approved'})</field>
+        </record>
+
+        <record model="workflow.activity" id="act_waiting_product">
+            <field name="wkf_id" ref="wkf_indent"/>
+            <field name="name">activity.waiting.product</field>
+            <field name="kind">subflow</field>
+            <field name="subflow_id" search="[('name','=','stock.picking.basic')]"/>
+            <field name="action">action_picking_create()</field>
+        </record>
+
+        <record model="workflow.activity" id="act_done">
+            <field name="wkf_id" ref="wkf_indent"/>
+            <field name="name">activity.done</field>
+            <field name="flow_stop">True</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state': 'done'})</field>
+        </record>
+
+        <record model="workflow.activity" id="act_cancel">
+            <field name="wkf_id" ref="wkf_indent"/>
+            <field name="name">activity.cancel</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state': 'cancel'})</field>
+        </record>
+
+        <!-- Indent Workflow Transitions -->
+        <record model="workflow.transition" id="trans_draft_confirm">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_confirm"/>
+            <field name="signal">indent_confirm</field>
+        </record>
+
+        <record model="workflow.transition" id="trans_confirm_waiting_approval">
+            <field name="act_from" ref="act_confirm"/>
+            <field name="act_to" ref="act_waiting_approval"/>
+            <field name="signal">indent_validate</field>
+        </record>
+
+        <record model="workflow.transition" id="trans_waiting_approval_approved">
+            <field name="act_from" ref="act_waiting_approval"/>
+            <field name="act_to" ref="act_approved"/>
+            <field name="signal">indent_approved</field>
+        </record>
+
+        <record model="workflow.transition" id="trans_approved_waiting_product">
+            <field name="act_from" ref="act_approved"/>
+            <field name="act_to" ref="act_waiting_product"/>
+            <field name="signal">indent_waiting_product</field>
+        </record>
+
+        <record model="workflow.transition" id="trans_waiting_product_done">
+            <field name="act_from" ref="act_waiting_product"/>
+            <field name="act_to" ref="act_done"/>
+            <field name="signal">subflow.done</field>
+        </record>
+
+    </data>
+</openerp>

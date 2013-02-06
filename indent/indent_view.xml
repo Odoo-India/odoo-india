@@ -9,11 +9,12 @@
             <field name="arch" type="xml">
                 <form string="Indents" version="7.0">
                     <header>
-                        <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight" type="object"/>
-                        <button name="indent_validate" string="Validate" states="confirm" class="oe_highlight" type="object"/>
-                        <button name="indent_approve" string="Approve" states="waiting" class="oe_highlight" type="object"/>
-                        <button name="indent_done" string="Done" states="inprogress" class="oe_highlight" type="object"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting,inprogress,done" statusbar_colors='{"cancel":"red"}'/>
+                        <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight"/>
+                        <button name="indent_validate" string="Validate" states="confirm" class="oe_highlight"/>
+                        <button name="indent_approved" string="Approve" states="waiting_approval" class="oe_highlight"/>
+                        <button name="indent_waiting_product" string="Proceed" states="approved" class="oe_highlight"/>
+                        <button name="action_receive_products" string="Receive Product(s)" states="waiting_product" class="oe_highlight" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting_approval,approved,waiting_product,done" statusbar_colors='{"cancel":"red"}'/>
                     </header>
                     <sheet>
                         <h1>
@@ -37,6 +38,7 @@
                             <group>
                                 <field name="requirement"/>
                                 <field name="type"/>
+                                <field name="company_id"/>
                             </group>
                         </group>
                         <notebook>

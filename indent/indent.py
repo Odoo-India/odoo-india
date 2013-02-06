@@ -23,6 +23,8 @@ import time
 
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
+from openerp.tools.translate import _
+from openerp import netsvc
 
 class indent_indent(osv.Model):
     _name = 'indent.indent'
@@ -38,8 +40,10 @@ class indent_indent(osv.Model):
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True),
         'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products'),
+        'picking_id': fields.many2one('stock.picking','Picking'),
         'description': fields.text('Description'),
-        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting','Waiting For Approval'), ('inprogress','Inprogress'), ('done','Done'), ('cancel','Cancel')], 'State', readonly=True)
+        'company_id': fields.many2one('res.company', 'Company'),
+        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('approved','Approved'), ('waiting_product','Waiting For Products'), ('done','Done'), ('cancel','Cancel')], 'State', readonly=True)
     }
     _defaults = {
         'state': 'draft',
@@ -50,6 +54,129 @@ class indent_indent(osv.Model):
         'requirement': 'ordinary',
         'type': 'new'
     }
+
+    def action_picking_create(self, cr, uid, ids, context=None):
+        assert len(ids) == 1, 'This option should only be used for a single id at a time.'
+        picking_id = False
+        indent = self.browse(cr, uid, ids[0], context=context)
+        if indent.product_lines:
+            picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
+        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'waiting_product'}, context=context)
+        return picking_id
+
+    def action_receive_products(self, cr, uid, ids, context=None):
+        '''
+        This function returns an action that display internal move of given indent ids.
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time'
+        picking_id = self.browse(cr, uid, ids[0], context=context).picking_id.id
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_form')
+        result = {
+            'name': _('Internal Moves'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': res and res[1] or False,
+            'res_model': 'stock.picking',
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': picking_id,
+        }
+        return result
+
+    def _default_location_source(self, cr, uid, context=None):
+        location_model, location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_stock')
+        return location_id
+
+    def _prepare_indent_line_move(self, cr, uid, indent, line, picking_id, date_planned, context=None):
+        location_id = self._default_location_source(cr, uid, context=context)
+        res = {
+            'name': line.name,
+            'picking_id': picking_id,
+            'product_id': line.product_id.id,
+            'date': date_planned,
+            'date_expected': date_planned,
+            'product_qty': line.product_uom_qty,
+            'product_uom': line.product_uom.id,
+            'product_uos_qty': (line.product_uos and line.product_uos_qty) or line.product_uom_qty,
+            'product_uos': (line.product_uos and line.product_uos.id)\
+                    or line.product_uom.id,
+            'location_id': location_id,
+            'location_dest_id': location_id,
+            'state': 'draft',
+            'price_unit': line.product_id.standard_price or 0.0
+        }
+        if indent.company_id:
+            res = dict(res, company_id = indent.company_id.id)
+        return res
+
+    def _prepare_indent_picking(self, cr, uid, indent, context=None):
+        pick_name = self.pool.get('ir.sequence').get(cr, uid, 'stock.picking')
+        res = {
+            'name': pick_name,
+            'origin': indent.name,
+            'date': indent.indent_date,
+            'type': 'internal',
+        }
+        if indent.company_id:
+            res = dict(res, company_id = indent.company_id.id)
+        return res
+
+    def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
+        location_id = self._default_location_source(cr, uid, context=context)
+        res = {
+            'name': line.name,
+            'origin': indent.name,
+            'date_planned': date_planned,
+            'product_id': line.product_id.id,
+            'product_qty': line.product_uom_qty,
+            'product_uom': line.product_uom.id,
+            'product_uos_qty': (line.product_uos and line.product_uos_qty)\
+                    or line.product_uom_qty,
+            'product_uos': (line.product_uos and line.product_uos.id)\
+                    or line.product_uom.id,
+            'location_id': location_id,
+            'procure_method': line.type,
+            'move_id': move_id,
+            'note': line.name,
+        }
+        if indent.company_id:
+            res = dict(res, company_id = indent.company_id.id)
+        return res
+
+#    def _get_date_planned(self, cr, uid, order, line, start_date, context=None):
+#        date_planned = datetime.strptime(start_date, DEFAULT_SERVER_DATE_FORMAT) + relativedelta(days=line.delay or 0.0)
+#        date_planned = (date_planned - timedelta(days=order.company_id.security_lead)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+#        return date_planned
+
+    def _create_pickings_and_procurements(self, cr, uid, indent, product_lines, picking_id=False, context=None):
+        move_obj = self.pool.get('stock.move')
+        picking_obj = self.pool.get('stock.picking')
+        procurement_obj = self.pool.get('procurement.order')
+        proc_ids = []
+
+        for line in product_lines:
+            date_planned = indent.indent_date
+#            date_planned = self._get_date_planned(cr, uid, order, line, order.date_order, context=context)
+
+            if line.product_id:
+                if line.product_id.type in ('product', 'consu'):
+                    if not picking_id:
+                        picking_id = picking_obj.create(cr, uid, self._prepare_indent_picking(cr, uid, indent, context=context))
+                    move_id = move_obj.create(cr, uid, self._prepare_indent_line_move(cr, uid, indent, line, picking_id, date_planned, context=context), context=context)
+                else:
+                    # a service has no stock move
+                    move_id = False
+                proc_id = procurement_obj.create(cr, uid, self._prepare_indent_line_procurement(cr, uid, indent, line, move_id, date_planned, context=context))
+                proc_ids.append(proc_id)
+
+        wf_service = netsvc.LocalService("workflow")
+        if picking_id:
+            wf_service.trg_validate(uid, 'stock.picking', picking_id, 'button_confirm', cr)
+        for proc_id in proc_ids:
+            wf_service.trg_validate(uid, 'procurement.order', proc_id, 'button_confirm', cr)
+
+        return picking_id
 
     def indent_draft(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state' : 'draft'}, context=context)

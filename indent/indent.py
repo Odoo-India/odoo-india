@@ -178,26 +178,6 @@ class indent_indent(osv.Model):
 
         return picking_id
 
-    def indent_draft(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state' : 'draft'}, context=context)
-        return True
-
-    def indent_confirm(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state' : 'confirm'}, context=context)
-        return True
-
-    def indent_validate(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state' : 'waiting'}, context=context)
-        return True
-
-    def indent_approve(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state' : 'inprogress'}, context=context)
-        return True
-
-    def indent_done(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state' : 'done'}, context=context)
-        return True
-
 indent_indent()
 
 class indent_product_lines(osv.Model):

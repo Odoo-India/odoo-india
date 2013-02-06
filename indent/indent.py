@@ -55,6 +55,19 @@ class indent_indent(osv.Model):
         'type': 'new'
     }
 
+    def copy(self, cr, uid, id, default=None, context=None):
+        if default is None:
+            default = {}
+        default.update({
+            'name': self.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
+            'indent_date': time.strftime('%Y-%m-%d'),
+            'required_date': time.strftime('%Y-%m-%d'),
+            'product_lines': [],
+            'picking_id': False,
+            'state': 'draft',
+        })
+        return super(indent_indent, self).copy(cr, uid, id, default, context=context)
+
     def action_picking_create(self, cr, uid, ids, context=None):
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'
         picking_id = False

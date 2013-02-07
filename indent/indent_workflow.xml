@@ -56,7 +56,8 @@
 
         <record model="workflow.activity" id="act_reject">
             <field name="wkf_id" ref="wkf_indent"/>
-            <field name="name">activity.cancel</field>
+            <field name="name">activity.reject</field>
+            <field name="flow_stop">True</field>
             <field name="kind">function</field>
             <field name="action">write({'state': 'reject'})</field>
         </record>

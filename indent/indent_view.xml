@@ -125,6 +125,7 @@
                     <field name="analytic_account_id"/>
                     <field name="requirement"/>
                     <field name="type"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>

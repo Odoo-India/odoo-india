@@ -35,7 +35,6 @@
             <field name="name">activity.approved</field>
             <field name="kind">function</field>
             <field name="action">write({'state': 'approved'})</field>
-            <field name="condition">check_approval()</field>
         </record>
 
         <record model="workflow.activity" id="act_waiting_product">
@@ -85,6 +84,7 @@
             <field name="act_from" ref="act_waiting_approval"/>
             <field name="act_to" ref="act_approved"/>
             <field name="signal">indent_approved</field>
+            <field name="condition">check_approval()</field>
         </record>
 
         <record model="workflow.transition" id="trans_waiting_approval_reject">

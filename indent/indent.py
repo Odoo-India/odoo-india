@@ -73,7 +73,9 @@ class indent_indent(osv.Model):
         document_authority_obj = self.pool.get('document.authority')
         document_authority_instance_obj = self.pool.get('document.authority.instance')
         indent_authority_ids = document_authority_obj.search(cr, uid, [('document', '=', 'indent')], context=context)
-        for indent in self.browse(cr, uid, ids, context=context):
+        for indent in self.browse(cr, uid, ids, context=context): 
+            if not indent.product_lines:
+                raise osv.except_osv(_('Error!'),_('You cannot confirm an indent which has no line.'))
             for authority in document_authority_obj.browse(cr, uid, indent_authority_ids, context=context):
                 document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': authority.document, 'indent_id': indent.id}, context=context)
                 self.write(cr, uid, [indent.id], {'state': 'confirm'}, context=context)

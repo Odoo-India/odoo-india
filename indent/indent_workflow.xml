@@ -35,6 +35,7 @@
             <field name="name">activity.approved</field>
             <field name="kind">function</field>
             <field name="action">write({'state': 'approved'})</field>
+            <field name="condition">check_approval()</field>
         </record>
 
         <record model="workflow.activity" id="act_waiting_product">

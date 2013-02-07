@@ -96,6 +96,8 @@
                                     <tree string="Document Status" editable="bottom">
                                         <field name="date"/>
                                         <field name="name"/>
+                                        <field name="priority"/>
+                                        <field name="document"/>
                                         <field name="state"/>
                                     </tree>
                                 </field>

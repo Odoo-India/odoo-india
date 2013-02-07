@@ -77,7 +77,7 @@ class indent_indent(osv.Model):
             if not indent.product_lines:
                 raise osv.except_osv(_('Error!'),_('You cannot confirm an indent which has no line.'))
             for authority in document_authority_obj.browse(cr, uid, indent_authority_ids, context=context):
-                document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': authority.document, 'indent_id': indent.id}, context=context)
+                document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': authority.document, 'indent_id': indent.id, 'priority': authority.priority}, context=context)
                 self.write(cr, uid, [indent.id], {'state': 'confirm'}, context=context)
         return True
 
@@ -89,6 +89,13 @@ class indent_indent(osv.Model):
             picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
         self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'waiting_product'}, context=context)
         return picking_id
+
+    def check_approval(self, cr, uid, ids):
+        for indent in self.browse(cr, uid, ids):
+            for authority in indent.indent_authority_ids:
+                if authority.state in ('reject','pending'):
+                    return False
+        return True
 
     def action_receive_products(self, cr, uid, ids, context=None):
         '''

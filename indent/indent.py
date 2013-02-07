@@ -65,6 +65,7 @@ class indent_indent(osv.Model):
             'required_date': time.strftime('%Y-%m-%d'),
             'product_lines': [],
             'picking_id': False,
+            'indent_authority_ids': [],
             'state': 'draft',
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)

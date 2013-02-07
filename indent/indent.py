@@ -43,6 +43,7 @@ class indent_indent(osv.Model):
         'picking_id': fields.many2one('stock.picking','Picking'),
         'description': fields.text('Description'),
         'company_id': fields.many2one('res.company', 'Company'),
+        'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority'),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('approved','Approved'), ('waiting_product','Waiting For Products'), ('done','Done'), ('cancel','Cancel')], 'State', readonly=True)
     }
     _defaults = {
@@ -334,5 +335,34 @@ class document_authority(osv.Model):
     }
 
 document_authority()
+
+class document_authority_instance(osv.Model):
+    _name = 'document.authority.instance'
+    _description = 'Document Authority Instance'
+
+    def name_get(self, cr, uid, ids, context=None):
+        res = []
+        if not ids:
+            return res
+        # name_get may receive int id instead of an id list
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+
+        return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
+
+    _columns = {
+        'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
+        'name': fields.many2one('res.users', 'Authority', required=True),
+        'document': fields.selection([('indent','Indent'), ('order','Purchase Order')], 'Document', required=True),
+        'priority': fields.integer('Priority'),
+        'description': fields.text('Description'),
+        'date': fields.date('Date'),
+        'state':fields.selection([('pending','Pending'), ('approve','Approved'), ('reject','Rejected')], 'State', required=True)
+    }
+    _defaults = {
+        'state': 'pending',
+    }
+
+document_authority_instance()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

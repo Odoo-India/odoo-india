@@ -91,6 +91,15 @@
                                     </tree>
                                 </field>
                             </page>
+                            <page string="Document Status">
+                                <field name="indent_authority_ids">
+                                    <tree string="Document Status" editable="bottom">
+                                        <field name="date"/>
+                                        <field name="name"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
                         </notebook>
                         <label for="description"/>
                         <field name="description"/>

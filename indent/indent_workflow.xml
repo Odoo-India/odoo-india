@@ -20,7 +20,7 @@
             <field name="wkf_id" ref="wkf_indent"/>
             <field name="name">activity.confirm</field>
             <field name="kind">function</field>
-            <field name="action">write({'state': 'confirm'})</field>
+            <field name="action">indent_confirm()</field>
         </record>
 
         <record model="workflow.activity" id="act_waiting_approval">

@@ -54,11 +54,11 @@
             <field name="action">write({'state': 'done'})</field>
         </record>
 
-        <record model="workflow.activity" id="act_cancel">
+        <record model="workflow.activity" id="act_reject">
             <field name="wkf_id" ref="wkf_indent"/>
             <field name="name">activity.cancel</field>
             <field name="kind">function</field>
-            <field name="action">write({'state': 'cancel'})</field>
+            <field name="action">write({'state': 'reject'})</field>
         </record>
 
         <!-- Indent Workflow Transitions -->
@@ -74,10 +74,22 @@
             <field name="signal">indent_validate</field>
         </record>
 
+        <record model="workflow.transition" id="trans_confirm_reject">
+            <field name="act_from" ref="act_confirm"/>
+            <field name="act_to" ref="act_reject"/>
+            <field name="signal">indent_reject</field>
+        </record>
+
         <record model="workflow.transition" id="trans_waiting_approval_approved">
             <field name="act_from" ref="act_waiting_approval"/>
             <field name="act_to" ref="act_approved"/>
             <field name="signal">indent_approved</field>
+        </record>
+
+        <record model="workflow.transition" id="trans_waiting_approval_reject">
+            <field name="act_from" ref="act_waiting_approval"/>
+            <field name="act_to" ref="act_reject"/>
+            <field name="signal">indent_reject</field>
         </record>
 
         <record model="workflow.transition" id="trans_approved_waiting_product">

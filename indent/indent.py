@@ -308,4 +308,21 @@ class indent_department(osv.Model):
 
 indent_department()
 
+class document_authority(osv.Model):
+    _name = 'document.authority'
+    _description = 'Document Authority'
+
+    _columns = {
+        'name': fields.many2one('res.users', 'Name', required=True),
+        'document': fields.selection([('indent','Indent'), ('order','Purchase Order')], 'Document', required=True),
+        'priority': fields.integer('Priority'),
+        'active': fields.boolean('Active', help="If the active field is set to False, it will allow you to hide the document authority without removing it."),
+        'description': fields.text('Description'),
+    }
+    _defaults = {
+        'active': True,
+    }
+
+document_authority()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

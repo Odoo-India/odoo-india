@@ -135,5 +135,36 @@
         <menuitem id="stock.menu_stock_warehouse_mgmt" name="Receive/Deliver By Orders" parent="stock.menu_stock_root" sequence="2"/>
         <menuitem id="stock.menu_stock_products_moves" name="Receive/Deliver Products" parent="stock.menu_stock_root" sequence="3"/>
 
+        <!-- Document Authority Tree View -->
+        <record id='view_document_authority_tree' model='ir.ui.view'>
+            <field name="name">document.authority.tree</field>
+            <field name="model">document.authority</field>
+            <field name="arch" type="xml">
+                <tree string="Document Authority" editable="bottom">
+                    <field name="document"/>
+                    <field name="name"/>
+                    <field name="priority"/>
+                    <field name="active"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Document Authority Action -->
+        <record id='action_document_authority' model='ir.actions.act_window'>
+            <field name="name">Document Authority</field>
+            <field name="res_model">document.authority</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new document authority.
+                </p>
+            </field>
+        </record>
+
+        <menuitem name="Indent Management" parent="stock.menu_stock_configuration" id="menu_document_authority_main" sequence="41"/>
+        <menuitem action="action_document_authority" name="Document Authority" parent="menu_document_authority_main" id="menu_menu_document_authority_main" sequence="1"/>
+
     </data>
 </openerp>

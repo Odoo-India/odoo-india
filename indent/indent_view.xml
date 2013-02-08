@@ -99,7 +99,7 @@
                                         <field name="date"/>
                                         <field name="name"/>
                                         <field name="priority"/>
-                                        <field name="document"/>
+                                        <field name="description"/>
                                         <field name="state"/>
                                     </tree>
                                 </field>

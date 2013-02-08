@@ -130,6 +130,37 @@
             </field>
         </record>
 
+        <!-- Indent Search View -->
+        <record id="view_indent_indent_search" model="ir.ui.view">
+            <field name="name">indent.indent.search</field>
+            <field name="model">indent.indent</field>
+            <field name="arch" type="xml">
+                <search string="Indents">
+                    <field name="name" string="Indent Name"/>
+                    <field name="indent_date"/>
+                    <field name="required_date"/>
+                    <filter string="Draft" name="state_draft" domain="[('state','=','draft')]"/>
+                    <filter string="Confirm" name="state_confirm" domain="[('state','=','confirm')]"/>
+                    <filter string="Waiting For Approval" name="state_waiting_approval" domain="[('state','=','waiting_approval')]"/>
+                    <filter string="Approved" name="state_approved" domain="[('state','=','approved')]"/>
+                    <filter string="Waiting For Product" name="state_waiting_product" domain="[('state','=','waiting_product')]"/>
+                    <filter string="done" name="state_done" domain="[('state','=','done')]"/>
+                    <filter string="Rejected" name="state_reject" domain="[('state','=','reject')]"/>
+                    <field name="indentor_id"/>
+                    <field name="department_id"/>
+                    <field name="analytic_account_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Indentor" context="{'group_by': 'indentor_id'}"/>
+                        <filter string="Department" context="{'group_by': 'department_id'}"/>
+                        <filter string="Project" context="{'group_by': 'analytic_account_id'}"/>
+                        <filter string="Requirement" context="{'group_by': 'requirement'}"/>
+                        <filter string="Indent Type" context="{'group_by': 'type'}"/>
+                        <filter string="Status" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <!-- Indent Action -->
         <record id='action_indent_indent' model='ir.actions.act_window'>
             <field name="name">Indents</field>

@@ -237,11 +237,10 @@
             <field name="name">document.authority.tree</field>
             <field name="model">document.authority</field>
             <field name="arch" type="xml">
-                <tree string="Document Authority" editable="bottom">
+                <tree string="Document Authorities" editable="bottom">
                     <field name="document"/>
                     <field name="name"/>
                     <field name="priority"/>
-                    <field name="active"/>
                     <field name="description"/>
                 </tree>
             </field>
@@ -249,7 +248,7 @@
 
         <!-- Document Authority Action -->
         <record id='action_document_authority' model='ir.actions.act_window'>
-            <field name="name">Document Authority</field>
+            <field name="name">Document Authorities</field>
             <field name="res_model">document.authority</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -260,7 +259,7 @@
             </field>
         </record>
 
-        <menuitem action="action_document_authority" name="Document Authority" parent="menu_indent_configuration" id="menu_document_authority" sequence="2"/>
+        <menuitem action="action_document_authority" name="Document Authorities" parent="menu_indent_configuration" id="menu_document_authority" sequence="2"/>
 
     </data>
 </openerp>

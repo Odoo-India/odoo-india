@@ -315,7 +315,7 @@ class indent_product_lines(osv.Model):
             uom2 = product_obj.uom_id
 
         result['type'] = product_obj.procure_method
-        result['stock_real'] = product_obj.qty_available
+        result['qty_available'] = product_obj.qty_available
         if warning_msgs:
             warning = {
                        'title': _('Configuration Error!'), 'message' : warning_msgs

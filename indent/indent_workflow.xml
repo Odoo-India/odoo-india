@@ -45,12 +45,12 @@
             <field name="action">action_picking_create()</field>
         </record>
 
-        <record model="workflow.activity" id="act_done">
+        <record model="workflow.activity" id="act_received">
             <field name="wkf_id" ref="wkf_indent"/>
-            <field name="name">activity.done</field>
+            <field name="name">activity.received</field>
             <field name="flow_stop">True</field>
             <field name="kind">function</field>
-            <field name="action">write({'state': 'done'})</field>
+            <field name="action">write({'state': 'received'})</field>
         </record>
 
         <record model="workflow.activity" id="act_reject">
@@ -99,9 +99,9 @@
             <field name="signal">indent_waiting_product</field>
         </record>
 
-        <record model="workflow.transition" id="trans_waiting_product_done">
+        <record model="workflow.transition" id="trans_waiting_product_received">
             <field name="act_from" ref="act_waiting_product"/>
-            <field name="act_to" ref="act_done"/>
+            <field name="act_to" ref="act_received"/>
             <field name="signal">subflow.done</field>
         </record>
 

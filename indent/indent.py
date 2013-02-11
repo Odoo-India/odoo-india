@@ -43,20 +43,20 @@ class indent_indent(osv.Model):
     }
 
     _columns = {
-        'name': fields.char('Name', size=256, required=True),
+        'name': fields.char('Name', size=256, required=True, track_visibility='always'),
         'indent_date': fields.datetime('Indent Date', required=True),
         'required_date': fields.datetime('Required Date', required=True),
         'indentor_id': fields.many2one('res.users','Indentor', required=True, track_visibility='always'),
-        'department_id': fields.many2one('indent.department', 'Department', required=True, track_visibility='always'),
-        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", required=True, track_visibility='always'),
-        'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True),
-        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='always'),
+        'department_id': fields.many2one('indent.department', 'Department', required=True, track_visibility='onchange'),
+        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", required=True, track_visibility='onchange'),
+        'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True, track_visibility='onchange'),
+        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange'),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products'),
         'picking_id': fields.many2one('stock.picking','Picking'),
         'description': fields.text('Description'),
         'company_id': fields.many2one('res.company', 'Company'),
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority'),
-        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='always')
+        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange')
     }
     _defaults = {
         'state': 'draft',

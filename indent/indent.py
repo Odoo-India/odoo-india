@@ -427,4 +427,28 @@ class document_authority_instance(osv.Model):
 
 document_authority_instance()
 
+class purchase_order(osv.Model):
+    _name = "purchase.order"
+    _inherit = 'purchase.order'
+    
+    def _amount_to_word(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = p.number_to_words(order.amount_total).upper() + '(ONLY)'
+        return res
+   
+    def _get_order_new(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('purchase.order.line').browse(cr, uid, ids, context=context):
+            result[line.order_id.id] = True
+        return result.keys()
+    
+    _columns = {
+        'amount_to_word': fields.function(_amount_to_word, type='char', string='Total',
+            store={
+                'purchase.order.line': (_get_order_new, None, 10),
+            },help="The total amount"),
+    }
+    
+purchase_order()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

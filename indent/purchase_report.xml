@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="report_new_purchase_order" model="purchase.order"
+                name="new.purchase.order" rml="purchase/report/new_po.rml"
+                usage="default" string="New Purchase Order"/>
+        <report auto="False" id="report_new_purchase_quotation" model="purchase.order"
+                name="new.purchase.quotation" rml="purchase/report/new_rfq.rml"
+                usage="default" string="New Purchase Quotation"/>
+    </data>
+</openerp>

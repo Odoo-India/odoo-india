@@ -31,22 +31,32 @@ p = inflect.engine()
 class indent_indent(osv.Model):
     _name = 'indent.indent'
     _description = 'Indent'
+    _inherit = ['mail.thread']
+    _track = {
+        'state': {
+            'indent.mt_indent_confirmed': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'confirm',
+            'indent.mt_indent_waiting_approval': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'waiting_approval',
+            'indent.mt_indent_inprogress': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'inprogress',
+            'indent.mt_indent_received': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'received',
+            'indent.mt_indent_rejected': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'reject'
+        },
+    }
 
     _columns = {
         'name': fields.char('Name', size=256, required=True),
         'indent_date': fields.date('Indent Date', required=True),
         'required_date': fields.date('Required Date', required=True),
-        'indentor_id': fields.many2one('res.users','Indentor', required=True),
-        'department_id': fields.many2one('indent.department', 'Department', required=True),
-        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", required=True),
+        'indentor_id': fields.many2one('res.users','Indentor', required=True, track_visibility='always'),
+        'department_id': fields.many2one('indent.department', 'Department', required=True, track_visibility='always'),
+        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", required=True, track_visibility='always'),
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True),
-        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True),
+        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='always'),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products'),
         'picking_id': fields.many2one('stock.picking','Picking'),
         'description': fields.text('Description'),
         'company_id': fields.many2one('res.company', 'Company'),
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority'),
-        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True)
+        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='always')
     }
     _defaults = {
         'state': 'draft',

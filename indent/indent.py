@@ -44,8 +44,8 @@ class indent_indent(osv.Model):
 
     _columns = {
         'name': fields.char('Name', size=256, required=True),
-        'indent_date': fields.date('Indent Date', required=True),
-        'required_date': fields.date('Required Date', required=True),
+        'indent_date': fields.datetime('Indent Date', required=True),
+        'required_date': fields.datetime('Required Date', required=True),
         'indentor_id': fields.many2one('res.users','Indentor', required=True, track_visibility='always'),
         'department_id': fields.many2one('indent.department', 'Department', required=True, track_visibility='always'),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", required=True, track_visibility='always'),
@@ -61,8 +61,8 @@ class indent_indent(osv.Model):
     _defaults = {
         'state': 'draft',
         'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
-        'indent_date': fields.date.context_today,
-        'required_date': fields.date.context_today,
+        'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
+        'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'indentor_id': lambda self, cr, uid, context: uid,
         'requirement': 'ordinary',
         'type': 'new'
@@ -437,12 +437,12 @@ class document_authority_instance(osv.Model):
         'document': fields.selection([('indent','Indent'), ('order','Purchase Order')], 'Document', required=True),
         'priority': fields.integer('Priority'),
         'description': fields.text('Description'),
-        'date': fields.date('Date'),
+        'date': fields.datetime('Date'),
         'state':fields.selection([('pending','Pending'), ('approve','Approved'), ('reject','Rejected')], 'State', required=True)
     }
     _defaults = {
         'state': 'pending',
-        'date': fields.date.context_today,
+        'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
     }
 
 document_authority_instance()

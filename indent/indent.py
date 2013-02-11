@@ -100,6 +100,8 @@ class indent_indent(osv.Model):
             for authority in sort_authorities:
                 count += 1
                 if authority[1] == uid:
+                    if authority[3] == 'approve':
+                        raise osv.except_osv(_('Error!'),_('You have already approved an indent.'))
                     write_ids = [auth[0] for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
                     document_authority_instance_obj.write(cr, uid, write_ids, {'state': 'approve', 'description': 'Approved by higher authority'})
@@ -107,7 +109,7 @@ class indent_indent(osv.Model):
 
         for indent in self.browse(cr, uid, ids):
             authorities = [(authority.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
-            sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+            sort_authorities = sorted(authorities, key=lambda element: (element[1]))
             for authority in sort_authorities:
                 if authority[2] == 'approve':
                     return True
@@ -124,6 +126,8 @@ class indent_indent(osv.Model):
             for authority in sort_authorities:
                 count += 1
                 if authority[1] == uid:
+                    if authority[3] == 'reject':
+                        raise osv.except_osv(_('Error!'),_('You have already rejected an indent.'))
                     write_ids = [auth[0] for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
                     document_authority_instance_obj.write(cr, uid, write_ids, {'state': 'reject', 'description': 'Rejected by higher authority'})
@@ -131,7 +135,7 @@ class indent_indent(osv.Model):
 
         for indent in self.browse(cr, uid, ids):
             authorities = [(authority.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
-            sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+            sort_authorities = sorted(authorities, key=lambda element: (element[1]))
             for authority in sort_authorities:
                 if authority[2] == 'approve' or authority[2] == 'pending':
                     return False

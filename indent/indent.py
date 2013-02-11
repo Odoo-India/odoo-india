@@ -94,19 +94,49 @@ class indent_indent(osv.Model):
     def check_approval(self, cr, uid, ids):
         document_authority_instance_obj = self.pool.get('document.authority.instance')
         for indent in self.browse(cr, uid, ids):
-            authorities = [(authority.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
-            sort_authorities = sorted(authorities, key=lambda element: (element[1]))
+            authorities = [(authority.id, authority.name.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
+            sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+            count = 0
             for authority in sort_authorities:
-                write_ids = [auth[0] for auth in sort_authorities if auth != authority]
+                count += 1
+                if authority[1] == uid:
+                    write_ids = [auth[0] for auth in sort_authorities][count:]
+                    document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
+                    document_authority_instance_obj.write(cr, uid, write_ids, {'state': 'approve', 'description': 'Approved by higher authority'})
+                    break
+
+        for indent in self.browse(cr, uid, ids):
+            authorities = [(authority.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
+            sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+            for authority in sort_authorities:
                 if authority[2] == 'approve':
-                    document_authority_instance_obj.write(cr, uid, write_ids, {'description': 'Approved by higher authority'})
                     return True
-                elif authority[2] == 'pending':
-                    document_authority_instance_obj.write(cr, uid, write_ids, {'description': 'Pending Approval by higher authority'})
+                elif authority[2] == 'pending' or authority[2] == 'reject':
+                    return False
+        return True
+
+    def check_reject(self, cr, uid, ids):
+        document_authority_instance_obj = self.pool.get('document.authority.instance')
+        for indent in self.browse(cr, uid, ids):
+            authorities = [(authority.id, authority.name.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
+            sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+            count = 0
+            for authority in sort_authorities:
+                count += 1
+                if authority[1] == uid:
+                    write_ids = [auth[0] for auth in sort_authorities][count:]
+                    document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
+                    document_authority_instance_obj.write(cr, uid, write_ids, {'state': 'reject', 'description': 'Rejected by higher authority'})
+                    break
+
+        for indent in self.browse(cr, uid, ids):
+            authorities = [(authority.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
+            sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+            for authority in sort_authorities:
+                if authority[2] == 'approve' or authority[2] == 'pending':
                     return False
                 elif authority[2] == 'reject':
-                    document_authority_instance_obj.write(cr, uid, write_ids, {'description': 'Rejected by higher authority'})
-                    return False
+                    return True
         return True
 
     def action_receive_products(self, cr, uid, ids, context=None):

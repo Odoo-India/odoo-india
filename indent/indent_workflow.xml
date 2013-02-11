@@ -77,7 +77,7 @@
             <field name="act_from" ref="act_waiting_approval"/>
             <field name="act_to" ref="act_waiting_approval"/>
             <field name="signal">indent_waiting_approval</field>
-            <field name="condition">not check_approval()</field>
+            <field name="condition">not check_approval and not check_reject()</field>
         </record>
 
         <record model="workflow.transition" id="trans_waiting_approval_inprogress">

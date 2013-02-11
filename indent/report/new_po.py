@@ -23,10 +23,8 @@ import time
 from openerp.report import report_sxw
 from openerp.osv import osv
 from openerp import pooler
-import inflect
 
 class new_po(report_sxw.rml_parse):
-    p = inflect.engine()
     def __init__(self, cr, uid, name, context):
         super(new_po, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({'time': time})

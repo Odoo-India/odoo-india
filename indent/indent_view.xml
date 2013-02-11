@@ -77,7 +77,7 @@
                                     </form>
                                     <tree string="Products">
                                         <field name="product_id"
-                                            groups="base.group_user" 
+                                            groups="base.group_user"
                                             on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"/>
                                         <field name="product_uom" string="Unit"
                                             on_change="product_uom_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"
@@ -167,7 +167,7 @@
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    Click to create a new indent. 
+                    Click to create a new indent.
                 </p>
             </field>
         </record>

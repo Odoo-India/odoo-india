@@ -25,6 +25,8 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp import netsvc
+import inflect
+p = inflect.engine()
 
 class indent_indent(osv.Model):
     _name = 'indent.indent'

@@ -12,11 +12,10 @@
                         <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight"/>
                         <button name="indent_validate" string="Validate" states="confirm" class="oe_highlight"/>
                         <button name="indent_reject" string="Reject" states="confirm"/>
-                        <button name="indent_approved" string="Approve" states="waiting_approval" class="oe_highlight"/>
+                        <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight"/>
                         <button name="indent_reject" string="Reject" states="waiting_approval"/>
-                        <button name="indent_waiting_product" string="Proceed" states="approved" class="oe_highlight"/>
-                        <button name="action_receive_products" string="Receive Product(s)" states="waiting_product" class="oe_highlight" type="object"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting_approval,approved,waiting_product,received" statusbar_colors='{"reject":"red"}'/>
+                        <button name="action_receive_products" string="Receive Product(s)" states="inprogress" class="oe_highlight" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
                     </header>
                     <sheet>
                         <h1>
@@ -142,8 +141,7 @@
                     <filter string="Draft" name="state_draft" domain="[('state','=','draft')]"/>
                     <filter string="Confirm" name="state_confirm" domain="[('state','=','confirm')]"/>
                     <filter string="Waiting For Approval" name="state_waiting_approval" domain="[('state','=','waiting_approval')]"/>
-                    <filter string="Approved" name="state_approved" domain="[('state','=','approved')]"/>
-                    <filter string="Waiting For Product" name="state_waiting_product" domain="[('state','=','waiting_product')]"/>
+                    <filter string="Inprogress" name="state_inprogress" domain="[('state','=','inprogress')]"/>
                     <filter string="Received" name="state_received" domain="[('state','=','received')]"/>
                     <filter string="Rejected" name="state_reject" domain="[('state','=','reject')]"/>
                     <field name="indentor_id"/>

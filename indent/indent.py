@@ -44,7 +44,7 @@ class indent_indent(osv.Model):
         'description': fields.text('Description'),
         'company_id': fields.many2one('res.company', 'Company'),
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority'),
-        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('approved','Approved'), ('waiting_product','Waiting For Products'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True)
+        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True)
     }
     _defaults = {
         'state': 'draft',
@@ -88,7 +88,7 @@ class indent_indent(osv.Model):
         indent = self.browse(cr, uid, ids[0], context=context)
         if indent.product_lines:
             picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
-        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'waiting_product'}, context=context)
+        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress'}, context=context)
         return picking_id
 
     def check_approval(self, cr, uid, ids):

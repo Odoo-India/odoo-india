@@ -30,16 +30,9 @@
             <field name="action">write({'state': 'waiting_approval'})</field>
         </record>
 
-        <record model="workflow.activity" id="act_approved">
+        <record model="workflow.activity" id="act_inprogress">
             <field name="wkf_id" ref="wkf_indent"/>
-            <field name="name">activity.approved</field>
-            <field name="kind">function</field>
-            <field name="action">write({'state': 'approved'})</field>
-        </record>
-
-        <record model="workflow.activity" id="act_waiting_product">
-            <field name="wkf_id" ref="wkf_indent"/>
-            <field name="name">activity.waiting.product</field>
+            <field name="name">activity.inprogress</field>
             <field name="kind">subflow</field>
             <field name="subflow_id" search="[('name','=','stock.picking.basic')]"/>
             <field name="action">action_picking_create()</field>
@@ -87,10 +80,10 @@
             <field name="condition">not check_approval()</field>
         </record>
 
-        <record model="workflow.transition" id="trans_waiting_approval_approved">
+        <record model="workflow.transition" id="trans_waiting_approval_inprogress">
             <field name="act_from" ref="act_waiting_approval"/>
-            <field name="act_to" ref="act_approved"/>
-            <field name="signal">indent_approved</field>
+            <field name="act_to" ref="act_inprogress"/>
+            <field name="signal">indent_inprogress</field>
             <field name="condition">check_approval()</field>
         </record>
 
@@ -101,14 +94,8 @@
             <field name="condition">check_reject()</field>
         </record>
 
-        <record model="workflow.transition" id="trans_approved_waiting_product">
-            <field name="act_from" ref="act_approved"/>
-            <field name="act_to" ref="act_waiting_product"/>
-            <field name="signal">indent_waiting_product</field>
-        </record>
-
-        <record model="workflow.transition" id="trans_waiting_product_received">
-            <field name="act_from" ref="act_waiting_product"/>
+        <record model="workflow.transition" id="trans_inprogress_received">
+            <field name="act_from" ref="act_inprogress"/>
             <field name="act_to" ref="act_received"/>
             <field name="signal">subflow.done</field>
         </record>

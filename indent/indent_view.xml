@@ -68,6 +68,7 @@
                                             <group>
                                                 <field name="type"/>
                                                 <field name="qty_available"/>
+                                                <field name="virtual_available"/>
                                             </group>
                                         </group>
                                         <label for="name"/>
@@ -83,6 +84,7 @@
                                             on_change="product_uom_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"
                                             groups="product.group_uom" options='{"no_open": True}'/>
                                         <field name="qty_available"/>
+                                        <field name="virtual_available"/>
                                         <field name="product_uom_qty"
                                             on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"/>
                                         <field name="product_uos_qty" groups="product.group_uos" invisible="1"/>

@@ -285,11 +285,12 @@ class indent_product_lines(osv.Model):
         'product_id': fields.many2one('product.product', 'Product', required=True),
         'type': fields.selection([('make_to_stock', 'from stock'), ('make_to_order', 'on order')], 'Procurement Method', required=True,
          help="From stock: When needed, the product is taken from the stock or we wait for replenishment.\nOn order: When needed, the product is purchased or produced."),
-        'product_uom_qty': fields.float('Quantity', digits_compute= dp.get_precision('Product UoS'), required=True),
+        'product_uom_qty': fields.float('Requested Qty', digits_compute= dp.get_precision('Product UoS'), required=True),
         'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
         'product_uos_qty': fields.float('Quantity (UoS)' ,digits_compute= dp.get_precision('Product UoS')),
         'product_uos': fields.many2one('product.uom', 'Product UoS'),
-        'qty_available': fields.float('Stock'),
+        'qty_available': fields.float('Qty On Hand'),
+        'virtual_available': fields.float('Forecasted Qty'),
         'name': fields.text('Purpose', required=True),
         'specification': fields.text('Specification'),
     }
@@ -366,6 +367,7 @@ class indent_product_lines(osv.Model):
 
         result['type'] = product_obj.procure_method
         result['qty_available'] = product_obj.qty_available
+        result['virtual_available'] = product_obj.virtual_available
         if warning_msgs:
             warning = {
                        'title': _('Configuration Error!'), 'message' : warning_msgs

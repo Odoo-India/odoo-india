@@ -2,10 +2,13 @@
 <openerp>
     <data>
         <report auto="False" id="report_new_purchase_order" model="purchase.order"
-                name="new.purchase.order" rml="purchase/report/new_po.rml"
+                name="new.purchase.order1" rml="indent/report/new_po.rml"
                 usage="default" string="New Purchase Order"/>
         <report auto="False" id="report_new_purchase_quotation" model="purchase.order"
-                name="new.purchase.quotation" rml="purchase/report/new_rfq.rml"
+                name="new.purchase.quotation1" rml="indent/report/new_rfq.rml"
                 usage="default" string="New Purchase Quotation"/>
+        <report auto="False" id="report_indent" model="indent.indent"
+                name="indent.indent" rml="indent/report/indent.rml"
+                usage="default" string="Indent Report"/>
     </data>
 </openerp>

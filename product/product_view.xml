@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Inherit the Product Form For Product History Page-->
+        <record id="product_normal_form_view" model="ir.ui.view">
+            <field name="name">inherit.product.product.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Accounting']" position='after'>
+                    <page string='Product History'>
+                        <group>
+                            <group>
+                                <field name='last_supplier_code'/>
+                                <field name='last_po_year'/>
+                                <field name='last_po_no'/>
+                                <field name='last_supplier_rate'/>
+                                <field name='last_recieve_date'/>
+                                <field name='last_issue_date'/>
+                                <field name='cy_opening_qty'/>
+                                <field name='cy_opening_value'/>
+                            </group>
+                            <group>
+                                <field name='last_recieve_qty'/>
+                                <field name='last_recieve_value'/>
+                                <field name='last_issue_qty'/>
+                                <field name='last_issue_value'/>
+                                <field name='cy_issue_qty'/>
+                                <field name='cy_issue_value'/>
+                                <field name='last_po_date'/>
+                                <field name='last_po_series'/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="//page[@string='Accounting']" position='inside'>
+                    <group>
+                        <field name='ex_chapter'/>
+                        <field name='ex_chapter_desc'/>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='list_price']" position='after'>
+                    <label for="variance"/>
+                        <div>
+                            <field name="variance" class="oe_inline"/>
+                            <label string="%%"/>
+                        </div>
+                    <field name='status'/>
+                    <field name='item_type'/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

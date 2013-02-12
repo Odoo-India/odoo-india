@@ -24,12 +24,19 @@ from openerp.report import report_sxw
 from openerp.osv import osv
 from openerp import pooler
 
-class new_rfq(report_sxw.rml_parse):
+class indent(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
-        super(new_rfq, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({'time': time,  'enumerate': enumerate,})
+        super(indent, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({'time': time, 'total_amount': self._get_total})
+        self.context = context
 
-report_sxw.report_sxw('report.new.purchase.quotation1','purchase.order','addons/indent/report/new_rfq.rml',parser=new_rfq)
+    def _get_total(self, id):
+        total =  0.0
+        for line in id.product_lines:
+            total += (line.product_uom_qty * line.product_id.last_supplier_rate )
+        return total
+
+report_sxw.report_sxw('report.indent.indent','indent.indent','addons/indent/report/indent.rml',parser=indent, header=False)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

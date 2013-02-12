@@ -29,7 +29,7 @@ class new_po(report_sxw.rml_parse):
         super(new_po, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({'time': time})
 
-report_sxw.report_sxw('report.new.purchase.order','purchase.order','addons/purchase/report/new_po.rml',parser=new_po)
+report_sxw.report_sxw('report.new.purchase.order1','purchase.order','addons/indent/report/new_po.rml',parser=new_po)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

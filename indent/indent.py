@@ -24,9 +24,8 @@ import time
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
+from openerp.tools import amount_to_text_en as text
 from openerp import netsvc
-import inflect
-p = inflect.engine()
 
 class indent_indent(osv.Model):
     _name = 'indent.indent'
@@ -462,7 +461,9 @@ class purchase_order(osv.Model):
     def _amount_to_word(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = p.number_to_words(order.amount_total).upper() + '(ONLY)'
+            cur = self.pool.get('res.users').browse(cr, uid, uid).company_id.currency_id.name
+            amt_en = text.amount_to_text(order.amount_total, 'en', cur)
+            res[order.id] = amt_en.upper() + '(ONLY)'
         return res
    
     def _get_order_new(self, cr, uid, ids, context=None):

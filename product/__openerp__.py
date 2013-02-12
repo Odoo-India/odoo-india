@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
-#    
+#
 #    OpenERP, Open Source Management Solution
 #    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
@@ -15,21 +15,32 @@
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
 
-import time
-from openerp.report import report_sxw
-from openerp.osv import osv
-from openerp import pooler
+{
+    'name' : 'Product',
+    'version' : '0.1',
+    'author' : 'OpenERP S.A.',
+    'sequence': 110,
+    'category': 'Product Management',
+    'website' : 'http://www.openerp.com',
+    'summary' : 'Managing Indent',
+    'description' : """
+Inherit The Product object and Add some new fields which in specification
+================================================================================================================================================================ 
+""",
+    'depends' : ['indent'],
+    'data' : [
+        'product_view.xml',
+    ],
+    'update_xml' : [],
 
-class new_rfq(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        super(new_rfq, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({'time': time,  'enumerate': enumerate,})
+    'demo': [],
 
-report_sxw.report_sxw('report.new.purchase.quotation1','purchase.order','addons/indent/report/new_rfq.rml',parser=new_rfq)
+    'installable' : True,
+    'application' : True,
+}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

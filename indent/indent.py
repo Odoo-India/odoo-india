@@ -47,7 +47,7 @@ class indent_indent(osv.Model):
         'indent_date': fields.datetime('Indent Date', required=True),
         'required_date': fields.datetime('Required Date', required=True),
         'indentor_id': fields.many2one('res.users','Indentor', required=True, track_visibility='always'),
-        'department_id': fields.many2one('indent.department', 'Department', required=True, track_visibility='onchange'),
+        'department_id': fields.many2one('stock.location', 'Department', required=True, track_visibility='onchange'),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", required=True, track_visibility='onchange'),
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True, track_visibility='onchange'),
         'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange'),
@@ -58,12 +58,18 @@ class indent_indent(osv.Model):
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority'),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange')
     }
+
+    def _default_stock_location(self, cr, uid, context=None):
+        stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_stock')
+        return stock_location.id
+
     _defaults = {
         'state': 'draft',
         'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
         'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'indentor_id': lambda self, cr, uid, context: uid,
+        'department_id': _default_stock_location,
         'requirement': 'ordinary',
         'type': 'new'
     }
@@ -197,7 +203,7 @@ class indent_indent(osv.Model):
             'product_uos': (line.product_uos and line.product_uos.id)\
                     or line.product_uom.id,
             'location_id': location_id,
-            'location_dest_id': location_id,
+            'location_dest_id': indent.department_id.id,
             'state': 'draft',
             'price_unit': line.product_id.standard_price or 0.0
         }

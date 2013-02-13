@@ -123,10 +123,9 @@ class indent_indent(osv.Model):
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
                     for write_id in write_ids:
                         desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
+                        description = 'Approved by higher authority - %s' %(authority[4],)
                         if desc:
                             description = 'Approved by higher authority - %s' %(authority[4],) + '\n' + desc
-                        else:
-                            description = 'Approved by higher authority - %s' %(authority[4],)
                         document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
                     break
 
@@ -155,10 +154,9 @@ class indent_indent(osv.Model):
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
                     for write_id in write_ids:
                         desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
+                        description = 'Rejected by higher authority - %s' %(authority[4],)
                         if desc:
                             description = 'Rejected by higher authority - %s' %(authority[4],) + '\n' + desc
-                        else:
-                            description = 'Rejected by higher authority - %s' %(authority[4],)
                         document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
                     break
 

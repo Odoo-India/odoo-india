@@ -71,8 +71,8 @@ class product_product(osv.Model):
                 res[order.id]['last_po_no'] = purchase_id[0]
                 res[order.id]['last_supplier_rate'] = line_qty
             else:
-                res[order.id]['last_po_no'] = ''
-                res[order.id]['last_supplier_rate'] = ''
+                res[order.id]['last_po_no'] = False
+                res[order.id]['last_supplier_rate'] = 0.0
         return res
     
     def last_recieve_date(self, cr, uid, ids, field_name, arg, context=None):

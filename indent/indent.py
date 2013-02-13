@@ -96,7 +96,7 @@ class indent_indent(osv.Model):
                 raise osv.except_osv(_('Error!'),_('You cannot confirm an indent which has no line.'))
             for authority in document_authority_obj.browse(cr, uid, indent_authority_ids, context=context):
                 document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': authority.document, 'indent_id': indent.id, 'priority': authority.priority}, context=context)
-                self.write(cr, uid, [indent.id], {'state': 'confirm'}, context=context)
+        self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
         return True
 
     def action_picking_create(self, cr, uid, ids, context=None):

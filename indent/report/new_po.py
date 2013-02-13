@@ -23,11 +23,18 @@ import time
 from openerp.report import report_sxw
 from openerp.osv import osv
 from openerp import pooler
+from openerp.tools import amount_to_text_en as text
 
 class new_po(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
         super(new_po, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({'time': time})
+        self.localcontext.update({'time': time, 'amount_to_word': self._amount_to_word})
+        
+    def _amount_to_word(self,order):
+        res = {}
+        amt_en = text.amount_to_text(order.amount_total, 'en', 'RUPEES')
+        res[order.id] = amt_en.upper() + '(ONLY)'
+        return amt_en
 
 report_sxw.report_sxw('report.new.purchase.order1','purchase.order','addons/indent/report/new_po.rml',parser=new_po)
 

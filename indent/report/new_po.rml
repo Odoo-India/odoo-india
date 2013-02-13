@@ -350,7 +350,7 @@
     <blockTable colWidths="530.0" style="Tableau3">
       <tr>
         <td>
-        <para style="terp_default_9">[[ (order.amount_to_word) or 'NULL' ]]</para>
+        <para style="terp_default_9">[[ amount_to_word(order) or 'NULL' ]]</para>
         <para style="terp_default_8">
             <font color="white"> </font>
         </para>

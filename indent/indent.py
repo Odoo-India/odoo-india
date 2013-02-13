@@ -47,7 +47,7 @@ class indent_indent(osv.Model):
         'required_date': fields.datetime('Required Date', required=True),
         'indentor_id': fields.many2one('res.users','Indentor', required=True, track_visibility='always'),
         'department_id': fields.many2one('stock.location', 'Department', required=True, track_visibility='onchange'),
-        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", required=True, track_visibility='onchange'),
+        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", track_visibility='onchange'),
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True, track_visibility='onchange'),
         'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange'),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products'),

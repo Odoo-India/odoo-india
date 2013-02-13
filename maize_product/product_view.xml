@@ -10,25 +10,27 @@
                 <xpath expr="//page[@string='Accounting']" position='after'>
                     <page string='Product History'>
                         <group>
-                            <group>
-                                <field name='last_supplier_code'/>
-                                <field name='last_po_year'/>
-                                <field name='last_po_no'/>
-                                <field name='last_supplier_rate'/>
-                                <field name='last_recieve_date'/>
-                                <field name='last_issue_date'/>
-                                <field name='cy_opening_qty'/>
-                                <field name='cy_opening_value'/>
-                            </group>
-                            <group>
-                                <field name='last_recieve_qty'/>
-                                <field name='last_recieve_value'/>
-                                <field name='last_issue_qty'/>
-                                <field name='last_issue_value'/>
-                                <field name='cy_issue_qty'/>
-                                <field name='cy_issue_value'/>
+                            <group string="Last Year">
                                 <field name='last_po_date'/>
                                 <field name='last_po_series'/>
+                                <field name='last_po_year'/>
+                                <field name='last_po_no'/>
+                                <field name='last_supplier_code'/>
+                                <field name='last_supplier_rate'/>
+                            </group>
+                            <group string="Last Year">
+                                <field name='last_recieve_date'/>
+                                <field name='last_recieve_qty'/>
+                                <field name='last_recieve_value'/>
+                                <field name='last_issue_date'/>
+                                <field name='last_issue_qty'/>
+                                <field name='last_issue_value'/>
+                            </group>
+                            <group string="Current Year">
+                                <field name='cy_opening_qty'/>
+                                <field name='cy_opening_value'/>
+                                <field name='cy_issue_qty'/>
+                                <field name='cy_issue_value'/>
                             </group>
                         </group>
                     </page>

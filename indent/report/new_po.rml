@@ -306,7 +306,7 @@
                     <para style="terp_default_9"> Dispatch </para>
                 </td>
                 <td>
-                    <para style="terp_default_9"> : [[ formatLang(order.amount_tax) or '0,0']] </para>
+                    <para style="terp_default_9"> : [[ formatLang(order.amount_tax) or '0.0']] </para>
                     <para style="terp_default_9"> :  N I L</para>
                     <para style="terp_default_9"> : MILL-DELIVERY</para>
                     <para style="terp_default_9"> : be arrangad by you</para>

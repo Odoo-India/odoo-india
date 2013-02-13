@@ -87,7 +87,7 @@ class product_product(osv.Model):
             res[order.id] = ''
         return res
     
-    def cy_opening_qty(self, cr, uidate_plannedd, ids, field_name, arg, context=None):
+    def cy_opening_qty(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = ''

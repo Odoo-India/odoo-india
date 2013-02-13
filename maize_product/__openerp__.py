@@ -28,7 +28,7 @@
     'website' : 'http://www.openerp.com',
     'summary' : 'Managing Indent',
     'description' : """
-Inherit The Product object and Add some new fields which in specification
+This module inherits the base product module which maintains some product history data like last purchase order number, last supplier rate etc.
 ================================================================================================================================================================ 
 """,
     'depends' : ['indent'],

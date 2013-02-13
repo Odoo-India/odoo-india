@@ -285,7 +285,7 @@
             <para style="terp_default_Centre_9">[[  (order_line.product_id and display_address(order_line.product_id and order_line.product_id.last_po_no.partner_id)) or 0.0]]</para>
           </td>
           <td>
-            <para style="terp_defa3ult_Centre_9">  </para>
+            <para style="terp_default_Centre_9">  </para>
           </td>
           <td>
             <para style="terp_default_Centre_9">  </para>

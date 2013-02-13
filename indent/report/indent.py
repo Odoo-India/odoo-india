@@ -33,7 +33,10 @@ class indent(report_sxw.rml_parse):
     def _get_total(self, id):
         total =  0.0
         for line in id.product_lines:
-            total += (line.product_uom_qty * line.product_id.last_supplier_rate )
+            if line.product_id and line.product_id.last_supplier_rate:
+                total += (line.product_uom_qty * line.product_id.last_supplier_rate )
+            else:
+                total = 0.0
         return total
 
 report_sxw.report_sxw('report.indent.indent','indent.indent','addons/indent/report/indent.rml',parser=indent, header=False)

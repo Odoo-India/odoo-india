@@ -122,8 +122,12 @@ class indent_indent(osv.Model):
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
                     for write_id in write_ids:
-                        if write_id[1] != 'approve':
-                            document_authority_instance_obj.write(cr, uid, [write_id[0]], {'state': 'approve', 'description': 'Approved by higher authority - %s' %(authority[4],)})
+                        desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
+                        if desc:
+                            description = 'Approved by higher authority - %s' %(authority[4],) + '\n' + desc
+                        else:
+                            description = 'Approved by higher authority - %s' %(authority[4],)
+                        document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
                     break
 
         for indent in self.browse(cr, uid, ids):
@@ -150,8 +154,12 @@ class indent_indent(osv.Model):
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
                     for write_id in write_ids:
-                        if write_id[1] != 'reject':
-                            document_authority_instance_obj.write(cr, uid, [write_id[0]], {'state': 'reject', 'description': 'Rejected by higher authority - %s' %(authority[4],)})
+                        desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
+                        if desc:
+                            description = 'Rejected by higher authority - %s' %(authority[4],) + '\n' + desc
+                        else:
+                            description = 'Rejected by higher authority - %s' %(authority[4],)
+                        document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
                     break
 
         for indent in self.browse(cr, uid, ids):

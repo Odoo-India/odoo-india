@@ -243,7 +243,7 @@
             <para style="terp_default_Centre_9">[[ order_line.price_unit or '0.0']]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[  order_line.discount or '0.0']]</para>
+            <para style="terp_default_Centre_9"> </para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
@@ -290,7 +290,7 @@
           <para style="terp_tblheader_Details">Payment:</para>
         </td>
         <td>
-          <para style="terp_default_Bold_Right_9">[[ (order.payment_term_id.name) or '0.0' ]]</para>
+          <para style="terp_default_9">[[ (order.payment_term_id.name) or '0.0' ]]</para>
         </td>
       </tr>
     </blockTable>
@@ -343,14 +343,14 @@
           <para style="terp_tblheader_Details">Total Amount:</para>
         </td>
         <td>
-          <para style="terp_default_Bold_Right_9">[[ formatLang(order.amount_total) or '0.0' ]]</para>
+          <para style="terp_default_9">[[ formatLang(order.amount_total) or '0.0' ]]</para>
         </td>
       </tr>
     </blockTable>
     <blockTable colWidths="530.0" style="Tableau3">
       <tr>
         <td>
-        <para style="terp_default_Bold_Right_9">[[ (order.amount_to_word) or 'NULL' ]]</para>
+        <para style="terp_default_9">[[ (order.amount_to_word) or 'NULL' ]]</para>
         <para style="terp_default_8">
             <font color="white"> </font>
         </para>

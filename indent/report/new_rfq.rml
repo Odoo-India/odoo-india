@@ -270,7 +270,7 @@
     <para style="Standard">
         <font color="white"> </font>
     </para>
-    <para style="terp_default_9">[[ format(order.notes) or removeParentNode('para') ]]</para>
+    <para style="terp_default_9">[[ formatLang(order.notes) or removeParentNode('para') ]]</para>
     <blockTable colWidths="300.0,230.0" style="Table1">
     <tr>
         <td>

@@ -42,7 +42,7 @@ class indent_indent(osv.Model):
     }
 
     _columns = {
-        'name': fields.char('Name', size=256, required=True, track_visibility='always'),
+        'name': fields.char('Indent #', size=256, required=True, track_visibility='always'),
         'indent_date': fields.datetime('Indent Date', required=True),
         'required_date': fields.datetime('Required Date', required=True),
         'indentor_id': fields.many2one('res.users','Indentor', required=True, track_visibility='always'),
@@ -52,7 +52,7 @@ class indent_indent(osv.Model):
         'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange'),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products'),
         'picking_id': fields.many2one('stock.picking','Picking'),
-        'description': fields.text('Description'),
+        'description': fields.text('Item Description'),
         'company_id': fields.many2one('res.company', 'Company'),
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority'),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange')
@@ -296,14 +296,14 @@ class indent_product_lines(osv.Model):
         'product_id': fields.many2one('product.product', 'Product', required=True),
         'type': fields.selection([('make_to_stock', 'from stock'), ('make_to_order', 'on order')], 'Procurement Method', required=True,
          help="From stock: When needed, the product is taken from the stock or we wait for replenishment.\nOn order: When needed, the product is purchased or produced."),
-        'product_uom_qty': fields.float('Requested Qty', digits_compute= dp.get_precision('Product UoS'), required=True),
+        'product_uom_qty': fields.float('Quantity', digits_compute= dp.get_precision('Product UoS'), required=True),
         'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
         'product_uos_qty': fields.float('Quantity (UoS)' ,digits_compute= dp.get_precision('Product UoS')),
         'product_uos': fields.many2one('product.uom', 'Product UoS'),
-        'qty_available': fields.float('Qty On Hand'),
+        'qty_available': fields.float('Stock'),
         'virtual_available': fields.float('Forecasted Qty'),
         'name': fields.text('Purpose', required=True),
-        'specification': fields.text('Specification'),
+        'specification': fields.text('Item Specification'),
     }
 
     def _get_uom_id(self, cr, uid, *args):

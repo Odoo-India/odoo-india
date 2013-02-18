@@ -33,8 +33,7 @@ class new_po(report_sxw.rml_parse):
     def _amount_to_word(self,order):
         res = {}
         amt_en = text.amount_to_text(order.amount_total, 'en', 'RUPEES')
-        res[order.id] = amt_en.upper() + '(ONLY)'
-        return amt_en
+        return amt_en.replace('Cent', 'Paise').upper() + '(ONLY)'
 
 report_sxw.report_sxw('report.new.purchase.order1','purchase.order','addons/indent/report/new_po.rml',parser=new_po)
 

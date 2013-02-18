@@ -27,7 +27,7 @@ from openerp import pooler
 class indent(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
         super(indent, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({'time': time, 'total_amount': self._get_total})
+        self.localcontext.update({'time': time, 'total_amount': self._get_total, 'project_name': self._project_code_name, 'last_supplier': self._last_supplier_code_name})
         self.context = context
 
     def _get_total(self, id):
@@ -38,6 +38,14 @@ class indent(report_sxw.rml_parse):
             else:
                 total = 0.0
         return total
+
+    def _project_code_name(self, id):
+        code = (id.analytic_account_id.code or '') +'  '+ id.analytic_account_id.name
+        return code
+    
+    def _last_supplier_code_name(self, id):
+        code = (id.ref or '')+' '+ id.name
+        return code
 
 report_sxw.report_sxw('report.indent.indent','indent.indent','addons/indent/report/indent.rml',parser=indent, header=False)
 

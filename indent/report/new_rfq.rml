@@ -169,8 +169,8 @@
     <blockTable colWidths="530.0" style="Table1">
         <tr>
             <td>
-                <para style="terp_header"> * Please Send Your Offer/Quot. in this Format for below listed godds or service Address to Purchase Officer with our Reerence No. &amp; Date</para>
-                <para style="terp_header"> * Please see the Undersigned Between 2:30 PM to 5:30 PM wherever Drawings are Required or Samples need to be Inspected</para>
+                <para style="terp_header"> * Please Send Your Offer/Quot. in this Format for below listed goods or service Address to Purchase Officer with our Reference No. &amp; Date</para>
+                <para style="terp_header"> * Please see the Undersigned Between 2:30 PM to 5:30 PM wherever Drawings are Required or Samples need to be Inspected.</para>
                 <para style="terp_header"> * For Terms &amp; Conditions please see enclosed Annexure.</para>
             </td>
         </tr>
@@ -188,7 +188,7 @@
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="5.0,50.0,55.0,300.0,50.0,70.0" repeatRows="1" style="Table_Product_Header_Title">
+    <blockTable colWidths="30.0,30.0,75.0,280.0,20.0,120.0" repeatRows="1" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_General_Centre">Sr. No</para>
@@ -222,16 +222,25 @@
     </section-->
     <section>
       <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]] </para>
-      <blockTable colWidths="55.0,55.0,300.0,50.0,70.0" style="Table_Product_Line">
+      <blockTable colWidths="30.0,30.0,75.0,280.0,20.0,120.0" style="Table_Product_Line">
         <tr>
           <td>
             <para style="terp_default_9">  </para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[ (order_line.product_id and order_line.product_id.default_code) or '0.0']]</para>
+            <para style="terp_default_9">  </para>
           </td>
           <td>
-            <para style="terp_default_Right_new">[[ (order_line.product_id and order_line.product_id.name) or '0.0']]</para>
+            <para style="terp_default_Centre_9">[[ (order_line.product_id and order_line.product_id.default_code) or '-']]</para>
+            <para style="Standard"> <font color="white"> </font> </para>
+            <para style="Standard"> <font color="white"> </font> </para>
+            <para style="Standard"> Specification: </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_new">[[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
+            <para style="Standard"> <font color="white"> </font> </para>
+            <para style="Standard"> <font color="white"> </font> </para>
+            <para style="Standard"> [[ (order_line.product_id and order_line.product_id.description) or ' ']]</para>
           </td>
           <td>
             <para style="terp_default_9">
@@ -240,11 +249,15 @@
             </para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[ order_line.product_qty or '0.0']]</para>
+            <para style="terp_default_Centre_9">Rate </para>
+            <para style="terp_default_Centre_9">Disc </para>
+            <para style="terp_default_Centre_9">Exicse Duty </para>
+            <para style="terp_default_Centre_9">S.T. / C.S.T. </para>
+            <para style="terp_default_Centre_9">Delivey Date </para>
           </td>
         </tr>
       </blockTable>
-      <blockTable colWidths="5.0,50.0,55.0,300.0,50.0,70.0" style="Table1">
+      <!--blockTable colWidths="5.0,30.0,75.0,280.0,20.0,120.0" style="Table1">
       <tr>
         <td>
           <para style="Standard"> <font color="white"> </font> </para>
@@ -253,10 +266,10 @@
           <para style="Standard"> <font color="white"> </font> </para>
         </td>
         <td>
-          <para style="Standard"> <font color="white"> </font> </para>
+          <para style="Standard"> Specification: </para>
         </td>
         <td>
-            <para style="Standard"> Specification :  [[ (order_line.product_id and order_line.product_id.description) or ' ']]</para>
+        <para style="Standard"> [[ (order_line.product_id and order_line.product_id.description) or ' ']]</para>
         </td>
         <td>
           <para style="Standard"> <font color="white"> </font> </para>
@@ -265,16 +278,12 @@
           <para style="Standard"> <font color="white"> </font> </para>
         </td>
       </tr>
-    </blockTable>
+    </blockTable-->
     </section>
-    <para style="Standard">
-        <font color="white"> </font>
-    </para>
-    <para style="terp_default_9">[[ formatLang(order.notes) or removeParentNode('para') ]]</para>
     <blockTable colWidths="300.0,230.0" style="Table1">
     <tr>
         <td>
-            <para style="terp_default_Right_new"> <font color="white"> ..</font>Prices are Ex:__________ basis ( Door Delivary Preferable)</para>
+            <para style="terp_default_Right_new"> <font color="white"> ..</font>Prices are Ex:__________ basis ( Door Delivery Preferable)</para>
             <para style="terp_default_Right_new"> <font color="white"> ..</font>Packing &amp; Forwarding : </para>
             <blockTable colWidths="100.0,250.0" style="Table1">
             <tr>

@@ -28,8 +28,15 @@ from openerp.tools import amount_to_text_en as text
 class new_po(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
         super(new_po, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({'time': time, 'amount_to_word': self._amount_to_word})
-        
+        self.localcontext.update({'time': time, 'amount_to_word': self._amount_to_word, 'indent_no': self._indent_no})
+    
+    def _indent_no(self, name):
+        if name:
+            no = name.split('/')
+            return no[len(no)-1]
+        else:
+            return '-'
+    
     def _amount_to_word(self,order):
         res = {}
         amt_en = text.amount_to_text(order.amount_total, 'en', 'RUPEES')

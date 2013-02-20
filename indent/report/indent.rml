@@ -181,9 +181,6 @@
   <story>
   <pto>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
-    <para style="terp_default_9">
-      <font color="white"> </font>
-    </para>
     <blockTable colWidths="285.0,240.0,285.0" style="Standard_Outline">
         <tr>
             <td>
@@ -210,15 +207,15 @@
             <para style="P1"> <font color="white"> </font> </para>
         </td>
         <td>
-            <para style="P1">Indent No : [[(order.name) or removeParentNode('para')]] </para>
-            <para style="P1">Indent Date: [[(order.indent_date) or removeParentNode('para')]] </para>
-            <para style="P1">Indent Code : [[(order.name) or removeParentNode('para')]] </para>
-            <para style="P1">Indentor : [[(order.indentor_id and order.indentor_id.name) or removeParentNode('para')]] </para>
-            <para style="P1">Indentor Dept : [[(order.department_id and order.department_id.name) or removeParentNode('para')]] </para>
-            <para style="P1">Indent Type: [[(order.type) or removeParentNode('para')]] </para>
-            <para style="P1">Department : </para>
-            <para style="P1">Project  : [[ project_name(order) or removeParentNode('para')]] </para>
-            <para style="P1">Print Date: [[(order.indent_date) or removeParentNode('para')]] </para>
+            <para style="P1">Indent No : [[indent_no(order.name) or False]] </para>
+            <para style="P1">Indent Date: [[(order.indent_date) or False]] </para>
+            <para style="P1">Indentor Code : [[ False ]] </para>
+            <para style="P1">Indentor : [[(order.indentor_id and order.indentor_id.name) or False]] </para>
+            <para style="P1">Indentor Dept : [[ False ]] </para>
+            <para style="P1">Indent Type: [[(order.type) or False]] </para>
+            <para style="P1">Department : [[(order.department_id and order.department_id.name) or False]]</para>
+            <para style="P1">Project  : [[ project_name(order.analytic_account_id) or False]] </para>
+            <para style="P1">Print Date: [[(order.indent_date) or False]] </para>
         </td>
     </tr>
     </blockTable>
@@ -268,9 +265,6 @@
           <td>
             <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.default_code) or '' ]]</para>
             <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.name) or '' ]]</para>
-            <para style="terp_default_8">
-                <font color="white"> </font>
-            </para>
             <para style="terp_default_9">Purpose: [[ (order_line.name) or '']] </para>
             <para style="terp_default_9">Specification: [[ (order_line.specification) or '' ]]</para>
           </td>
@@ -293,7 +287,7 @@
             <para style="terp_default_Centre_9">[[ (order_line.product_uom_qty * order_line.product_id.last_supplier_rate) or '0.0']]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[  last_supplier((order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.partner_id))) or '']]</para>
+            <para style="terp_default_Centre_9">[[  last_supplier((order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.partner_id))) or False]]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">  </para>
@@ -327,36 +321,6 @@
         </td>
       </tr>
      </blockTable>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
-    <para style="Space bet user and signature">
-        <font color="white"> </font>
-    </para>
     <para style="Space bet user and signature">
         <font color="white"> </font>
     </para>

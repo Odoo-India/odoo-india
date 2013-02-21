@@ -286,6 +286,22 @@
             <field name="arch" type="xml">
                 <field name="origin" position="replace">
                     <field name="origin" invisible="1"/>
+                </field>
+                <field name="pricelist_id" position="after">
+                    <field name="indent_id"/>
+                    <field name="indentor_id"/>
+                    <field name="indent_date"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Purchase Requisition Form View -->
+        <record id="view_purchase_requisition_inherited_form" model="ir.ui.view">
+            <field name="name">purchase.requisition.form.inherit</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+            <field name="arch" type="xml">
+                <field name="exclusive" position="after">
                     <field name="indent_id"/>
                     <field name="indentor_id"/>
                     <field name="indent_date"/>

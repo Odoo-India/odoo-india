@@ -504,4 +504,26 @@ class purchase_order(osv.Model):
 
 purchase_order()
 
+class purchase_requisition(osv.Model):
+    _inherit = 'purchase.requisition'
+
+    def _get_indent(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        indent_obj = self.pool.get('indent.indent')
+        for requisition in self.browse(cr, uid, ids, context=context):
+            indent_id = False
+            if requisition.origin:
+                indent_ids = indent_obj.search(cr, uid, [('name', '=', requisition.origin)], context=context)
+                indent_id = indent_ids and indent_ids[0] or False
+            result[requisition.id] = indent_id
+        return result
+
+    _columns = {
+        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True),
+    }
+
+purchase_requisition()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -33,6 +33,8 @@
                         <group string="Indent Details">
                             <group>
                                 <field name="indentor_id"/>
+                                <field name="employee_id" invisible="1"/>
+                                <field name="employee_department_id" invisible="1"/>
                                 <field name="department_id"/>
                                 <field name="analytic_account_id"/>
                             </group>
@@ -263,6 +265,33 @@
         </record>
 
         <menuitem action="action_document_authority" name="Document Authorities" parent="menu_indent_configuration" id="menu_document_authority" sequence="2"/>
+
+        <!-- Stock Picking Form View -->
+        <record id="view_stock_picking_form" model="ir.ui.view">
+            <field name="name">stock.picking.form.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="stock_journal_id" position="after">
+                    <field name="indentor_id" />
+                </field>
+            </field>
+        </record>
+
+        <!-- Purchase Order Form View -->
+        <record id="view_purchase_order_form" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <field name="origin" position="replace">
+                    <field name="origin" invisible="1"/>
+                    <field name="indent_id"/>
+                    <field name="indentor_id"/>
+                    <field name="indent_date"/>
+                </field>
+            </field>
+        </record>
 
     </data>
 </openerp>

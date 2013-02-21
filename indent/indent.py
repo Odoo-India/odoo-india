@@ -45,7 +45,9 @@ class indent_indent(osv.Model):
         'name': fields.char('Indent #', size=256, required=True, track_visibility='always'),
         'indent_date': fields.datetime('Indent Date', required=True),
         'required_date': fields.datetime('Required Date', required=True),
-        'indentor_id': fields.many2one('res.users','Indentor', required=True, track_visibility='always'),
+        'indentor_id': fields.many2one('res.users', 'Indentor', required=True, track_visibility='always'),
+        'employee_id': fields.many2one('hr.employee', 'Employee'),
+        'employee_department_id': fields.related('employee_id', 'department_id', type='many2one', relation='hr.department', string="Employee Department", store=True),
         'department_id': fields.many2one('stock.location', 'Department', required=True, track_visibility='onchange'),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", track_visibility='onchange'),
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True, track_visibility='onchange'),
@@ -58,6 +60,10 @@ class indent_indent(osv.Model):
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange')
     }
 
+    def _default_employee_id(self, cr, uid, context=None):
+        employees = self.pool.get('hr.employee').search(cr, uid, [('user_id', '=', uid)], context=context)
+        return employees and employees[0] or False
+
     def _default_stock_location(self, cr, uid, context=None):
         stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_stock')
         return stock_location.id
@@ -68,9 +74,11 @@ class indent_indent(osv.Model):
         'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'indentor_id': lambda self, cr, uid, context: uid,
+        'employee_id': _default_employee_id,
         'department_id': _default_stock_location,
         'requirement': 'ordinary',
-        'type': 'new'
+        'type': 'new',
+        'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c)
     }
 
     def copy(self, cr, uid, id, default=None, context=None):
@@ -96,6 +104,10 @@ class indent_indent(osv.Model):
                 raise osv.except_osv(_('Error!'),_('You cannot confirm an indent which has no line.'))
             for authority in document_authority_obj.browse(cr, uid, indent_authority_ids, context=context):
                 document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': authority.document, 'indent_id': indent.id, 'priority': authority.priority}, context=context)
+            if indent.employee_id and indent.employee_id.department_id and indent.employee_id.department_id.manager_id and indent.employee_id.department_id.manager_id.user_id:
+                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.department_id.manager_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 95}, context=context)
+            if indent.employee_id and indent.employee_id.user_id:
+                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 90}, context=context)
         self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
         return True
 
@@ -223,6 +235,7 @@ class indent_indent(osv.Model):
             'origin': indent.name,
             'date': indent.indent_date,
             'type': 'internal',
+            'indentor_id': indent.indentor_id.id,
         }
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
@@ -459,5 +472,37 @@ class document_authority_instance(osv.Model):
     }
 
 document_authority_instance()
+
+class stock_picking(osv.Model):
+    _inherit = 'stock.picking'
+
+    _columns = {
+        'indentor_id': fields.many2one('res.users', 'Indentor'),
+    }
+
+stock_picking()
+
+class purchase_order(osv.Model):
+    _inherit = 'purchase.order'
+
+    def _get_indent(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        indent_obj = self.pool.get('indent.indent')
+        for order in self.browse(cr, uid, ids, context=context):
+            indent = False
+            if order.origin:
+                indent_ids = indent_obj.search(cr, uid, [('name', '=', order.origin)], context=context)
+                indent_id = indent_ids and indent_ids[0] or False
+                indent = indent_obj.browse(cr, uid, indent_id, context=context)
+            result[order.id] = indent
+        return result
+
+    _columns = {
+        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor'),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date'),
+    }
+
+purchase_order()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -272,8 +272,11 @@
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
-                <field name="stock_journal_id" position="after">
-                    <field name="indentor_id" />
+                <field name="origin" position="replace">
+                    <field name="origin" invisible="1"/>
+                    <field name="indent_id"/>
+                    <field name="indentor_id"/>
+                    <field name="indent_date"/>
                 </field>
             </field>
         </record>
@@ -286,8 +289,6 @@
             <field name="arch" type="xml">
                 <field name="origin" position="replace">
                     <field name="origin" invisible="1"/>
-                </field>
-                <field name="pricelist_id" position="after">
                     <field name="indent_id"/>
                     <field name="indentor_id"/>
                     <field name="indent_date"/>

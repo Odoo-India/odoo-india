@@ -476,8 +476,21 @@ document_authority_instance()
 class stock_picking(osv.Model):
     _inherit = 'stock.picking'
 
+    def _get_indent(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        indent_obj = self.pool.get('indent.indent')
+        for order in self.browse(cr, uid, ids, context=context):
+            indent_id = False
+            if order.origin:
+                indent_ids = indent_obj.search(cr, uid, [('name', '=', order.origin)], context=context)
+                indent_id = indent_ids and indent_ids[0] or False
+            result[order.id] = indent_id
+        return result
+
     _columns = {
-        'indentor_id': fields.many2one('res.users', 'Indentor'),
+        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True),
     }
 
 stock_picking()
@@ -523,6 +536,12 @@ class purchase_requisition(osv.Model):
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True),
     }
+
+    def make_purchase_order(self, cr, uid, ids, partner_id, context=None):
+        res = super(purchase_requisition, self).make_purchase_order(cr, uid, ids, partner_id, context=context)
+        origin = self.browse(cr, uid, ids[0], context).origin
+        self.pool.get('purchase.order').write(cr, uid, res.values(), {'origin': origin}, context=context)
+        return res
 
 purchase_requisition()
 

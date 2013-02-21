@@ -47,7 +47,7 @@ class indent_indent(osv.Model):
         'required_date': fields.datetime('Required Date', required=True),
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, track_visibility='always'),
         'employee_id': fields.many2one('hr.employee', 'Employee'),
-        'employee_department_id': fields.related('employee_id', 'department_id', type='many2one', relation='hr.department', string="Employee Department", store=True),
+        'employee_department_id': fields.related('employee_id', 'department_id', type='many2one', relation='hr.department', string='Employee Department', store=True),
         'department_id': fields.many2one('stock.location', 'Department', required=True, track_visibility='onchange'),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", track_visibility='onchange'),
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True, track_visibility='onchange'),
@@ -489,18 +489,17 @@ class purchase_order(osv.Model):
         result = {}
         indent_obj = self.pool.get('indent.indent')
         for order in self.browse(cr, uid, ids, context=context):
-            indent = False
+            indent_id = False
             if order.origin:
                 indent_ids = indent_obj.search(cr, uid, [('name', '=', order.origin)], context=context)
                 indent_id = indent_ids and indent_ids[0] or False
-                indent = indent_obj.browse(cr, uid, indent_id, context=context)
-            result[order.id] = indent
+            result[order.id] = indent_id
         return result
 
     _columns = {
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
-        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor'),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date'),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True),
     }
 
 purchase_order()

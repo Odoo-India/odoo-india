@@ -540,7 +540,8 @@ class purchase_requisition(osv.Model):
     def make_purchase_order(self, cr, uid, ids, partner_id, context=None):
         res = super(purchase_requisition, self).make_purchase_order(cr, uid, ids, partner_id, context=context)
         origin = self.browse(cr, uid, ids[0], context).origin
-        self.pool.get('purchase.order').write(cr, uid, res.values(), {'origin': origin}, context=context)
+        if origin:
+            self.pool.get('purchase.order').write(cr, uid, res.values(), {'origin': origin}, context=context)
         return res
 
 purchase_requisition()

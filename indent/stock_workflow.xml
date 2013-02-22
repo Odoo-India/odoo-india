@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Stock Workflow Activities -->
+        <record model="workflow.activity" id="act_approved">
+            <field name="wkf_id" ref="stock.wkf_picking"/>
+            <field name="name">activity.approved</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state': 'approved'})</field>
+        </record>
+
+        <!-- Stock Workflow Transitions -->
+        <record model="workflow.transition" id="stock.trans_draft_confirmed">
+            <field name="act_from" ref="stock.act_draft"/>
+            <field name="act_to" ref="act_approved"/>
+            <field name="signal">button_approve</field>
+            <field name="condition">check_manager_approval()</field>
+        </record>
+
+        <record model="workflow.transition" id="trans_approved_confirmed">
+            <field name="act_from" ref="act_approved"/>
+            <field name="act_to" ref="stock.act_confirmed"/>
+            <field name="signal">button_confirm</field>
+        </record>
+
+    </data>
+</openerp>

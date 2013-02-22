@@ -50,7 +50,64 @@
                     <field name='status'/>
                     <field name='item_type'/>
                 </xpath>
+                <xpath expr="//label[@for='purchase_ok']" position='after'>
+                	<group>
+                		<group>
+	                		<label for="description"/>
+		            	     <div>
+		                       	<field name='description' placeholder="Description1"/>
+		      			        <field name='desc2' placeholder="Description2"/>
+			                    <field name='desc3' placeholder="Description3"/>
+			                    <field name='desc4' placeholder="Description4"/>
+		                    </div>
+	                    </group>
+                    </group>
+                </xpath>                
+              
             </field>
         </record>
+
+        <record id="po_series_form_view" model="ir.ui.view">
+            <field name="name">purchase.order.series.form</field>
+            <field name="model">purchase.order.series</field>
+            <field name="arch" type="xml">
+                <form string="PO Series" version="7.0">
+                	<sheet>
+	                    <group>
+	                    	<group col="4">
+		                        <field name="code"/>
+		                        <field name="name"/>
+	                        </group>
+	                    </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="po_series_list_view" model="ir.ui.view">
+            <field name="name">purchase.order.series.tree</field>
+            <field name="model">purchase.order.series</field>
+            <field name="arch" type="xml">
+                <tree string="PO Series" version="7.0">
+	                <field name="code"/>
+	                <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="po_series_form_action" model="ir.actions.act_window">
+            <field name="name">PO Series</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">purchase.order.series</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="po_series_list_view"/>
+        </record>
+        <menuitem groups="base.group_no_one"
+            id="menu_maize_config"
+            name="Maize"
+            parent="purchase.menu_purchase_config_purchase" sequence="50"/>
+        <menuitem action="po_series_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_po_series"
+            parent="menu_maize_config" sequence="2"/>
     </data>
 </openerp>

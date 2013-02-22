@@ -27,17 +27,6 @@ from openerp.tools.translate import _
 from openerp import netsvc
 
 
-class purchase_order_series(osv.Model):
-    _name = 'purchase.order.series'
-    _description = ' Add Purchase Order series'
-    _rec_name = 'code'
-    
-    _columns = {
-        'code': fields.char('Series', size=15),
-        'description': fields.char('Description', size=50),
-        }
-purchase_order_series()
-
 class product_product(osv.Model):
     _inherit = 'product.product'
     
@@ -164,6 +153,16 @@ class product_product(osv.Model):
         'variance': fields.integer('Variance', help='Percentage that shows the actual difference between the ordered quantity and received one'),
         'status': fields.integer('Status', help='There is a report that is generated from this status for store people monthly'),
         'item_type': fields.selection([('gp', 'GP'), ('im' , 'IM')], 'Item Type'),
+        'description': fields.char('Description', size=256),
+        'desc2': fields.char('Description2', size=256),
+        'desc3': fields.char('Description3', size=256),
+        'desc4': fields.char('Description4', size=256),
+        'ex_chapter': fields.char('EXCHAPTER', size=30, translate=True),
+        'ex_chapter': fields.char('EXCHAPTER', size=30, translate=True),
         }
+    _defaults = {
+                'sale_ok':False,
+                'type':'product'
+                }
     
 product_product()

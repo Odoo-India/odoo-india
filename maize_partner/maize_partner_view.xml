@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Inherit the partner Form-->
+        <record id="maize_inherit_partner_form_view" model="ir.ui.view">
+            <field name="name">inherit.maize.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="arch" type="xml">
+               	<xpath expr="//div[@name='buttons']" position='after'>
+               		<group>
+               			<group>               	
+            				<field name="co_code" />
+            				<field name="supp_code"/>
+            				<field name="bank_code_id" widget="selection"/>
+            				<field name="series_id"/>
+            				<field name="c_form"/>
+            			</group>
+              			<group>               	
+            				<field name="raw_code_id" widget="selection"/>
+            				<field name="tax_code_id" widget="selection"/>
+            				<field name="md_code"/>
+            				<field name="tds_per"/>
+            				<field name="pan_no"/>
+            			</group>
+            		</group>
+            		
+           		</xpath>
+
+               	<xpath expr="//field[@name='street']" position='replace'>
+            		<field name="street" placeholder="Address1"/>
+           		</xpath>
+               	<xpath expr="//field[@name='street2']" position='replace'>
+            		<field name="street2" placeholder="Address2"/>
+           		</xpath>
+            	<xpath expr="//field[@name='street2']" position='after'>
+            		<field name="street3" placeholder="Address3"/>
+           		</xpath>
+
+				<xpath expr="//field[@name='bank_ids']" position='before'>
+		       		<group>
+		            	<group>
+		            		<field name="stno_1"/>
+		            		<field name="stno_2"/>
+		            		<field name="cst_no"/>
+		            	</group>
+		            	<group>
+		            		<field name="ecc_code"/>
+		            		<field name="ser_tax_reg_no"/>
+		            	</group>		            	
+		           	</group>
+				</xpath>  
+         		
+        	</field>
+       	</record>
+       	<!-- Raw code -->
+        <record id="row_code_form_view" model="ir.ui.view">
+            <field name="name">row.code.form</field>
+            <field name="model">row.code</field>
+            <field name="arch" type="xml">
+                <form string="Row Code" version="7.0">
+                	<sheet>
+	                    <group>
+	                    	<group col="4">
+		                        <field name="code"/>
+		                        <field name="name"/>
+	                        </group>
+	                    </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>       	
+        <record id="row_code_list_view" model="ir.ui.view">
+            <field name="name">row.code.list</field>
+            <field name="model">row.code</field>
+            <field name="arch" type="xml">
+                <tree string="Row Code" version="7.0">
+	                <field name="code"/>
+	                <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="row_code_form_action" model="ir.actions.act_window">
+            <field name="name">Raw Code</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">row.code</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="row_code_list_view"/>
+        </record>
+
+        <menuitem action="row_code_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_row_code"
+            parent="maize_product.menu_maize_config" sequence="3"/>
+            
+            
+       	<!-- Tax code -->
+        <record id="tax_code_form_view" model="ir.ui.view">
+            <field name="name">tax.code.form</field>
+            <field name="model">tax.code</field>
+            <field name="arch" type="xml">
+                <form string="Tax Code" version="7.0">
+                	<sheet>
+	                    <group>
+	                    	<group col="4">
+		                        <field name="code"/>
+		                        <field name="name"/>
+	                        </group>
+	                    </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>       	
+        <record id="tax_code_list_view" model="ir.ui.view">
+            <field name="name">tax.code.list</field>
+            <field name="model">tax.code</field>
+            <field name="arch" type="xml">
+                <tree string="Tax Code" version="7.0">
+	                <field name="code"/>
+	                <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="tax_code_form_action" model="ir.actions.act_window">
+            <field name="name">Tax Code</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tax.code</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="tax_code_list_view"/>
+        </record>
+
+        <menuitem action="tax_code_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_tax_code"
+            parent="maize_product.menu_maize_config" sequence="4"/>
+            
+            
+            
+       	<!-- Bank code -->
+        <record id="bank_code_form_view" model="ir.ui.view">
+            <field name="name">bank.code.form</field>
+            <field name="model">bank.code</field>
+            <field name="arch" type="xml">
+                <form string="Bank Code" version="7.0">
+                	<sheet>
+	                    <group>
+	                    	<group col="4">
+		                        <field name="code"/>
+		                        <field name="name"/>
+	                        </group>
+	                    </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>       	
+        <record id="bank_code_list_view" model="ir.ui.view">
+            <field name="name">bank.code.list</field>
+            <field name="model">bank.code</field>
+            <field name="arch" type="xml">
+                <tree string="Bank Code" version="7.0">
+	                <field name="code"/>
+	                <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="bank_code_form_action" model="ir.actions.act_window">
+            <field name="name">Bank Code</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bank.code</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="bank_code_list_view"/>
+        </record>
+
+        <menuitem action="bank_code_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_bank_code"
+            parent="maize_product.menu_maize_config" sequence="4"/>             
+    </data>
+</openerp>

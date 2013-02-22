@@ -19,29 +19,4 @@
 #
 ##############################################################################
 
-{
-    'name' : 'Product',
-    'version' : '0.1',
-    'author' : 'OpenERP S.A.',
-    'sequence': 110,
-    'category': 'Product Management',
-    'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Indent',
-    'description' : """
-This module inherits the base product module which maintains some product history data like last purchase order number, last supplier rate etc.
-================================================================================================================================================================ 
-""",
-    'depends' : ['indent'],
-    'data' : [
-        'po_series_data.xml',
-        'product_view.xml',
-    ],
-    'update_xml' : [],
-
-    'demo': [],
-
-    'installable' : True,
-    'application' : True,
-}
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+import maize_partner

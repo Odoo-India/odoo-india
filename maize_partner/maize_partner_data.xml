@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="row_code_m" model="row.code">
+            <field name="code">M</field>
+            <field name="name">Maize</field>
+        </record>
+        <record id="row_code_j" model="row.code">
+            <field name="code">J</field>
+            <field name="name">Juvar</field>
+        </record> 
+        <record id="row_code_C" model="row.code">
+            <field name="code">C</field>
+            <field name="name">Cron</field>
+        </record> 
+        <record id="row_code_t" model="row.code">
+            <field name="code">T</field>
+            <field name="name">Tuver</field>
+        </record> 
+    </data>
+</openerp>    

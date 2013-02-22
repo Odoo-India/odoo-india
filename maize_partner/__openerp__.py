@@ -20,28 +20,26 @@
 ##############################################################################
 
 {
-    'name' : 'Product',
+    'name' : 'Maize Partner',
     'version' : '0.1',
     'author' : 'OpenERP S.A.',
-    'sequence': 110,
-    'category': 'Product Management',
+    'sequence': 111,
+    'category': 'Maize Partner',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Indent',
+    'summary' : 'Managing Partner',
     'description' : """
-This module inherits the base product module which maintains some product history data like last purchase order number, last supplier rate etc.
-================================================================================================================================================================ 
 """,
-    'depends' : ['indent'],
+    'depends' : ['base','account'],
     'data' : [
-        'po_series_data.xml',
-        'product_view.xml',
+         'maize_partner_data.xml',
+        'maize_partner_view.xml',
     ],
     'update_xml' : [],
 
     'demo': [],
 
     'installable' : True,
-    'application' : True,
+    'application' : False,
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

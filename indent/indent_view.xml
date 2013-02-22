@@ -310,5 +310,17 @@
             </field>
         </record>
 
+        <!-- Purchase Order Search View -->
+        <record id="view_purchase_order_inherited_search" model="ir.ui.view">
+            <field name="name">purchase.order.search.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <filter string="Source" position="attributes">
+                    <attribute name="string">Indent</attribute>
+                </filter>
+            </field>
+        </record>
+
     </data>
 </openerp>

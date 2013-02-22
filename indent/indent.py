@@ -328,7 +328,7 @@ class indent_product_lines(osv.Model):
         'product_uom' : _get_uom_id,
         'product_uom_qty': 1,
         'product_uos_qty': 1,
-        'type': 'make_to_stock',
+        'type': 'make_to_order',
     }
 
     def product_id_change(self, cr, uid, ids, product, qty=0, uom=False, qty_uos=0, uos=False, name='', date_order=False):
@@ -390,7 +390,6 @@ class indent_product_lines(osv.Model):
         if not uom2:
             uom2 = product_obj.uom_id
 
-        result['type'] = product_obj.procure_method
         result['qty_available'] = product_obj.qty_available
         result['virtual_available'] = product_obj.virtual_available
         if warning_msgs:

@@ -106,9 +106,9 @@ class indent_indent(osv.Model):
             for authority in document_authority_obj.browse(cr, uid, indent_authority_ids, context=context):
                 document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': authority.document, 'indent_id': indent.id, 'priority': authority.priority}, context=context)
             if indent.employee_id and indent.employee_id.department_id and indent.employee_id.department_id.manager_id and indent.employee_id.department_id.manager_id.user_id:
-                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.department_id.manager_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 95}, context=context)
+                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.department_id.manager_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 90}, context=context)
             if indent.employee_id and indent.employee_id.user_id:
-                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 90}, context=context)
+                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 95}, context=context)
         self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
         return True
 
@@ -512,7 +512,7 @@ class stock_picking(osv.Model):
 
     def check_manager_approval(self, cr, uid, ids):
         indent = self.browse(cr, uid, ids[0]).indent_id
-        manager = indent and indent.employee_department_id and indent.employee_department_id.manager_id and indent.employee_department_id.manager_id.id or False
+        manager = indent and indent.employee_department_id and indent.employee_department_id.manager_id and indent.employee_department_id.manager_id.user_id and indent.employee_department_id.manager_id.user_id.id or False
         if manager and manager == uid:
             return True
         elif manager and manager != uid:

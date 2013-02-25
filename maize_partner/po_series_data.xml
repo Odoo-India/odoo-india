@@ -213,7 +213,7 @@
             <field name="type">bank</field>
         </record>
         <record id="bank_33" model="account.journal">
-            <field name="code">33</field>
+            <field name="code">35</field>
             <field name="name">TEMPORARY LOAN FROM P.N.B.M.M.B...</field>
             <field name="type">bank</field>
         </record>

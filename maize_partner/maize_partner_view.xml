@@ -12,7 +12,7 @@
                			<group>
             				<field name="co_code" />
             				<field name="supp_code"/>
-            				<field name="bank_code_id" widget="selection"/>
+            				<field name="bank_code_id"/>
             				<field name="series_id"/>
             				<field name="c_form"/>
             			</group>

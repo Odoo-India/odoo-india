@@ -72,3 +72,19 @@ class tax_code(osv.Model):
         'name': fields.char('Name', size=256),
         }
 tax_code()
+
+class account_journal(osv.Model):
+    _inherit = 'account.journal'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        res = []
+        if not ids:
+            return res
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        for id in ids:
+            elmt = self.browse(cr, uid, id, context=context)
+            res.append((id, '['+elmt.code +'] '+elmt.name))
+        return res
+
+account_journal()

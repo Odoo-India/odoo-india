@@ -236,7 +236,6 @@ class indent_indent(osv.Model):
             'origin': indent.name,
             'date': indent.indent_date,
             'type': 'internal',
-            'indentor_id': indent.indentor_id.id,
         }
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
@@ -489,8 +488,8 @@ class stock_picking(osv.Model):
 
     _columns = {
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
-        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
         'state': fields.selection([
             ('draft', 'Draft'),
             ('approved', 'Approved'),
@@ -537,8 +536,8 @@ class purchase_order(osv.Model):
 
     _columns = {
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
-        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
     }
 
 purchase_order()
@@ -559,8 +558,8 @@ class purchase_requisition(osv.Model):
 
     _columns = {
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
-        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
     }
 
     def make_purchase_order(self, cr, uid, ids, partner_id, context=None):

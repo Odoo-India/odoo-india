@@ -153,16 +153,16 @@
     	    <para style="Standard">
 		      <font color="white"> </font>
 		    </para>
-		    <para style="terp_default_Right_new">Opening Date : [[ order.date_order]]</para>
+		    <para style="terp_default_Right_new">Opening Date : [[ formatLang(order.date_order, date = True)]]</para>
 		    <para style="terp_default_Right_new">Quot. No. [[ order.name ]]</para>
 		</td>
 		<td>
 		    <para style="Standard">
 		      <font color="white"> </font>
 		    </para>
-		    <para style="terp_default_Right_new">Date : [[ order.date_order ]]</para>
+		    <para style="terp_default_Right_new">Date : [[ formatLang(order.date_order, date = True) ]]</para>
 		    <para style="terp_default_Right_new"><font color="white"> </font></para>
-		    <para style="terp_default_Right_new">Date : [[ order.date_order ]]</para>
+		    <para style="terp_default_Right_new">Date : [[ formatLang(order.date_order, date = True) ]]</para>
 		</td>
 	</tr>
 	</blockTable>
@@ -210,25 +210,17 @@
         </td>
       </tr>
     </blockTable>
-    <!--section>
-      <para style="terp_default_9">[[repeatIn(enumerate(order.order_line), 'line')]]</para>
-      <blockTable colWidths="5.0" style="Table_Product_Line">
-      <tr>
-        <td>
-            <para style="terp_default_Right_new">[[ line[0] + 1 ]]</para>
-        </td>
-      </tr>
-      </blockTable>
-    </section-->
     <section>
       <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]] </para>
       <blockTable colWidths="30.0,30.0,75.0,280.0,20.0,120.0" style="Table_Product_Line">
         <tr>
           <td>
-            <para style="terp_default_9">  </para>
+              <para style="terp_default_Centre_9">[[ sequence(order_line) ]] </para>
           </td>
           <td>
-            <para style="terp_default_9">  </para>
+            <para style="terp_default_9">  [[ indent_no(order.indent_id.name) or '-' ]]</para>
+            <para style="terp_default_9">  [[ (order.indentor_id.id) or '-' ]]</para>
+            <para style="terp_default_9">  [[ formatLang(order.indent_date, date = True) or '-' ]]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_id and order_line.product_id.default_code) or '-']]</para>

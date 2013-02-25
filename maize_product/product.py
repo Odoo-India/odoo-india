@@ -26,6 +26,16 @@ import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp import netsvc
 
+class product_order_series(osv.Model):
+    _name = 'product.order.series'
+    _description = ' Add Purchase Order series'
+    _rec_name = 'code'
+    
+    _columns = {
+        'code': fields.char('Series', size=15),
+        'name': fields.char('Description', size=50),
+        }
+product_order_series()
 
 class product_product(osv.Model):
     _inherit = 'product.product'
@@ -147,7 +157,7 @@ class product_product(osv.Model):
         'cy_issue_qty': fields.function(cy_issue_qty, type='float', string='Current Year Issue Quantity'),
         'cy_issue_value': fields.function(cy_issue_value, type='float', string='Current Year Issue Value'),
         'last_po_date': fields.function(last_po_date, type='date', string='Last PO Date'),
-        'last_po_series': fields.many2one('purchase.order.series', 'Last PO Series'),
+        'last_po_series': fields.many2one('product.order.series', 'Last PO Series'),
         'ex_chapter': fields.char('EXCHAPTER', size=30, translate=True),
         'ex_chapter_desc': fields.text('EXCHAPTERDESCR',translate=True),
         'variance': fields.integer('Variance', help='Percentage that shows the actual difference between the ordered quantity and received one'),

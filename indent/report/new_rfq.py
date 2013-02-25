@@ -26,8 +26,23 @@ from openerp import pooler
 
 class new_rfq(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
+        self.sr_no = 0
         super(new_rfq, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({'time': time,  'enumerate': enumerate,})
+        self.localcontext.update({'time': time,
+                                  'sequence': self._serial_no,
+                                  'indent_no': self._indent_no
+                                  })
+
+    def _indent_no(self, name):
+        if name:
+            no = name.split('/')
+            return no[len(no)-1]
+        else:
+            return '-'
+
+    def _serial_no(self, line):
+        self.sr_no += 1
+        return self.sr_no
 
 report_sxw.report_sxw('report.new.purchase.quotation1','purchase.order','addons/indent/report/new_rfq.rml',parser=new_rfq)
 

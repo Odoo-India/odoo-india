@@ -2,7 +2,7 @@
 <document filename="indent.pdf">
   <template pageSize="(842.0,595.0)" title="Indent" author="Martin Simon" allowSplitting="20">
     <pageTemplate id="first">
-      <frame id="first" x1="8.0" y1="8.0" width="786" height="525"/>
+      <frame id="first" x1="8.0" y1="8.0" width="840" height="525"/>
     </pageTemplate>
   </template>
   <stylesheet>
@@ -13,8 +13,6 @@
     <blockTableStyle id="Table1">
       <blockAlignment value="LEFT"/>
       <blockValign value="TOP"/>
-      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
-      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
@@ -81,6 +79,7 @@
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
       <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
@@ -92,6 +91,8 @@
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="7,-1" stop="7,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
@@ -103,6 +104,7 @@
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
     </blockTableStyle>
     <blockTableStyle id="Table10">
       <blockAlignment value="LEFT"/>
@@ -136,6 +138,7 @@
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
       <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
     </blockTableStyle>
     <initialize>
@@ -165,7 +168,7 @@
     <paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_Centre_8" fontName="Helvetica" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_header_Right" fontName="Helvetica-Bold" fontSize="15.0" leading="19" alignment="LEFT" spaceBefore="12.0" spaceAfter="6.0"/>
-    <paraStyle name="terp_header_Centre" fontNaLINEBEFOREme="Helvetica-Bold" fontSize="12.0" leading="15" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="15" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="terp_default_address" fontName="Helvetica" fontSize="10.0" leading="13" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_9" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_Bold_9" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
@@ -181,19 +184,53 @@
   <story>
   <pto>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
-    <blockTable colWidths="285.0,240.0,285.0" style="Standard_Outline">
-        <tr>
-            <td>
-            </td>
-            <td>
-                <para style="P1"> MAIZE PRODUCTS </para>
-                <para style="P1"><font color="white"> .....</font> KATHWADA </para>
-            </td>
-            <td>
-            </td>
-        </tr>
+    <para style="terp_default_8">[[ setLang(order.indentor_id.lang) ]]</para>
+    <pto_header>
+    <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,50.0,50.0,90.0,100.0,70.0,50.0" style="Table_Product_Header_Title">
+      <tr>
+        <td>
+          <para style="terp_tblheader_Details_Centre">Sr.</para>
+          <para style="terp_tblheader_Details_Centre">No.</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">ITEM CODE</para>
+          <para style="terp_tblheader_Details_Centre">DESCRIPTION</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">UNIT</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">STOCK IN STORE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">QUANTITY REQUIRED</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">REQUIRED DATE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST RATE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">AMOUNT</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST SUPPLIER</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST YR. CONS</para>
+          <para style="terp_tblheader_Details_Centre">CURR. YR. CONS</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST ISSUE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Detailterp_default_9s_Centre">LAST PO</para>
+        </td>
+      </tr>
     </blockTable>
-    <blockTable colWidths="480.0,340.0" style="Table1">
+    </pto_header>
+    <blockTable colWidths="480.0,100.0,240.0" style="Table1">
     <tr>
         <td>
             <para style="P1"> TO : </para>
@@ -207,20 +244,26 @@
             <para style="P1"> <font color="white"> </font> </para>
         </td>
         <td>
+        </td>
+        <td>
             <para style="P1">Indent No : [[indent_no(order.name) or False]] </para>
-            <para style="P1">Indent Date: [[(order.indent_date) or False]] </para>
+            <para style="P1">Indent Date: [[formatLang(order.indent_date, date = True) or False]] </para>
             <para style="P1">Indentor Code : [[ False ]] </para>
             <para style="P1">Indentor : [[(order.indentor_id and order.indentor_id.name) or False]] </para>
-            <para style="P1">Indentor Dept : [[ False ]] </para>
+            <para style="P1">Indentor Dept : [[ (order.employee_department_id.name) ]] </para>
             <para style="P1">Indent Type: [[(order.type) or False]] </para>
             <para style="P1">Department : [[(order.department_id and order.department_id.name) or False]]</para>
             <para style="P1">Project  : [[ project_name(order.analytic_account_id) or False]] </para>
-            <para style="P1">Print Date: [[(order.indent_date) or False]] </para>
+            <para style="P1">Print Date: [[formatLang(order.indent_date, date = True) or False]] </para>
         </td>
     </tr>
     </blockTable>
-    <blockTable colWidths="210.0,40.0,40.0,60.0,60.0,40.0,50.0,100.0,100.0,70.0,50.0" repeatRows="1" style="Table_Product_Header_Title">
+    <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,50.0,50.0,90.0,100.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
+        <td>
+          <para style="terp_tblheader_Details_Centre">Sr.</para>
+          <para style="terp_tblheader_Details_Centre">No.</para>
+        </td>
         <td>
           <para style="terp_tblheader_Details_Centre">ITEM CODE</para>
           <para style="terp_tblheader_Details_Centre">DESCRIPTION</para>
@@ -260,8 +303,11 @@
     </blockTable>
     <section>
       <para style="terp_default_9">[[ repeatIn(order.product_lines,'order_line') ]]</para>
-      <blockTable colWidths="210.0,40.0,40.0,60.0,60.0,40.0,50.0,100.0,100.0,70.0,50.0" style="Table_Product_Line">
+      <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,50.0,50.0,90.0,100.0,70.0,50.0" style="Table_Product_Line">
         <tr>
+          <td>
+            <para style="terp_default_Centre_9">[[ sequence(order_line) ]] </para>
+          </td>
           <td>
             <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.default_code) or '' ]]</para>
             <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.name) or '' ]]</para>
@@ -279,9 +325,13 @@
           </td>
           <td>
             <para style="terp_default_Centre_9">[[  formatLang(order.required_date, date = True) or '']]</para>
+            <para style="terp_default_Centre_9">Excise :</para>
+            <para style="terp_default_Centre_9">VAT :</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_id and order_line.product_id.last_supplier_rate) or '0.0']]</para>
+            <para style="terp_default_Centre_9">[[ '0']] %</para>
+            <para style="terp_default_Centre_9">[[ (order_line.product_id and order_line.product_id.supplier_taxes_id and order_line.product_id.supplier_taxes_id[0].amount * 100) or '0']] %</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_uom_qty * order_line.product_id.last_supplier_rate) or '0.0']]</para>
@@ -293,15 +343,16 @@
             <para style="terp_default_Centre_9">  </para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">  </para>
+            <para style="terp_default_Centre_9"> [[ last_issue(order_line.product_id, formatLang(order.indent_date, date=True)).get('date')]] </para>
+            <para style="terp_default_Centre_9"> [[ last_issue(order_line.product_id, formatLang(order.indent_date, date=True)).get('department')]] </para> 
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[ (order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.name)) or '0.0']]</para>
+            <para style="terp_default_Centre_9">[[ (order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.name)) or '-']]</para>
           </td>
         </tr>
       </blockTable>
     </section>
-    <blockTable colWidths="235.0,90.0,140.0,355.0" style="Tableau2">
+    <blockTable colWidths="265.0,90.0,140.0,325.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -312,7 +363,7 @@
           <para style="terp_default_9">TOTAL AMOUNT:</para>
         </td>
         <td>
-          <para style="terp_default_Right_9"> [[ formatLang(total_amount(order)) or '0.0' ]]</para>
+          <para style="terp_default_Right_9"> [[ total_amount(order) or '0.0' ]]</para>
         </td>
         <td>
           <para style="terp_default_8">

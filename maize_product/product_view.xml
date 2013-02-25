@@ -102,12 +102,12 @@
             <field name="view_id" ref="product_series_list_view"/>
         </record>
         <menuitem groups="base.group_no_one"
-            id="menu_maize_config"
+            id="menu_maize_product_config"
             name="Maize"
-            parent="purchase.menu_purchase_config_purchase" sequence="50"/>
+            parent="stock.menu_stock_configuration" sequence="50"/>
         <menuitem action="product_series_form_action"
             groups="base.group_no_one"
             id="menu_maize_po_series"
-            parent="menu_maize_config" sequence="2"/>
+            parent="menu_maize_product_config" sequence="2"/>
     </data>
 </openerp>

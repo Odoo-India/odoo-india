@@ -2,104 +2,267 @@
 <openerp>
     <data noupdate="1">
 
-        <record id="series_ae" model="product.order.series">
+        <record id="series_ae" model="supplier.series">
             <field name="code">AE</field>
             <field name="name">Electricity</field>
         </record>
 
-        <record id="series_ba" model="product.order.series">
+        <record id="series_ba" model="supplier.series">
             <field name="code">BA</field>
             <field name="name">Block Addition</field>
         </record>
-        <record id="series_ca" model="product.order.series">
+        <record id="series_ca" model="supplier.series">
             <field name="code">CA</field>
             <field name="name">Carting</field>
         </record>
-        <record id="series_ch" model="product.order.series">
+        <record id="series_ch" model="supplier.series">
             <field name="code">CH</field>
             <field name="name">Chemicals</field>
         </record>
-        <record id="series_co" model="product.order.series">
+        <record id="series_co" model="supplier.series">
             <field name="code">CO</field>
             <field name="name">Coal</field>
         </record>
-                <record id="series_ct" model="product.order.series">
+                <record id="series_ct" model="supplier.series">
             <field name="code">CT</field>
             <field name="name">Contractor Bill</field>
         </record>
-        <record id="series_df" model="product.order.series">
+        <record id="series_df" model="supplier.series">
             <field name="code">DF</field>
             <field name="name">Dicamol Filter</field>
         </record>
 
-        <record id="series_dm" model="product.order.series">
+        <record id="series_dm" model="supplier.series">
             <field name="code">DM</field>
             <field name="name">D M WATER</field>
         </record>
-                <record id="series_do" model="product.order.series">
+                <record id="series_do" model="supplier.series">
             <field name="code">DO</field>
             <field name="name">De Oil Cake</field>
         </record>
-                <record id="series_ex" model="product.order.series">
+                <record id="series_ex" model="supplier.series">
             <field name="code">EX</field>
             <field name="name">Expenses</field>
         </record>
-        <record id="series_fa" model="product.order.series">
+        <record id="series_fa" model="supplier.series">
             <field name="code">FA</field>
             <field name="name">Fly Ash Bricks</field>
         </record>
-        <record id="series_fo" model="product.order.series">
+        <record id="series_fo" model="supplier.series">
             <field name="code">FO</field>
             <field name="name">Furnace Oil</field>
         </record>
-        <record id="series_fr" model="product.order.series">
+        <record id="series_fr" model="supplier.series">
             <field name="code">FR</field>
             <field name="name">Freight</field>
         </record>
-        <record id="series_jw" model="product.order.series">
+        <record id="series_jw" model="supplier.series">
             <field name="code">JW</field>
             <field name="name">Job Work</field>
         </record>
-        <record id="series_ms" model="product.order.series">
+        <record id="series_ms" model="supplier.series">
             <field name="code">MS</field>
             <field name="name">Maize MS</field>
         </record>
-        <record id="series_mz" model="product.order.series">
+        <record id="series_mz" model="supplier.series">
             <field name="code">MZ</field>
             <field name="name">Maize</field>
         </record>
-        <record id="series_op" model="product.order.series">
+        <record id="series_op" model="supplier.series">
             <field name="code">OP</field>
             <field name="name">Other Purchase</field>
         </record>
-        <record id="series_pk" model="product.order.series">
+        <record id="series_pk" model="supplier.series">
             <field name="code">PK</field>
             <field name="name">Packing</field>
         </record>
-        <record id="series_st" model="product.order.series">
+        <record id="series_st" model="supplier.series">
             <field name="code">ST</field>
             <field name="name">Store</field>
         </record>
-        <record id="series_su" model="product.order.series">
+        <record id="series_su" model="supplier.series">
             <field name="code">SU</field>
-            <field name="name">Daily Purchase</field>
+            <field name="name">Daily Purchase SU</field>
         </record>
-        <record id="series_tp" model="product.order.series">
+        <record id="series_tp" model="supplier.series">
             <field name="code">TP</field>
-            <field name="name">Daily Purchase</field>
+            <field name="name">Daily Purchase TP</field>
         </record>
-        <record id="series_wo" model="product.order.series">
+        <record id="series_wo" model="supplier.series">
             <field name="code">WO</field>
             <field name="name">Wood</field>
         </record>
-        <record id="series_xp" model="product.order.series">
+        <record id="series_xp" model="supplier.series">
             <field name="code">XP</field>
             <field name="name">Export</field>
-        </record>2013-02-25 05:12:22,424 2917 INFO test_issue openerp.modules.loading: module maize_partner: loading po_series_data.xmlmaize_partner_data.xml
-
-        <record id="series_ys" model="product.order.series">
-            <field name="code">YS</field>
-            <field name="name">YASHWANT</field>
         </record>
+        <record id="series_ys" model="supplier.series">
+            <field name="code">YS</field>
+            <field name="name">YASHWANT SAHAKARI</field>
+        </record>
+
+        <!-- Bank Code -->
+        <record id="bank_11" model="account.journal">
+            <field name="code">11</field>
+            <field name="name">PNB VANIJYA BHAVAN AHD CC-80/5</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_12" model="account.journal">
+            <field name="code">12</field>
+            <field name="name">PNB ODHAV BRANCH AHD CC-0102</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_13" model="account.journal">
+            <field name="code">13</field>
+            <field name="name">PNB MASKATI MARKET AHD CD-5853</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_14" model="account.journal">
+            <field name="code">14</field>
+            <field name="name">PNB VANIJYA BHAVAN AHD CD-5342</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_15" model="account.journal">
+            <field name="code">15</field>
+            <field name="name">PNB VANIJYA BHAVAN AHD CD-5353</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_16" model="account.journal">
+            <field name="code">16</field>
+            <field name="name">PNB KATHWADA A/C 0811012100000013</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_17" model="account.journal">
+            <field name="code">17</field>
+            <field name="name">BOB GANDHI ROAD, AHD CD-57772</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_18" model="account.journal">
+            <field name="code">18</field>
+            <field name="name">SBI MAIN BRANCH, AHD CD-1000/040371</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_19" model="account.journal">
+            <field name="code">19</field>
+            <field name="name">PNB ILACO HOUSE, BOMBAY CD-116770</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_20" model="account.journal">
+            <field name="code">20</field>
+            <field name="name">PNB SRT NAGAR, DELHI CD-0457</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_21" model="account.journal">
+            <field name="code">21</field>
+            <field name="name">PNB BRBB ROAD, CALCUTTA CD-9509</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_22" model="account.journal">
+            <field name="code">22</field>
+            <field name="name">PNB KALIGHT CALCUTTA 1428002100004</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_23" model="account.journal">
+            <field name="code">23</field>
+            <field name="name">PNB NINGAMBAKKAM, MADRAS CD-0287</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_24" model="account.journal">
+            <field name="code">24</field>
+            <field name="name">SBI MUMBAI AC 10783155040</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_25" model="account.journal">
+            <field name="code">25</field>
+            <field name="name">SAKURA BANK, BOMBAY CD-4200271</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_26" model="account.journal">
+            <field name="code">26</field>
+            <field name="name">B C C I, BOMBAY CD-1018234</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_27" model="account.journal">
+            <field name="code">27</field>
+            <field name="name">PNB, NIZAMABAD CD-0470</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_28" model="account.journal">
+            <field name="code">28</field>
+            <field name="name">BOB, CALCUTTA CD-0038</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_29" model="account.journal">
+            <field name="code">29</field>
+            <field name="name">PNB ASHRAM ROAD CD-1851</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_30" model="account.journal">
+            <field name="code">30</field>
+            <field name="name">SBI GVMM ODHAV, CD-1000/040171</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_31" model="account.journal">
+            <field name="code">31</field>
+            <field name="name">CITI BANK N.A. AHMEDABAD</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_32" model="account.journal">
+            <field name="code">32</field>
+            <field name="name">UTI BANK LTD. AHMEDABAD</field>
+            <field name="type">bank</field>
+        </record>
+        <record id="bank_33" model="account.journal">
+            <field name="code">33</field>
+            <field name="name">TEMPORARY LOAN FROM P.N.B.M.M.B...</field>
+            <field name="type">bank</field>
+        </record>
+
+        <!-- Tax Code -->
+        <record id="tax_01" model="tax.code">
+            <field name="code">01</field>
+            <field name="name">ST-CD-01</field>
+        </record>
+        <record id="tax_02" model="tax.code">
+            <field name="code">02</field>
+            <field name="name">ST-CD-02</field>
+        </record>
+        <record id="tax_11" model="tax.code">
+            <field name="code">11</field>
+            <field name="name">ST-CD-11 Unregistered Dealer</field>
+        </record>
+        <record id="tax_21" model="tax.code">
+            <field name="code">21</field>
+            <field name="name">ST-CD-21 Outside Gujarat State</field>
+        </record>
+        <record id="tax_22" model="tax.code">
+            <field name="code">22</field>
+            <field name="name">ST-CD-22 Import</field>
+        </record>
+        <record id="tax_31" model="tax.code">
+            <field name="code">31</field>
+            <field name="name">ST-CD-31 Tax Free</field>
+        </record>
+        <record id="tax_41" model="tax.code">
+            <field name="code">41</field>
+            <field name="name">ST-CD-41 Labour &amp; Cartage</field>
+        </record>
+        <record id="tax_51" model="tax.code">
+            <field name="code">51</field>
+            <field name="name">ST-CD-51 Against 'H' Form</field>
+        </record>
+        <record id="tax_91" model="tax.code">
+            <field name="code">91</field>
+            <field name="name">ST-CD-91 Input Tax Credit</field>
+        </record>
+        <record id="tax_92" model="tax.code">
+            <field name="code">92</field>
+            <field name="name">ST-CD-92 Registered Dealer</field>
+        </record>
+        <record id="tax_93" model="tax.code">
+            <field name="code">93</field>
+            <field name="name">ST-CD-93</field>
+        </record>
+
     </data>
 </openerp>

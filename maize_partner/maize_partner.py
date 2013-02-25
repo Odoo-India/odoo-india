@@ -22,8 +22,8 @@
 
 from openerp.osv import fields, osv
 
-class purchase_order_series(osv.Model):
-    _name = 'purchase.order.series'
+class supplier_series(osv.Model):
+    _name = 'supplier.series'
     _description = ' Add Purchase Order series'
     _rec_name = 'code'
     
@@ -31,7 +31,7 @@ class purchase_order_series(osv.Model):
         'code': fields.char('Series', size=15),
         'name': fields.char('Description', size=50),
         }
-purchase_order_series()
+supplier_series()
 
 class res_partner(osv.Model):
     _inherit = 'res.partner'
@@ -43,7 +43,7 @@ class res_partner(osv.Model):
         'tax_code_id': fields.many2one('tax.code','TAXCODE'),
         'bank_code_id': fields.many2one('account.journal','BANKCODE'),
         'md_code': fields.selection([('manufacture','M'),(' dealer','D')],'MDCODE'),
-        'series_id':fields.many2one('purchase.order.series', 'SERIES'),
+        'series_id':fields.many2one('supplier.series', 'SERIES'),
         'tds_per':fields.float('TDSPER'),
         'c_form':fields.boolean('CFORMIND'),
         'pan_no': fields.char('PANNO', size=256),
@@ -72,11 +72,3 @@ class tax_code(osv.Model):
         'name': fields.char('Name', size=256),
         }
 tax_code()
-class bank_code(osv.Model):
-    _name = "bank.code"
-    _rec_name="code"
-    _columns = {
-        'code': fields.char('Code', size=256),
-        'name': fields.char('Name', size=256),
-        }
-bank_code()

@@ -39,7 +39,7 @@
 
 				<xpath expr="//field[@name='bank_ids']" position='before'>
 		       		<group>
-		            	<group>
+		            	<group>H
 		            		<field name="stno_1"/>
 		            		<field name="stno_2"/>
 		            		<field name="cst_no"/>
@@ -62,11 +62,11 @@
                 	<sheet>
 	                    <group>
 	                    	<group col="4">
-		                        <field name="code"/>
+		                        <field name="code"/>H
 		                        <field name="name"/>
 	                        </group>
 	                    </group>
-                    </sheet>
+                    </sheet>H
                 </form>
             </field>
         </record>
@@ -89,10 +89,15 @@
             <field name="view_id" ref="row_code_list_view"/>
         </record>
 
+        <menuitem groups="base.group_no_one"
+            id="menu_maize_config"
+            name="Maize"
+            parent="purchase.menu_purchase_config_purchase" sequence="50"/>
+
         <menuitem action="row_code_form_action"
             groups="base.group_no_one"
             id="menu_maize_row_code"
-            parent="maize_product.menu_maize_config" sequence="3"/>
+            parent="menu_maize_config" sequence="3"/>
 
 
        	<!-- Tax code -->
@@ -134,55 +139,12 @@
         <menuitem action="tax_code_form_action"
             groups="base.group_no_one"
             id="menu_maize_tax_code"
-            parent="maize_product.menu_maize_config" sequence="4"/>
+            parent="menu_maize_config" sequence="4"/>
 
-
-
-       	<!-- Bank code -->
-        <record id="bank_code_form_view" model="ir.ui.view">
-            <field name="name">bank.code.form</field>
-            <field name="model">bank.code</field>
-            <field name="arch" type="xml">
-                <form string="Bank Code" version="7.0">
-                	<sheet>
-	                    <group>
-	                    	<group col="4">
-		                        <field name="code"/>
-		                        <field name="name"/>
-	                        </group>
-	                    </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-        <record id="bank_code_list_view" model="ir.ui.view">
-            <field name="name">bank.code.list</field>
-            <field name="model">bank.code</field>
-            <field name="arch" type="xml">
-                <tree string="Bank Code" version="7.0">
-	                <field name="code"/>
-	                <field name="name"/>
-                </tree>
-            </field>
-        </record>
-        <record id="bank_code_form_action" model="ir.actions.act_window">
-            <field name="name">Bank Code</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">bank.code</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="bank_code_list_view"/>
-        </record>
-
-        <menuitem action="bank_code_form_action"
-            groups="base.group_no_one"
-            id="menu_maize_bank_code"
-            parent="maize_product.menu_maize_config" sequence="4"/>
-
-       <!--purchase order series -->
+       <!--Supplier series -->
        <record id="po_series_form_view" model="ir.ui.view">
-            <field name="name">product.order.series.form</field>
-            <field name="model">product.order.series</field>
+            <field name="name">supplier.series.form</field>
+            <field name="model">supplier.series</field>
             <field name="arch" type="xml">
                 <form string="PO Series" version="7.0">
                     <sheet>
@@ -197,8 +159,8 @@
             </field>
         </record>
         <record id="po_series_list_view" model="ir.ui.view">
-            <field name="name">product.order.series.tree</field>
-            <field name="model">product.order.series</field>
+            <field name="name">supplier.series.tree</field>
+            <field name="model">supplier.series</field>
             <field name="arch" type="xml">
                 <tree string="PO Series" version="7.0">
                     <field name="code"/>
@@ -207,9 +169,9 @@
             </field>
         </record>
         <record id="po_series_form_action" model="ir.actions.act_window">
-            <field name="name">Purchase Order Series</field>
+            <field name="name">Supplier Series</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">product.order.series</field>
+            <field name="res_model">supplier.series</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="po_series_list_view"/>
@@ -217,6 +179,6 @@
         <menuitem action="po_series_form_action"
             groups="base.group_no_one"
             id="menu_maize_po_series"
-            parent="maize_product.menu_maize_config" sequence="2"/>
+            parent="menu_maize_config" sequence="2"/>
     </data>
 </openerp>

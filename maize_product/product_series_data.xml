@@ -2,104 +2,71 @@
 <openerp>
     <data noupdate="1">
 
-        <record id="series_ae" model="product.order.series">
-            <field name="code">AE</field>
-            <field name="name">Electricity</field>
-        </record>
-
-        <record id="series_ba" model="product.order.series">
-            <field name="code">BA</field>
-            <field name="name">Block Addition</field>
-        </record>
-        <record id="series_ca" model="product.order.series">
-            <field name="code">CA</field>
-            <field name="name">Carting</field>
-        </record>
-        <record id="series_ch" model="product.order.series">
+        <record id="product_ch" model="product.order.series">
             <field name="code">CH</field>
-            <field name="name">Chemicals</field>
-        </record>
-        <record id="series_co" model="product.order.series">
-            <field name="code">CO</field>
-            <field name="name">Coal</field>
-        </record>
-                <record id="series_ct" model="product.order.series">
-            <field name="code">CT</field>
-            <field name="name">Contractor Bill</field>
-        </record>
-                <record id="series_df" model="product.order.series">
-            <field name="code">DF</field>
-            <field name="name">Dicamol Filter</field>
+            <field name="name">Chemical</field>
         </record>
 
-        <record id="series_dm" model="product.order.series">
-            <field name="code">DM</field>
-            <field name="name">D M WATER</field>
-        </record>
-                <record id="series_do" model="product.order.series">
-            <field name="code">DO</field>
-            <field name="name">De Oil Cake</field>
-        </record>
-                <record id="series_ex" model="product.order.series">
-            <field name="code">EX</field>
-            <field name="name">Expenses</field>
-        </record>
-                <record id="series_fa" model="product.order.series">
-            <field name="code">FA</field>
-            <field name="name">Fly Ash Bricks</field>
-        </record>
-                <record id="series_fo" model="product.order.series">
-            <field name="code">FO</field>
-            <field name="name">Furnace Oil</field>
-        </record>
-                <record id="series_fr" model="product.order.series">
-            <field name="code">FR</field>
-            <field name="name">Freight</field>
-        </record>
-                <record id="series_jw" model="product.order.series">
-            <field name="code">JW</field>
-            <field name="name">Job Work</field>
-        </record>
-                <record id="series_ms" model="product.order.series">
-            <field name="code">MS</field>
-            <field name="name">Maize MS</field>
-        </record>
-                <record id="series_mz" model="product.order.series">
-            <field name="code">MZ</field>
-            <field name="name">Maize</field>
-        </record>
-                <record id="series_op" model="product.order.series">
-            <field name="code">OP</field>
-            <field name="name">Other Purchase</field>
-        </record>
-                <record id="series_pk" model="product.order.series">
+        <record id="product_pk" model="product.order.series">
             <field name="code">PK</field>
             <field name="name">Packing</field>
         </record>
-                <record id="series_st" model="product.order.series">
+        <record id="product_st" model="product.order.series">
             <field name="code">ST</field>
             <field name="name">Store</field>
         </record>
-                <record id="series_su" model="product.order.series">
-            <field name="code">SU</field>
-            <field name="name">Daily Purchase</field>
+        <record id="product_cp" model="product.order.series">
+            <field name="code">CP</field>
+            <field name="name">Capital</field>
         </record>
-                <record id="series_tp" model="product.order.series">
-            <field name="code">TP</field>
-            <field name="name">Daily Purchase</field>
+        <record id="product_co" model="product.order.series">
+            <field name="code">CO</field>
+            <field name="name">Contract</field>
         </record>
-                <record id="series_wo" model="product.order.series">
-            <field name="code">WO</field>
-            <field name="name">Wood</field>
+        <record id="product_lb" model="product.order.series">
+            <field name="code">LB</field>
+            <field name="name">Laboratory</field>
         </record>
-                <record id="series_xp" model="product.order.series">
-            <field name="code">XP</field>
-            <field name="name">Export</field>
-        </record>2013-02-25 05:12:22,424 2917 INFO test_issue openerp.modules.loading: module maize_partner: loading po_series_data.xmlmaize_partner_data.xml
+        <record id="product_rp" model="product.order.series">
+            <field name="code">RP</field>
+            <field name="name">Repair</field>
+        </record>
 
-                <record id="series_ys" model="product.order.series">
-            <field name="code">YS</field>
-            <field name="name">YASHWANT</field>
+        <record id="product_ms" model="product.order.series">
+            <field name="code">MS</field>
+            <field name="name">Miscelaneous</field>
+        </record>
+        <record id="product_fa" model="product.order.series">
+            <field name="code">FA</field>
+            <field name="name">Fly Ash Bricks</field>
+        </record>
+        <record id="product_fc" model="product.order.series">
+            <field name="code">FC</field>
+            <field name="name">Filter Cloth</field>
+        </record>
+        <record id="product_ft" model="product.order.series">
+            <field name="code">FT</field>
+            <field name="name">Free Trial</field>
+        </record>
+        <record id="product_im" model="product.order.series">
+            <field name="code">IM</field>
+            <field name="name">Imported</field>
+        </record>
+        <record id="product_wo" model="product.order.series">
+            <field name="code">WO</field>
+            <field name="name">Work Order</field>
+        </record>
+        <record id="product_sp" model="product.order.series">
+            <field name="code">SP</field>
+            <field name="name">Special Purchase</field>
+        </record>
+        <record id="product_og" model="product.order.series">
+            <field name="code">OG</field>
+            <field name="name">Oil / Grease</field>
+        </record>
+        <record id="product_mm" model="product.order.series">
+            <field name="code">MM</field>
+            <field name="name">Mininmum / Maximum</field>
         </record>
 
 

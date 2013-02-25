@@ -7,6 +7,24 @@
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_normal_form_view" />
             <field name="arch" type="xml">
+            	<xpath expr="//label[@for='name']" position='replace'>
+            	</xpath>
+            	<xpath expr="//h1" position='before'>
+                      <h1><field name="item_code" readonly="1"/></h1>
+                      <label for="name" string="Item Description" class="oe_edit_only"/>
+            	</xpath>
+               	<xpath expr="//h2" position='replace'>
+               		<group>
+               			<group col="6">
+		               		<h2><field name="categ_id" placeholder="e.g Local/Imported"/></h2>
+		            		<h2><field name='major_group_id' placeholder="Major Group"/></h2>
+		            		<h2><field name='sub_group_id' placeholder="Sub Group" domain="[('major_group_id','=',major_group_id)]"/></h2>
+	            		</group>
+            		</group>
+            	</xpath>
+<!--             	<xpath expr="//field[@name='categ_id']" position='after'>
+            		<field name='major_group_id'/>
+            	</xpath> -->
                 <xpath expr="//page[@string='Accounting']" position='after'>
                     <page string='Product History'>
                         <group>
@@ -108,6 +126,90 @@
         <menuitem action="product_series_form_action"
             groups="base.group_no_one"
             id="menu_maize_po_series"
-            parent="menu_maize_product_config" sequence="2"/>
+            parent="menu_maize_config" sequence="2"/>
+            
+<!-- product major group code -->
+
+        <record id="product_major_group_form_view" model="ir.ui.view">
+            <field name="name">product.major.group.form</field>
+            <field name="model">product.major.group</field>
+            <field name="arch" type="xml">
+                <form string="Product Major Group" version="7.0">
+                	<sheet>
+	                    <group>
+	                    	<group col="4">
+		                        <field name="code"/>
+		                        <field name="name"/>
+	                        </group>
+	                    </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="product_major_group_list_view" model="ir.ui.view">
+            <field name="name">product.major.group.tree</field>
+            <field name="model">product.major.group</field>
+            <field name="arch" type="xml">
+                <tree string="Product Major Group" editable="top" version="7.0">
+	                <field name="code"/>
+	                <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="product_major_group_form_action" model="ir.actions.act_window">
+            <field name="name">Product Major Group</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.major.group</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="product_major_group_list_view"/>
+        </record>
+        <menuitem action="product_major_group_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_major_groups"
+            parent="menu_maize_config" sequence="5"/>
+            
+<!-- product sub group code -->
+
+        <record id="product_sub_group_form_view" model="ir.ui.view">
+            <field name="name">product.sub.group.form</field>
+            <field name="model">product.sub.group</field>
+            <field name="arch" type="xml">
+                <form string="Product Sub Group" version="7.0">
+                	<sheet>
+	                    <group>
+	                    	<group col="4">
+	                    		<field name="major_group_id"/>
+		                        <field name="code"/>
+		                        <field name="name"/>
+	                        </group>
+	                    </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="product_sub_group_list_view" model="ir.ui.view">
+            <field name="name">product.sub.group.tree</field>
+            <field name="model">product.sub.group</field>
+            <field name="arch" type="xml">
+                <tree string="Product Sub Group" editable="top" version="7.0">
+                	<field name="major_group_id"/>
+	                <field name="code"/>
+	                <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="product_sub_group_form_action" model="ir.actions.act_window">
+            <field name="name">Product Sub Group</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.sub.group</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="product_sub_group_list_view"/>
+        </record>
+        <menuitem action="product_sub_group_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_sub_groups"
+            parent="menu_maize_config" sequence="5"/>                 
     </data>
 </openerp>

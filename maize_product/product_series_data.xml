@@ -137,10 +137,10 @@
             <field name="factor" eval="1.0"/>
         </record>
         <!-- product Category data-->
-        <record id="product_category_local" model="product.category">
+        <record id="product.product_category_all" model="product.category">
             <field name="name">Local</field>
         </record>
-        <record id="product_category_imported" model="product.category">
+        <record id="product.product_category_1" model="product.category">
             <field name="name">Imported</field>
         </record>
     </data>

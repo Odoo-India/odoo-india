@@ -33,6 +33,7 @@ This module inherits the base product module which maintains some product histor
 """,
     'depends' : ['indent'],
     'data' : [
+        'product_sequence.xml',
         'product_series_data.xml',
         'product_view.xml',
     ],

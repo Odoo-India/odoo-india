@@ -43,5 +43,16 @@
                 </xpath>
             </field>
         </record>
+        <!-- Purchase Requisition Form Inherit for add field -->
+        <record id="view_maize_purchase_requisition_order" model="ir.ui.view">
+            <field name="name">inherit.purchase.requisition.form</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='purchase_ids']" position="attributes">
+                    <attribute name="readonly">False</attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </openerp>

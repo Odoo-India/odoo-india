@@ -31,7 +31,7 @@
 This module inherits the base product module which maintains some product history data like last purchase order number, last supplier rate etc.
 ================================================================================================================================================================ 
 """,
-    'depends' : ['purchase'],
+    'depends' : ['purchase_requisition'],
     'data' : [
         'maize_purchase_view.xml',
     ],

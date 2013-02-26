@@ -154,7 +154,6 @@
 		      <font color="white"> </font>
 		    </para>
 		    <para style="terp_default_Right_new">Opening Date : [[ formatLang(order.date_order, date = True)]]</para>
-		    <para style="terp_default_Right_new">Quot. No. [[ order.name ]]</para>
 		</td>
 		<td>
 		    <para style="Standard">

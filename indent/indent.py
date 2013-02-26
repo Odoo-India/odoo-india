@@ -404,17 +404,6 @@ class indent_product_lines(osv.Model):
 
 indent_product_lines()
 
-class indent_department(osv.Model):
-    _name = 'indent.department'
-    _description = 'Department'
-
-    _columns = {
-        'name': fields.char('Name', size=64, required=True, translate=True),
-        'code': fields.char('Code', size=32, required=True),
-    }
-
-indent_department()
-
 class document_authority(osv.Model):
     _name = 'document.authority'
     _description = 'Document Authority'

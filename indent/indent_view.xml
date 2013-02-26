@@ -185,34 +185,6 @@
         <menuitem id="stock.menu_stock_warehouse_mgmt" name="Receive/Deliver By Orders" parent="stock.menu_stock_root" sequence="2"/>
         <menuitem id="stock.menu_stock_products_moves" name="Receive/Deliver Products" parent="stock.menu_stock_root" sequence="3"/>
 
-        <!-- Department Tree View -->
-        <record id='view_indent_department_tree' model='ir.ui.view'>
-            <field name="name">indent.department.tree</field>
-            <field name="model">indent.department</field>
-            <field name="arch" type="xml">
-                <tree string="Departments" editable="bottom">
-                    <field name="name"/>
-                    <field name="code"/>
-                </tree>
-            </field>
-        </record>
-
-        <!-- Department Action -->
-        <record id='action_indent_department' model='ir.actions.act_window'>
-            <field name="name">Departments</field>
-            <field name="res_model">indent.department</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="help" type="html">
-                <p class="oe_view_nocontent_create">
-                    Click to create a new department.
-                </p>
-            </field>
-        </record>
-
-        <menuitem name="Indent Management" parent="stock.menu_stock_configuration" id="menu_indent_configuration" sequence="41"/>
-        <menuitem action="action_indent_department" name="Departments" parent="menu_indent_configuration" id="menu_indent_department" sequence="1"/>
-
         <!-- Document Authority Form View -->
         <record id="view_document_authority_form" model="ir.ui.view">
             <field name="name">document.authority.form</field>
@@ -264,6 +236,7 @@
             </field>
         </record>
 
+        <menuitem name="Indent Management" parent="stock.menu_stock_configuration" id="menu_indent_configuration" sequence="41"/>
         <menuitem action="action_document_authority" name="Document Authorities" parent="menu_indent_configuration" id="menu_document_authority" sequence="2"/>
 
         <!-- Stock Picking Form View -->

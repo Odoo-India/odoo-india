@@ -84,7 +84,10 @@
 
             </field>
         </record>
-
+        <menuitem groups="base.group_no_one"
+            id="menu_maize_config"
+            name="Maize"
+            parent="purchase.menu_purchase_config_purchase" sequence="50"/>
         <record id="product_series_form_view" model="ir.ui.view">
             <field name="name">product.order.series.form</field>
             <field name="model">product.order.series</field>

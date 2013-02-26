@@ -20,13 +20,13 @@
 ##############################################################################
 
 {
-    'name' : 'Product',
+    'name' : 'Maize Product',
     'version' : '0.1',
     'author' : 'OpenERP S.A.',
     'sequence': 110,
     'category': 'Product Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Indent',
+    'summary' : 'Managing Maize Product',
     'description' : """
 This module inherits the base product module which maintains some product history data like last purchase order number, last supplier rate etc.
 ================================================================================================================================================================ 

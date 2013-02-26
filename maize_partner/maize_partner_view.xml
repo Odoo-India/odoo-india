@@ -89,15 +89,12 @@
             <field name="view_id" ref="row_code_list_view"/>
         </record>
 
-        <menuitem groups="base.group_no_one"
-            id="menu_maize_config"
-            name="Maize"
-            parent="purchase.menu_purchase_config_purchase" sequence="50"/>
+
 
         <menuitem action="row_code_form_action"
             groups="base.group_no_one"
             id="menu_maize_row_code"
-            parent="menu_maize_config" sequence="3"/>
+            parent="maize_product.menu_maize_config" sequence="3"/>
 
 
        	<!-- Tax code -->
@@ -139,7 +136,7 @@
         <menuitem action="tax_code_form_action"
             groups="base.group_no_one"
             id="menu_maize_tax_code"
-            parent="menu_maize_config" sequence="4"/>
+            parent="maize_product.menu_maize_config" sequence="4"/>
 
        <!--Supplier series -->
        <record id="po_series_form_view" model="ir.ui.view">
@@ -179,6 +176,6 @@
         <menuitem action="po_series_form_action"
             groups="base.group_no_one"
             id="menu_maize_po_series"
-            parent="menu_maize_config" sequence="2"/>
+            parent="maize_product.menu_maize_config" sequence="2"/>
     </data>
 </openerp>

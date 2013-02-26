@@ -196,49 +196,50 @@ class product_product(osv.Model):
                 'sale_ok':False,
                 'type':'product',
                 }
-#    def create(self, cr, uid, vals, context=None):
-#        obj_prod_categ=self.pool.get('product.category')
-#        obj_major_grp = self.pool.get('product.major.group')
-#        obj_sub_grp = self.pool.get('product.sub.group')
-#        if vals.get('item_code','/')=='/':
-#            categ_name = obj_prod_categ.browse(cr,uid,vals['categ_id']).name
-#            if categ_name == 'Local':
-#                categ_code ='01'
-#            else:
-#                 categ_code ='02'
-#            major_group_code = obj_major_grp.browse(cr,uid,vals['major_group_id']) and  obj_major_grp.browse(cr,uid,vals['major_group_id']).code or ''
-#            sub_group_code = obj_sub_grp.browse(cr,uid,vals['sub_group_id']) and obj_sub_grp.browse(cr,uid,vals['sub_group_id']).code or ''
-#            
-#            vals['item_code'] = categ_code+major_group_code+sub_group_code+self.pool.get('ir.sequence').get(cr, uid, 'product.product') or '/'
-#        product =  super(product_product, self).create(cr, uid, vals, context=context)
-#        return product
+    def create(self, cr, uid, vals, context=None):
+        obj_prod_categ=self.pool.get('product.category')
+        obj_major_grp = self.pool.get('product.major.group')
+        obj_sub_grp = self.pool.get('product.sub.group')
+        if vals.get('item_code','/')=='/':
+            categ_name = obj_prod_categ.browse(cr,uid,vals['categ_id']).name
+            if categ_name == 'Local':
+                categ_code ='01'
+            else:
+                 categ_code ='02'
+            major_group_code = obj_major_grp.browse(cr,uid,vals['major_group_id']) and  obj_major_grp.browse(cr,uid,vals['major_group_id']).code or ''
+            sub_group_code = obj_sub_grp.browse(cr,uid,vals['sub_group_id']) and obj_sub_grp.browse(cr,uid,vals['sub_group_id']).code or ''
+            
+            vals['item_code'] = categ_code+major_group_code+sub_group_code+self.pool.get('ir.sequence').get(cr, uid, 'product.product') or '/'
+        product =  super(product_product, self).create(cr, uid, vals, context=context)
+        return product
     
-#    def write(self, cr, uid, ids,vals, context=None):
-#        obj_prod_categ=self.pool.get('product.category')
-#        obj_major_grp = self.pool.get('product.major.group')
-#        obj_sub_grp = self.pool.get('product.sub.group')
-#        record = self.browse(cr,uid,ids)[0]
-#        if 'categ_id' in vals:
-#            categ_name = obj_prod_categ.browse(cr,uid,vals['categ_id']).name
-#        else:
-#            categ_name = record.categ_id.name
-#            
-#        if categ_name == 'Local':
-#            categ_code ='01'
-#        else:
-#             categ_code ='02'    
-#             
-#        if 'major_group_id' in vals:
-#            major_group_code = obj_major_grp.browse(cr,uid,vals['major_group_id']).code
-#        else:
-#            major_group_code = record.major_group_id.code
-#            
-#        if 'sub_group_id' in vals:
-#            sub_group_code = obj_sub_grp.browse(cr,uid,vals['sub_group_id']).code
-#        else:
-#            sub_group_code = record.sub_group_id.code              
-#
-#        vals['item_code'] = categ_code+major_group_code+sub_group_code+self.pool.get('ir.sequence').get(cr, uid, 'product.product') or '/'
-#        product =  super(product_product, self).write(cr, uid, ids, vals, context=context)
-#        return product    
+    def write(self, cr, uid, ids,vals, context=None):
+        obj_prod_categ=self.pool.get('product.category')
+        obj_major_grp = self.pool.get('product.major.group')
+        obj_sub_grp = self.pool.get('product.sub.group')
+        record = self.browse(cr,uid,ids)[0]
+        if 'categ_id' in vals:
+            categ_name = obj_prod_categ.browse(cr,uid,vals['categ_id']).name
+        else:
+            categ_name = record.categ_id.name
+            
+        if categ_name == 'Local':
+            categ_code ='01'
+        else:
+             categ_code ='02'    
+             
+        if 'major_group_id' in vals:
+            major_group_code = obj_major_grp.browse(cr,uid,vals['major_group_id']).code
+        else:
+            major_group_code = record.major_group_id.code
+            
+        if 'sub_group_id' in vals:
+            sub_group_code = obj_sub_grp.browse(cr,uid,vals['sub_group_id']).code
+        else:
+            sub_group_code = record.sub_group_id.code              
+
+        vals['item_code'] = categ_code+major_group_code+sub_group_code+self.pool.get('ir.sequence').get(cr, uid, 'product.product') or '/'
+        product =  super(product_product, self).write(cr, uid, ids, vals, context=context)
+        return product
+    
 product_product()

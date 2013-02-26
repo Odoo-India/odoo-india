@@ -203,12 +203,8 @@ class indent_indent(osv.Model):
         }
         return result
 
-    def _default_location_source(self, cr, uid, context=None):
-        location_model, location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_stock')
-        return location_id
-
     def _prepare_indent_line_move(self, cr, uid, indent, line, picking_id, date_planned, context=None):
-        location_id = self._default_location_source(cr, uid, context=context)
+        location_id = self._default_stock_location(cr, uid, context=context)
         res = {
             'name': line.name,
             'picking_id': picking_id,
@@ -242,7 +238,7 @@ class indent_indent(osv.Model):
         return res
 
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
-        location_id = self._default_location_source(cr, uid, context=context)
+        location_id = self._default_stock_location(cr, uid, context=context)
         res = {
             'name': line.name,
             'origin': indent.name,

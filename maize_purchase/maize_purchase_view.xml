@@ -13,38 +13,47 @@
             </field>
         </record>
 
+        <!-- Purchase Order Line Form Inherit for add field -->
+        <record id="view_maize_purchase_order_line_form" model="ir.ui.view">
+            <field name="name">inherit.purchase.order.line.form</field>
+            <field name="model">purchase.order.line</field>
+            <field name="inherit_id" ref="purchase.purchase_order_line_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//group/group/field[@name='price_unit']" position='after'>
+                    <field name="discount"/>
+                </xpath>
+            </field>
+        </record>
+        
         <!-- Purchase Order Form Inherit for add field -->
-        <record id="view_maize_purchase_order" model="ir.ui.view">
+        <record id="view_maize_purchase_order_form" model="ir.ui.view">
             <field name="name">inherit.purchase.order.form</field>
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form" />
             <field name="arch" type="xml">
-                <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']/group/group/field[@name='payment_term_id']" position='replace'>
-                    <field name="payment_term_id" widget="selection" invisible="1"/>
+                <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']/group/group/field[@name='payment_term_id']" position="replace">
+                    <field name="payment_term_id" invisible="1"/>
                 </xpath>
-                <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']" position='after'>
-                    <page string="Enquire Details">
+                <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']" position='inside'>
+                    <separator string="Other Charges"/>
                         <group>
                             <group>
-                                <field name="discount"/>
-                                <field name="excise"/>
-                                <field name="tax"/>
                                 <field name="octroi"/>
                                 <field name="package_and_forwording"/>
                                 <field name="insurance"/>
+                                <field name="commission"/>
                             </group>
                             <group>
-                                <field name="commission"/>
                                 <field name="other_charge"/>
                                 <field name="other_discount"/>
-                                <field name="payment_term_id" widget="selection"/>
+                                <field name="payment_term_id"/>
                                 <field name="delivey"/>
                             </group>
                         </group>
-                    </page>
                 </xpath>
             </field>
         </record>
+        
         <!-- Purchase Requisition Form Inherit for add field -->
         <record id="view_maize_purchase_requisition_order" model="ir.ui.view">
             <field name="name">inherit.purchase.requisition.form</field>

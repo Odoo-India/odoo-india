@@ -21,18 +21,22 @@
 
 from openerp.osv import fields, osv
 
+class purchase_order_line(osv.Model):
+    _inherit = 'purchase.order.line'
+    _columns = {
+        'discount': fields.float('Discount'),
+                }
+purchase_order_line()
+
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
     _columns = {
-        'package_and_forwording': fields.float('Package & Forwarding'),
+        'package_and_forwording': fields.float('Packing & Forwarding'),
         'insurance': fields.float('Insurance'),
         'commission': fields.float('Commission'),
         'other_charge': fields.float('Other Charges'),
         'other_discount': fields.float('Other Discount'),
         'octroi': fields.float('Octroi'),
-        'tax': fields.float('Tax'),
         'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
-        'discount': fields.float('Discount'),
-        'excise': fields.float('Excise'),
                 }
 purchase_order()

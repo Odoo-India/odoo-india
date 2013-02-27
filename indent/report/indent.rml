@@ -329,9 +329,9 @@
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_id and order_line.product_id.last_supplier_rate) or '0.0']]</para>
-            <para style="terp_default_Left_9">Excise: [[ (order_line.product_id.last_po_no and order_line.product_id.last_po_no.excise) or removeParentNode('para')]] %</para>
-            <para style="terp_default_Left_9">VAT: [[ (order_line.product_id and order_line.product_id.supplier_taxes_id and order_line.product_id.supplier_taxes_id[0].amount * 100) or '0']]%</para>
-            <para style="terp_default_Left_9">Dis: [[ (order_line.product_id.last_po_no and order_line.product_id.last_po_no.discount) or removeParentNode('para')]]%</para>
+            <para style="terp_default_Left_9">Excise: [[ '0.0']] %</para>
+            <para style="terp_default_Left_9">VAT: [[ '0.0' ]]%</para>
+            <para style="terp_default_Left_9">Dis: [[ check_discount(order_line.product_id.last_po_no.id).get('discount') or '0.0']]%</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_uom_qty * order_line.product_id.last_supplier_rate) or '0.0']]</para>
@@ -345,7 +345,7 @@
           </td>
           <td>
             <para style="terp_default_Centre_9"> [[ last_issue(order_line.product_id, formatLang(order.indent_date, date=True)).get('date')]] </para>
-            <para style="terp_default_Centre_9"> [[ last_issue(order_line.product_id, formatLang(order.indent_date, date=True)).get('department')]] </para> 
+            <para style="terp_default_Centre_9"> [[ get_value().get('department')]] </para> 
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.name)) or '-']]</para>

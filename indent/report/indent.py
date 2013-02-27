@@ -31,6 +31,7 @@ class indent(report_sxw.rml_parse):
         self.sr_no = 0
         self.cr = cr
         self.uid = uid
+        self.get_value ={}
         super(indent, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({
               'time': time, 
@@ -42,6 +43,8 @@ class indent(report_sxw.rml_parse):
               'last_issue': self._last_issue,
               'last_consumption_qty': self._last_consumption_qty,
               'current_consumption_qty': self._current_consumption_qty,
+              'check_discount': self._check_dis,
+              'get_value': self._get_value,
               })
         self.context = context
 
@@ -49,18 +52,24 @@ class indent(report_sxw.rml_parse):
         self.sr_no += 1
         return self.sr_no
     
+    def _check_dis(self, line):
+        purchase_obj = self.pool.get('purchase.order')
+        line = purchase_obj.browse(self.cr, self.uid, line)
+        for line_1 in line.order_line:
+            self.get_value.update({'discount': line_1.discount})
+        return self.get_value
+    
     def _last_issue(self, product_id, date):
-        res = {}
         stock_obj = self.pool.get('stock.move')
         stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'internal'),('state', '=', 'done'), ('create_date', '<=', date)])
         stock_id = sorted(stock_id,reverse=True)
         if stock_id and len(stock_id) >= 2:
             pick = stock_obj.browse(self.cr, self.uid, stock_id[1])
-            res.update({'date': pick.picking_id.date.split(' ')[0], 'department' : pick.location_dest_id.name})
+            self.get_value.update({'date': pick.picking_id.date.split(' ')[0], 'department' : pick.location_dest_id.name})
         elif stock_id:
             pick = stock_obj.browse(self.cr, self.uid, stock_id[0])
-            res.update({'date': pick.picking_id.date.split(' ')[0], 'department' : pick.location_dest_id.name})
-        return res
+            self.get_value.update({'date': pick.picking_id.date.split(' ')[0], 'department' : pick.location_dest_id.name})
+        return self.get_value
 
     def _last_consumption_qty(self, product_id):
         last_year = str(datetime.now() - relativedelta(years=1)).split('-')[0]
@@ -76,6 +85,9 @@ class indent(report_sxw.rml_parse):
             res.update({'last_year_qty': consume_qty})
         return res
     
+    def _get_value(self):
+        return self.get_value
+
     def _current_consumption_qty(self, product_id):
         next_year = str(datetime.now() + relativedelta(years=1)).split('-')[0]
         current_year = str(datetime.now()).split('-')[0]

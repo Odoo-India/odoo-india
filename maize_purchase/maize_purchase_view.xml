@@ -51,6 +51,10 @@
                             </group>
                         </group>
                 </xpath>
+
+            	<xpath expr="//field[@name='partner_ref']" position='after'>
+            		<field name='last_po_series'/>
+            	</xpath>                
             </field>
         </record>
         

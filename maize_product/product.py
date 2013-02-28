@@ -213,8 +213,8 @@ class product_product(osv.Model):
     
     
     _columns = {
-        'last_supplier_code': fields.function(last_supplier_code, type='char', string='Last Supplier Code'),
-        'last_po_year': fields.function(last_po_year, type='date', string='Last PO Year'),
+        'last_supplier_code': fields.many2one('res.partner', string='Last Supplier Code',readonly=True),
+        'last_po_year': fields.char('Last PO Year',size=256,readonly=True),
         'last_po_no': fields.function(last_po_no, type='many2one', relation='purchase.order', multi='po',string='Last PO No'),
         'last_supplier_rate': fields.function(last_po_no, type='float', multi='po',string='Last Supplier Rate'),
         'last_recieve_date': fields.function(last_recieve_date, type='date', string='Last Receieve Date'),
@@ -227,7 +227,7 @@ class product_product(osv.Model):
         'last_issue_value': fields.function(last_issue_value, type='float', string='Last Issue Value'),
         'cy_issue_qty': fields.function(cy_issue_qty, type='float', string='Current Year Issue Quantity'),
         'cy_issue_value': fields.function(cy_issue_value, type='float', string='Current Year Issue Value'),
-        'last_po_date': fields.function(last_po_date, type='date', string='Last PO Date'),
+        'last_po_date': fields.date('Last PO Date',readonly=True),
         'last_po_series': fields.many2one('product.order.series', 'Last PO Series'),
         'ex_chapter': fields.char('EXCHAPTER', size=30, translate=True),
         'ex_chapter_desc': fields.text('EXCHAPTERDESCR',translate=True),
@@ -242,11 +242,13 @@ class product_product(osv.Model):
         'ex_chapter': fields.char('EXCHAPTER', size=30, translate=True),
         'major_group_id': fields.many2one('product.major.group', 'Major Group',required=True),
         'sub_group_id': fields.many2one('product.sub.group', 'Sub Group',required=True),
+        'location': fields.char('Location', size=256),
         #'item_code': fields.char('Item Code', size=30),
         }
     _defaults = {
                 'sale_ok':False,
                 'type':'product',
+                'purchase_requisition':True,
                 }
     def create(self, cr, uid, vals, context=None):
         obj_prod_categ=self.pool.get('product.category')
@@ -274,43 +276,43 @@ class product_product(osv.Model):
         product =  super(product_product, self).create(cr, uid, vals, context=context)
         return product
 
-    def write(self, cr, uid, ids,vals, context=None):
-        obj_prod_categ=self.pool.get('product.category')
-        obj_major_grp = self.pool.get('product.major.group')
-        obj_sub_grp = self.pool.get('product.sub.group')
-        record = self.browse(cr,uid,ids)[0]
-        if not context.get('create',False):
-            if 'categ_id' in vals:
-                categ_name = obj_prod_categ.browse(cr,uid,vals['categ_id']).name
-            else:
-                categ_name = record.categ_id.name
-                
-            if categ_name == 'Local':
-                categ_code ='01'
-            else:
-                 categ_code ='02'    
-             
-            if 'major_group_id' in vals:
-                major_group_code = obj_major_grp.browse(cr,uid,vals['major_group_id']).code
-            else:
-                major_group_code = record.major_group_id.code
-                
-            if 'sub_group_id' in vals:
-                sub_group_code = obj_sub_grp.browse(cr,uid,vals['sub_group_id']).code
-            else:
-                sub_group_code = record.sub_group_id.code              
-    
-            major_id = obj_major_grp.search(cr,uid,[('code','=',major_group_code)])
-            sub_id = obj_sub_grp.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('code','=',sub_group_code)])
-            seq_id = self.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('sub_group_id','=',sub_id and sub_id[0] or False)])
-            init_seq=1
-            if seq_id:
-                last_rec=self.browse(cr,uid,seq_id[-1])
-                init_seq = int(last_rec.default_code[6:9])+1
-            #vals['default_code'] = categ_code+major_group_code+sub_group_code+self.pool.get('ir.sequence').get(cr, uid, 'product.product') or '/'
-            if 'categ_id' in vals or 'major_group_id' in vals or 'sub_group_id' in vals:
-                vals['default_code'] = categ_code+major_group_code+sub_group_code+"%03d"%(init_seq)
-        product =  super(product_product, self).write(cr, uid, ids, vals, context=context)
-        return product
+#    def write(self, cr, uid, ids,vals, context=None):
+#        obj_prod_categ=self.pool.get('product.category')
+#        obj_major_grp = self.pool.get('product.major.group')
+#        obj_sub_grp = self.pool.get('product.sub.group')
+#        record = self.browse(cr,uid,ids)[0]
+#        if not context.get('create',False):
+#            if 'categ_id' in vals:
+#                categ_name = obj_prod_categ.browse(cr,uid,vals['categ_id']).name
+#            else:
+#                categ_name = record.categ_id.name
+#                
+#            if categ_name == 'Local':
+#                categ_code ='01'
+#            else:
+#                 categ_code ='02'    
+#             
+#            if 'major_group_id' in vals:
+#                major_group_code = obj_major_grp.browse(cr,uid,vals['major_group_id']).code
+#            else:
+#                major_group_code = record.major_group_id.code
+#                
+#            if 'sub_group_id' in vals:
+#                sub_group_code = obj_sub_grp.browse(cr,uid,vals['sub_group_id']).code
+#            else:
+#                sub_group_code = record.sub_group_id.code              
+#    
+#            major_id = obj_major_grp.search(cr,uid,[('code','=',major_group_code)])
+#            sub_id = obj_sub_grp.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('code','=',sub_group_code)])
+#            seq_id = self.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('sub_group_id','=',sub_id and sub_id[0] or False)])
+#            init_seq=1
+#            if seq_id:
+#                last_rec=self.browse(cr,uid,seq_id[-1])
+#                init_seq = int(last_rec.default_code[6:9])+1
+#            #vals['default_code'] = categ_code+major_group_code+sub_group_code+self.pool.get('ir.sequence').get(cr, uid, 'product.product') or '/'
+#            if 'categ_id' in vals or 'major_group_id' in vals or 'sub_group_id' in vals:
+#                vals['default_code'] = categ_code+major_group_code+sub_group_code+"%03d"%(init_seq)
+#        product =  super(product_product, self).write(cr, uid, ids, vals, context=context)
+#        return product
     
 product_product()

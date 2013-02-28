@@ -11,6 +11,7 @@
             	<xpath expr="//label[@for='name']" position='replace'>
             	</xpath>
             	<xpath expr="//field[@name='default_code']" position='replace'>
+            		<field name='location'/>
             	</xpath>
             	<xpath expr="//h1" position='before'>
                       <h1><field name="default_code" readonly="1"/></h1>
@@ -76,7 +77,6 @@
                 		<group>
 	                		<label for="description"/>
 		            	     <div>
-		                       	<field name='description' placeholder="Description1"/>
 		      			        <field name='desc2' placeholder="Description2"/>
 			                    <field name='desc3' placeholder="Description3"/>
 			                    <field name='desc4' placeholder="Description4"/>
@@ -84,6 +84,7 @@
 	                    </group>
                     </group>
                 </xpath>
+
 
             </field>
         </record>
@@ -118,7 +119,7 @@
             </field>
         </record>
         <record id="product_series_form_action" model="ir.actions.act_window">
-            <field name="name">Product Series</field>
+            <field name="name">Purchase Series</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">product.order.series</field>
             <field name="view_type">form</field>

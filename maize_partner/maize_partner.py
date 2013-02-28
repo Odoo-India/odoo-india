@@ -35,6 +35,16 @@ supplier_series()
 
 class res_partner(osv.Model):
     _inherit = 'res.partner'
+    _rec_name = 'supp_code'
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.supp_code and '[' + pckg.supp_code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res        
     _columns = {
         'co_code': fields.char('COCODE', size=256),
         'supp_code': fields.char('SUPPCODE', size=256),

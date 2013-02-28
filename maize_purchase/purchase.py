@@ -19,6 +19,7 @@
 #
 ##############################################################################
 
+import datetime
 from openerp.osv import fields, osv
 
 class purchase_order_line(osv.Model):
@@ -38,5 +39,32 @@ class purchase_order(osv.Model):
         'other_discount': fields.float('Other Discount'),
         'octroi': fields.float('Octroi'),
         'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
+        'last_po_series': fields.many2one('product.order.series', 'PO Series'),
                 }
+
+    def wkf_confirm_order(self, cr, uid, ids, context=None):
+        res = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)
+        proc_obj = self.pool.get('procurement.order')
+        for po in self.browse(cr, uid, ids, context=context):
+            
+            if po.requisition_id and (po.requisition_id.exclusive=='exclusive'):
+                for order in po.requisition_id.purchase_ids:
+                    suppler = order.partner_id.id
+                    if order.id != po.id:
+                        proc_ids = proc_obj.search(cr, uid, [('purchase_id', '=', order.id)])
+                        if proc_ids and po.state=='confirmed':
+                            proc_obj.write(cr, uid, proc_ids, {'purchase_id': po.id})
+                        wf_service = netsvc.LocalService("workflow")
+                        wf_service.trg_validate(uid, 'purchase.order', order.id, 'purchase_cancel', cr)
+                    po.requisition_id.tender_done(context=context)
+                for line in po.requisition_id.line_ids:
+                    today = datetime.datetime.today()
+                    year = datetime.datetime.today().year
+                    month = datetime.datetime.today().month
+                    if month<4:
+                        po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
+                    else:
+                        po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
+                    self.pool.get('product.product').write(cr,uid,line.product_id.id,{'last_supplier_code':suppler,'last_po_date':today.strftime("%Y-%m-%d"),'last_po_year':po_year},context=context)
+        return res    
 purchase_order()

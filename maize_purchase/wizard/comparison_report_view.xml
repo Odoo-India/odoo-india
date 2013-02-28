@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_comparison_report_view" model="ir.ui.view">
+            <field name="name">comparison.report.form</field>
+            <field name="model">comparison.report</field>
+            <field name="arch" type="xml">
+                <form string="Comparison Report" version="7.0">
+                <group>
+                    <group>
+	                    <field name="discount"/>
+	                    <field name="package_and_forwording"/>
+	                    <field name="insurance"/>
+	                    <field name="commission"/>
+                    </group>
+                    <group>
+	                    <field name="other_charge"/>
+	                    <field name="other_discount"/>
+	                    <field name="octroi"/>
+	                    <field name="delivey"/>
+                    </group>
+                    <div>
+                         Check the Field which you want to generate the comparison report. 
+                    </div>
+                </group>
+                <footer>
+                        <button string="Print" name="action_print" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />    
+                    </footer>
+                </form>
+            </field>
+        </record>
+               
+        <act_window
+        id="act_maize_comparison_report"
+        name="Comparison Report"
+        view_type="form" view_mode="form"
+        key2="client_action_multi" target="new"
+        res_model="comparison.report"
+        src_model="purchase.requisition"/>
+    </data>
+</openerp>

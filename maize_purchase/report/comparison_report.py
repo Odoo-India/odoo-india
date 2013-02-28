@@ -19,29 +19,18 @@
 #
 ##############################################################################
 
-{
-    'name' : 'Maize Purchase',
-    'version' : '0.1',
-    'author' : 'OpenERP S.A.',
-    'sequence': 110,
-    'category': 'Maize Purchase Management',
-    'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Purchase',
-    'description' : """
-This module inherits the base product module which maintains some product history data like last purchase order number, last supplier rate etc.
-================================================================================================================================================================ 
-""",
-    'depends' : ['purchase_requisition'],
-    'data' : [
-        'wizard/comparison_report_view.xml',
-        'maize_purchase_view.xml',
-    ],
-    'update_xml' : [],
+import time
+from openerp.report import report_sxw
 
-    'demo': [],
-
-    'installable' : True,
-    'application' : True,
-}
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+class comparison_report(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        self.cr = cr
+        self.uid = uid
+        super(comparison_report, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({'time': time})
+        self.context = context
+        
+    def set_context(self, objects, data, ids, report_type=None):
+        return super(comparison_report, self).set_context(objects, data, ids, report_type=report_type)
+        
+report_sxw.report_sxw('report.Rate_Comparison','purchase.requisition','addons/maize_purchase/report/comparison_report.rml',parser=comparison_report, header='internal landscape')

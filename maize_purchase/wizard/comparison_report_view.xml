@@ -5,7 +5,7 @@
             <field name="name">comparison.report.form</field>
             <field name="model">comparison.report</field>
             <field name="arch" type="xml">
-                <form string="Comparison Report" version="7.0">
+                <form string="Product Rate Comparison" version="7.0">
                 <group>
                     <group>
 	                    <field name="discount"/>
@@ -34,7 +34,7 @@
                
         <act_window
         id="act_maize_comparison_report"
-        name="Comparison Report"
+        name="Product Rate Comparison"
         view_type="form" view_mode="form"
         key2="client_action_multi" target="new"
         res_model="comparison.report"

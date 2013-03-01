@@ -93,6 +93,8 @@
       <tr>
         <td>
             <para style="terp_tblheader_Details_Centre"> Supplier</para>
+        </td>
+        <td>
             <para style="terp_tblheader_Details_Centre"> Product</para>
         </td>
         <td>
@@ -125,8 +127,11 @@
     <para style="terp_default_8">[[ repeatIn(order.purchase_ids,'po_line') ]]</para>
         <blockTable style="Table_Product_Line">
         <tr>
-            <td>
+        <td>
               <para style="terp_tblheader_Details_Centre"> [[ (po_line.partner_id.name)]]</para>
+        </td>
+        <td>
+              <para style="terp_tblheader_Details_Centre"> </para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and ' ' or removeParentNode('td')]]</para>
@@ -158,6 +163,9 @@
         <para style="terp_default_8">[[ repeatIn(po_line.order_line,'product_line') ]]</para>
         <blockTable  style="Table_Product_Line">
         <tr>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> </para>
+            </td>
             <td>
                 <para style="terp_tblheader_Details_Centre"> [[ (product_line.product_id.name) ]] </para>
             </td>

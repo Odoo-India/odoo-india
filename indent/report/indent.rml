@@ -187,11 +187,11 @@
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="terp_default_8">[[ setLang(order.indentor_id.lang) ]]</para>
     <pto_header>
-    <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,50.0,50.0,90.0,100.0,70.0,50.0" style="Table_Product_Header_Title">
+    <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,80.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
         <td>
-          <para style="terp_tblheader_Details_Centre">Sr.</para>
-          <para style="terp_tblheader_Details_Centre">No.</para>
+          <para style="terp_tblheader_Details_Centre">SR No.</para>
+          <para style="terp_tblheader_Details_Centre"> </para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">ITEM CODE</para>
@@ -219,8 +219,8 @@
           <para style="terp_tblheader_Details_Centre">LAST SUPPLIER</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">LAST YR. CONS</para>
-          <para style="terp_tblheader_Details_Centre">CURR. YR. CONS</para>
+          <para style="terp_tblheader_Details_Centre">LAST YR. CONS CURR. YR. CONS</para>
+          <para style="terp_tblheader_Details_Centre"></para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">LAST ISSUE</para>
@@ -259,11 +259,11 @@
         </td>
     </tr>
     </blockTable>
-    <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,50.0,50.0,90.0,100.0,70.0,50.0" style="Table_Product_Header_Title">
+    <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,80.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
         <td>
-          <para style="terp_tblheader_Details_Centre">Sr.</para>
-          <para style="terp_tblheader_Details_Centre">No.</para>
+          <para style="terp_tblheader_Details_Centre">SR No.</para>
+          <para style="terp_tblheader_Details_Centre"></para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">ITEM CODE</para>
@@ -291,8 +291,8 @@
           <para style="terp_tblheader_Details_Centre">LAST SUPPLIER</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">LAST YR. CONS</para>
-          <para style="terp_tblheader_Details_Centre">CURR. YR. CONS</para>
+          <para style="terp_tblheader_Details_Centre">LAST YR. CONS CURR. YR. CONS</para>
+          <para style="terp_tblheader_Details_Centre"></para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">LAST ISSUE</para>
@@ -304,7 +304,7 @@
     </blockTable>
     <section>
       <para style="terp_default_9">[[ repeatIn(order.product_lines,'order_line') ]]</para>
-      <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,50.0,50.0,90.0,100.0,70.0,50.0" style="Table_Product_Line">
+      <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,80.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Line">
         <tr>
           <td>
             <para style="terp_default_Centre_9">[[ sequence(order_line) ]] </para>
@@ -322,16 +322,18 @@
             <para style="terp_default_9"> [[ (order_line.product_id and order_line.product_id.qty_available) or '0.0' ]]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[ (order_line.product_uom_qty) or '0.0' ]]</para>
+            <para style="terp_default_Centre_9">[[ qty(order_line.product_uom_qty) or '0.0' ]]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[  formatLang(order.required_date, date = True) or '']]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_id and order_line.product_id.last_supplier_rate) or '0.0']]</para>
-            <para style="terp_default_Left_9">Excise: [[ '0.0']] %</para>
-            <para style="terp_default_Left_9">VAT: [[ '0.0' ]]%</para>
-            <para style="terp_default_Left_9">Dis: [[ check_discount(order_line.product_id.last_po_no.id).get('discount') or '0.0']]%</para>
+            <para style="terp_default_Left_9">Excise: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('ex') or removeParentNode('para')]] %</para>
+            <para style="terp_default_Left_9">VAT: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('vat') or removeParentNode('para')]]%</para>
+            <para style="terp_default_Left_9">Edu.Cess: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('edu') or removeParentNode('para')]] %</para>
+            <para style="terp_default_Left_9">Add.Tax: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('add') or removeParentNode('para')]]%</para>
+            <para style="terp_default_Left_9">Dis: [[ check_discount(order_line.product_id.last_po_no.id).get('discount') or removeParentNode('para')]]%</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_uom_qty * order_line.product_id.last_supplier_rate) or '0.0']]</para>
@@ -353,7 +355,7 @@
         </tr>
       </blockTable>
     </section>
-    <blockTable colWidths="265.0,90.0,140.0,325.0" style="Tableau2">
+    <blockTable colWidths="390.0,110.0,30.0,290.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -387,9 +389,11 @@
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> DEPARTMENT ENGINEER</para>
             </td>
             <td>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
@@ -401,6 +405,7 @@
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER(PROJECT TECH &amp; PLANNING) </para>
             </td>
             <td>
@@ -408,9 +413,11 @@
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER(MAINTENANCE)</para>
             </td>
             <td>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>

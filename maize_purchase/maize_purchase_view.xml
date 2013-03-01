@@ -24,7 +24,7 @@
                 </xpath>
             </field>
         </record>
-        
+
         <!-- Purchase Order Form Inherit for add field -->
         <record id="view_maize_purchase_order_form" model="ir.ui.view">
             <field name="name">inherit.purchase.order.form</field>
@@ -51,7 +51,9 @@
                             </group>
                         </group>
                 </xpath>
-
+                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="before">
+                    <field name="discount"/>
+                </xpath>
             	<xpath expr="//field[@name='partner_ref']" position='after'>
             		<field name='last_po_series'/>
             	</xpath>                

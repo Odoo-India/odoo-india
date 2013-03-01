@@ -49,6 +49,6 @@ class comparison_report(osv.osv_memory):
             if data['form'][value] == True:
                 flage = True
         if not flage:
-            raise osv.except_osv(_("Warning !"), _("Please check at least one for comparison."))
+            raise osv.except_osv(_("Warning !"), _("Please check at least one Factor for Product Rate Comparison."))
         return {'type': 'ir.actions.report.xml', 'report_name': report_name, 'datas': data}
 comparison_report()

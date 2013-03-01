@@ -45,6 +45,8 @@ class indent(report_sxw.rml_parse):
               'current_consumption_qty': self._current_consumption_qty,
               'check_discount': self._check_dis,
               'get_value': self._get_value,
+              'check_tax': self._check_tax,
+              'qty': self._qty,
               })
         self.context = context
 
@@ -52,12 +54,25 @@ class indent(report_sxw.rml_parse):
         self.sr_no += 1
         return self.sr_no
     
+    def _qty(self, qty):
+        return int(qty)
+    
     def _check_dis(self, line):
         purchase_obj = self.pool.get('purchase.order')
         line = purchase_obj.browse(self.cr, self.uid, line)
         for line_1 in line.order_line:
             self.get_value.update({'discount': line_1.discount})
         return self.get_value
+    
+    def _check_tax(self,purchase_no, product):
+        po_line_obj = self.pool.get('purchase.order.line')
+        po_line_id = po_line_obj.search(self.cr, self.uid, [('order_id', '=', purchase_no),('product_id', '=', product)])
+        tax_dict = {}
+        if po_line_id:
+            po_line = po_line_obj.browse(self.cr, self.uid, po_line_id[0])
+            for tax in po_line.taxes_id:
+                tax_dict.update({str(tax.tax_type): tax.amount * 100})
+        return tax_dict
     
     def _last_issue(self, product_id, date):
         stock_obj = self.pool.get('stock.move')

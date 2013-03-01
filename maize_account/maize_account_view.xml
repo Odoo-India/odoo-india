@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    
+        <!-- Account Tax Form Inherit for add field -->
+        <record id="view_maize_account_tax_form" model="ir.ui.view">
+            <field name="name">inherit.account.tax.form</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//form/group/group/field[@name='description']" position='after'>
+                    <field name="tax_type"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <!-- Account Tax tree Inherit for add field -->
+        <record id="view_maize_account_tax_tree" model="ir.ui.view">
+            <field name="name">inherit.account.tax.tree</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//tree/field[@name='description']" position='after'>
+                    <field name="tax_type"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

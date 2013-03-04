@@ -43,6 +43,27 @@ class purchase_order_line(osv.Model):
         'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
                 }
 purchase_order_line()
+class purchase_requisition(osv.osv):
+    _inherit = "purchase.requisition"
+    _defaults = {
+                 'exclusive': 'exclusive',
+    }
+purchase_requisition()
+
+class purchase_requisition_partner(osv.osv_memory):
+    _inherit = "purchase.requisition.partner"
+    _columns = {
+        'po_series_id': fields.many2one('product.order.series', 'PO Series'),
+    }
+    def create_order(self, cr, uid, ids, context=None):
+        active_ids = context and context.get('active_ids', [])
+        data =  self.browse(cr, uid, ids, context=context)[0]
+        context.update({'po_order_series':data.po_series_id or False})
+        qu_id = self.pool.get('purchase.requisition').make_purchase_order(cr, uid, active_ids, data.partner_id.id, context=context)
+        if qu_id:
+            self.pool.get('purchase.order').write(cr,uid,qu_id[active_ids[0]],{'po_series_id':data.po_series_id.id or False})
+        return {'type': 'ir.actions.act_window_close'}    
+purchase_requisition_partner()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
@@ -81,7 +102,7 @@ class purchase_order(osv.Model):
         'other_discount': fields.float('Other Discount'),
         'octroi': fields.float('Octroi'),
         'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
-        'last_po_series': fields.many2one('product.order.series', 'PO Series'),
+        'po_series_id': fields.many2one('product.order.series', 'PO Series'),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
                 'purchase.order.line': (_get_order, None, 10),
@@ -107,7 +128,6 @@ class purchase_order(osv.Model):
             
             if po.requisition_id and (po.requisition_id.exclusive=='exclusive'):
                 for order in po.requisition_id.purchase_ids:
-                    suppler = order.partner_id.id
                     if order.id != po.id:
                         proc_ids = proc_obj.search(cr, uid, [('purchase_id', '=', order.id)])
                         if proc_ids and po.state=='confirmed':
@@ -115,14 +135,23 @@ class purchase_order(osv.Model):
                         wf_service = netsvc.LocalService("workflow")
                         wf_service.trg_validate(uid, 'purchase.order', order.id, 'purchase_cancel', cr)
                     po.requisition_id.tender_done(context=context)
-                for line in po.requisition_id.line_ids:
-                    today = datetime.datetime.today()
-                    year = datetime.datetime.today().year
-                    month = datetime.datetime.today().month
-                    if month<4:
-                        po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
-                    else:
-                        po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
-                    self.pool.get('product.product').write(cr,uid,line.product_id.id,{'last_supplier_code':suppler,'last_po_date':today.strftime("%Y-%m-%d"),'last_po_year':po_year},context=context)
+                    
+                    for line in order.order_line:
+                        print "AAAAAAAAA", line
+                        today = order.date_order
+                        year = datetime.datetime.today().year
+                        month = datetime.datetime.today().month
+                        if month<4:
+                            po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
+                        else:
+                            po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
+                        self.pool.get('product.product').write(cr,uid,line.product_id.id,{
+                                                                                              'last_supplier_rate': line.price_unit,
+                                                                                              'last_po_no':order.id,
+                                                                                              'last_po_series':order.po_series_id.id,
+                                                                                              'last_supplier_code':order.partner_id.id,
+                                                                                              'last_po_date':order.date_order,
+                                                                                              'last_po_year':po_year
+                                                                                          },context=context)
         return res    
 purchase_order()

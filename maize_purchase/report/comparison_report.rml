@@ -98,6 +98,9 @@
             <para style="terp_tblheader_Details_Centre"> Product</para>
         </td>
         <td>
+            <para style="terp_tblheader_Details_Centre"> Unit Price</para>
+        </td>
+        <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and 'Discount' or removeParentNode('td')]]</para>
         </td>
         <td>
@@ -134,6 +137,9 @@
               <para style="terp_tblheader_Details_Centre"> </para>
         </td>
         <td>
+            <para style="terp_tblheader_Details_Centre"> </para>
+        </td>
+        <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and ' ' or removeParentNode('td')]]</para>
         </td>
         <td>
@@ -168,6 +174,9 @@
             </td>
             <td>
                 <para style="terp_tblheader_Details_Centre"> [[ (product_line.product_id.name) ]] </para>
+            </td>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> [[ (product_line.price_unit) or '0.0']]</para>
             </td>
             <td>
                 <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and (product_line.discount or '0.0') or removeParentNode('td')]]</para>

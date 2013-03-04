@@ -104,6 +104,11 @@
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
       <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
     </blockTableStyle>
     <initialize>
       <paraStyle name="all" alignment="justify"/>
@@ -118,7 +123,7 @@
     <paraStyle name="Caption" fontName="Helvetica" fontSize="12.0" leading="15" spaceBefore="6.0" spaceAfter="6.0"/>
     <paraStyle name="Index" fontName="Helvetica"/>
     <paraStyle name="Footer" fontName="Helvetica"/>
-    <paraStyle name="Horizontal Line" fontName="Helvetica" fontSize="6.0" leading="8" spaceBefore="0.0" spaceAfter="14.0"/>
+    <paraStyle name="Horizontal Line" fontName="Helvetica" fontSize="6.0" leading="8" spaceBefore="0.0" spaceAfter="1.0"/>
     <paraStyle name="terp_header" fontName="Helvetica-Bold" fontSize="9.0" leading="15" alignment="LEFT" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="Heading 9" fontName="Helvetica-Bold" fontSize="75%" leading="NaN" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="terp_tblheader_General" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="6.0" spaceAfter="6.0"/>
@@ -152,26 +157,36 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="265.0,265.0" style="Tableau1">
+    <blockTable colWidths="275.0,255.0" style="Tableau1">
         <tr>
         <td>
+            <blockTable colWidths="65.0,200.0" style="Standard_Outline">
+            <tr>
+                <td>
+                    <image  width="65.0" height="65.0" >[[ company.logo or removeParentNode('image') ]]</image>
+                </td>
+                <td>
+                    <para style="P1"> [[ order.company_id.name or removeParentNode('para')]] </para>
+                    <para style="Horizontal Line"> [[ order.company_id.street or removeParentNode('para')]] </para>
+                    <para style="Horizontal Line"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
+                    <para style="Horizontal Line"> Phone : [[ order.company_id.phone or removeParentNode('para')]] <font color="white"> ..</font>Fax : [[ order.company_id.fax or removeParentNode('para')]]</para>
+                    <para style="Horizontal Line"> Email : [[ order.company_id.email or removeParentNode('para')]] </para>
+                </td>
+            </tr>
+            </blockTable>
         </td>
         <td>
             <para style="P1"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
-            <section>
-                <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]]</para>
                 <blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>
-                            <para style="P1">LAST PO : [[(order_line.product_id.last_po_no.name) or False]] </para>
+                            <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
                         </td>
                         <td>
-                            <para style="P1">DT : [[formatLang(order_line.product_id.last_po_no.date_order,date = True) or False]] </para>
                         </td>
                     </tr>
                 </blockTable>
-            </section>
         </td>
       </tr>
     </blockTable>
@@ -207,20 +222,13 @@
 		</td>
 	</tr>
 	</blockTable>
-	
-    <blockTable colWidths="530.0" style="Table3">
+	<blockTable colWidths="530.0" style="Table10">
         <tr>
             <td>
-                <para style="terp_default_8">
-                    <font color="white"> </font>
-                </para>
                 <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition overleaf.</para>
-                <para style="terp_default_8">
-                    <font color="white"> </font>
-                </para>
             </td>
         </tr>
-	</blockTable>
+    </blockTable>
     <blockTable colWidths="300.0,55.0,55.0,50.0,70.0" repeatRows="1" style="Table_Product_Header_Title">
       <tr>
         <td>
@@ -269,17 +277,11 @@
     <blockTable colWidths="530.0" style="Table10">
         <tr>
             <td>
-                <para style="terp_default_8">
-                    <font color="white"> </font>
-                </para>
                 <para style="terp_default_9"> ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
-                <para style="terp_default_8">
-                    <font color="white"> </font>
-                </para>
             </td>
         </tr>
-    </blockTable>mobile
-    <blockTable colWidths="400.0,80.0,50.0" style="Tableau2">
+    </blockTable>
+    <blockTable colWidths="400.0,100.0,30.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -287,14 +289,14 @@
           </para>
         </td>
         <td>
-          <para style="terp_default_9">Sub Total:</para>
+          <para style="terp_default_9">Sub Total : [[ formatLang(order.amount_untaxed) or '0.0' ]]</para>
         </td>
         <td>
-          <para style="terp_default_Right_9">[[ formatLang(order.amount_untaxed) or '0.0' ]]</para>
+          <para style="terp_default_left_new"></para>
         </td>
       </tr>
      </blockTable>
-     <blockTable colWidths="300.0,100.0,130.0" style="Tableau2">
+     <blockTable colWidths="300.0,200.0,30.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -302,32 +304,26 @@
           </para>
         </td>
         <td>
-          <para style="terp_tblheader_Details">Payment:</para>
+          <para style="terp_tblheader_Details">Payment : [[ (order.payment_term_id.name) or '0.0' ]]</para>
         </td>
         <td>
-          <para style="terp_default_9">[[ (order.payment_term_id.name) or '0.0' ]]</para>
+          <para style="terp_default_9"></para>
         </td>
       </tr>
     </blockTable>
      <blockTable colWidths="420.0,10.0,100.0" style="Tableau2">
       <tr>
         <td>
-        <blockTable colWidhts="10.0,400.0,10.0" style="Standard_Outline">
+        <blockTable colWidhts="400.0,20.0" style="Standard_Outline">
             <tr>
                 <td>
-                    <para style="terp_default_9"> C.S.T. </para>
-                    <para style="terp_default_9"> Freight </para>
-                    <para style="terp_default_9"> Delivery </para>
-                    <para style="terp_default_9"> Despatch </para>
+                    <para style="terp_default_9"> C.S.T. <font color="white"> .......</font>: [[ formatLang(order.amount_tax) or '0.0']] </para>
+                    <para style="terp_default_9"> Freight <font color="white"> .....</font>:  [[ ' N I L']] </para>
+                    <para style="terp_default_9"> Delivery <font color="white"> ...</font>: MILL-DELIVERY</para>
+                    <para style="terp_default_9"> Despatch <font color="white"> .</font>: [[ (order.delivey ) or '']]</para>
                 </td>
                 <td>
-                    <para style="terp_default_9"> : [[ formatLang(order.amount_tax) or '0.0']]  </para>
-                    <para style="terp_default_9"> :  [[ ' N I L']] </para>
-                    <para style="terp_default_9"> : MILL-DELIVERY</para>
-                    <para style="terp_default_9"> : To be arranged by you</para>
-                </td>
-                <td>
-                    <para style="terp_default_9">  </para>
+                    <para style="terp_default_9"> </para>
                     <para style="terp_default_9"> </para>
                     <para style="terp_default_9"> </para>
                     <para style="terp_default_9"> </para>
@@ -347,7 +343,7 @@
         </td>
       </tr>
      </blockTable>
-     <blockTable colWidths="300.0,100.0,130.0" style="Tableau2">
+     <blockTable colWidths="300.0,200.0,30.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -355,10 +351,10 @@
           </para>
         </td>
         <td>
-          <para style="terp_tblheader_Details">Total Amount:</para>
+          <para style="terp_tblheader_Details">Total Amount : [[ formatLang(order.amount_total) or '0.0' ]]</para>
         </td>
         <td>
-          <para style="terp_default_9">[[ formatLang(order.amount_total) or '0.0' ]]</para>
+          <para style="terp_default_9"></para>
         </td>
       </tr>
     </blockTable>

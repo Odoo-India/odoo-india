@@ -42,7 +42,7 @@ class new_po(report_sxw.rml_parse):
         amt_en = text.amount_to_text(order.amount_total, 'en', 'RUPEES')
         return amt_en.replace('Cent', 'Paise').upper() + '(ONLY)'
 
-report_sxw.report_sxw('report.new.purchase.order1','purchase.order','addons/indent/report/new_po.rml',parser=new_po)
+report_sxw.report_sxw('report.new.purchase.order1','purchase.order','addons/indent/report/new_po.rml',parser=new_po, header=False)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

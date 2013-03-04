@@ -22,16 +22,57 @@
 import datetime
 from openerp.osv import fields, osv
 from openerp import netsvc
+import openerp.addons.decimal_precision as dp
 
 class purchase_order_line(osv.Model):
     _inherit = 'purchase.order.line'
+    
+    def _amount_line(self, cr, uid, ids, prop, arg, context=None):
+        res = super(purchase_order_line, self)._amount_line(cr, uid, ids, prop, arg, context=context)
+        cur_obj=self.pool.get('res.currency')
+        tax_obj = self.pool.get('account.tax')
+        for line in self.browse(cr, uid, ids, context=context):
+            res[line.id] -= line.discount
+            taxes = tax_obj.compute_all(cr, uid, line.taxes_id, res[line.id], 1, line.product_id, line.order_id.partner_id)
+            cur = line.order_id.pricelist_id.currency_id
+            res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
+        return res
+
     _columns = {
         'discount': fields.float('Discount'),
+        'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
                 }
 purchase_order_line()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
+    
+    def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        cur_obj=self.pool.get('res.currency')
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = {
+                'amount_untaxed': 0.0,
+                'amount_tax': 0.0,
+                'amount_total': 0.0,
+                'other_charges': 0.0,
+            }
+            val = val1 = 0.0
+            cur = order.pricelist_id.currency_id
+            for line in order.order_line:
+               val1 += line.price_subtotal
+               for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
+                    val += c.get('amount', 0.0)
+            other_charge = (order.package_and_forwording + order.insurance + order.octroi) - order.commission
+            res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
+            res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
+            res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
+            res[order.id]['amount_total']=res[order.id]['amount_untaxed'] + res[order.id]['amount_tax'] + res[order.id]['other_charges']
+        return res
+    
+    def _get_order(self, cr, uid, ids, context=None):
+        return super(purchase_order, self.pool.get('purchase.order'))._get_order(cr, uid, ids, context=context)
+    
     _columns = {
         'package_and_forwording': fields.float('Packing & Forwarding'),
         'insurance': fields.float('Insurance'),
@@ -41,6 +82,22 @@ class purchase_order(osv.Model):
         'octroi': fields.float('Octroi'),
         'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
         'last_po_series': fields.many2one('product.order.series', 'PO Series'),
+        'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
+            store={
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums", help="The amount without tax", track_visibility='always'),
+        'amount_tax': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Taxes',
+            store={
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums", help="The tax amount"),
+        'amount_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Total',
+            store={
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums",help="The total amount"),
+        'other_charges': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Other Charges',
+            store={
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums",help="The other charge"),
                 }
 
     def wkf_confirm_order(self, cr, uid, ids, context=None):

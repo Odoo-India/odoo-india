@@ -34,6 +34,9 @@
                 <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']/group/group/field[@name='payment_term_id']" position="replace">
                     <field name="payment_term_id" invisible="1"/>
                 </xpath>
+                <xpath expr="//notebook/page[@string='Purchase Order']/group/field[@name='amount_tax']" position="after">
+                    <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </xpath>
                 <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']" position='inside'>
                     <separator string="Other Charges"/>
                         <group>

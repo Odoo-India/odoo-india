@@ -44,7 +44,7 @@ class new_rfq(report_sxw.rml_parse):
         self.sr_no += 1
         return self.sr_no
 
-report_sxw.report_sxw('report.new.purchase.quotation1','purchase.order','addons/indent/report/new_rfq.rml',parser=new_rfq)
+report_sxw.report_sxw('report.new.purchase.quotation1','purchase.order','addons/indent/report/new_rfq.rml',parser=new_rfq, header=False)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

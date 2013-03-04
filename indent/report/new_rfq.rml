@@ -22,10 +22,6 @@
     <blockTableStyle id="Tableau1">
       <blockAlignment value="LEFT"/>
       <blockValign value="TOP"/>
-      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
-      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
-      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
-      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
     </blockTableStyle>
     <blockTableStyle id="Tableau2">
       <blockAlignment value="LEFT"/>
@@ -74,16 +70,16 @@
       <paraStyle name="all" alignment="justify"/>
     </initialize>
     <paraStyle name="P1" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="Standard" fontName="Helvetica"/>
+    <paraStyle name="Standard" fontName="Helvetica" fontSize="9.0" spaceBefore="0.0" spaceAfter="0.0" alignment="LEFT"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
-    <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="2.0" alignment="CENTER"/>
     <paraStyle name="List" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="Table Contents" fontName="Helvetica"/>
     <paraStyle name="Table Heading" fontName="Helvetica" alignment="CENTER"/>
     <paraStyle name="Caption" fontName="Helvetica" fontSize="12.0" leading="15" spaceBefore="6.0" spaceAfter="6.0"/>
-    <paraStyle name="Index" fontName="Helvetica"/>
+    <paraStyle name="Index" fontName="Helvetica" fontSize="11.0" leading="17" spaceBefore="2.0" spaceAfter="1.0" alignment="CENTER"/>
     <paraStyle name="Footer" fontName="Helvetica"/>
-    <paraStyle name="Horizontal Line" fontName="Helvetica" fontSize="6.0" leading="8" spaceBefore="0.0" spaceAfter="14.0"/>
+    <paraStyle name="Horizontal Line" fontName="Helvetica" fontSize="6.0" leading="8" spaceBefore="0.0" spaceAfter="1.0"/>
     <paraStyle name="terp_header" fontName="Helvetica-Bold" fontSize="9.0" leading="15" alignment="LEFT" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="Heading 9" fontName="Helvetica-Bold" fontSize="75%" leading="NaN" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="terp_tblheader_General" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="6.0" spaceAfter="6.0"/>
@@ -113,24 +109,34 @@
   <story>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
-    <para style="terp_default_9">
-      <font color="white"> </font>
-    </para>
-    <para style="terp_default_9">
-      <font color="white"> </font>
-    </para>
-    <para style="terp_default_9">
-      <font color="white"> </font>
-    </para>
-    <para style="terp_default_9">
-      <font color="white"> </font>
-    </para>
-    <para style="terp_default_9">
-      <font color="white"> </font>
-    </para>
-    <para style="terp_default_9">
-      <font color="white"> </font>
-    </para>
+    <blockTable colWidths="365.0,165.0" style="Tableau1">
+        <tr>
+        <td>
+            <para style="Heading"> [[ order.company_id.name or removeParentNode('para')]] </para>
+            <para style="Index"> [[ order.company_id.street or removeParentNode('para')]] </para>
+            <para style="Standard"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
+            <para style="Standard"> Phone : [[ order.company_id.phone or removeParentNode('para')]] <font color="white"> ..</font>Fax : [[ order.company_id.fax or removeParentNode('para')]]</para>
+            <para style="Standard"> Email : [[ order.company_id.email or removeParentNode('para')]] </para>
+        </td>
+        <td>
+            <blockTable colWidths="65.0,100.0" style="Standard_Outline">
+            <tr>
+                <td>
+                    <image  width="65.0" height="65.0" >[[ company.logo or removeParentNode('image') ]]</image>
+                </td>
+                <td>
+                    <para style="P1"> [[ order.company_id.name or removeParentNode('para')]] </para>
+                    <para style="Horizontal Line"> [[ order.company_id.street or removeParentNode('para')]] </para>
+                    <para style="Horizontal Line"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
+                    <para style="Horizontal Line"> Phone : [[ order.company_id.phone or removeParentNode('para')]] </para>
+                    <para style="Horizontal Line"> Fax : [[ order.company_id.fax or removeParentNode('para')]]</para>
+                    <para style="Horizontal Line"> Email : [[ order.company_id.email or removeParentNode('para')]] </para>
+                </td>
+            </tr>
+            </blockTable>
+        </td>
+      </tr>
+    </blockTable>
     <blockTable colWidths="250.0,150.0,130.0" style="Table1">
     <tr>
     	<td>

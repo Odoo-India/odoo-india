@@ -49,7 +49,7 @@ class res_partner(osv.Model):
         'co_code': fields.char('COCODE', size=256),
         'supp_code': fields.char('SUPPCODE', size=256),
         'street3': fields.char('Address3', size=256),
-        'raw_code_id': fields.many2one('row.code','ROWCODE'),
+        'raw_code_id': fields.many2one('row.code','RAWCODE'),
         'tax_code_id': fields.many2one('tax.code','TAXCODE'),
         'bank_code_id': fields.many2one('account.journal','BANKCODE'),
         'md_code': fields.selection([('manufacture','M'),(' dealer','D')],'MDCODE'),

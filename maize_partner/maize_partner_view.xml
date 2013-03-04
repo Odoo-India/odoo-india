@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
+        <record id="maize_inherit_partner_tree_view" model="ir.ui.view">
+            <field name="name">inherit.maize.partner.tree</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree" />
+            <field name="arch" type="xml">
+            	<field name="name" position="before">
+            		<field name="supp_code"/>
+            	</field>
+            </field>
+          </record>
         <!-- Inherit the partner Form-->
         <record id="maize_inherit_partner_form_view" model="ir.ui.view">
             <field name="name">inherit.maize.partner.form</field>

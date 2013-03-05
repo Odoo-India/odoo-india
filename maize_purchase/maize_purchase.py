@@ -137,7 +137,6 @@ class purchase_order(osv.Model):
                     po.requisition_id.tender_done(context=context)
                     
                     for line in order.order_line:
-                        print "AAAAAAAAA", line
                         today = order.date_order
                         year = datetime.datetime.today().year
                         month = datetime.datetime.today().month

@@ -114,8 +114,8 @@
         <td>
             <para style="Heading"> [[ order.company_id.name or removeParentNode('para')]] </para>
             <para style="Index"> [[ order.company_id.street or removeParentNode('para')]] </para>
-            <para style="Standard"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
-            <para style="Standard"> Phone : [[ order.company_id.phone or removeParentNode('para')]] <font color="white"> ..</font>Fax : [[ order.company_id.fax or removeParentNode('para')]]</para>
+            <para style="Standard"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or '']] </para>
+            <para style="Standard"> Phone : [[ order.company_id.phone or '']] <font color="white"> ..</font>Fax : [[ order.company_id.fax or '']]</para>
             <para style="Standard"> Email : [[ order.company_id.email or removeParentNode('para')]] </para>
         </td>
         <td>
@@ -127,7 +127,7 @@
                 <td>
                     <para style="P1"> [[ order.company_id.name or removeParentNode('para')]] </para>
                     <para style="Horizontal Line"> [[ order.company_id.street or removeParentNode('para')]] </para>
-                    <para style="Horizontal Line"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
+                    <para style="Horizontal Line"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or '']] </para>
                     <para style="Horizontal Line"> Phone : [[ order.company_id.phone or removeParentNode('para')]] </para>
                     <para style="Horizontal Line"> Fax : [[ order.company_id.fax or removeParentNode('para')]]</para>
                     <para style="Horizontal Line"> Email : [[ order.company_id.email or removeParentNode('para')]] </para>

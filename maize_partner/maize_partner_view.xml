@@ -187,5 +187,30 @@
             groups="base.group_no_one"
             id="menu_maize_po_series"
             parent="maize_product.menu_maize_config" sequence="2"/>
+        
+        <!--  inherit the res.user form view -->
+        <record id="maize_inherit_user_form_view" model="ir.ui.view">
+            <field name="name">inherit.maize.user.form</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form" />
+            <field name="arch" type="xml">
+                <field name="login" position="after">
+                    <label for="user_code" class="oe_edit_only"/>
+                    <field name="user_code"/>
+                </field>
+            </field>
+          </record>
+          
+        <!--  inherit the res.user tree view -->
+        <record id="maize_inherit_user_tree_view" model="ir.ui.view">
+            <field name="name">inherit.maize.user.tree</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_tree" />
+            <field name="arch" type="xml">
+                <field name="login" position="after">
+                    <field name="user_code"/>
+                </field>
+            </field>
+          </record>          
     </data>
 </openerp>

@@ -98,3 +98,22 @@ class account_journal(osv.Model):
         return res
 
 account_journal()
+
+class res_users(osv.Model):
+    _inherit = "res.users"
+    
+    def name_get(self, cr, uid, ids, context=None):
+        res = []
+        if not ids:
+            return res
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        for id in ids:
+            elmt = self.browse(cr, uid, id, context=context)
+            res.append((id, '['+ (elmt.user_code or '') +'] '+elmt.name))
+        return res
+    
+    _columns = {
+            'user_code': fields.char('Code', size=50),
+                }
+res_users()

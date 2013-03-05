@@ -87,6 +87,32 @@
     <para style="terp_tblheader_Details_Centre"> <b> Comparison Report </b></para>
     <para style="terp_default_8"> <font color="white"> </font> </para>
     <para style="terp_default_8"> <font color="white"> </font> </para>
+    <blockTable style="Table_Product_Header_Title">
+        <tr>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> Indent </para>
+            </td>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> Indentor </para>
+            </td>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> Indent Date </para>
+            </td>
+        </tr>
+    </blockTable>
+    <blockTable style="Table_Product_Line">
+        <tr>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> [[ order.indent_id.name]] </para>
+            </td>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> [[ order.indentor_id.name]]</para>
+            </td>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> [[ formatLang(order.indent_date,date=True)]] </para>
+            </td>
+        </tr>
+    </blockTable>
     <para style="terp_default_8"> <font color="white"> </font> </para>
     <para style="terp_default_8">[[repeatIn(objects,'order')]]</para>
     <blockTable style="Table_Product_Header_Title">

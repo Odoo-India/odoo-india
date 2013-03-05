@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    
+        <record id="base.main_company" model="res.company">
+            <field name="name">MAIZE PRODUCTS</field>
+            <field name="rml_header1">Your Company Tagline</field>
+            <field name="currency_id" ref="base.INR"/>
+            <field name="street">(A DIVISION OF SAYAJI INDUSTRIES LTD.)</field>
+            <field name="street2">Reg.Office: P.O. Kathwada</field>
+            <field name="city">Ahmedabad</field>
+            <field name="zip">382430</field>
+            <field name="phone">22901581 to 229011585</field>
+            <field name="fax">(079) 22901003</field>
+            <field name="email">purchase@maizeproducts.com</field>
+        </record>
+        
+        <record id="base.main_partner" model="res.partner">
+            <field name="name">MAIZE PRODUCTS</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+    </data>
+</openerp>

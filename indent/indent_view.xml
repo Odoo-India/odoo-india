@@ -18,10 +18,20 @@
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
                     </header>
                     <sheet>
-                        <h1>
-                            <label for="name" class="oe_edit_only"/>
-                            <field name="name"/>
-                        </h1>
+                    	<div class="oe_title">
+	                        <h1>
+	                            <label for="name" class="oe_edit_only"/>
+	                            <field name="name"/>
+	                        </h1>
+                        </div>
+	                    <div class="oe_right oe_button_box" name="buttons">
+	  	                    <button name="process_purchse_order" string="Purchase Requisitions"
+	                        	groups="purchase.group_purchase_user"/> 
+	                        <button name="process_purchse_order" string="Purchase Orders"
+	                        	groups="purchase.group_purchase_user"/>
+	  	                    <button name="process_purchase_order" string="Process Purchase Orders" type="object"
+	                        	groups="purchase.group_purchase_user"/> 
+	                    </div>                        
                         <group>
                             <group>
                                 <field name="indent_date"/>

@@ -293,6 +293,23 @@ class indent_indent(osv.Model):
 
         return picking_id
 
+    def process_purchase_order(self,cr,uid,ids,context):
+        obj_purchase_order = self.pool.get('purchase.order')
+        wf_service = netsvc.LocalService("workflow")
+        for indent in self.browse(cr,uid,ids,context):
+            po_grp_partners = obj_purchase_order.read_group(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')], ['partner_id'], ['partner_id'])
+            for po_grp_partner in po_grp_partners:
+                if po_grp_partner['partner_id_count'] > 1:
+                    po_to_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0])])
+                    obj_purchase_order.action_cancel(cr,uid,po_to_merge,context)
+                    obj_purchase_order.action_cancel_draft(cr,uid,po_to_merge,context)
+                    po_merged_id = obj_purchase_order.do_merge(cr,uid,po_to_merge,context).keys()[0]
+                    obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
+                    wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
+                    wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
+        return True
+
+
 indent_indent()
 
 class indent_product_lines(osv.Model):

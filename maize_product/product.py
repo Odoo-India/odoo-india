@@ -145,18 +145,6 @@ class product_product(osv.Model):
 #                res[order.id]['last_supplier_rate'] = 0.0
 #        return res
     
-    def last_recieve_date(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = ''
-        return res
-    
-    def last_issue_date(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = ''
-        return res
-    
     def cy_opening_qty(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
@@ -164,30 +152,6 @@ class product_product(osv.Model):
         return res
     
     def cy_opening_value(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = ''
-        return res
-    
-    def last_recieve_qty(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = ''
-        return res
-    
-    def last_recieve_value(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = ''
-        return res
-    
-    def last_issue_qty(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = ''
-        return res
-    
-    def last_issue_value(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = ''
@@ -217,14 +181,14 @@ class product_product(osv.Model):
         'last_po_year': fields.char('Last PO Year',size=256,readonly=True),
         'last_po_no': fields.many2one('purchase.order', 'Last PO No',readonly=True),
         'last_supplier_rate': fields.float('Last Supplier Rate',readonly=True),
-        'last_recieve_date': fields.function(last_recieve_date, type='date', string='Last Receieve Date'),
-        'last_issue_date': fields.function(last_issue_date, type='date', string='Last Issue Date'),
+        'last_recieve_date': fields.datetime('Last Receieve Date', readonly=True),
+        'last_issue_date': fields.datetime('Last Issue Date', readonly=True),
         'cy_opening_qty': fields.function(cy_opening_qty, type='float', string='Current Year Opening Quantity'),
         'cy_opening_value': fields.function(cy_opening_value, type='float', string='Current Year Opening Value'),
-        'last_recieve_qty': fields.function(last_recieve_qty, type='float', string='Last Receieve Quantity'),
-        'last_recieve_value': fields.function(last_recieve_value, type='float', string='Last Receieve value'),
-        'last_issue_qty': fields.function(last_issue_qty, type='float', string='Last Issue Quantity'),
-        'last_issue_value': fields.function(last_issue_value, type='float', string='Last Issue Value'),
+        'last_recieve_qty': fields.float('Last Receieve Quantity', readonly=True),
+        'last_recieve_value': fields.float('Last Receieve value', readonly=True),
+        'last_issue_qty': fields.float('Last Issue Quantity', readonly=True),
+        'last_issue_value': fields.float('Last Issue Value', readonly=True),
         'cy_issue_qty': fields.function(cy_issue_qty, type='float', string='Current Year Issue Quantity'),
         'cy_issue_value': fields.function(cy_issue_value, type='float', string='Current Year Issue Value'),
         'last_po_date': fields.date('Last PO Date',readonly=True),
@@ -320,3 +284,16 @@ class product_product(osv.Model):
 #        return product
     
 product_product()
+
+class stock_move(osv.Model):
+    _inherit = "stock.move"
+    
+    def action_done(self, cr, uid, ids, context=None):
+        res = super(stock_move,self).action_done(cr, uid, ids, context=context)
+        product_obj = self.pool.get('product.product')
+        for move in self.browse(cr, uid, ids, context=context):
+            if move.type == 'internal':
+                product_obj.write(cr, uid, move.product_id.id, {'last_issue_date': move.create_date, 'last_issue_qty': move.product_qty, 'last_issue_value': (move.product_qty * move.product_id.standard_price)})
+            elif move.type == 'in':
+                product_obj.write(cr, uid, move.product_id.id, {'last_recieve_date': move.create_date, 'last_recieve_qty': move.product_qty, 'last_recieve_value': (move.product_qty * move.purchase_line_id.price_unit)})
+        return res

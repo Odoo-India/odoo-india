@@ -42,6 +42,20 @@ class indent_indent(osv.Model):
         },
     }
 
+    def _check_po_done(self, cr, uid, ids, field_name, arg=False, context=None):
+        res = {}
+        requisition_obj = self.pool.get('purchase.requisition')
+        req_ids = requisition_obj.search(cr, uid, [('indent_id', 'in', ids)])
+        if req_ids:
+            for req_id in requisition_obj.browse(cr, uid, req_ids):
+                po_done = False
+                if req_id.state == 'done':
+                    po_done = True
+                res[ids[0]] = po_done
+        else:
+            res[ids[0]] = False
+        return res
+
     _columns = {
         'name': fields.char('Indent #', size=256, required=True, track_visibility='always'),
         'indent_date': fields.datetime('Indent Date', required=True),
@@ -58,7 +72,9 @@ class indent_indent(osv.Model):
         'description': fields.text('Item Description'),
         'company_id': fields.many2one('res.company', 'Company'),
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority'),
-        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange')
+        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
+        'purchase_done': fields.function(_check_po_done, type='boolean', string="Check Purchase Done"),
+        'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
     }
 
     def _default_employee_id(self, cr, uid, context=None):
@@ -102,7 +118,7 @@ class indent_indent(osv.Model):
         indent_authority_ids = document_authority_obj.search(cr, uid, [('document', '=', 'indent')], context=context)
         for indent in self.browse(cr, uid, ids, context=context): 
             if not indent.product_lines:
-                raise osv.except_osv(_('Error!'),_('You cannot confirm an indent which has no line.'))
+                raise osv.except_osv(_("Warning !"),_('You cannot confirm an indent which has no line.'))
             for authority in document_authority_obj.browse(cr, uid, indent_authority_ids, context=context):
                 document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': authority.document, 'indent_id': indent.id, 'priority': authority.priority}, context=context)
             if indent.employee_id and indent.employee_id.department_id and indent.employee_id.department_id.manager_id and indent.employee_id.department_id.manager_id.user_id:
@@ -131,7 +147,7 @@ class indent_indent(osv.Model):
                 count += 1
                 if authority[1] == uid:
                     if authority[3] == 'approve':
-                        raise osv.except_osv(_('Error!'),_('You have already approved an indent.'))
+                        raise osv.except_osv(_("Warning !"),_('You have already approved an indent.'))
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
                     for write_id in write_ids:
@@ -162,7 +178,7 @@ class indent_indent(osv.Model):
                 count += 1
                 if authority[1] == uid:
                     if authority[3] == 'reject':
-                        raise osv.except_osv(_('Error!'),_('You have already rejected an indent.'))
+                        raise osv.except_osv(_("Warning !"),_('You have already rejected an indent.'))
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
                     for write_id in write_ids:
@@ -297,6 +313,8 @@ class indent_indent(osv.Model):
         obj_purchase_order = self.pool.get('purchase.order')
         wf_service = netsvc.LocalService("workflow")
         for indent in self.browse(cr,uid,ids,context):
+            if indent.purchase_count ==  True:
+                raise osv.except_osv(_('Warning!'),_("Purchase Order is already process !"))
             po_grp_partners = obj_purchase_order.read_group(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')], ['partner_id'], ['partner_id'])
             for po_grp_partner in po_grp_partners:
                 if po_grp_partner['partner_id_count'] > 1:
@@ -307,6 +325,7 @@ class indent_indent(osv.Model):
                     obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
                     wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
                     wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
+            self.write(cr, uid, indent.id, {'purchase_count': True}, context=context)
         return True
 
 

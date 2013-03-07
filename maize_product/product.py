@@ -295,5 +295,5 @@ class stock_move(osv.Model):
             if move.type == 'internal':
                 product_obj.write(cr, uid, move.product_id.id, {'last_issue_date': move.create_date, 'last_issue_qty': move.product_qty, 'last_issue_value': (move.product_qty * move.product_id.standard_price)})
             elif move.type == 'in':
-                product_obj.write(cr, uid, move.product_id.id, {'last_recieve_date': move.create_date, 'last_recieve_qty': move.product_qty, 'last_recieve_value': (move.product_qty * move.purchase_line_id.price_unit)})
+                product_obj.write(cr, uid, move.product_id.id, {'last_recieve_date': move.create_date, 'last_recieve_qty': move.product_qty, 'last_recieve_value': (move.product_qty * (move.purchase_line_id and move.purchase_line_id.price_unit or 0.0))})
         return res

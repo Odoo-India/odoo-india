@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
+        <!-- Purchase Order Search View -->
+        <record id="view_purchase_order_inherited_search" model="ir.ui.view">
+            <field name="name">purchase.order.search.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+               <filter string="Source" position="attributes">
+                    <attribute name="string">Indent</attribute>
+                </filter>
+               <field name="create_uid" position="after">
+                    <field name="indent_id"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Purchase Order Link with Indent action -->
+        <record model="ir.actions.act_window" id="action_purchase_order_indent_view">
+            <field name="context">{'search_default_indent_id': active_id}</field>
+            <field name="name">Purchase Order</field>
+            <field name="res_model">purchase.order</field>
+            <field name="search_view_id" ref="view_purchase_order_inherited_search"/>
+        </record>
+
+        <!-- Purchase Requisition Search View -->
+        <record id="view_purchase_requisition_inherited_search" model="ir.ui.view">
+            <field name="name">purchase.requisition.search.inherit</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_filter"/>
+            <field name="arch" type="xml">
+                <field name="user_id" position="after">
+                    <field name="indent_id"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Purchase Requisiton Link with Indent action -->
+        <record model="ir.actions.act_window" id="action_purchase_requisition_indent_view">
+            <field name="context">{'search_default_indent_id': active_id}</field>
+            <field name="name">Purchase Requisition</field>
+            <field name="res_model">purchase.requisition</field>
+            <field name="search_view_id" ref="view_purchase_requisition_inherited_search"/>
+        </record>
 
         <!-- Indent Form View -->
         <record id='view_indent_indent_form' model='ir.ui.view'>
@@ -25,9 +67,9 @@
 	                        </h1>
                         </div>
 	                    <div class="oe_right oe_button_box" name="buttons">
-	  	                    <button name="process_purchse_order" string="Purchase Requisitions"
+	  	                    <button name="%(action_purchase_requisition_indent_view)d" string="Purchase Requisitions" type="action"
 	                        	groups="purchase.group_purchase_user"/> 
-	                        <button name="process_purchse_order" string="Purchase Orders"
+	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action"
 	                        	groups="purchase.group_purchase_user"/>
 	  	                    <button name="process_purchase_order" string="Process Purchase Orders" type="object"
 	                        	groups="purchase.group_purchase_user"/> 
@@ -301,18 +343,5 @@
                 </field>
             </field>
         </record>
-
-        <!-- Purchase Order Search View -->
-        <record id="view_purchase_order_inherited_search" model="ir.ui.view">
-            <field name="name">purchase.order.search.inherit</field>
-            <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
-            <field name="arch" type="xml">
-                <filter string="Source" position="attributes">
-                    <attribute name="string">Indent</attribute>
-                </filter>
-            </field>
-        </record>
-
     </data>
 </openerp>

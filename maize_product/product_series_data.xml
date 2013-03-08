@@ -71,6 +71,11 @@
 
 
         <!-- UOM Data -->
+        <record id="product.product_uom_no" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">NU</field>
+            <field name="factor" eval="1"/>
+        </record>
         <record id="product.product_uom_kgm" model="product.uom">
             <field name="category_id" ref="product.product_uom_categ_kgm"/>
             <field name="name">KG</field>
@@ -82,9 +87,10 @@
             <field name="factor">1.0</field>
         </record>
         <record id="product.product_mt" model="product.uom">
-            <field name="category_id" ref="product.uom_categ_length"/>
+            <field name="category_id" ref="product.product_uom_categ_kgm"/>
             <field name="name">MT</field>
-            <field name="factor" eval="1.0"/>
+            <field name="factor_inv" eval="1000"/>
+            <field name="uom_type">bigger</field>
         </record>
         <record id="product_uom_mr" model="product.uom">
             <field name="category_id" ref="product.uom_categ_length"/>
@@ -94,7 +100,8 @@
         <record id="product_uom_mm" model="product.uom">
             <field name="category_id" ref="product.uom_categ_length"/>
             <field name="name">MM</field>
-            <field name="factor" eval="1.0"/>
+            <field name="factor" eval="1000"/>
+            <field name="uom_type">smaller</field>
         </record>
         <record id="product_uom_sm" model="product.uom">
             <field name="category_id" ref="product.uom_categ_length"/>
@@ -106,35 +113,40 @@
             <field name="name">SF</field>
             <field name="factor" eval="1.0"/>
         </record>
-                <record id="product_uom_si" model="product.uom">
+        <record id="product_uom_si" model="product.uom">
             <field name="category_id" ref="product.uom_categ_length"/>
             <field name="name">SI</field>
-            <field name="factor" eval="1.0"/>
+            <field name="factor" eval="144.0"/>
+            <field name="uom_type">smaller</field>
         </record>
         <record id="product_uom_cd" model="product.uom">
             <field name="category_id" ref="product.uom_categ_length"/>
             <field name="name">CD</field>
             <field name="factor" eval="1.0"/>
         </record>
-                <record id="product_uom_m3" model="product.uom">
-            <field name="category_id" ref="product.uom_categ_length"/>
+        <record id="product_uom_m3" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_vol"/>
             <field name="name">M3</field>
-            <field name="factor" eval="1.0"/>
+            <field name="factor_inv" eval="1000"/>
+            <field name="uom_type">bigger</field>
         </record>
-                <record id="product_uom_sc" model="product.uom">
+        <record id="product_uom_sc" model="product.uom">
             <field name="category_id" ref="product.uom_categ_length"/>
             <field name="name">SC</field>
-            <field name="factor" eval="1.0"/>
+            <field name="factor" eval="10000.0"/>
+            <field name="uom_type">smaller</field>
         </record>
-                <record id="product_uom_cf" model="product.uom">
-            <field name="category_id" ref="product.uom_categ_length"/>
+        <record id="product_uom_cf" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_vol"/>
             <field name="name">CF</field>
-            <field name="factor" eval="1.0"/>
+            <field name="factor_inv" eval="28.317"/>
+            <field name="uom_type">bigger</field>
         </record>
-                <record id="product_uom_ft" model="product.uom">
+        <record id="product_uom_ft" model="product.uom">
             <field name="category_id" ref="product.uom_categ_length"/>
             <field name="name">FT</field>
-            <field name="factor" eval="1.0"/>
+            <field name="factor_inv" eval="3"/>
+            <field name="uom_type">bigger</field>
         </record>
         <!-- product Category data-->
         <record id="product.product_category_all" model="product.category">

@@ -322,6 +322,23 @@ class indent_indent(osv.Model):
                     obj_purchase_order.action_cancel(cr,uid,po_to_merge,context)
                     obj_purchase_order.action_cancel_draft(cr,uid,po_to_merge,context)
                     po_merged_id = obj_purchase_order.do_merge(cr,uid,po_to_merge,context).keys()[0]
+                    order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
+                    today = order.date_order
+                    year = datetime.datetime.today().year
+                    month = datetime.datetime.today().month
+                    if month < 4:
+                        po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
+                    else:
+                        po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
+                    for line in order.order_line:
+                        self.pool.get('product.product').write(cr,uid,line.product_id.id,{
+                                                                      'last_supplier_rate': line.price_unit,
+                                                                      'last_po_no':order.id,
+                                                                      'last_po_series':order.po_series_id.id,
+                                                                      'last_supplier_code':order.partner_id.id,
+                                                                      'last_po_date':order.date_order,
+                                                                      'last_po_year':po_year
+                                                                  },context=context)
                     obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
                     wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
                     wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)

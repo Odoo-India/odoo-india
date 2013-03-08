@@ -29,7 +29,7 @@
     'summary' : 'Managing Partner',
     'description' : """
 """,
-    'depends' : ['base','account','maize_product'],
+    'depends' : ['base', 'maize_product'],
     'data' : [
         'po_series_data.xml',
         'maize_partner_data.xml',

@@ -2,7 +2,7 @@
 <document filename="newpo.pdf">
   <template pageSize="(595.0,842.0)" title="Test" author="Martin Simon" allowSplitting="20">
     <pageTemplate id="first">
-      <frame id="first" x1="23.0" y1="43.0" width="530" height="799"/>
+      <frame id="first" x1="23.0" y1="23.0" width="570" height="799"/>
     </pageTemplate>
   </template>
   <stylesheet>
@@ -114,6 +114,8 @@
       <paraStyle name="all" alignment="justify"/>
     </initialize>
     <paraStyle name="P1" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="company_head" fontName="Helvetica-Bold" fontSize="17.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="Heading 10" fontName="Helvetica-Bold" fontSize="8.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
@@ -144,6 +146,7 @@
     <paraStyle name="terp_default_Centre_9" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_Right_9" fontName="Helvetica" fontSize="9.0" leading="0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_left_new" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_left_7" fontName="Helvetica" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_Right_new" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_2" fontName="Helvetica" fontSize="2.0" leading="3" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_8_italic" rightIndent="0.0" leftIndent="20.0" fontName="Helvetica-Oblique" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
@@ -157,7 +160,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="275.0,255.0" style="Tableau1">
+    <blockTable colWidths="295.0,275.0" style="Tableau1">
         <tr>
         <td>
             <blockTable colWidths="65.0,200.0" style="Standard_Outline">
@@ -166,8 +169,10 @@
                     <image  width="65.0" height="65.0" >[[ company.logo or removeParentNode('image') ]]</image>
                 </td>
                 <td>
-                    <para style="P1"> [[ order.company_id.name or removeParentNode('para')]] </para>
-                    <para style="Horizontal Line"> [[ order.company_id.street or removeParentNode('para')]] </para>
+                    <para style="Horizontal Line"> Subject to Ahmedabad Jurisdiction </para>
+                    <para style="company_head"> [[ order.company_id.name or removeParentNode('para')]] </para>
+                    <para style="terp_default_9"> <font color="white"> </font> </para>
+                    <para style="Heading 10"> [[ order.company_id.street or removeParentNode('para')]] </para>
                     <para style="Horizontal Line"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
                     <para style="Horizontal Line"> Phone : [[ order.company_id.phone or '']] <font color="white"> ..</font>Fax : [[ order.company_id.fax or '']]</para>
                     <para style="Horizontal Line"> Email : [[ order.company_id.email or removeParentNode('para')]] </para>
@@ -190,7 +195,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="200.0,120.0,210.0" style="Table1">
+    <blockTable colWidths="200.0,120.0,250.0" style="Table1">
     <tr>
     	<td>
 		    <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
@@ -222,14 +227,14 @@
 		</td>
 	</tr>
 	</blockTable>
-	<blockTable colWidths="530.0" style="Table10">
+	<blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
                 <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition overleaf.</para>
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="300.0,55.0,55.0,50.0,70.0" repeatRows="1" style="Table_Product_Header_Title">
+    <blockTable colWidths="300.0,55.0,55.0,50.0,110.0" repeatRows="1" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
@@ -250,7 +255,7 @@
     </blockTable>mobile
     <section>
       <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]]</para>
-      <blockTable colWidths="300.0,55.0,55.0,50.0,70.0" style="Table_Product_Line">
+      <blockTable colWidths="300.0,55.0,55.0,50.0,110.0" style="Table_Product_Line">
         <tr>
           <td>
             <para style="terp_default_9">[[ order_line.name ]]</para>
@@ -274,14 +279,14 @@
         </tr>
       </blockTable>
     </section>mobile
-    <blockTable colWidths="530.0" style="Table10">
+    <blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
                 <para style="terp_default_9"> ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="400.0,100.0,30.0" style="Tableau2">
+    <blockTable colWidths="400.0,100.0,70.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -296,7 +301,7 @@
         </td>
       </tr>
      </blockTable>
-     <blockTable colWidths="300.0,200.0,30.0" style="Tableau2">
+     <blockTable colWidths="300.0,200.0,70.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -311,7 +316,7 @@
         </td>
       </tr>
     </blockTable>
-     <blockTable colWidths="420.0,10.0,100.0" style="Tableau2">
+     <blockTable colWidths="420.0,10.0,140.0" style="Tableau2">
       <tr>
         <td>
         <blockTable colWidhts="400.0,20.0" style="Standard_Outline">
@@ -343,7 +348,7 @@
         </td>
       </tr>
      </blockTable>
-     <blockTable colWidths="300.0,200.0,30.0" style="Tableau2">
+     <blockTable colWidths="300.0,200.0,70.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -358,7 +363,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="530.0" style="Tableau3">
+    <blockTable colWidths="570.0" style="Tableau3">
       <tr>
         <td>
         <para style="terp_default_9">[[ amount_to_word(order) or 'NULL' ]]</para>
@@ -368,11 +373,26 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="360.0,170.0" style="Table9">
+    <blockTable colWidths="400.0,170.0" style="Table9">
         <tr>
             <td>
+                <para style="terp_default_left_7"> Excise Gate Pass (Duplicate for Transporter's Copy) must accompany with the Consignment</para>
+                <para style="terp_default_left_7"> where applicable. <b>Please quote Order No. supplier Code No. &amp; Our Item Code No.</b></para>
+                <para style="terp_default_left_7"> <b>on Delivery Challan.</b>Unless expressly desired by the management suppliers are</para>
+                <para style="terp_default_left_7"> hereby notified to deliver goods only between 8:00 A.M. to 4:00 P.M.</para>
+                <para style="terp_default_left_7"><b>If you are booking through Transport Co., Please mention our name as consignee</b></para>
+                <para style="terp_default_left_7"><b>"MAIZE PRODUCTS, Kathwada delivery from Kathwada/Odhav</b></para>
+                <para style="terp_default_left_7"><font color="white"> </font></para>
+                <para style="terp_default_left_7">Bankers : Panjab National Bank, Vanijya Bhavan,</para>
+                <para style="terp_default_left_7">Karkaria, Ahmedabad-380022</para>
             </td>
             <td>
+                <para style="Space bet user and signature">
+                    <font color="white"> </font>
+                </para>
+                <para style="Space bet user and signature">
+                    <font color="white"> </font>
+                </para>
                 <para style="terp_default_left_new"> [[(order.name)]]  For,<b> Maize Products</b></para>
                 <para style="Space bet user and signature">
                     <font color="white"> </font>
@@ -392,7 +412,22 @@
                 <para style="Space bet user and signature">
                     <font color="white"> </font>
                 </para>
-                <para style="terp_default_Right_8"><font color="white"> ............. </font>Purchase Officer</para>
+                <para style="Space bet user and signature">
+                    <font color="white"> </font>
+                </para>
+                <para style="Space bet user and signature">
+                    <font color="white"> </font>
+                </para>
+                <para style="Space bet user and signature">
+                    <font color="white"> </font>
+                </para>
+                <para style="Space bet user and signature">
+                    <font color="white"> </font>
+                </para>
+                <para style="Space bet user and signature">
+                    <font color="white"> </font>
+                </para>
+                <para style="terp_default_Right_8"><font color="white"> ............. </font>Material Manager</para>
             </td>
         </tr>
     </blockTable>

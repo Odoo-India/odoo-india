@@ -57,24 +57,24 @@ class indent_indent(osv.Model):
         return res
 
     _columns = {
-        'name': fields.char('Indent #', size=256, required=True, track_visibility='always'),
-        'indent_date': fields.datetime('Indent Date', required=True),
-        'required_date': fields.datetime('Required Date', required=True),
-        'indentor_id': fields.many2one('res.users', 'Indentor', required=True, track_visibility='always'),
+        'name': fields.char('Indent #', size=256, required=True, track_visibility='always', states={'draft': [('readonly', False)]}),
+        'indent_date': fields.datetime('Indent Date', required=True, states={'draft': [('readonly', False)]}),
+        'required_date': fields.datetime('Required Date', required=True, states={'draft': [('readonly', False)]}),
+        'indentor_id': fields.many2one('res.users', 'Indentor', required=True, track_visibility='always', states={'draft': [('readonly', False)]}),
         'employee_id': fields.many2one('hr.employee', 'Employee'),
-        'employee_department_id': fields.related('employee_id', 'department_id', type='many2one', relation='hr.department', string='Employee Department', store=True),
-        'department_id': fields.many2one('stock.location', 'Department', required=True, track_visibility='onchange'),
-        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", track_visibility='onchange'),
-        'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True, track_visibility='onchange'),
-        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange'),
-        'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products'),
-        'picking_id': fields.many2one('stock.picking','Picking'),
-        'description': fields.text('Item Description'),
-        'company_id': fields.many2one('res.company', 'Company'),
-        'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority'),
-        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
+        'employee_department_id': fields.related('employee_id', 'department_id', type='many2one', relation='hr.department', string='Employee Department', store=True, states={'draft': [('readonly', False)]}),
+        'department_id': fields.many2one('stock.location', 'Department', required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
+        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", track_visibility='onchange', states={'draft': [('readonly', False)]}),
+        'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
+        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
+        'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products', states={'draft': [('readonly', False)]}),
+        'picking_id': fields.many2one('stock.picking','Picking', states={'draft': [('readonly', False)]}),
+        'description': fields.text('Item Description', states={'draft': [('readonly', False)]}),
+        'company_id': fields.many2one('res.company', 'Company', states={'draft': [('readonly', False)]}),
+        'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', states={'draft': [('readonly', False)]}),
         'purchase_done': fields.function(_check_po_done, type='boolean', string="Check Purchase Done"),
         'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
+        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange')
     }
 
     def _default_employee_id(self, cr, uid, context=None):
@@ -114,22 +114,35 @@ class indent_indent(osv.Model):
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
 
-    def _create_hierarchy(self, cr, uid, indent, emp, priority, context=None):
-        if not emp.coach_id and not emp.coach_id.user_id:
-            return True
-        else:
-            self.pool.get('document.authority.instance').create(cr, uid, {'name': emp.coach_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
-            priority -= 2
-            return self._create_hierarchy(cr, uid, indent, emp.coach_id, priority=priority, context=context)
-
     def indent_confirm(self, cr, uid, ids, context=None):
+        def _create_parent_category_list(id, lst):
+            if not id:
+                return []
+            parent = employee_tree.get(id)
+            if parent:
+                lst.append(parent)
+                return _create_parent_category_list(parent, lst)
+            else:
+                return lst
+        # _create_manager_list
+        obj_hr = self.pool.get('hr.employee')        
         document_authority_instance_obj = self.pool.get('document.authority.instance')
         for indent in self.browse(cr, uid, ids, context=context): 
             if not indent.product_lines:
-                raise osv.except_osv(_("Warning !"),_('You cannot confirm an indent which has no line.'))
-            if indent.employee_id and indent.employee_id.user_id:
-                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 10}, context=context)
-            self._create_hierarchy(cr, uid, indent, indent.employee_id, priority=8, context=context)
+                raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent which has no line.'))            
+            employee_parent_ids = obj_hr.search(cr, uid, [])
+            employee_parents = obj_hr.read(cr, uid, employee_parent_ids, ['coach_id'])
+            employee_tree = dict([(item['id'], item['coach_id'][0]) for item in employee_parents if item['coach_id']])
+            if not indent.employee_id.id:
+                raise osv.except_osv(_('Configuration Error!'), _('Create related employee for %s' % indent.indentor_id.name))
+            parent_employee_ids = _create_parent_category_list(indent.employee_id.id, [indent.employee_id.id])
+            new_parent_employee_id = list(reversed(parent_employee_ids))
+            priority=1
+            for auth in new_parent_employee_id:
+                emp = obj_hr.browse(cr,uid,auth,context=context)
+                if emp.user_id:
+                    document_authority_instance_obj.create(cr, uid, {'name': emp.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
+                    priority=priority+1            
         self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
         return True
 

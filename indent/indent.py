@@ -114,13 +114,13 @@ class indent_indent(osv.Model):
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
 
-    def _get_manager(self, cr, uid, indent, emp, priority, context=None):
+    def _create_hierarchy(self, cr, uid, indent, emp, priority, context=None):
         if not emp.coach_id and not emp.coach_id.user_id:
             return True
         else:
             self.pool.get('document.authority.instance').create(cr, uid, {'name': emp.coach_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
             priority -= 2
-            return self._get_manager(cr, uid, indent, emp.coach_id, priority=priority, context=context)
+            return self._create_hierarchy(cr, uid, indent, emp.coach_id, priority=priority, context=context)
 
     def indent_confirm(self, cr, uid, ids, context=None):
         document_authority_instance_obj = self.pool.get('document.authority.instance')
@@ -129,7 +129,7 @@ class indent_indent(osv.Model):
                 raise osv.except_osv(_("Warning !"),_('You cannot confirm an indent which has no line.'))
             if indent.employee_id and indent.employee_id.user_id:
                 document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 10}, context=context)
-            self._get_manager(cr, uid, indent, indent.employee_id, priority=8, context=context)
+            self._create_hierarchy(cr, uid, indent, indent.employee_id, priority=8, context=context)
         self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
         return True
 

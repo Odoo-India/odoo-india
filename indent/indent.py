@@ -458,33 +458,6 @@ class indent_product_lines(osv.Model):
 
 indent_product_lines()
 
-class document_authority(osv.Model):
-    _name = 'document.authority'
-    _description = 'Document Authority'
-
-    def name_get(self, cr, uid, ids, context=None):
-        res = []
-        if not ids:
-            return res
-        # name_get may receive int id instead of an id list
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-
-        return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
-
-    _columns = {
-        'name': fields.many2one('res.users', 'Authority', required=True),
-        'document': fields.selection([('indent','Indent'), ('order','Purchase Order')], 'Document', required=True),
-        'priority': fields.integer('Priority'),
-        'active': fields.boolean('Active', help="If the active field is set to False, it will allow you to hide the document authority without removing it."),
-        'description': fields.text('Description'),
-    }
-    _defaults = {
-        'active': True,
-    }
-
-document_authority()
-
 class document_authority_instance(osv.Model):
     _name = 'document.authority.instance'
     _description = 'Document Authority Instance'

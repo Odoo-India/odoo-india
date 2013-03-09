@@ -2,5 +2,4 @@
 
 "access_indent_indent","indent.indent","model_indent_indent","stock.group_stock_user",1,1,1,1
 "access_indent_product_lines","indent.product.lines","model_indent_product_lines","stock.group_stock_user",1,1,1,1
-"access_document_authority","document.authority","model_document_authority","stock.group_stock_user",1,1,1,1
 "access_document_authority_instance","document.authority.instance","model_document_authority_instance","stock.group_stock_user",1,1,1,1

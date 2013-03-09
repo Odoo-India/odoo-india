@@ -280,11 +280,6 @@ class indent_indent(osv.Model):
             res = dict(res, company_id = indent.company_id.id)
         return res
 
-#    def _get_date_planned(self, cr, uid, order, line, start_date, context=None):
-#        date_planned = datetime.strptime(start_date, DEFAULT_SERVER_DATE_FORMAT) + relativedelta(days=line.delay or 0.0)
-#        date_planned = (date_planned - timedelta(days=order.company_id.security_lead)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-#        return date_planned
-
     def _create_pickings_and_procurements(self, cr, uid, indent, product_lines, picking_id=False, context=None):
         move_obj = self.pool.get('stock.move')
         picking_obj = self.pool.get('stock.picking')
@@ -293,7 +288,6 @@ class indent_indent(osv.Model):
 
         for line in product_lines:
             date_planned = indent.indent_date
-#            date_planned = self._get_date_planned(cr, uid, order, line, order.date_order, context=context)
 
             if line.product_id:
                 if line.product_id.type in ('product', 'consu'):

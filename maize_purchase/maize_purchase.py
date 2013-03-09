@@ -70,6 +70,7 @@ class purchase_order(osv.Model):
     
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
+        amount_exices = amount_vat = insurance = freight = 0
         cur_obj=self.pool.get('res.currency')
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = {
@@ -84,15 +85,44 @@ class purchase_order(osv.Model):
                val1 += line.price_subtotal
                for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
-            other_charge = (order.package_and_forwording + order.insurance + order.octroi) - order.commission
+            other_charge = (order.package_and_forwording + order.octroi) - order.commission
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
+            amount_untaxed = res[order.id]['amount_untaxed']
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
-            res[order.id]['amount_total']=res[order.id]['amount_untaxed'] + res[order.id]['amount_tax'] + res[order.id]['other_charges']
+            for c in self.pool.get('account.tax').compute_all(cr, uid, order.excies_ids, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
+                amount_exices += c.get('amount', 0.0)
+            amount_untaxed += amount_exices
+            for c in self.pool.get('account.tax').compute_all(cr, uid, order.vat_ids, amount_untaxed, 1, line.product_id, order.partner_id)['taxes']:
+                amount_vat += c.get('amount', 0.0)
+            amount_untaxed += amount_vat
+            if order.insurance_type == order.freight_type:
+                if order.insurance_type == 'fix':
+                    amount_untaxed += order.insurance
+                    amount_untaxed += order.freight
+                else:
+                    if order.insurance != 0:
+                        amount_untaxed += (amount_untaxed * order.insurance) / 100
+                    if order.freight != 0:
+                        amount_untaxed += (amount_untaxed * order.freight) / 100
+            else:
+                if order.insurance_type == 'fix' and order.freight_type == 'percentage':
+                    amount_untaxed += order.insurance
+                    if order.freight != 0:
+                        amount_untaxed += (amount_untaxed * order.freight) / 100
+                else:
+                    if order.insurance != 0:
+                        amount_untaxed += (amount_untaxed * order.insurance) / 100
+                    amount_untaxed += order.freight
+            print "\n-==- vat exices =-=", amount_vat, amount_exices, insurance, freight
+            res[order.id]['amount_total']= amount_untaxed + res[order.id]['amount_tax'] + res[order.id]['other_charges']
         return res
     
     def _get_order(self, cr, uid, ids, context=None):
-        return super(purchase_order, self.pool.get('purchase.order'))._get_order(cr, uid, ids, context=context)
+        result = {}
+        for line in self.pool.get('purchase.order.line').browse(cr, uid, ids, context=context):
+            result[line.order_id.id] = True
+        return result.keys()
     
     _columns = {
         'package_and_forwording': fields.float('Packing & Forwarding'),
@@ -105,22 +135,36 @@ class purchase_order(osv.Model):
         'po_series_id': fields.many2one('product.order.series', 'PO Series'),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The amount without tax", track_visibility='always'),
         'amount_tax': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Taxes',
             store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The tax amount"),
         'amount_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Total',
             store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total amount"),
         'other_charges': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Other Charges',
             store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The other charge"),
+        'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Exices'),
+        'vat_ids': fields.many2many('account.tax', 'purchase_order_vat', 'vat_id', 'tax_id', 'VAT'),
+        'freight': fields.float('Freight'),
+        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)')], 'Type', required=True),
+        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)')], 'Type', required=True),
                 }
 
+    _defaults = {
+        'insurance_type': 'fix',
+        'freight_type': 'fix'
+                 }
+    
     def wkf_confirm_order(self, cr, uid, ids, context=None):
         res = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)
         proc_obj = self.pool.get('procurement.order')

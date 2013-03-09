@@ -22,6 +22,9 @@
                 <xpath expr="//group/group/field[@name='price_unit']" position='after'>
                     <field name="discount"/>
                 </xpath>
+                <xpath expr="//group/group/field[@name='taxes_id']" position='replace'>
+                    <field name="taxes_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]" invisible="1"/>
+                </xpath>
             </field>
         </record>
 
@@ -34,8 +37,8 @@
                 <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']/group/group/field[@name='payment_term_id']" position="replace">
                     <field name="payment_term_id" invisible="1"/>
                 </xpath>
-                <xpath expr="//notebook/page[@string='Purchase Order']/group/field[@name='amount_tax']" position="after">
-                    <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <xpath expr="//notebook/page[@string='Purchase Order']/field/tree/field[@name='taxes_id']" position="replace">
+                    <field name="taxes_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]" invisible="1"/>
                 </xpath>
                 <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']" position='inside'>
                     <separator string="Other Charges"/>
@@ -43,7 +46,6 @@
                             <group>
                                 <field name="octroi"/>
                                 <field name="package_and_forwording"/>
-                                <field name="insurance"/>
                                 <field name="commission"/>
                             </group>
                             <group>
@@ -53,6 +55,24 @@
                                 <field name="delivey"/>
                             </group>
                         </group>
+                </xpath>
+                <xpath expr="//notebook/page[@string='Purchase Order']/group/field[@name='amount_untaxed']" position="after">
+                    <field name="excies_ids" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
+                    <field name="vat_ids" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
+                    <div class="oe_inline">
+                        <label for="insurance"/>
+                        <field name="insurance_type" class="oe_inline" />
+                        <field name="insurance" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    </div>
+                    <div  class="oe_inline">
+                        <label for="freight"/>
+                        <field name="freight_type" class=" oe_inline" />
+                        <field name="freight" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    </div>
+                    <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </xpath>
+                <xpath expr="//notebook/page[@string='Purchase Order']/group/field[@name='amount_tax']" position="replace">
+                    <field name="amount_tax" invisible="1"/>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="before">
                     <field name="discount"/>

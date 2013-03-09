@@ -28,3 +28,9 @@ class account_tax(osv.Model):
     _columns = {
         'tax_type': fields.selection([('ex','Excise'),('edu','Education Cess'),('vat','Vat'),('add', 'Additional Tax'),('other', 'Other')], 'Tax Category', required=True)
                 }
+    
+    _defaults = {
+        'tax_type': 'other',
+        }
+
+account_tax()

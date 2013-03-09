@@ -79,6 +79,8 @@ class indent_indent(osv.Model):
 
     def _default_employee_id(self, cr, uid, context=None):
         employees = self.pool.get('hr.employee').search(cr, uid, [('user_id', '=', uid)], context=context)
+        if not employees:
+            raise osv.except_osv(_("Warning !"),_('You must define an employee and assign the related user to that employee.'))
         return employees and employees[0] or False
 
     def _default_stock_location(self, cr, uid, context=None):
@@ -112,19 +114,22 @@ class indent_indent(osv.Model):
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
 
+    def _get_manager(self, cr, uid, indent, emp, priority, context=None):
+        if not emp.coach_id and not emp.coach_id.user_id:
+            return True
+        else:
+            self.pool.get('document.authority.instance').create(cr, uid, {'name': emp.coach_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
+            priority -= 2
+            return self._get_manager(cr, uid, indent, emp.coach_id, priority=priority, context=context)
+
     def indent_confirm(self, cr, uid, ids, context=None):
-        document_authority_obj = self.pool.get('document.authority')
         document_authority_instance_obj = self.pool.get('document.authority.instance')
-        indent_authority_ids = document_authority_obj.search(cr, uid, [('document', '=', 'indent')], context=context)
         for indent in self.browse(cr, uid, ids, context=context): 
             if not indent.product_lines:
                 raise osv.except_osv(_("Warning !"),_('You cannot confirm an indent which has no line.'))
-            for authority in document_authority_obj.browse(cr, uid, indent_authority_ids, context=context):
-                document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': authority.document, 'indent_id': indent.id, 'priority': authority.priority}, context=context)
-            if indent.employee_id and indent.employee_id.department_id and indent.employee_id.department_id.manager_id and indent.employee_id.department_id.manager_id.user_id:
-                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.department_id.manager_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 90}, context=context)
             if indent.employee_id and indent.employee_id.user_id:
-                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 95}, context=context)
+                document_authority_instance_obj.create(cr, uid, {'name': indent.employee_id.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': 10}, context=context)
+            self._get_manager(cr, uid, indent, indent.employee_id, priority=8, context=context)
         self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
         return True
 

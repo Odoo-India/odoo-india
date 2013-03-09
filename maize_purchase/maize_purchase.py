@@ -114,7 +114,6 @@ class purchase_order(osv.Model):
                     if order.insurance != 0:
                         amount_untaxed += (amount_untaxed * order.insurance) / 100
                     amount_untaxed += order.freight
-            print "\n-==- vat exices =-=", amount_vat, amount_exices, insurance, freight
             res[order.id]['amount_total']= amount_untaxed + res[order.id]['amount_tax'] + res[order.id]['other_charges']
         return res
     
@@ -156,14 +155,22 @@ class purchase_order(osv.Model):
         'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Exices'),
         'vat_ids': fields.many2many('account.tax', 'purchase_order_vat', 'vat_id', 'tax_id', 'VAT'),
         'freight': fields.float('Freight'),
-        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)')], 'Type', required=True),
-        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)')], 'Type', required=True),
+        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True),
+        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True),
                 }
 
     _defaults = {
         'insurance_type': 'fix',
         'freight_type': 'fix'
                  }
+    
+    def onchange_reset(self, cr, uid, ids, insurance_type, freight_type):
+        dict = {}
+        if insurance_type == 'include':
+            dict.update({'insurance': 0.0})
+        if freight_type == 'include':
+            dict.update({'freight': 0.0})
+        return {'value': dict}
     
     def wkf_confirm_order(self, cr, uid, ids, context=None):
         res = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)

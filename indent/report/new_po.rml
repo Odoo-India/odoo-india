@@ -54,17 +54,20 @@
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
       <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
     </blockTableStyle>
     <blockTableStyle id="Table10">
       <blockAlignment value="LEFT"/>
@@ -103,6 +106,7 @@
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
       <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
@@ -234,8 +238,11 @@
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="300.0,55.0,55.0,50.0,110.0" repeatRows="1" style="Table_Product_Header_Title">
+    <blockTable colWidths="20.0,300.0,55.0,55.0,50.0,90.0" repeatRows="1" style="Table_Product_Header_Title">
       <tr>
+        <td>
+          <para style="terp_tblheader_Details_Centre">Sr.No.</para>
+        </td>
         <td>
           <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
         </td>
@@ -255,8 +262,11 @@
     </blockTable>mobile
     <section>
       <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]]</para>
-      <blockTable colWidths="300.0,55.0,55.0,50.0,110.0" style="Table_Product_Line">
+      <blockTable colWidths="20.0,300.0,55.0,55.0,50.0,90.0" style="Table_Product_Line">
         <tr>
+          <td>
+            <para style="terp_default_9">[[ sequence(order_line) ]]</para>
+          </td>
           <td>
             <para style="terp_default_9">[[ order_line.name ]]</para>
           </td>
@@ -316,22 +326,17 @@
         </td>
       </tr>
     </blockTable>
-     <blockTable colWidths="420.0,10.0,140.0" style="Tableau2">
+     <blockTable colWidths="480.0,10.0,80.0" style="Tableau2">
       <tr>
         <td>
-        <blockTable colWidhts="400.0,20.0" style="Standard_Outline">
+        <blockTable colWidhts="480.0" style="Standard_Outline">
             <tr>
                 <td>
-                    <para style="terp_default_9"> C.S.T. <font color="white"> .......</font>: [[ formatLang(order.amount_tax) or '0.0']] </para>
-                    <para style="terp_default_9"> Freight <font color="white"> .....</font>:  [[ ' N I L']] </para>
+                    <para style="terp_default_9"> Excise <font color="white"> ......</font>: [[ tax(order)  or '']] [[ get_value().get('excise')]]</para>
+                    <para style="terp_default_9"> VAT <font color="white"> ..........</font>: [[ get_value().get('vat') or '']]</para>
+                    <para style="terp_default_9"> Freight <font color="white"> .....</font>:  [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
                     <para style="terp_default_9"> Delivery <font color="white"> ...</font>: MILL-DELIVERY</para>
                     <para style="terp_default_9"> Despatch <font color="white"> .</font>: [[ (order.delivey ) or '']]</para>
-                </td>
-                <td>
-                    <para style="terp_default_9"> </para>
-                    <para style="terp_default_9"> </para>
-                    <para style="terp_default_9"> </para>
-                    <para style="terp_default_9"> </para>
                 </td>
             </tr>
         </blockTable>

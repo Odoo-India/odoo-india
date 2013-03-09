@@ -27,8 +27,19 @@ from openerp.tools import amount_to_text_en as text
 
 class new_po(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
+        self.sr_no = 0
+        self.cr = cr
+        self.uid = uid
+        self.get_value ={}
         super(new_po, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({'time': time, 'amount_to_word': self._amount_to_word, 'indent_no': self._indent_no})
+        self.localcontext.update({'time': time, 
+                                  'amount_to_word': self._amount_to_word,
+                                  'indent_no': self._indent_no,
+                                  'tax': self._tax,
+                                  'get_value': self._get_value,
+                                  'sequence': self._serial_no,})
+        
+        self.context = context
     
     def _indent_no(self, name):
         if name:
@@ -36,6 +47,22 @@ class new_po(report_sxw.rml_parse):
             return no[len(no)-1]
         else:
             return '-'
+    
+    def _serial_no(self, line):
+        self.sr_no += 1
+        return self.sr_no
+    
+    def _tax(self,order):
+        tax_obj = self.pool.get('account.tax')
+        excise_tax = vat_tax = ''
+        for exc in order.excies_ids:
+            excise_tax += exc.name + ' '
+        for vat in order.vat_ids:
+            vat_tax += vat.name + ' '
+        return self.get_value.update({'excise': excise_tax, 'vat': vat_tax})
+    
+    def _get_value(self):
+        return self.get_value
     
     def _amount_to_word(self,order):
         res = {}

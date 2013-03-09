@@ -61,13 +61,13 @@
                     <field name="vat_ids" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
                     <div class="oe_inline">
                         <label for="insurance"/>
-                        <field name="insurance_type" class="oe_inline" />
-                        <field name="insurance" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        <field name="insurance_type" class="oe_inline" on_change="onchange_reset(insurance_type,freight_type)"/>
+                        <field name="insurance" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"  attrs="{'invisible':[('insurance_type','=','include')]}"/>
                     </div>
                     <div  class="oe_inline">
                         <label for="freight"/>
-                        <field name="freight_type" class=" oe_inline" />
-                        <field name="freight" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        <field name="freight_type" class=" oe_inline" on_change="onchange_reset(insurance_type,freight_type)" />
+                        <field name="freight" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('freight_type','=','include')]}"/>
                     </div>
                     <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 </xpath>

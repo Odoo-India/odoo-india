@@ -12,12 +12,14 @@
 	                    <field name="package_and_forwording"/>
 	                    <field name="insurance"/>
 	                    <field name="commission"/>
+	                    <field name="excise"/>
                     </group>
                     <group>
 	                    <field name="other_charge"/>
 	                    <field name="other_discount"/>
-	                    <field name="octroi"/>
+	                    <field name="freight"/>
 	                    <field name="delivey"/>
+	                    <field name="vat"/>
                     </group>
                     <div>
                          Check the Field which you want to generate the comparison report. 

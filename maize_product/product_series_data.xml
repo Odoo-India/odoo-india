@@ -73,7 +73,7 @@
         <!-- UOM Data -->
         <record id="product.product_uom_no" model="product.uom">
             <field name="category_id" ref="product.product_uom_categ_unit"/>
-            <field name="name">NU</field>
+            <field name="name">NO</field>
             <field name="factor" eval="1"/>
         </record>
         <record id="product.product_uom_kgm" model="product.uom">

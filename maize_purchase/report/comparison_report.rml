@@ -145,10 +145,19 @@
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_discount'] == True and 'Other Discount' or removeParentNode('td')]]</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['octroi'] == True and 'Octroi' or removeParentNode('td')]]</para>
+          <para style="terp_tblheader_Details_Centre"> [[ data['form']['freight'] == True and 'Freight' or removeParentNode('td')]]</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['delivey'] == True and 'Delivey' or removeParentNode('td')]]</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre"> [[ data['form']['excise'] == True and 'Excise' or removeParentNode('td')]]</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre"> [[ data['form']['vat'] == True and 'VAT' or removeParentNode('td')]]</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre"> Cost TO Company </para>
         </td>
       </tr>
     </blockTable>
@@ -184,10 +193,19 @@
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_discount'] == True and ' ' or removeParentNode('td')]]</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['octroi'] == True and ' ' or removeParentNode('td')]]</para>
+          <para style="terp_tblheader_Details_Centre"> [[ data['form']['freight'] == True and ' ' or removeParentNode('td')]]</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['delivey'] == True and ' ' or removeParentNode('td')]]</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre"> [[ data['form']['excise'] == True and ' ' or removeParentNode('td')]]</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre"> [[ data['form']['vat'] == True and ' ' or removeParentNode('td')]]</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">  </para>
         </td>
           </tr>
         </blockTable>
@@ -202,31 +220,40 @@
                 <para style="terp_tblheader_Details_Centre"> [[ (product_line.product_id.name) ]] </para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ (product_line.price_unit) or '0.0']]</para>
+                <para style="terp_tblheader_Details_Centre"> [[ (product_line.price_unit) or '0.00']]</para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and (product_line.discount or '0.0') or removeParentNode('td')]]</para>
+                <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and (product_line.discount or '0.00') or removeParentNode('td')]]</para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['package_and_forwording'] == True and (po_line.package_and_forwording or '0.0') or removeParentNode('td')]]</para>
+                <para style="terp_tblheader_Details_Centre"> [[ data['form']['package_and_forwording'] == True and (po_line.package_and_forwording or '0.00') or removeParentNode('td')]]</para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['insurance'] == True and (po_line.insurance  or '0.0') or removeParentNode('td')]]</para>
+                <para style="terp_tblheader_Details_Centre"> [[ data['form']['insurance'] == True and ((po_line.insurance_type == 'fix' and formatLang(po_line.insurance)) or (po_line.insurance_type == 'percentage' and formatLang(po_line.insurance) + '%') or '0.00') or removeParentNode('td')]]</para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['commission'] == True and (po_line.commission  or '0.0') or removeParentNode('td')]]</para>
+                <para style="terp_tblheader_Details_Centre"> [[ data['form']['commission'] == True and (po_line.commission  or '0.00') or removeParentNode('td')]]</para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_charge'] == True and (po_line.other_charge  or '0.0') or removeParentNode('td')]]</para>
+                <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_charge'] == True and (po_line.other_charge  or '0.00') or removeParentNode('td')]]</para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_discount'] == True and (po_line.other_discount  or '0.0') or removeParentNode('td')]]</para>
+                <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_discount'] == True and (po_line.other_discount  or '0.00') or removeParentNode('td')]]</para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['octroi'] == True and (po_line.octroi  or '0.0') or removeParentNode('td')]]</para>
+                <para style="terp_tblheader_Details_Centre"> [[ data['form']['freight'] == True and ((po_line.freight_type == 'fix' and formatLang(po_line.freight)) or (po_line.freight_type == 'percentage' and formatLang(po_line.freight) + '%') or '0.00') or removeParentNode('td')]]</para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['delivey'] == True and (po_line.delivey  or '0.0') or removeParentNode('td')]]</para>
+                <para style="terp_tblheader_Details_Centre"> [[ data['form']['delivey'] == True and (po_line.delivey  or '0.00') or removeParentNode('td')]]</para>
+            </td>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> [[ (data['form']['excise'] == True or removeParentNode('td')) and tax(po_line or '0.00') ]] [[ get_value().get('excise') or '0.00']]</para>
+            </td>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> [[ (data['form']['vat'] == True or removeParentNode('td')) and tax(po_line or '0.00') ]] [[ get_value().get('vat') or '0.00']]</para>
+            </td>
+            <td>
+                <para style="terp_tblheader_Details_Centre">  [[ po_line.amount_total]]</para>
             </td>
         </tr>
         </blockTable>

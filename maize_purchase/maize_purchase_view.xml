@@ -62,8 +62,8 @@
                         <group>
                             <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="amount_tax" invisible="1"/>
-                            <field name="excies_ids" widget="many2many_tags" class="oe_left" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
-                            <field name="vat_ids" widget="many2many_tags" class="oe_left" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
+                            <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','ex')]"/>
+                            <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]"/>
                             <div>
                                 <label for="insurance"/>
                                 <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type)"/>

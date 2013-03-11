@@ -56,30 +56,39 @@
                             </group>
                         </group>
                 </xpath>
-                <xpath expr="//notebook/page[@string='Purchase Order']/group/field[@name='amount_untaxed']" position="after">
-                    <field name="excies_ids" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
-                    <field name="vat_ids" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
-                    <div class="oe_inline">
-                        <label for="insurance"/>
-                        <field name="insurance_type" class="oe_inline" on_change="onchange_reset(insurance_type,freight_type)"/>
-                        <field name="insurance" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"  attrs="{'invisible':[('insurance_type','=','include')]}"/>
-                    </div>
-                    <div  class="oe_inline">
-                        <label for="freight"/>
-                        <field name="freight_type" class=" oe_inline" on_change="onchange_reset(insurance_type,freight_type)" />
-                        <field name="freight" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('freight_type','=','include')]}"/>
-                    </div>
-                    <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                </xpath>
-                <xpath expr="//notebook/page[@string='Purchase Order']/group/field[@name='amount_tax']" position="replace">
-                    <field name="amount_tax" invisible="1"/>
+                <xpath expr="//notebook/page[@string='Purchase Order']/group" position="replace">
+                    <group>
+                        <group></group>
+                        <group>
+                            <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="amount_tax" invisible="1"/>
+                            <field name="excies_ids" widget="many2many_tags" class="oe_left" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
+                            <field name="vat_ids" widget="many2many_tags" class="oe_left" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
+                            <div>
+                                <label for="insurance"/>
+                                <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type)"/>
+                                <field name="insurance" widget="monetary" options="{'currency_field': 'currency_id'}"  attrs="{'invisible':[('insurance_type','=','include')]}"/>
+                            </div>
+                            <div>
+                                <label for="freight"/>
+                                <field name="freight_type" on_change="onchange_reset(insurance_type,freight_type)" />
+                                <field name="freight" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('freight_type','=','include')]}"/>
+                            </div>
+                            <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <div class="oe_subtotal_footer_separator oe_inline">
+                                <label for="amount_total"/>
+                                <button name="button_dummy" states="draft" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                            </div>
+                            <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']" position="before">
                     <field name="discount"/>
                 </xpath>
-            	<xpath expr="//field[@name='partner_ref']" position='after'>
-    		        <field name='po_series_id'/>
-            	</xpath>                
+                <xpath expr="//field[@name='partner_ref']" position='after'>
+                    <field name='po_series_id'/>
+                </xpath>
             </field>
         </record>
         

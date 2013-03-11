@@ -70,7 +70,7 @@ class purchase_order(osv.Model):
     
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
-        amount_exices = amount_vat = insurance = freight = 0
+        amount_exices = amount_vat = insurance = freight = amount_untaxed= 0
         cur_obj=self.pool.get('res.currency')
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = {
@@ -82,20 +82,20 @@ class purchase_order(osv.Model):
             val = val1 = 0.0
             cur = order.pricelist_id.currency_id
             for line in order.order_line:
-               val1 += line.price_subtotal
-               for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
+                val1 += line.price_subtotal
+                amount_untaxed = val1
+                for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
+                for exices in self.pool.get('account.tax').compute_all(cr, uid, order.excies_ids, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
+                    amount_exices += exices.get('amount', 0.0)
+                amount_untaxed += amount_exices
+                for vat in self.pool.get('account.tax').compute_all(cr, uid, order.vat_ids, amount_untaxed, 1, line.product_id, order.partner_id)['taxes']:
+                    amount_vat += vat.get('amount', 0.0)
+                amount_untaxed += amount_vat
             other_charge = (order.package_and_forwording + order.octroi) - order.commission
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
-            amount_untaxed = res[order.id]['amount_untaxed']
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
-            for c in self.pool.get('account.tax').compute_all(cr, uid, order.excies_ids, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
-                amount_exices += c.get('amount', 0.0)
-            amount_untaxed += amount_exices
-            for c in self.pool.get('account.tax').compute_all(cr, uid, order.vat_ids, amount_untaxed, 1, line.product_id, order.partner_id)['taxes']:
-                amount_vat += c.get('amount', 0.0)
-            amount_untaxed += amount_vat
             if order.insurance_type == order.freight_type:
                 if order.insurance_type == 'fix':
                     amount_untaxed += order.insurance

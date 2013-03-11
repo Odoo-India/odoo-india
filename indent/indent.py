@@ -223,19 +223,37 @@ class indent_indent(osv.Model):
         '''
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
         picking_id = self.browse(cr, uid, ids[0], context=context).picking_id.id
-        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_form')
+        incoming_ship_id = self.pool.get('stock.picking.in').search(cr,uid,[('purchase_id.indent_id.id','=',ids[0])])
+        domain = [('purchase_id.indent_id.id','=',ids[0])]
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_in_tree')
         result = {
-            'name': _('Internal Moves'),
+            'name': _('Receive Product'),
             'view_type': 'form',
-            'view_mode': 'form',
-            'view_id': res and res[1] or False,
-            'res_model': 'stock.picking',
+            "view_mode": 'tree,form',
+            'res_model': 'stock.picking.in',
+            'domain': domain,
             'type': 'ir.actions.act_window',
-            'nodestroy': True,
-            'target': 'current',
-            'res_id': picking_id,
         }
         return result
+
+    def action_issue_receipt(self, cr, uid, ids, context=None):
+        '''
+        This function returns an action that display internal move of given indent ids.
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time'
+        picking_id = self.browse(cr, uid, ids[0], context=context).picking_id.id
+        incoming_ship_id = self.pool.get('stock.picking').search(cr,uid,[('indent_id.id','=',ids[0])])
+        domain = [('indent_id.id','=',ids[0]),('type','=','internal')]
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'action_picking_tree6')
+        result = {
+            'name': _('Issue Receipt'),
+            'view_type': 'form',
+            "view_mode": 'tree,form',
+            'res_model': 'stock.picking',
+            'domain': domain,
+            'type': 'ir.actions.act_window',
+        }
+        return result    
 
     def _prepare_indent_line_move(self, cr, uid, indent, line, picking_id, date_planned, context=None):
         location_id = self._default_stock_location(cr, uid, context=context)

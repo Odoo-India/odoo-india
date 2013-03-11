@@ -16,12 +16,12 @@
         </record>
         <record id="maize_child_tax2" model="account.tax">
             <field name="name"> Excise 2%</field>
-            <field name="tax_type">ex</field>
+            <field name="tax_type">other</field>
             <field name="amount">0.02</field>
         </record>
         <record id="maize_child_tax1" model="account.tax">
             <field name="name"> Excise 1%</field>
-            <field name="tax_type">ex</field>
+            <field name="tax_type">other</field>
             <field name="amount">0.01</field>
         </record>
         <record id="maize_excise_12" model="account.tax">
@@ -33,13 +33,13 @@
         </record>
         <record id="maize_vat_include" model="account.tax">
             <field name="name"> Tax paid</field>
-            <field name="tax_type">vat</field>
+            <field name="tax_type">other</field>
             <field name="price_include">True</field>
             <field name="amount">0.0</field>
         </record>
         <record id="maize_vat_tax1" model="account.tax">
             <field name="name"> VAT 2.5%</field>
-            <field name="tax_type">vat</field>
+            <field name="tax_type">other</field>
             <field name="amount">0.025</field>
         </record>
         <record id="maize_vat_15" model="account.tax">
@@ -48,6 +48,16 @@
             <field name="amount">0.15</field>
             <field name="include_base_amount">True</field>
             <field name="child_ids" eval="[(6,0,[ref('maize_vat_tax1')])]"/>
+        </record>
+        <record id="maize_vat_c_form" model="account.tax">
+            <field name="name"> 'C' form to be Issued</field>
+            <field name="tax_type">vat</field>
+            <field name="amount">0.00</field>
+        </record>
+        <record id="maize_vat_h_form" model="account.tax">
+            <field name="name"> 'H' form to be Issued</field>
+            <field name="tax_type">vat</field>
+            <field name="amount">0.00</field>
         </record>
     </data>
 </openerp>

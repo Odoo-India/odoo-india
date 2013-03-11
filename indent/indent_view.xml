@@ -153,9 +153,9 @@
                                     </tree>
                                 </field>
                             </page>
-                            <page string="Document Status">
+                            <page string="Status">
                                 <field name="indent_authority_ids" readonly="1">
-                                    <tree string="Document Status" editable="bottom">
+                                    <tree string="Status" editable="bottom">
                                         <field name="date"/>
                                         <field name="name"/>
                                         <field name="priority"/>

@@ -182,7 +182,7 @@ class purchase_order(osv.Model):
         
         po = self.browse(cr, uid, ids[0], context)
         taxes = po.excies_ids + po.vat_ids
-        self.pool.get('account.invoice').write(cr, uid, [invoice_id], {'freight':po.freight, 'insurance':po.insurance, 'other_charges':po.other_charges}, context)
+        invoice_pool.write(cr, uid, [invoice_id], {'freight':po.freight, 'insurance':po.insurance, 'other_charges':po.other_charges}, context)
         
         for tax in tax_pool.compute_all(cr, uid, taxes, po.amount_untaxed, 1)['taxes']:
             val = {}
@@ -200,7 +200,9 @@ class purchase_order(osv.Model):
             val['account_analytic_id'] = tax['account_analytic_collected_id']
 
             invoice_tax_pool.create(cr, uid, val, context)
-                  
+        cr.commit()
+        invoice_pool.button_compute(cr, uid, [invoice_id], context=context, set_total=True)
+        
         return invoice_id
     
     def wkf_confirm_order(self, cr, uid, ids, context=None):

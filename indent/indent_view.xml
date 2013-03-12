@@ -68,16 +68,17 @@
                         </div>
 	                    <div class="oe_right oe_inline" name="buttons">
 	  	                    <button name="%(action_purchase_requisition_indent_view)d" string="Tender(s)" type="action"
-	                        	groups="purchase.group_purchase_user" states="inprogress"/> 
+	                        	groups="purchase.group_purchase_user" states="waiting_approval,inprogress,received"/> 
                             <button name="process_purchase_order" string="Process Purchase Orders" type="object"
                                 groups="purchase.group_purchase_user" attrs="{'invisible': [('purchase_done','=',False)]}"/>	                        	
 
                         </div>
                         <div class="oe_right oe_button_box" name="buttons"> 
 	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action"
-	                        	groups="purchase.group_purchase_user" attrs="{'invisible': [('purchase_done','=',False)]}"/>
-                            <button name="action_issue_receipt" string="Issue Reciept(s)" attrs="{'invisible': [('purchase_done','=',False)]}" type="object"
-                                groups="purchase.group_purchase_user"/>                                
+	                        	groups="purchase.group_purchase_user" attrs="{'invisible': [('process_purchase_done','=',False)]}"/>
+                            <button name="action_issue_receipt" string="Issue Reciept(s)" attrs="{'invisible': [('process_purchase_done','=',False)]}" type="object"
+                                groups="purchase.group_purchase_user"/>  
+                                <field name="process_purchase_done" invisible="1"/>                              
                         </div>
                         <group>
                             <group>

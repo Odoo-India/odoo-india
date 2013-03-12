@@ -45,6 +45,7 @@ class purchase_order_line(osv.Model):
 purchase_order_line()
 class purchase_requisition(osv.osv):
     _inherit = "purchase.requisition"
+    _order = "name desc"
     _defaults = {
                  'exclusive': 'exclusive',
     }

@@ -32,6 +32,7 @@ class indent_indent(osv.Model):
     _name = 'indent.indent'
     _description = 'Indent'
     _inherit = ['mail.thread']
+    _order = "name desc"
     _track = {
         'state': {
             'indent.mt_indent_confirmed': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'confirm',
@@ -52,27 +53,29 @@ class indent_indent(osv.Model):
                 if req_id.state == 'done':
                     po_done = True
                 res[ids[0]] = po_done
+                self.write(cr,uid,ids[0],{'process_purchase_done':True})
         else:
             res[ids[0]] = False
         return res
 
     _columns = {
-        'name': fields.char('Indent #', size=256, required=True, track_visibility='always', states={'draft': [('readonly', False)]}),
-        'indent_date': fields.datetime('Indent Date', required=True, states={'draft': [('readonly', False)]}),
-        'required_date': fields.datetime('Required Date', required=True, states={'draft': [('readonly', False)]}),
-        'indentor_id': fields.many2one('res.users', 'Indentor', required=True, track_visibility='always', states={'draft': [('readonly', False)]}),
+        'name': fields.char('Indent #', size=256, required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
+        'indent_date': fields.datetime('Indent Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
         'employee_id': fields.many2one('hr.employee', 'Employee'),
-        'employee_department_id': fields.related('employee_id', 'department_id', type='many2one', relation='hr.department', string='Employee Department', store=True, states={'draft': [('readonly', False)]}),
-        'department_id': fields.many2one('stock.location', 'Department', required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
-        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", track_visibility='onchange', states={'draft': [('readonly', False)]}),
-        'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
-        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
-        'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products', states={'draft': [('readonly', False)]}),
+        'employee_department_id': fields.related('employee_id', 'department_id',readonly=True, type='many2one', relation='hr.department', string='Employee Department', store=True, states={'draft': [('readonly', False)]}),
+        'department_id': fields.many2one('stock.location', 'Department', required=True,readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
+        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade",readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
+        'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', readonly=True, required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
+        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange',readonly=True, states={'draft': [('readonly', False)]}),
+        'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products',readonly=True, states={'draft': [('readonly', False)]}),
         'picking_id': fields.many2one('stock.picking','Picking', states={'draft': [('readonly', False)]}),
-        'description': fields.text('Item Description', states={'draft': [('readonly', False)]}),
-        'company_id': fields.many2one('res.company', 'Company', states={'draft': [('readonly', False)]}),
-        'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', states={'draft': [('readonly', False)]}),
+        'description': fields.text('Item Description', readonly=True,states={'draft': [('readonly', False)]}),
+        'company_id': fields.many2one('res.company', 'Company', readonly=True,states={'draft': [('readonly', False)]}),
+        'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', readonly=True, states={'draft': [('readonly', False)]}),
         'purchase_done': fields.function(_check_po_done, type='boolean', string="Check Purchase Done"),
+        'process_purchase_done': fields.boolean("process done",help="Check Process Purchase Done"),
         'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange')
     }

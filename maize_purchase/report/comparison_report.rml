@@ -21,6 +21,8 @@
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="12,-1" stop="12,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="13,-1" stop="13,-1"/>
       <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
@@ -34,6 +36,8 @@
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
       <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="12,-1" stop="12,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="13,-1" stop="13,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
@@ -46,6 +50,8 @@
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="12,-1" stop="12,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="13,-1" stop="13,-1"/>
     </blockTableStyle>
     <blockTableStyle id="Table_Product_Line">
       <blockAlignment value="LEFT"/>
@@ -62,6 +68,8 @@
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
       <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="12,-1" stop="12,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="13,-1" stop="13,-1"/>
       <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
@@ -74,6 +82,9 @@
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
       <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="12,-1" stop="12,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="13,-1" stop="13,-1"/>
     </blockTableStyle>
     <initialize>
       <paraStyle name="all" alignment="justify"/>
@@ -130,19 +141,13 @@
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and 'Discount' or removeParentNode('td')]]</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['package_and_forwording'] == True and 'Packing &amp; Forwarding' or removeParentNode('td')]]</para>
+          <para style="terp_tblheader_Details_Centre"> [[ data['form']['package_and_forwording'] == True and 'Pack &amp; Forward' or removeParentNode('td')]]</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['insurance'] == True and 'Insurance' or removeParentNode('td')]]</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['commission'] == True and 'Commission' or removeParentNode('td')]]</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_charge'] == True and 'Other Charge' or removeParentNode('td')]]</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_discount'] == True and 'Other Discount' or removeParentNode('td')]]</para>
+          <para style="terp_tblheader_Details_Centre" fontSize="8.0"> [[ data['form']['commission'] == True and 'Commission' or removeParentNode('td')]]</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['freight'] == True and 'Freight' or removeParentNode('td')]]</para>
@@ -157,7 +162,7 @@
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['vat'] == True and 'VAT' or removeParentNode('td')]]</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre"> Cost TO Company </para>
+          <para style="terp_tblheader_Details_Centre"> Cost To Company </para>
         </td>
       </tr>
     </blockTable>
@@ -185,12 +190,6 @@
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['commission'] == True and ' ' or removeParentNode('td')]]</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_charge'] == True and ' ' or removeParentNode('td')]]</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_discount'] == True and ' ' or removeParentNode('td')]]</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['freight'] == True and ' ' or removeParentNode('td')]]</para>
@@ -233,12 +232,6 @@
             </td>
             <td>
                 <para style="terp_tblheader_Details_Centre"> [[ data['form']['commission'] == True and (po_line.commission  or '0.00') or removeParentNode('td')]]</para>
-            </td>
-            <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_charge'] == True and (po_line.other_charge  or '0.00') or removeParentNode('td')]]</para>
-            </td>
-            <td>
-                <para style="terp_tblheader_Details_Centre"> [[ data['form']['other_discount'] == True and (po_line.other_discount  or '0.00') or removeParentNode('td')]]</para>
             </td>
             <td>
                 <para style="terp_tblheader_Details_Centre"> [[ data['form']['freight'] == True and ((po_line.freight_type == 'fix' and formatLang(po_line.freight)) or (po_line.freight_type == 'percentage' and formatLang(po_line.freight) + '%') or '0.00') or removeParentNode('td')]]</para>

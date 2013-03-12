@@ -30,8 +30,6 @@ class comparison_report(osv.osv_memory):
         'package_and_forwording': fields.boolean('Packing & Forwarding'),
         'insurance': fields.boolean('Insurance'),
         'commission': fields.boolean('Commission'),
-        'other_charge': fields.boolean('Other Charge'),
-        'other_discount': fields.boolean('Other Discount'),
         'freight': fields.boolean('Freight'),
         'delivey': fields.boolean('Ex. GoDown / Mill Delivey'),
         'excise': fields.boolean('Excise'),
@@ -45,9 +43,9 @@ class comparison_report(osv.osv_memory):
         flage = False
         data['ids'] = context.get('active_ids', [])
         data['model'] = context.get('active_model', 'ir.ui.menu')
-        data['form'] = self.read(cr, uid, ids, ['discount',  'package_and_forwording',  'insurance', 'commission', 'other_charge', 'other_discount', 'excise', 'vat','freight', 'delivey'], context=context)[0]
+        data['form'] = self.read(cr, uid, ids, ['discount',  'package_and_forwording',  'insurance', 'commission', 'excise', 'vat','freight', 'delivey'], context=context)[0]
         report_name = 'Rate_Comparison'
-        for value in ['discount',  'package_and_forwording',  'insurance', 'commission', 'other_charge', 'other_discount', 'excise', 'vat', 'freight', 'delivey']:
+        for value in ['discount',  'package_and_forwording',  'insurance', 'commission', 'excise', 'vat', 'freight', 'delivey']:
             if data['form'][value] == True:
                 flage = True
         if not flage:

@@ -219,7 +219,7 @@ class indent_indent(osv.Model):
 
     def action_receive_products(self, cr, uid, ids, context=None):
         '''
-        This function returns an action that display internal move of given indent ids.
+        This function returns an action that display incoming shipment of given indent ids.
         '''
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
         picking_id = self.browse(cr, uid, ids[0], context=context).picking_id.id

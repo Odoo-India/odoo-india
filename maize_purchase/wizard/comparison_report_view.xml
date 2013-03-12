@@ -21,10 +21,10 @@
 	                    <field name="delivey"/>
 	                    <field name="vat"/>
                     </group>
-                    <div>
-                         Check the Field which you want to generate the comparison report. 
-                    </div>
                 </group>
+                <p>
+                     TICK THE REQUIRED CHECK BOXES ON WHICH YOU WANT TO GENERATE THE COMPARISON REPORT. 
+                </p>
                 <footer>
                         <button string="Print" name="action_print" type="object" class="oe_highlight"/>
                         or

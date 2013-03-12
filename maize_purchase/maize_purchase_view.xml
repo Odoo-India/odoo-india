@@ -44,7 +44,6 @@
                     <separator string="Other Charges"/>
                         <group>
                             <group>
-                                <field name="octroi"/>
                                 <field name="package_and_forwording"/>
                                 <field name="commission"/>
                             </group>

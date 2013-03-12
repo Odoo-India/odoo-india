@@ -92,7 +92,7 @@ class purchase_order(osv.Model):
                 for vat in self.pool.get('account.tax').compute_all(cr, uid, order.vat_ids, amount_untaxed, 1, line.product_id, order.partner_id)['taxes']:
                     amount_vat += vat.get('amount', 0.0)
                 amount_untaxed += amount_vat
-            other_charge = (order.package_and_forwording + order.octroi) - order.commission
+            other_charge = order.package_and_forwording  - order.commission
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
@@ -129,7 +129,6 @@ class purchase_order(osv.Model):
         'commission': fields.float('Commission'),
         'other_charge': fields.float('Other Charges'),
         'other_discount': fields.float('Other Discount'),
-        'octroi': fields.float('Octroi'),
         'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
         'po_series_id': fields.many2one('product.order.series', 'PO Series'),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
@@ -152,7 +151,7 @@ class purchase_order(osv.Model):
                 'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The other charge"),
-        'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Exices'),
+        'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise'),
         'vat_ids': fields.many2many('account.tax', 'purchase_order_vat', 'vat_id', 'tax_id', 'VAT'),
         'freight': fields.float('Freight'),
         'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True),

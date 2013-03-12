@@ -32,7 +32,7 @@ class comparison_report(osv.osv_memory):
         'commission': fields.boolean('Commission'),
         'other_charge': fields.boolean('Other Charge'),
         'other_discount': fields.boolean('Other Discount'),
-        'freight': fields.boolean('Freught'),
+        'freight': fields.boolean('Freight'),
         'delivey': fields.boolean('Ex. GoDown / Mill Delivey'),
         'excise': fields.boolean('Excise'),
         'vat': fields.boolean('VAT'),

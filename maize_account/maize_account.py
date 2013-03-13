@@ -49,6 +49,7 @@ class account_invoice(osv.Model):
             for line in invoice.tax_line:
                 res[invoice.id]['amount_tax'] += line.amount
             res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + invoice.insurance + invoice.other_charges
+        print res
         return res
         
     def _get_invoice_line(self, cr, uid, ids, context=None):

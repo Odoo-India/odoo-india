@@ -63,13 +63,13 @@
                             <field name="amount_tax" invisible="1"/>
                             <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','ex')]"/>
                             <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]"/>
+                            <label for="insurance"/>
                             <div>
-                                <label for="insurance"/>
                                 <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type)"/>
                                 <field name="insurance" widget="monetary" options="{'currency_field': 'currency_id'}"  attrs="{'invisible':[('insurance_type','=','include')]}"/>
                             </div>
+                            <label for="freight"/>
                             <div>
-                                <label for="freight"/>
                                 <field name="freight_type" on_change="onchange_reset(insurance_type,freight_type)" />
                                 <field name="freight" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('freight_type','=','include')]}"/>
                             </div>

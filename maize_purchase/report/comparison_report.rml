@@ -126,13 +126,34 @@
     </blockTable>
     <para style="terp_default_8"> <font color="white"> </font> </para>
     <para style="terp_default_8">[[repeatIn(objects,'order')]]</para>
+    <blockTable  style="Table_Product_Header_Title">
+    <tr>
+        <td>
+            <para style="terp_tblheader_Details_Centre"> Product </para>
+        </td>
+        <td>
+            <para style="terp_tblheader_Details_Centre"> Unit </para>
+        </td>
+    </tr>
+    </blockTable>
+    <section>
+        <para style="terp_default_8">[[ repeatIn(order.line_ids,'product_line') ]]</para>
+        <blockTable  style="Table_Product_Line">
+        <tr>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> [[ product_line.product_id.name]] </para>
+            </td>
+            <td>
+                <para style="terp_tblheader_Details_Centre"> [[ product_line.product_uom_id.name]] </para>
+            </td>
+        </tr>
+        </blockTable>
+    </section>
+    <para style="terp_default_8"> <font color="white"> </font> </para>
     <blockTable style="Table_Product_Header_Title">
       <tr>
         <td>
             <para style="terp_tblheader_Details_Centre"> Supplier</para>
-        </td>
-        <td>
-            <para style="terp_tblheader_Details_Centre"> Product</para>
         </td>
         <td>
             <para style="terp_tblheader_Details_Centre"> Unit Price</para>
@@ -174,9 +195,6 @@
               <para style="terp_tblheader_Details_Centre"> [[ (po_line.partner_id.name)]]</para>
         </td>
         <td>
-              <para style="terp_tblheader_Details_Centre"> </para>
-        </td>
-        <td>
             <para style="terp_tblheader_Details_Centre"> </para>
         </td>
         <td>
@@ -214,9 +232,6 @@
         <tr>
             <td>
                 <para style="terp_tblheader_Details_Centre"> </para>
-            </td>
-            <td>
-                <para style="terp_tblheader_Details_Centre"> [[ (product_line.product_id.name) ]] </para>
             </td>
             <td>
                 <para style="terp_tblheader_Details_Centre"> [[ (product_line.price_unit) or '0.00']]</para>

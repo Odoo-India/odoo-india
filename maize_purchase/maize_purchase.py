@@ -173,9 +173,6 @@ class purchase_order(osv.Model):
         return {'value': dict}
         
     def action_invoice_create(self, cr, uid, ids, context=None):
-        tax_pool = self.pool.get('account.tax')
-        cur_obj = self.pool.get('res.currency')
-        invoice_tax_pool = self.pool.get('account.invoice.tax')
         invoice_pool = self.pool.get('account.invoice')
         
         invoice_id = super(purchase_order, self).action_invoice_create(cr, uid, ids, context)
@@ -183,33 +180,6 @@ class purchase_order(osv.Model):
         po = self.browse(cr, uid, ids[0], context)
         taxes = po.excies_ids + po.vat_ids
         invoice_pool.write(cr, uid, [invoice_id], {'freight':po.freight, 'insurance':po.insurance, 'other_charges':po.other_charges}, context)
-        cr.commit()
-        
-        last_tax = 0.0
-        
-        for taxes in po.excies_ids + po.vat_ids:
-            invoice_amount = last_tax + po.amount_untaxed
-            
-            for tax in tax_pool.compute_all(cr, uid, [taxes], invoice_amount, 1)['taxes']:
-                val = {}
-                val['invoice_id'] = invoice_id
-                val['name'] = tax['name']
-                val['amount'] = tax['amount']
-                val['manual'] = False
-                val['sequence'] = tax['sequence']
-                val['base'] = tax['price_unit']
-                val['base_code_id'] = tax['base_code_id']
-                val['tax_code_id'] = tax['tax_code_id']
-                val['base_amount'] = val['base'] * tax['base_sign']
-                val['tax_amount'] = val['amount'] * tax['tax_sign']
-                val['account_id'] = tax['account_collected_id']
-                val['account_analytic_id'] = tax['account_analytic_collected_id']
-
-                invoice_tax_pool.create(cr, uid, val, context)
-                
-                last_tax += (val['amount'] * tax['tax_sign'])
-       
-        cr.commit()
         invoice_pool.button_compute(cr, uid, [invoice_id], context=context, set_total=True)
         return invoice_id
     

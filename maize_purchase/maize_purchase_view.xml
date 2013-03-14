@@ -61,7 +61,7 @@
                         <group>
                             <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="amount_tax" invisible="1"/>
-                            <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','ex')]"/>
+                            <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','excise')]"/>
                             <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]"/>
                             <div>
 	                            <label for="insurance"/>

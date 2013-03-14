@@ -169,16 +169,16 @@ class purchase_order(osv.Model):
         if isinstance(ids, (int, long)):
             ids = [ids]
         for order in self.browse(cr, uid, ids, context=context):
-            excies_ids = []
-            vat_ids = []
+            excies_ids = [excies_id.id for excies_id in order.excies_ids]
+            vat_ids = [vat_id.id for vat_id in order.vat_ids]
             if ('excies_ids' in vals) and ('vat_ids' in vals):
                 excies_ids = vals.get('excies_ids') and vals.get('excies_ids')[0][2] or []
                 vat_ids = vals.get('vat_ids') and vals.get('vat_ids')[0][2] or []
             if 'excies_ids' in vals and 'vat_ids' not in vals:
                 excies_ids = vals.get('excies_ids') and vals.get('excies_ids')[0][2] or []
-                vat_ids = [vat_id.id for vat_id in self.browse(cr, uid, order.id, context=context).vat_ids]
+                vat_ids = [vat_id.id for vat_id in order.vat_ids]
             if 'vat_ids' in vals and 'excies_ids' not in vals:
-                excies_ids = [excies_id.id for excies_id in self.browse(cr, uid, order.id, context=context).excies_ids]
+                excies_ids = [excies_id.id for excies_id in order.excies_ids]
                 vat_ids = vals.get('vat_ids') and vals.get('vat_ids')[0][2] or []
             for line in order.order_line:
                 line_obj.write(cr, uid, [line.id], {'taxes_id': [(6, 0, excies_ids + vat_ids)]}, context=context)
@@ -195,7 +195,7 @@ class purchase_order(osv.Model):
     def action_invoice_create(self, cr, uid, ids, context=None):
         invoice_pool = self.pool.get('account.invoice')
         
-        invoice_id = super(purchase_order, self).action_invoice_create(cr, uid, ids, context)
+        invoice_id = super(purchase_order, self).action_invoice_create(cr, uid, ids, context=context)
         
         po = self.browse(cr, uid, ids[0], context)
         taxes = po.excies_ids + po.vat_ids

@@ -47,15 +47,28 @@ class indent_indent(osv.Model):
         res = {}
         requisition_obj = self.pool.get('purchase.requisition')
         req_ids = requisition_obj.search(cr, uid, [('indent_id', 'in', ids)])
-        if req_ids:
-            for req_id in requisition_obj.browse(cr, uid, req_ids):
-                po_done = False
-                if req_id.state == 'done':
-                    po_done = True
-                res[ids[0]] = po_done
-                self.write(cr,uid,ids[0],{'process_purchase_done':True})
-        else:
-            res[ids[0]] = False
+        for record in ids:
+            if req_ids:
+                for req_id in requisition_obj.browse(cr, uid, req_ids):
+                    po_done = False
+                    if req_id.state == 'done':
+                        po_done = True
+                    res[record] = po_done
+                    self.write(cr,uid,record,{'process_purchase_done':True})
+            else:
+                res[record] = False
+        return res
+    
+    def _check_shipment_done(self, cr, uid, ids, field_name, arg=False, context=None):
+        res = {}
+        purchase_obj = self.pool.get('purchase.order')
+        shipped = False
+        for record in ids:
+            po_ids = purchase_obj.search(cr, uid, [('indent_id', '=', record), ('state', '=', 'approved')])
+            for po_data in purchase_obj.read(cr, uid,po_ids, ['shipped']):
+                if po_data['shipped']:
+                    shipped = True
+            res[record] = shipped
         return res
 
     _columns = {
@@ -69,15 +82,15 @@ class indent_indent(osv.Model):
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade",readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', readonly=True, required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange',readonly=True, states={'draft': [('readonly', False)]}),
-        'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products',readonly=True, states={'draft': [('readonly', False)]}),
+        'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products',readonly=True, states={'draft': [('readonly', False)],'inprogress': [('readonly', False)],'waiting_approval': [('readonly', False)]}),
         'picking_id': fields.many2one('stock.picking','Picking', states={'draft': [('readonly', False)]}),
         'description': fields.text('Item Description', readonly=True,states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', readonly=True,states={'draft': [('readonly', False)]}),
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', readonly=True, states={'draft': [('readonly', False)]}),
-        'purchase_done': fields.function(_check_po_done, type='boolean', string="Check Purchase Done"),
-        'process_purchase_done': fields.boolean("process done",help="Check Process Purchase Done"),
+        'requisition_done': fields.function(_check_po_done, type='boolean', string="Check Requisition Done"),
+        'shipment_done': fields.function(_check_shipment_done, type="boolean", string="Shipment Done"),
         'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
-        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange')
+        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 
     def _default_employee_id(self, cr, uid, context=None):
@@ -100,7 +113,8 @@ class indent_indent(osv.Model):
         'department_id': _default_stock_location,
         'requirement': 'ordinary',
         'type': 'new',
-        'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c)
+        'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c),
+        'purchase_count': False,
     }
 
     def copy(self, cr, uid, id, default=None, context=None):

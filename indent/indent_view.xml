@@ -56,7 +56,6 @@
                         <button name="indent_reject" string="Reject" states="confirm"/>
                         <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight"/>
                         <button name="indent_reject" string="Reject" states="waiting_approval"/>
-                        <button name="action_receive_products" string="Receive Product(s)" attrs="{'invisible': [('purchase_done','=',False)]}" class="oe_highlight" type="object"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
                     </header>
                     <sheet>
@@ -66,24 +65,20 @@
 	                            <field name="name"/>
 	                        </h1>
                         </div>
+                                <field name="requisition_done" invisible="1"/>
+                                <field name="purchase_count" invisible="1"/>
+                               	<field name="shipment_done" invisible="1"/>
 	                    <div class="oe_right oe_inline" name="buttons">
-	  	                    <button name="%(action_purchase_requisition_indent_view)d" string="Tender(s)" type="action"
-	                        	groups="purchase.group_purchase_user" states="waiting_approval,inprogress,received"/> 
-                            <button name="process_purchase_order" string="Process Purchase Orders" type="object"
-                                groups="purchase.group_purchase_user" attrs="{'invisible': [('purchase_done','=',False)]}"/>	                        	
-
-                        </div>
-                        <div class="oe_right oe_button_box" name="buttons"> 
-	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action"
-	                        	groups="purchase.group_purchase_user" attrs="{'invisible': [('process_purchase_done','=',False)]}"/>
-                            <button name="action_issue_receipt" string="Issue Reciept(s)" attrs="{'invisible': [('process_purchase_done','=',False)]}" type="object"
-                                groups="purchase.group_purchase_user"/>  
-                                <field name="process_purchase_done" invisible="1"/>                              
+	  	                    <button name="%(action_purchase_requisition_indent_view)d" string="Tender(s)" type="action" groups="purchase.group_purchase_user" states="inprogress,received"/> 
+                            <button name="process_purchase_order" string="Process Purchase Orders" type="object" groups="purchase.group_purchase_user" attrs="{'invisible': ['|',('purchase_count', '=', True),('requisition_done','=',False)]}"/>
+							<button name="action_receive_products" string="Receive Product(s)" attrs="{'invisible': [('purchase_count', '=', False)]}" type="object"/>
+                            <button name="action_issue_receipt" string="Issue Reciept(s)" attrs="{'invisible': [('shipment_done','=',False)]}" type="object" groups="purchase.group_purchase_user"/>  
+	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('purchase_count','=',False)]}"/>
+	                        	
                         </div>
                         <group>
                             <group>
                                 <field name="indent_date"/>
-                                <field name="purchase_done" invisible="1"/>
                             </group>
                             <group>
                                 <field name="required_date"/>
@@ -182,7 +177,7 @@
             <field name="name">indent.indent.tree</field>
             <field name="model">indent.indent</field>
             <field name="arch" type="xml">
-                <tree string="Indents">
+                <tree string="Indents" colors="gray:state=='received';red:shipment_done==True;green:purchase_count==True;">
                     <field name="name"/>
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
@@ -191,6 +186,8 @@
                     <field name="analytic_account_id"/>
                     <field name="requirement"/>
                     <field name="type"/>
+                    <field name="shipment_done" invisible="1"/>
+                    <field name="purchase_count" invisible="1"/>
                     <field name="state"/>
                 </tree>
             </field>

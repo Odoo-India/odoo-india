@@ -163,7 +163,27 @@ class purchase_order(osv.Model):
         'insurance_type': 'fix',
         'freight_type': 'fix'
      }
-    
+
+    def write(self, cr, uid, ids, vals, context=None):
+        line_obj = self.pool.get('purchase.order.line')
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        for order in self.browse(cr, uid, ids, context=context):
+            excies_ids = []
+            vat_ids = []
+            if ('excies_ids' in vals) and ('vat_ids' in vals):
+                excies_ids = vals.get('excies_ids') and vals.get('excies_ids')[0][2] or []
+                vat_ids = vals.get('vat_ids') and vals.get('vat_ids')[0][2] or []
+            if 'excies_ids' in vals and 'vat_ids' not in vals:
+                excies_ids = vals.get('excies_ids') and vals.get('excies_ids')[0][2] or []
+                vat_ids = [vat_id.id for vat_id in self.browse(cr, uid, order.id, context=context).vat_ids]
+            if 'vat_ids' in vals and 'excies_ids' not in vals:
+                excies_ids = [excies_id.id for excies_id in self.browse(cr, uid, order.id, context=context).excies_ids]
+                vat_ids = vals.get('vat_ids') and vals.get('vat_ids')[0][2] or []
+            for line in order.order_line:
+                line_obj.write(cr, uid, [line.id], {'taxes_id': [(6, 0, excies_ids + vat_ids)]}, context=context)
+        return super(purchase_order, self).write(cr, uid, ids, vals, context=context)
+
     def onchange_reset(self, cr, uid, ids, insurance_type, freight_type):
         dict = {}
         if insurance_type == 'include':

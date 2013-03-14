@@ -68,10 +68,9 @@ purchase_requisition_partner()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
-    
+
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
-        amount_exices = amount_vat = insurance = freight = amount_untaxed= 0
         cur_obj=self.pool.get('res.currency')
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = {
@@ -87,12 +86,6 @@ class purchase_order(osv.Model):
                 amount_untaxed = val1
                 for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
-                for exices in self.pool.get('account.tax').compute_all(cr, uid, order.excies_ids, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
-                    amount_exices += exices.get('amount', 0.0)
-                amount_untaxed += amount_exices
-                for vat in self.pool.get('account.tax').compute_all(cr, uid, order.vat_ids, amount_untaxed, 1, line.product_id, order.partner_id)['taxes']:
-                    amount_vat += vat.get('amount', 0.0)
-                amount_untaxed += amount_vat
             other_charge = order.package_and_forwording  - order.commission
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
@@ -117,7 +110,7 @@ class purchase_order(osv.Model):
                     amount_untaxed += order.freight
             res[order.id]['amount_total']= amount_untaxed + res[order.id]['amount_tax'] + res[order.id]['other_charges']
         return res
-    
+
     def _get_order(self, cr, uid, ids, context=None):
         result = {}
         for line in self.pool.get('purchase.order.line').browse(cr, uid, ids, context=context):

@@ -320,7 +320,7 @@
           </para>
         </td>
         <td>
-          <para style="terp_tblheader_Details">Payment : [[ (order.payment_term_id.name) or '0.0' ]]</para>
+          <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
         </td>
         <td>
           <para style="terp_default_9"></para>

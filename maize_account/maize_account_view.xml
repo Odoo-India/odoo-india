@@ -25,5 +25,20 @@
                 </xpath>
             </field>
         </record>
+
+        <!-- Account Invoice Form View -->
+        <record id="view_maize_account_invoice_form" model="ir.ui.view">
+            <field name="name">maize.account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Invoice']/group/field[@name='amount_tax']" position='after'>
+                    <field name="insurance"/>
+                    <field name="freight"/>
+                    <field name="other_charges"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </openerp>

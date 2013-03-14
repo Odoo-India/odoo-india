@@ -35,18 +35,31 @@ class comparison_report(report_sxw.rml_parse):
     
     def _tax(self,order):
         tax_obj = self.pool.get('account.tax')
-        excise_tax = vat_tax = ''
-        for exc in order.excies_ids:
-            if exc.price_include:
-                excise_tax += 'Include in Price' + ' '
-            else:
-                excise_tax += exc.name + ' '
-        for vat in order.vat_ids:
-            if vat.price_include:
-                vat_tax += 'Include in Price' + ' '
-            else:
-                vat_tax += vat.name + ' '
-        return self.get_value.update({'excise': excise_tax, 'vat': vat_tax})
+        excise_tax = vat_tax = val1 = 0.
+        for line in order.order_line:
+            freight_tax = order.freight
+            insurance_tax = order.insurance
+            val1 += line.price_subtotal
+            for exices in self.pool.get('account.tax').compute_all(self.cr, self.uid, order.excies_ids, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
+                tax_data = tax_obj.read(self.cr, self.uid, exices.get('id'), ['price_include'])
+                if tax_data['price_include']:
+                    excise_tax += 'Include in Price' + ' '
+                else:
+                    excise_tax += exices.get('amount', 0.0)
+            val1 += excise_tax
+            for vat in self.pool.get('account.tax').compute_all(self.cr, self.uid, order.vat_ids, val1, 1, line.product_id, order.partner_id)['taxes']:
+                tax_data = tax_obj.read(self.cr, self.uid, vat.get('id'), ['price_include'])
+                if tax_data['price_include']:
+                    vat_tax += 'Include in Price' + ' '
+                else:
+                    vat_tax += vat.get('amount', 0.0)
+            val1 += vat_tax
+        if order.insurance_type == 'percentage':
+            insurance_tax = round((val1 * order.insurance) / 100,2)
+        val1 += insurance_tax
+        if order.freight_type == 'percentage':
+            freight_tax = round(( val1 * order.freight) / 100,2)
+        return self.get_value.update({'excise': excise_tax, 'vat': vat_tax, 'freight': freight_tax,'insurance': insurance_tax})
     
     def _get_value(self):
         return self.get_value

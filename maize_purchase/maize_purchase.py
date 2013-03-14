@@ -104,6 +104,16 @@ class purchase_order(osv.Model):
                     amount_untaxed += order.insurance
                     if order.freight != 0:
                         amount_untaxed += (amount_untaxed * order.freight) / 100
+                elif order.insurance_type == 'include':
+                    if order.freight_type == 'percentage':
+                        amount_untaxed += (amount_untaxed * order.freight) / 100
+                    else:
+                        amount_untaxed += order.freight
+                elif order.freight_type == 'include':
+                    if order.insurance_type == 'percentage':
+                        amount_untaxed += (amount_untaxed * order.insurance) / 100
+                    else:
+                        amount_untaxed += order.insurance
                 else:
                     if order.insurance != 0:
                         amount_untaxed += (amount_untaxed * order.insurance) / 100

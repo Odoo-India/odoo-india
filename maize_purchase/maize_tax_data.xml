@@ -57,22 +57,17 @@
             <field name="tax_type">vat</field>
             <field name="amount">0.00</field>
         </record>
-        <record id="maize_vat_4" model="account.tax">
-            <field name="name"> VAT 4%</field>
-            <field name="tax_type">other</field>
-            <field name="amount">0.04</field>
-        </record>
         <record id="maize_vat_1" model="account.tax">
             <field name="name"> Add Tax 1%</field>
             <field name="tax_type">other</field>
             <field name="amount">0.01</field>
         </record>
         <record id="vat_parent_5" model="account.tax">
-            <field name="name"> VAT 5%(4% + 1%)</field>
+            <field name="name"> VAT 4% (1% Add Tax)</field>
             <field name="tax_type">vat</field>
-            <field name="amount">0.05</field>
+            <field name="amount">0.04</field>
             <field name="include_base_amount">True</field>
-            <field name="child_ids" eval="[(6,0,[ref('maize_vat_4'), ref('maize_vat_1')])]"/>
+            <field name="child_ids" eval="[(6,0,[ref('maize_vat_1')])]"/>
         </record>
         <record id="maize_vat_12" model="account.tax">
             <field name="name"> VAT 12% (2.5% VAT)</field>

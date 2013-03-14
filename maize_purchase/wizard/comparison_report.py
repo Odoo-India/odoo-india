@@ -34,7 +34,19 @@ class comparison_report(osv.osv_memory):
         'delivey': fields.boolean('Ex. GoDown / Mill Delivey'),
         'excise': fields.boolean('Excise'),
         'vat': fields.boolean('VAT'),
+        'check_all': fields.boolean('Check All', help="If you select this than all check box is selected and vice versa"),
                 }
+    
+    def onchange_select_all(self,cr, uid, ids,check):
+        dict = {}
+        list = ['discount','package_and_forwording', 'insurance', 'commission', 'freight', 'delivey', 'excise', 'vat']
+        if check:
+            for field in list:
+                dict.update({field: True})
+        else:
+            for field in list:
+                dict.update({field: False})
+        return {'value': dict}
     
     def action_print(self, cr, uid, ids, context=None):
         if context is None:

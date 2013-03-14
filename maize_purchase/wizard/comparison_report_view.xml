@@ -7,6 +7,11 @@
             <field name="arch" type="xml">
                 <form string="Product Rate Comparison" version="7.0">
                 <group>
+                    <div>
+                        <label for="check_all"/>
+                        <field name="check_all" on_change="onchange_select_all(check_all)"/>
+                    </div>
+                    <separator/>
                     <group>
 	                    <field name="discount"/>
 	                    <field name="package_and_forwording"/>
@@ -21,7 +26,7 @@
                     </group>
                 </group>
                 <p>
-                     TICK THE REQUIRED CHECK BOXES ON WHICH YOU WANT TO GENERATE THE COMPARISON REPORT. 
+                     TICK THE REQUIRED CHECK BOXES ON WHICH YOU WANT TO GENERATE THE COMPARISON REPORT.
                 </p>
                 <footer>
                         <button string="Print" name="action_print" type="object" class="oe_highlight"/>

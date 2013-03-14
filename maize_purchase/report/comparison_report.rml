@@ -132,7 +132,7 @@
             <para style="terp_tblheader_Details_Centre"> Product </para>
         </td>
         <td>
-            <para style="terp_tblheader_Details_Centre"> Unit </para>
+            <para style="terp_tblheader_Details_Centre"> Quantity </para>
         </td>
     </tr>
     </blockTable>
@@ -144,7 +144,7 @@
                 <para style="terp_tblheader_Details_Centre"> [[ product_line.product_id.name]] </para>
             </td>
             <td>
-                <para style="terp_tblheader_Details_Centre"> [[ product_line.product_uom_id.name]] </para>
+                <para style="terp_tblheader_Details_Centre"> [[ formatLang(product_line.product_qty) + ' ']][[ product_line.product_uom_id.name]] </para>
             </td>
         </tr>
         </blockTable>

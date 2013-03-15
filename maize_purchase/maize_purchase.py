@@ -87,7 +87,7 @@ class purchase_order(osv.Model):
                 amount_untaxed = val1
                 for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
-            other_charge = order.package_and_forwording  - order.commission
+            other_charge = order.package_and_forwording  - (order.commission + order.other_discount)
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
@@ -132,28 +132,27 @@ class purchase_order(osv.Model):
         'package_and_forwording': fields.float('Packing & Forwarding'),
         'insurance': fields.float('Insurance'),
         'commission': fields.float('Commission'),
-        'other_charge': fields.float('Other Charges'),
         'other_discount': fields.float('Other Discount'),
         'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
         'po_series_id': fields.many2one('product.order.series', 'PO Series'),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The amount without tax", track_visibility='always'),
         'amount_tax': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Taxes',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The tax amount"),
         'amount_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Total',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total amount"),
         'other_charges': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Other Charges',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The other charge"),
         'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise'),

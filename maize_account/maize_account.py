@@ -185,7 +185,7 @@ class account_invoice_tax(osv.osv):
 
 class account_invoice(osv.Model):
     _inherit = "account.invoice"
-    
+
     def _amount_all(self, cr, uid, ids, name, args, context=None):
         res = {}
         for invoice in self.browse(cr, uid, ids, context=context):
@@ -199,9 +199,8 @@ class account_invoice(osv.Model):
             for line in invoice.tax_line:
                 res[invoice.id]['amount_tax'] += line.amount
             res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + invoice.insurance + invoice.other_charges
-        print res
         return res
-        
+
     def _get_invoice_line(self, cr, uid, ids, context=None):
         result = {}
         for line in self.pool.get('account.invoice.line').browse(cr, uid, ids, context=context):
@@ -220,7 +219,7 @@ class account_invoice(osv.Model):
         'insurance': fields.float('Insurance'),
         'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
             store={
-                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges'], 20),
                 'account.invoice.tax': (_get_invoice_tax, None, 20),
                 'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
             },

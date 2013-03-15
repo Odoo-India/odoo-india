@@ -71,6 +71,7 @@ class purchase_order(osv.Model):
 
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
+        amount_untaxed = 0
         cur_obj=self.pool.get('res.currency')
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = {

@@ -217,6 +217,20 @@ class account_invoice(osv.Model):
         'freight': fields.float('Freight'),
         'other_charges': fields.float('Other Charges'),
         'insurance': fields.float('Insurance'),
+        'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Subtotal', track_visibility='always',
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges'], 20),
+                'account.invoice.tax': (_get_invoice_tax, None, 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
+            },
+            multi='all'),
+        'amount_tax': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Tax',
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges'], 20),
+                'account.invoice.tax': (_get_invoice_tax, None, 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
+            },
+            multi='all'),
         'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
             store={
                 'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges'], 20),

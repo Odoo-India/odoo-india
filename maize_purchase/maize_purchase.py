@@ -195,18 +195,13 @@ class purchase_order(osv.Model):
         if freight_type == 'include':
             dict.update({'freight': 0.0})
         return {'value': dict}
-        
+
     def action_invoice_create(self, cr, uid, ids, context=None):
-        invoice_pool = self.pool.get('account.invoice')
-        
         invoice_id = super(purchase_order, self).action_invoice_create(cr, uid, ids, context=context)
-        
-        po = self.browse(cr, uid, ids[0], context)
-        taxes = po.excies_ids + po.vat_ids
-        invoice_pool.write(cr, uid, [invoice_id], {'freight':po.freight, 'insurance':po.insurance, 'other_charges':po.other_charges}, context)
-        invoice_pool.button_compute(cr, uid, [invoice_id], context=context, set_total=True)
+        order = self.browse(cr, uid, ids[0], context=context)
+        self.pool.get('account.invoice').write(cr, uid, [invoice_id], {'freight':order.freight, 'insurance':order.insurance, 'other_charges':order.other_charges}, context=context)
         return invoice_id
-    
+
     def wkf_confirm_order(self, cr, uid, ids, context=None):
         res = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)
         proc_obj = self.pool.get('procurement.order')

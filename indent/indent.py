@@ -376,7 +376,7 @@ class indent_indent(osv.Model):
         if 'company_id' in vals:
             seq['company_id'] = vals['company_id']
         return self.pool.get('ir.sequence').create(cr, uid, seq)
-
+    
     def process_purchase_order(self,cr,uid,ids,context):
         obj_purchase_order = self.pool.get('purchase.order')
         wf_service = netsvc.LocalService("workflow")
@@ -389,6 +389,15 @@ class indent_indent(osv.Model):
                     obj_purchase_order.action_cancel(cr,uid,po_to_merge,context)
                     obj_purchase_order.action_cancel_draft(cr,uid,po_to_merge,context)
                     po_merged_id = obj_purchase_order.do_merge(cr,uid,po_to_merge,context).keys()[0]
+                    series_obj = self.pool.get('product.order.series')
+                    po = obj_purchase_order.browse(cr,uid,po_merged_id,context=context)
+                    series_code= po and po.po_series_id and po.po_series_id.code or False
+                    if series_code:
+                        vals = {'company_id':1,'po_series_id':po.po_series_id.id}
+                        if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
+                            seqq = self.create_series_sequence(cr,uid,vals,context)
+                        po_seq = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
+                        obj_purchase_order.write(cr,uid,po_merged_id,{'name':po_seq})
                     order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
                     today = order.date_order
                     year = datetime.datetime.today().year

@@ -110,7 +110,9 @@ product_sub_group()
 
 class product_product(osv.Model):
     _inherit = 'product.product'
-    
+    _order = 'id desc,default_code'
+    _columns = {
+        }    
     def last_supplier_code(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):

@@ -69,6 +69,23 @@ purchase_requisition_partner()
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
 
+#    def create_series_sequence(self, cr, uid, vals, context=None):
+#        series_obj = self.pool.get('product.order.series')
+#        type_name= series_obj.browse(cr,uid,vals['po_series_id']).code
+#        type = self.pool.get('ir.sequence.type').create(cr,uid,{'name':'maize'+type_name,'code':type_name})
+#        code = self.pool.get('ir.sequence.type').browse(cr,uid,type).code
+#        seq = {
+#            'name': series_obj.browse(cr,uid,vals['po_series_id']).code,
+#            'implementation':'standard',
+#            'prefix': series_obj.browse(cr,uid,vals['po_series_id']).code+"/",
+#            'padding': 4,
+#            'number_increment': 1,
+#            'code':code
+#        }
+#        if 'company_id' in vals:
+#            seq['company_id'] = vals['company_id']
+#        return self.pool.get('ir.sequence').create(cr, uid, seq)
+
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         amount_untaxed = 0
@@ -166,8 +183,26 @@ class purchase_order(osv.Model):
         'insurance_type': 'fix',
         'freight_type': 'fix'
      }
-
+    
+#    def create(self, cr, uid, vals, context=None):
+#        series_obj = self.pool.get('product.order.series')
+#        if vals.get('name','/')=='/':
+#            if vals.get('po_series_id'):
+#                series_code =  series_obj.browse(cr,uid,vals['po_series_id']).code
+#                if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
+#                    seqq = self.create_series_sequence(cr,uid,vals,context)
+#                vals['name'] = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
+#        order =  super(purchase_order, self).create(cr, uid, vals, context=context)
+#        return order
+    
     def write(self, cr, uid, ids, vals, context=None):
+#        series_obj = self.pool.get('product.order.series')
+#        if vals.get('po_series_id'):
+#            series_code =  series_obj.browse(cr,uid,vals['po_series_id']).code
+#            if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
+#                seqq = self.create_series_sequence(cr,uid,vals,context)
+#            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
+        
         line_obj = self.pool.get('purchase.order.line')
         if isinstance(ids, (int, long)):
             ids = [ids]

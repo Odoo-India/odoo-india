@@ -46,15 +46,16 @@ class indent_indent(osv.Model):
     def _check_po_done(self, cr, uid, ids, field_name, arg=False, context=None):
         res = {}
         requisition_obj = self.pool.get('purchase.requisition')
-        req_ids = requisition_obj.search(cr, uid, [('indent_id', 'in', ids)])
         for record in ids:
+            res[record] = False
+            req_ids = requisition_obj.search(cr, uid, [('indent_id', '=', record)])
             if req_ids:
                 for req_id in requisition_obj.browse(cr, uid, req_ids):
                     po_done = False
                     if req_id.state == 'done':
                         po_done = True
-                    res[record] = po_done
-                    self.write(cr,uid,record,{'process_purchase_done':True})
+                res[record] = po_done
+                self.write(cr,uid,record,{'process_purchase_done':True})
             else:
                 res[record] = False
         return res
@@ -62,10 +63,11 @@ class indent_indent(osv.Model):
     def _check_shipment_done(self, cr, uid, ids, field_name, arg=False, context=None):
         res = {}
         purchase_obj = self.pool.get('purchase.order')
-        shipped = False
+        shipped =False
         for record in ids:
             po_ids = purchase_obj.search(cr, uid, [('indent_id', '=', record), ('state', '=', 'approved')])
-            for po_data in purchase_obj.read(cr, uid,po_ids, ['shipped']):
+            for po_data in purchase_obj.read(cr, uid,po_ids,['shipped']):
+                shipped = False
                 if po_data['shipped']:
                     shipped = True
             res[record] = shipped
@@ -90,6 +92,7 @@ class indent_indent(osv.Model):
         'requisition_done': fields.function(_check_po_done, type='boolean', string="Check Requisition Done"),
         'shipment_done': fields.function(_check_shipment_done, type="boolean", string="Shipment Done"),
         'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
+        'active': fields.boolean('Active'),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 
@@ -115,6 +118,7 @@ class indent_indent(osv.Model):
         'type': 'new',
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c),
         'purchase_count': False,
+        'active': True,
     }
 
     def copy(self, cr, uid, id, default=None, context=None):
@@ -356,13 +360,29 @@ class indent_indent(osv.Model):
 
         return picking_id
 
+    def create_series_sequence(self, cr, uid, vals, context=None):
+        series_obj = self.pool.get('product.order.series')
+        type_name= series_obj.browse(cr,uid,vals['po_series_id']).code
+        type = self.pool.get('ir.sequence.type').create(cr,uid,{'name':'maize'+type_name,'code':type_name})
+        code = self.pool.get('ir.sequence.type').browse(cr,uid,type).code
+        seq = {
+            'name': series_obj.browse(cr,uid,vals['po_series_id']).code,
+            'implementation':'standard',
+            'prefix': series_obj.browse(cr,uid,vals['po_series_id']).code+"/",
+            'padding': 4,
+            'number_increment': 1,
+            'code':code
+        }
+        if 'company_id' in vals:
+            seq['company_id'] = vals['company_id']
+        return self.pool.get('ir.sequence').create(cr, uid, seq)
+
     def process_purchase_order(self,cr,uid,ids,context):
         obj_purchase_order = self.pool.get('purchase.order')
         wf_service = netsvc.LocalService("workflow")
         for indent in self.browse(cr,uid,ids,context):
-            if indent.purchase_count ==  True:
-                raise osv.except_osv(_('Warning!'),_("Purchase Order is already process !"))
             po_grp_partners = obj_purchase_order.read_group(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')], ['partner_id'], ['partner_id'])
+            po_without_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')])
             for po_grp_partner in po_grp_partners:
                 if po_grp_partner['partner_id_count'] > 1:
                     po_to_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0])])
@@ -389,9 +409,20 @@ class indent_indent(osv.Model):
                     obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
                     wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
                     wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
+                else:
+                    # write purchase order series
+                    for p in po_without_merge:
+                        series_obj = self.pool.get('product.order.series')
+                        po = obj_purchase_order.browse(cr,uid,p,context=context)
+                        series_code= po and po.po_series_id and po.po_series_id.code or False
+                        if series_code:
+                            vals = {'company_id':1,'po_series_id':po.po_series_id.id}
+                            if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
+                                seqq = self.create_series_sequence(cr,uid,vals,context)
+                            po_seq = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
+                            obj_purchase_order.write(cr,uid,p,{'name':po_seq})
             self.write(cr, uid, indent.id, {'purchase_count': True}, context=context)
         return True
-
 
 indent_indent()
 

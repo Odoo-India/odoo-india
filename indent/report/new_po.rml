@@ -2,7 +2,7 @@
 <document filename="newpo.pdf">
   <template pageSize="(595.0,842.0)" title="Test" author="Martin Simon" allowSplitting="20">
     <pageTemplate id="first">
-      <frame id="first" x1="23.0" y1="23.0" width="570" height="799"/>
+      <frame id="first" x1="12.0" y1="43.0" width="570" height="799"/>
     </pageTemplate>
   </template>
   <stylesheet>

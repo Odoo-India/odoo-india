@@ -51,7 +51,7 @@
             <field name="name">activity.reject</field>
             <field name="flow_stop">True</field>
             <field name="kind">function</field>
-            <field name="action">write({'state': 'reject'})</field>
+            <field name="action">write({'state': 'reject','active':False})</field>
         </record>
 
         <!-- Indent Workflow Transitions -->

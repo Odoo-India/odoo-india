@@ -69,9 +69,9 @@
                                 <field name="purchase_count" invisible="1"/>
                                	<field name="shipment_done" invisible="1"/>
 	                    <div class="oe_right oe_inline" name="buttons">
-	  	                    <button name="%(action_purchase_requisition_indent_view)d" string="Tender(s)" type="action" groups="purchase.group_purchase_user" states="inprogress,received"/> 
+	  	                    <button name="%(action_purchase_requisition_indent_view)d" string="Enquiry" type="action" groups="purchase.group_purchase_user" states="inprogress,received"/> 
                             <button name="process_purchase_order" string="Process Purchase Orders" type="object" groups="purchase.group_purchase_user" attrs="{'invisible': ['|',('purchase_count', '=', True),('requisition_done','=',False)]}"/>
-							<button name="action_receive_products" string="Receive Product(s)" attrs="{'invisible': [('purchase_count', '=', False)]}" type="object"/>
+							<button name="action_receive_products" string="Inward" attrs="{'invisible': [('purchase_count', '=', False)]}" type="object"/>
                             <button name="action_issue_receipt" string="Issue Reciept(s)" attrs="{'invisible': [('shipment_done','=',False)]}" type="object" groups="purchase.group_purchase_user"/>  
 	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('purchase_count','=',False)]}"/>
 	                        	
@@ -188,6 +188,7 @@
                     <field name="type"/>
                     <field name="shipment_done" invisible="1"/>
                     <field name="purchase_count" invisible="1"/>
+                    <field name="requisition_done" invisible="1"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -207,7 +208,7 @@
                     <filter string="Waiting For Approval" name="state_waiting_approval" domain="[('state','=','waiting_approval')]"/>
                     <filter string="Inprogress" name="state_inprogress" domain="[('state','=','inprogress')]"/>
                     <filter string="Received" name="state_received" domain="[('state','=','received')]"/>
-                    <filter string="Rejected" name="state_reject" domain="[('state','=','reject')]"/>
+                    <filter string="Rejected" name="state_reject" domain="[('state','=','reject'),('active','=',False)]"/>
                     <field name="indentor_id"/>
                     <field name="department_id"/>
                     <field name="analytic_account_id"/>
@@ -218,6 +219,7 @@
                         <filter string="Requirement" context="{'group_by': 'requirement'}"/>
                         <filter string="Indent Type" context="{'group_by': 'type'}"/>
                         <filter string="Status" context="{'group_by': 'state'}"/>
+                        <filter string="Date" context="{'group_by': 'indent_date'}"/>
                     </group>
                 </search>
             </field>

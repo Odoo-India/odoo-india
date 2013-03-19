@@ -148,8 +148,8 @@
             id="menu_maize_tax_code"
             parent="maize_product.menu_maize_config" sequence="4"/>
 
-       <!--Supplier series -->
-       <record id="po_series_form_view" model="ir.ui.view">
+        <!--Supplier series -->
+        <record id="po_series_form_view" model="ir.ui.view">
             <field name="name">supplier.series.form</field>
             <field name="model">supplier.series</field>
             <field name="arch" type="xml">
@@ -199,7 +199,7 @@
                     <field name="user_code"/>
                 </field>
             </field>
-          </record>
+        </record>
           
         <!--  inherit the res.user tree view -->
         <record id="maize_inherit_user_tree_view" model="ir.ui.view">
@@ -211,6 +211,6 @@
                     <field name="user_code"/>
                 </field>
             </field>
-          </record>          
+        </record>
     </data>
 </openerp>

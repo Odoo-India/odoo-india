@@ -23,6 +23,8 @@ import datetime
 from openerp.osv import fields, osv
 from openerp import netsvc
 import openerp.addons.decimal_precision as dp
+from openerp.tools.translate import _
+from openerp.osv.orm import browse_record, browse_null
 
 class purchase_order_line(osv.Model):
     _inherit = 'purchase.order.line'
@@ -69,8 +71,26 @@ purchase_requisition_partner()
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
 
+#    def create_series_sequence(self, cr, uid, vals, context=None):
+#        series_obj = self.pool.get('product.order.series')
+#        type_name= series_obj.browse(cr,uid,vals['po_series_id']).code
+#        type = self.pool.get('ir.sequence.type').create(cr,uid,{'name':'maize'+type_name,'code':type_name})
+#        code = self.pool.get('ir.sequence.type').browse(cr,uid,type).code
+#        seq = {
+#            'name': series_obj.browse(cr,uid,vals['po_series_id']).code,
+#            'implementation':'standard',
+#            'prefix': series_obj.browse(cr,uid,vals['po_series_id']).code+"/",
+#            'padding': 4,
+#            'number_increment': 1,
+#            'code':code
+#        }
+#        if 'company_id' in vals:
+#            seq['company_id'] = vals['company_id']
+#        return self.pool.get('ir.sequence').create(cr, uid, seq)
+
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
+        amount_untaxed = 0
         cur_obj=self.pool.get('res.currency')
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = {
@@ -86,7 +106,7 @@ class purchase_order(osv.Model):
                 amount_untaxed = val1
                 for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
-            other_charge = order.package_and_forwording  - order.commission
+            other_charge = order.package_and_forwording  - (order.commission + order.other_discount)
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
@@ -131,28 +151,27 @@ class purchase_order(osv.Model):
         'package_and_forwording': fields.float('Packing & Forwarding'),
         'insurance': fields.float('Insurance'),
         'commission': fields.float('Commission'),
-        'other_charge': fields.float('Other Charges'),
         'other_discount': fields.float('Other Discount'),
         'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
         'po_series_id': fields.many2one('product.order.series', 'PO Series'),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The amount without tax", track_visibility='always'),
         'amount_tax': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Taxes',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The tax amount"),
         'amount_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Total',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total amount"),
         'other_charges': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Other Charges',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The other charge"),
         'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise'),
@@ -166,8 +185,26 @@ class purchase_order(osv.Model):
         'insurance_type': 'fix',
         'freight_type': 'fix'
      }
-
+    
+#    def create(self, cr, uid, vals, context=None):
+#        series_obj = self.pool.get('product.order.series')
+#        if vals.get('name','/')=='/':
+#            if vals.get('po_series_id'):
+#                series_code =  series_obj.browse(cr,uid,vals['po_series_id']).code
+#                if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
+#                    seqq = self.create_series_sequence(cr,uid,vals,context)
+#                vals['name'] = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
+#        order =  super(purchase_order, self).create(cr, uid, vals, context=context)
+#        return order
+    
     def write(self, cr, uid, ids, vals, context=None):
+#        series_obj = self.pool.get('product.order.series')
+#        if vals.get('po_series_id'):
+#            series_code =  series_obj.browse(cr,uid,vals['po_series_id']).code
+#            if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
+#                seqq = self.create_series_sequence(cr,uid,vals,context)
+#            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
+        
         line_obj = self.pool.get('purchase.order.line')
         if isinstance(ids, (int, long)):
             ids = [ids]
@@ -194,22 +231,21 @@ class purchase_order(osv.Model):
         if freight_type == 'include':
             dict.update({'freight': 0.0})
         return {'value': dict}
-        
+
     def action_invoice_create(self, cr, uid, ids, context=None):
-        invoice_pool = self.pool.get('account.invoice')
-        
+        invoice_obj = self.pool.get('account.invoice')
         invoice_id = super(purchase_order, self).action_invoice_create(cr, uid, ids, context=context)
-        
-        po = self.browse(cr, uid, ids[0], context)
-        taxes = po.excies_ids + po.vat_ids
-        invoice_pool.write(cr, uid, [invoice_id], {'freight':po.freight, 'insurance':po.insurance, 'other_charges':po.other_charges}, context)
-        invoice_pool.button_compute(cr, uid, [invoice_id], context=context, set_total=True)
+        order = self.browse(cr, uid, ids[0], context=context)
+        invoice_obj.write(cr, uid, [invoice_id], {'freight':order.freight, 'insurance':order.insurance, 'other_charges':order.other_charges}, context=context)
+        invoice_obj.button_compute(cr, uid, [invoice_id], context=context, set_total=True)
         return invoice_id
-    
+
     def wkf_confirm_order(self, cr, uid, ids, context=None):
         res = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)
         proc_obj = self.pool.get('procurement.order')
         for po in self.browse(cr, uid, ids, context=context):
+            if not po.po_series_id:
+                raise osv.except_osv(_("Warning !"),_('You cannot confirm a purchase order without any purchase order series.'))
             if po.requisition_id and (po.requisition_id.exclusive=='exclusive'):
                 for order in po.requisition_id.purchase_ids:
                     if order.id != po.id:
@@ -236,5 +272,102 @@ class purchase_order(osv.Model):
                                                                                               'last_po_year':po_year
                                                                                           },context=context)
                 po.requisition_id.tender_done(context=context)
-        return res    
+        return res
+    
+    def do_merge(self, cr, uid, ids, context=None):
+        """ Copy the original do_merge method for set po_series_id field for new Purchase Order
+        """
+        #TOFIX: merged order line should be unlink
+        wf_service = netsvc.LocalService("workflow")
+        def make_key(br, fields):
+            list_key = []
+            for field in fields:
+                field_val = getattr(br, field)
+                if field in ('product_id', 'move_dest_id', 'account_analytic_id'):
+                    if not field_val:
+                        field_val = False
+                if isinstance(field_val, browse_record):
+                    field_val = field_val.id
+                elif isinstance(field_val, browse_null):
+                    field_val = False
+                elif isinstance(field_val, list):
+                    field_val = ((6, 0, tuple([v.id for v in field_val])),)
+                list_key.append((field, field_val))
+            list_key.sort()
+            return tuple(list_key)
+
+        # Compute what the new orders should contain
+
+        new_orders = {}
+
+        for porder in [order for order in self.browse(cr, uid, ids, context=context) if order.state == 'draft']:
+            order_key = make_key(porder, ('partner_id', 'location_id', 'pricelist_id'))
+            new_order = new_orders.setdefault(order_key, ({}, []))
+            new_order[1].append(porder.id)
+            order_infos = new_order[0]
+            if not order_infos:
+                order_infos.update({
+                    'origin': porder.origin,
+                    'po_series_id': porder.po_series_id.id,
+                    'date_order': porder.date_order,
+                    'partner_id': porder.partner_id.id,
+                    'dest_address_id': porder.dest_address_id.id,
+                    'warehouse_id': porder.warehouse_id.id,
+                    'location_id': porder.location_id.id,
+                    'pricelist_id': porder.pricelist_id.id,
+                    'state': 'draft',
+                    'order_line': {},
+                    'notes': '%s' % (porder.notes or '',),
+                    'fiscal_position': porder.fiscal_position and porder.fiscal_position.id or False,
+                })
+            else:
+                if porder.date_order < order_infos['date_order']:
+                    order_infos['date_order'] = porder.date_order
+                if porder.notes:
+                    order_infos['notes'] = (order_infos['notes'] or '') + ('\n%s' % (porder.notes,))
+                if porder.origin:
+                    order_infos['origin'] = (order_infos['origin'] or '') + ' ' + porder.origin
+
+            for order_line in porder.order_line:
+                line_key = make_key(order_line, ('name', 'date_planned', 'taxes_id', 'price_unit', 'product_id', 'move_dest_id', 'account_analytic_id'))
+                o_line = order_infos['order_line'].setdefault(line_key, {})
+                if o_line:
+                    # merge the line with an existing line
+                    o_line['product_qty'] += order_line.product_qty * order_line.product_uom.factor / o_line['uom_factor']
+                else:
+                    # append a new "standalone" line
+                    for field in ('product_qty', 'product_uom'):
+                        field_val = getattr(order_line, field)
+                        if isinstance(field_val, browse_record):
+                            field_val = field_val.id
+                        o_line[field] = field_val
+                    o_line['uom_factor'] = order_line.product_uom and order_line.product_uom.factor or 1.0
+
+
+
+        allorders = []
+        orders_info = {}
+        for order_key, (order_data, old_ids) in new_orders.iteritems():
+            # skip merges with only one order
+            if len(old_ids) < 2:
+                allorders += (old_ids or [])
+                continue
+
+            # cleanup order line data
+            for key, value in order_data['order_line'].iteritems():
+                del value['uom_factor']
+                value.update(dict(key))
+            order_data['order_line'] = [(0, 0, value) for value in order_data['order_line'].itervalues()]
+
+            # create the new order
+            neworder_id = self.create(cr, uid, order_data)
+            orders_info.update({neworder_id: old_ids})
+            allorders.append(neworder_id)
+
+            # make triggers pointing to the old orders point to the new order
+            for old_id in old_ids:
+                wf_service.trg_redirect(uid, 'purchase.order', old_id, neworder_id, cr)
+                wf_service.trg_validate(uid, 'purchase.order', old_id, 'purchase_cancel', cr)
+        return orders_info
+    
 purchase_order()

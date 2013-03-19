@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_po_series,po.series,model_product_order_series,stock.group_stock_user,1,1,1,1
+access_major_group,major.group,model_product_major_group,stock.group_stock_user,1,1,1,1
+access_sub_group,sub.group,model_product_sub_group,stock.group_stock_user,1,1,1,1

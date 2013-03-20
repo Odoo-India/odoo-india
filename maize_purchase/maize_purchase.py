@@ -460,4 +460,13 @@ class gate_pass_lines(osv.Model):
         'app_value': fields.float('App Value'),
     }
 
+    def _get_uom_id(self, cr, uid, *args):
+        result = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'product', 'product_uom_unit')
+        return result and result[1] or False
+
+    _defaults = {
+        'product_uom_qty': 1,
+        'product_uom' : _get_uom_id,
+    }
+
 gate_pass_lines()

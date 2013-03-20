@@ -470,4 +470,17 @@ class gate_pass_lines(osv.Model):
         'product_uom' : _get_uom_id,
     }
 
+    def onchange_product_id(self, cr, uid, ids, product_id=False):
+        result = {}
+        if product_id:
+            product = self.pool.get('product.product').browse(cr, uid, product_id)
+            name = product.name
+            product_uom = product.uom_id and product.uom_id.id or False
+            result = {'value': {
+                'name': name,
+                'product_uom': product_uom,
+                }
+            }
+        return result
+
 gate_pass_lines()

@@ -427,6 +427,7 @@ class maize_gate_pass(osv.Model):
         'partner_id':fields.many2one('res.partner', 'Supplier', required=True),
         'department_id': fields.many2one('stock.location', 'Department', required=True),
         'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'gate_pass_lines': fields.one2many('gate.pass.lines', 'gate_pass_id', 'Products'),
     }
 
     def _default_stock_location(self, cr, uid, context=None):
@@ -449,12 +450,12 @@ class gate_pass_lines(osv.Model):
 
     _columns = {
         'gate_pass_id': fields.many2one('maize.gate.pass', 'Gate Pass', required=True, ondelete='cascade'),
-        'name': fields.text('Description', required=True),
+        'name': fields.text('Name', required=True),
         'product_id': fields.many2one('product.product', 'Product', required=True),
         'product_uom_qty': fields.float('Quantity', digits_compute= dp.get_precision('Product UoS'), required=True),
         'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
-        'pen_qty': fields.float('Pen Qty.'),
-        'gps_qty': fields.float('Gps Qty.'),
+        'pen_qty': fields.float('Pen Qty'),
+        'gps_qty': fields.float('Gps Qty'),
         'app_rate': fields.float('App Rate'),
         'app_value': fields.float('App Value'),
     }

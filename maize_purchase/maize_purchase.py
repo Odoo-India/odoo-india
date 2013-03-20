@@ -422,7 +422,7 @@ class maize_gate_pass(osv.Model):
         'name': fields.char('Name', size=256, required=True),
         'gate_pass_no': fields.char('Gate Pass No', size=256, required=True),
         'series':fields.selection([('repair', 'Repair'), ('purchase', 'Purchase'), ('store', 'Store')], 'Series', required=True),
-        'type':fields.selection([('foc', 'Free Of Cost'), ('chargeable', 'Chargeable'), ('sample', 'Sample'), ('contract', 'Contract'), ('cash', 'Cash'), ('Loan', 'Loan')], 'Series', required=True),
+        'type':fields.selection([('foc', 'Free Of Cost'), ('chargeable', 'Chargeable'), ('sample', 'Sample'), ('contract', 'Contract'), ('cash', 'Cash'), ('Loan', 'Loan')], 'Type', required=True),
         'date': fields.datetime('Gate Pass Date', required=True),
         'partner_id':fields.many2one('res.partner', 'Supplier', required=True),
         'department_id': fields.many2one('stock.location', 'Department', required=True),

@@ -19,6 +19,7 @@
 #
 ##############################################################################
 
+import time
 import datetime
 from openerp.osv import fields, osv
 from openerp import netsvc
@@ -371,3 +372,31 @@ class purchase_order(osv.Model):
         return orders_info
     
 purchase_order()
+
+class maize_gate_pass(osv.Model):
+    _name = 'maize.gate.pass'
+    _description = 'Gate Pass'
+
+    _columns = {
+        'name': fields.char('Name', size=256, required=True),
+        'gate_pass_no': fields.char('Gate Pass No', size=256, required=True),
+        'series':fields.selection([('repair', 'Repair'), ('purchase', 'Purchase'), ('store', 'Store')], 'Series', required=True),
+        'type':fields.selection([('foc', 'Free Of Cost'), ('chargeable', 'Chargeable'), ('sample', 'Sample'), ('contract', 'Contract'), ('cash', 'Cash'), ('Loan', 'Loan')], 'Series', required=True),
+        'date': fields.datetime('Gate Pass Date', required=True),
+        'partner_id':fields.many2one('res.partner', 'Supplier', required=True),
+        'department_id': fields.many2one('stock.location', 'Department', required=True),
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+    }
+
+    def _default_stock_location(self, cr, uid, context=None):
+        stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_stock')
+        return stock_location.id
+
+    _defaults = {
+        'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
+        'series': 'repair',
+        'type': 'foc',
+        'department_id': _default_stock_location,
+    }
+
+maize_gate_pass()

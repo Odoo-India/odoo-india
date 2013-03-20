@@ -27,6 +27,47 @@ import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.osv.orm import browse_record, browse_null
 
+class stock_picking_in(osv.osv):
+    _inherit = "stock.picking.in"
+    _columns = {
+        'lr_no': fields.char("LR No",size=64),
+        'lr_date': fields.date("LR Date"),
+        'transporter':fields.char("Transporter",size=256),
+        'hpressure':fields.integer("HPressure"),
+        'dest_from': fields.char("Destination From",size=64),
+        'dest_to': fields.char("Destination To",size=64),
+        'lab_no':fields.integer("Lab No"),
+        'gp_no': fields.integer("Gate Pass No"),
+        'gp_year': fields.char("GP Year",size=64),
+        'series_id': fields.many2one("product.order.series",'Series'),
+        'remark1': fields.char("Remark1",size=256),
+        'remark2': fields.char("remark2",size=256),
+        'case_code': fields.boolean("Case Code"),
+        'challan_no': fields.char("Challan Number",size=256),
+        'despatch_mode': fields.selection([('person','By Person'),
+                                           ('scooter','By Scooter'),
+                                           ('tanker','By Tanker'),
+                                           ('truck','By Truck'),
+                                           ('auto_rickshaw','By Auto Rickshaw'),
+                                           ('loading_rickshaw','By Loading Rickshaw'),
+                                           ('tempo','By Tempo'),
+                                           ('metador','By Metador'),
+                                           ('rickshaw_tempo','By Rickshaw Tempo'),
+                                           ('cart','By Cart'),
+                                           ('cycle','By Cycle'),
+                                           ('pedal_rickshaw','By Pedal Rickshaw'),
+                                           ('car','By Car'),
+                                           ('post_parcel','By Post Parcel'),
+                                           ('courier','By Courier'),
+                                           ('tractor','By Tractor'),
+                                           ('hand_cart','By Hand Cart'),
+                                           ('camel_cart','By Camel Cart'),
+                                           ('others','Others'),],"Despatch Mode"),
+        'other_dispatch': fields.char("Other Dispatch",size=256),
+            
+    }
+stock_picking_in()
+
 class purchase_order_line(osv.Model):
     _inherit = 'purchase.order.line'
     

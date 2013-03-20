@@ -127,7 +127,39 @@
                     <field name="coach_id" string="Manager"/>
                 </xpath>                
             </field>
-        </record>  
+        </record>
+        <record id="maize_view_stock_picking_in_inherit_form" model="ir.ui.view">
+            <field name="name">maize,stock.picking.in.inherit</field>
+            <field name="model">stock.picking.in</field>
+            <field name="inherit_id" ref="stock.view_picking_in_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="after">
+					<group col="12">
+                		<group colspan="4">
+                			<field name="lr_no"/>
+                			<field name="lr_date"/>
+                			<field name="hpressure"/>
+                			<field name="transporter"/>
+                			<field name="series_id"/>
+               			</group>
+               			<group colspan="4">
+               				<field name="lab_no"/>
+               				<field name="gp_no"/>
+               				<field name="gp_year"/>
+							<field name="dest_from"/>
+							<field name="despatch_mode"/>
+               			</group>
+               			<group colspan="4">
+               				<field name="case_code"/>
+                			<field name="challan_no"/>
+                			<field name="despatch_mode"/>
+                			<field name="dest_to"/>
+               				<field name="other_dispatch" attrs="{'invisible': [('despatch_mode','=','others')]}"/>
+               			</group>
+                	</group>
+                </xpath>
+            </field>
+        </record>
 
         <!-- Gate Pass Form View -->
         <record id='view_maize_gate_pass_form' model='ir.ui.view'>
@@ -192,6 +224,5 @@
         <!-- Gate Pass Menu -->
         <menuitem action="indent.action_indent_indent" name="Indents" parent="indent.menu_indent_indent_main" id="indent.menu_indent_indent" sequence="2"/>
         <menuitem action="action_maize_gate_pass" name="Gate Passes" parent="indent.menu_indent_indent_main" id="menu_maize_gate_pass" sequence="1"/>
-
     </data>
 </openerp>

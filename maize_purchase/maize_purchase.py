@@ -442,3 +442,21 @@ class maize_gate_pass(osv.Model):
     }
 
 maize_gate_pass()
+
+class gate_pass_lines(osv.Model):
+    _name = 'gate.pass.lines'
+    _description = 'Gate Pass Lines'
+
+    _columns = {
+        'gate_pass_id': fields.many2one('maize.gate.pass', 'Gate Pass', required=True, ondelete='cascade'),
+        'name': fields.text('Description', required=True),
+        'product_id': fields.many2one('product.product', 'Product', required=True),
+        'product_uom_qty': fields.float('Quantity', digits_compute= dp.get_precision('Product UoS'), required=True),
+        'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
+        'pen_qty': fields.float('Pen Qty.'),
+        'gps_qty': fields.float('Gps Qty.'),
+        'app_rate': fields.float('App Rate'),
+        'app_value': fields.float('App Value'),
+    }
+
+gate_pass_lines()

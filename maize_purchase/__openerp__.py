@@ -36,6 +36,7 @@ This module inherits the base product module which maintains some product histor
         'wizard/comparison_report_view.xml',
         'maize_purchase_view.xml',
         'maize_tax_data.xml',
+        'gate_pass_sequence.xml',
     ],
     'update_xml' : [],
 

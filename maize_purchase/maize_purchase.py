@@ -393,6 +393,7 @@ class maize_gate_pass(osv.Model):
         return stock_location.id
 
     _defaults = {
+        'gate_pass_no': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'gate.pass'),
         'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'series': 'repair',
         'type': 'foc',

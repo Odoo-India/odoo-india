@@ -128,5 +128,70 @@
                 </xpath>                
             </field>
         </record>  
+
+        <!-- Gate Pass Form View -->
+        <record id='view_maize_gate_pass_form' model='ir.ui.view'>
+            <field name="name">maize.gate.pass.form</field>
+            <field name="model">maize.gate.pass</field>
+            <field name="arch" type="xml">
+                <form string="Gate Pass" version="7.0">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <label for="name" class="oe_edit_only"/>
+                                <field name="name"/>
+                                <label for="gate_pass_no" class="oe_edit_only"/>
+                                <field name="gate_pass_no"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="partner_id"/>
+                                <field name="series"/>
+                                <field name="department_id"/>
+                            </group>
+                            <group>
+                                <field name="date"/>
+                                <field name="type"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Gate Pass Tree View -->
+        <record id='view_maize_gate_pass_tree' model='ir.ui.view'>
+            <field name="name">maize.gate.pass.tree</field>
+            <field name="model">maize.gate.pass</field>
+            <field name="arch" type="xml">
+                <tree string="Gate Passes">
+                    <field name="gate_pass_no"/>
+                    <field name="partner_id"/>
+                    <field name="series"/>
+                    <field name="type"/>
+                    <field name="date"/>
+                    <field name="department_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Gate Pass Action -->
+        <record id='action_maize_gate_pass' model='ir.actions.act_window'>
+            <field name="name">Gate Passes</field>
+            <field name="res_model">maize.gate.pass</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new gate pass.
+                </p>
+            </field>
+        </record>
+
+        <!-- Gate Pass Menu -->
+        <menuitem action="indent.action_indent_indent" name="Indents" parent="indent.menu_indent_indent_main" id="indent.menu_indent_indent" sequence="2"/>
+        <menuitem action="action_maize_gate_pass" name="Gate Passes" parent="indent.menu_indent_indent_main" id="menu_maize_gate_pass" sequence="1"/>
+
     </data>
 </openerp>

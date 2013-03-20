@@ -474,13 +474,8 @@ class gate_pass_lines(osv.Model):
         result = {}
         if product_id:
             product = self.pool.get('product.product').browse(cr, uid, product_id)
-            name = product.name
-            product_uom = product.uom_id and product.uom_id.id or False
-            result = {'value': {
-                'name': name,
-                'product_uom': product_uom,
-                }
-            }
+            value = dict(name = product.name, product_uom = product.uom_id and product.uom_id.id or False)
+            result = dict(value = value)
         return result
 
 gate_pass_lines()

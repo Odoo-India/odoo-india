@@ -449,6 +449,12 @@ class gate_pass_lines(osv.Model):
     _name = 'gate.pass.lines'
     _description = 'Gate Pass Lines'
 
+    def _get_subtotal_amount(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        for gatepass in self.browse(cr, uid, ids, context=context):
+            result[gatepass.id] = (gatepass.product_uom_qty * gatepass.app_rate)
+        return result
+
     _columns = {
         'gate_pass_id': fields.many2one('maize.gate.pass', 'Gate Pass', required=True, ondelete='cascade'),
         'name': fields.text('Name', required=True),
@@ -458,7 +464,7 @@ class gate_pass_lines(osv.Model):
         'pen_qty': fields.float('Pen Qty'),
         'gps_qty': fields.float('Gps Qty'),
         'app_rate': fields.float('App Rate'),
-        'app_value': fields.float('App Value'),
+        'app_value': fields.function(_get_subtotal_amount, type="float", string='App Value', store=True),
     }
 
     def _get_uom_id(self, cr, uid, *args):

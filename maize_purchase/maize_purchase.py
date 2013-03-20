@@ -428,6 +428,7 @@ class maize_gate_pass(osv.Model):
         'department_id': fields.many2one('stock.location', 'Department', required=True),
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'gate_pass_lines': fields.one2many('gate.pass.lines', 'gate_pass_id', 'Products'),
+        'description': fields.text('Remarks'),
     }
 
     def _default_stock_location(self, cr, uid, context=None):

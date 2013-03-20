@@ -223,6 +223,8 @@
                                 </field>
                             </page>
                         </notebook>
+                        <label for="description"/>
+                        <field name="description"/>
                     </sheet>
                 </form>
             </field>

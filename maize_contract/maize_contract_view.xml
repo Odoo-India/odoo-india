@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        
+        <record id="inherit_indetn_form_view" model="ir.ui.view">
+            <field name="name">inherit.indent.indent.form</field>
+            <field name="model">indent.indent</field>
+            <field name="inherit_id" ref="indent.view_indent_indent_form" />
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position='after'>
+                    <field name="contract" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id="view_contract_search" model="ir.ui.view">
+            <field name="name">contract.search</field>
+            <field name="model">indent.indent</field>
+            <field name="inherit_id" ref="indent.view_indent_indent_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position='after'>
+                    <filter string="Contract" name="contract_type" domain="[('contract','=', True)]"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id='action_contract_view' model='ir.actions.act_window'>
+            <field name="name">Contracts</field>
+            <field name="context">{'default_contract': True, 'search_default_contract_type': True}</field>
+            <field name="res_model">indent.indent</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_contract_search"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new indent.
+                </p>
+            </field>
+        </record>
+        <menuitem action="action_contract_view" name="Contracts" parent="indent.menu_indent_indent_main" id="menu_contract_main" sequence="2"/>
+    
+        <!-- Purchase Order Form View -->
+        <record id="view_contract_purchase_order_form" model="ir.ui.view">
+            <field name="name">contract.purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="before">
+                    <group attrs="{'invisible': [('contract', '=', False)]}" col="6">
+                        <group>
+                            <field name="contract" invisible="1"/>
+                            <field name="no_of_days"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="extended_date_from1"/>
+                            <field name="extended_date_from2"/>
+                        </group>
+                        <group>
+                            <field name="date_to" on_change="onchange_compute_days(date_from, date_to)"/>
+                            <field name="extended_date_to1" on_change="onchange_compute_days(extended_date_from1, extended_date_to1)"/>
+                            <field name="extended_date_to2" on_change="onchange_compute_days(extended_date_from2, extended_date_to2)"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

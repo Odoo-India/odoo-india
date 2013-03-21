@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <!-- Gate Pass Form View -->
+        <record id='view_gate_pass_form' model='ir.ui.view'>
+            <field name="name">gate.pass.form</field>
+            <field name="model">gate.pass</field>
+            <field name="arch" type="xml">
+                <form string="Gate Pass" version="7.0">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <label for="name" class="oe_edit_only"/>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="gate_pass_no"/>
+                                <field name="partner_id" domain="[('supplier', '=', True)]"/>
+                                <field name="series"/>
+                            </group>
+                            <group>
+                                <field name="date"/>
+                                <field name="department_id"/>
+                                <field name="type"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="move_lines"/>
+                            </page>
+                        </notebook>
+                        <!--
+                                    <form string="Products" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field name="product_id" on_change="onchange_product_id(product_id)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field name="product_uom_qty" class="oe_inline"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="pen_qty"/>
+                                                <field name="gps_qty"/>
+                                                <field name="app_rate"/>
+                                                <field name="app_value"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                    </form>
+                                    <tree string="Products">
+                                        <field name="product_id" on_change="onchange_product_id(product_id)"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="product_uom" string="Unit" groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="pen_qty"/>
+                                        <field name="gps_qty"/>
+                                        <field name="app_rate"/>
+                                        <field name="app_value"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total"/>
+                                </group>
+                                <div class="oe_clear">
+                                    <label for="description"/>
+                                </div>
+                                <field name="description" class="oe_inline"/>
+                            </page>
+                        </notebook>
+                        -->
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Gate Pass Tree View -->
+        <record id='view_gate_pass_tree' model='ir.ui.view'>
+            <field name="name">gate.pass.tree</field>
+            <field name="model">gate.pass</field>
+            <field name="arch" type="xml">
+                <tree string="Gate Passes">
+                    <field name="gate_pass_no"/>
+                    <field name="partner_id"/>
+                    <field name="series"/>
+                    <field name="type"/>
+                    <field name="date"/>
+                    <field name="department_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Gate Pass Action -->
+        <record id='action_gate_pass' model='ir.actions.act_window'>
+            <field name="name">Gate Passes</field>
+            <field name="res_model">gate.pass</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new gate pass.
+                </p>
+            </field>
+        </record>
+
+        <!-- Gate Pass Menu -->
+        <menuitem name="Gate Passes" parent="stock.menu_stock_root" id="menu_gate_pass_main" sequence="1"/>
+        <menuitem action="action_gate_pass" name="Gate Passes" parent="menu_gate_pass_main" id="menu_gate_pass" sequence="1"/>
+
+    </data>
+</openerp>

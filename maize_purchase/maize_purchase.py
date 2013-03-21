@@ -418,6 +418,15 @@ class maize_gate_pass(osv.Model):
     _name = 'maize.gate.pass'
     _description = 'Gate Pass'
 
+    def _get_total_amount(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        for gatepass in self.browse(cr, uid, ids, context=context):
+            total = 0.0
+            for line in gatepass.gate_pass_lines:
+                total += line.app_value
+            result[gatepass.id] = total
+        return result
+
     _columns = {
         'name': fields.char('Name', size=256, required=True),
         'gate_pass_no': fields.char('Gate Pass No', size=256, required=True),
@@ -429,6 +438,7 @@ class maize_gate_pass(osv.Model):
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'gate_pass_lines': fields.one2many('gate.pass.lines', 'gate_pass_id', 'Products'),
         'description': fields.text('Remarks'),
+        'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True),
     }
 
     def _default_stock_location(self, cr, uid, context=None):

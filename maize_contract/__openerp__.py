@@ -33,6 +33,7 @@ The user will create an contract
 """,
     'depends' : ['indent'],
     'data' : [
+        'contract_report.xml',
         'maize_contract_view.xml',
     ],
     'update_xml' : [],

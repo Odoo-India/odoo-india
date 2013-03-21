@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="report_contract_new" model="purchase.order"
+                name="contract.new" rml="maize_contract/report/contract.rml"
+                usage="default" string="Contract Report"/>
+    </data>
+</openerp>

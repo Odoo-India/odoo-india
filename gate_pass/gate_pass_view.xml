@@ -111,5 +111,24 @@
         <menuitem name="Gate Passes" parent="stock.menu_stock_root" id="menu_gate_pass_main" sequence="1"/>
         <menuitem action="action_gate_pass" name="Gate Passes" parent="menu_gate_pass_main" id="menu_gate_pass" sequence="1"/>
 
+        <!-- Stock Picking Out Gate Pass Form View -->
+        <record id="view_stock_picking_out_gate_pass_form" model="ir.ui.view">
+            <field name="name">stock.picking.out.gate.pass.form</field>
+            <field name="model">stock.picking.out</field>
+            <field name="inherit_id" ref="stock.view_picking_out_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="after">
+                    <group>
+                        <group string="Gate Pass">
+                            <field name="series"/>
+                            <field name="type"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record> 
+
     </data>
 </openerp>

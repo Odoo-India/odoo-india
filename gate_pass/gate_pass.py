@@ -32,6 +32,20 @@ class stock_picking(osv.Model):
 
 stock_picking()
 
+class stock_picking_in(osv.Model):
+    _name = "stock.picking.in"
+    _inherit = "stock.picking"
+    _table = "stock_picking"
+
+stock_picking_in()
+
+class stock_picking_out(osv.Model):
+    _name = "stock.picking.out"
+    _inherit = "stock.picking"
+    _table = "stock_picking"
+
+stock_picking_out()
+
 class gate_pass(osv.Model):
     _name = 'gate.pass'
     _description = 'Gate Pass'

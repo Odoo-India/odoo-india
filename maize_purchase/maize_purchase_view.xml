@@ -219,10 +219,15 @@
                                         <field name="app_value"/>
                                     </tree>
                                 </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total"/>
+                                </group>
+                                <div class="oe_clear">
+                                    <label for="description"/>
+                                </div>
+                                <field name="description" class="oe_inline"/>
                             </page>
                         </notebook>
-                        <label for="description"/>
-                        <field name="description"/>
                     </sheet>
                 </form>
             </field>

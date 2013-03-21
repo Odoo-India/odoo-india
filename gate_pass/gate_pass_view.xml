@@ -18,7 +18,7 @@
                         <group>
                             <group>
                                 <field name="gate_pass_no"/>
-                                <field name="partner_id" domain="[('supplier', '=', True)]"/>
+                                <field name="partner_id"/>
                                 <field name="series"/>
                             </group>
                             <group>
@@ -118,12 +118,13 @@
             <field name="inherit_id" ref="stock.view_picking_out_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//group" position="after">
-                    <group>
-                        <group string="Gate Pass">
+                    <group string="Gate Pass">
+                        <group>
                             <field name="series"/>
-                            <field name="type"/>
+                            <field name="gate_pass_type"/>
                         </group>
                         <group>
+                            <field name="gate_pass_id"/>
                         </group>
                     </group>
                 </xpath>

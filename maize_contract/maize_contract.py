@@ -21,9 +21,11 @@
 
 import time
 from datetime import datetime
+import math
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
+from openerp import tools
 
 class indent_indent(osv.Model):
     _inherit = 'indent.indent'
@@ -39,28 +41,103 @@ indent_indent()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
+
+    def _get_number_of_days(self, date_from, date_to):
+        """Returns a float equals to the timedelta between two dates given as string."""
+
+        DATETIME_FORMAT = "%Y-%m-%d"
+        from_dt = datetime.strptime(date_from, DATETIME_FORMAT)
+        to_dt = datetime.strptime(date_to, DATETIME_FORMAT)
+        timedelta = to_dt - from_dt
+        diff_day = timedelta.days + float(timedelta.seconds) / 86400
+        return diff_day
+
+    def onchange_compute_days1(self, cr, uid, ids, date_from, date_to,d1=0,d2=0):
+        """
+        If there are no date set for date_to, automatically set one 8 hours later than
+        the date_from.
+        Also update the number_of_days.
+        """
+        # date_to has to be greater than date_from
+        if (date_from and date_to) and (date_from > date_to):
+            raise osv.except_osv(_('Warning!'),_('The start date must be anterior to the end date.'))
+
+        result = {'value': {}}
+
+        # No date_to set so far: automatically compute one 8 hours later
+        if date_from and not date_to:
+            result['value']['no_of_days1'] = 0
+            result['value']['total_days'] = d1+d2
+
+        # Compute and update the number of days
+        if (date_to and date_from) and (date_from <= date_to):
+            diff_day = self._get_number_of_days(date_from, date_to)
+            result['value']['no_of_days1'] = round(math.floor(diff_day))+1
+            result['value']['total_days'] = d1+d2+round(math.floor(diff_day))+1
+        else:
+            result['value']['no_of_days1'] = 0
+
+        return result
     
-    def onchange_compute_days(self, cr, uid, ids, date_start, date_end, context=None):
-        res = {}
-        for po in self.browse(cr, uid, ids, context=context):
-            day = po.no_of_days
-            if date_start and date_end:
-                day_from = datetime.strptime(date_start,"%Y-%m-%d")
-                day_to = datetime.strptime(date_end,"%Y-%m-%d")
-                day += (day_to - day_from).days + 1
-                res['no_of_days'] = day
-            elif po.extended_date_from1 and po.extended_date_to1:
-                res = self.onchange_compute_days(cr, uid, ids, po.extended_date_from1, po.extended_date_to1)
-                res['value']['no_of_days'] = po.no_of_days
-            elif po.date_from and po.date_to:
-                res = self.onchange_compute_days(cr, uid, ids, po.date_from, po.date_to, {'start': True})
-                res['value']['no_of_days'] = po.no_of_days
-                return res
-        return {'value' : res}
+    def onchange_compute_days2(self, cr, uid, ids, date_from, date_to,d1=0,d2=0):
+        """
+        If there are no date set for date_to, automatically set one 8 hours later than
+        the date_from.
+        Also update the number_of_days.
+        """
+        # date_to has to be greater than date_from
+        if (date_from and date_to) and (date_from > date_to):
+            raise osv.except_osv(_('Warning!'),_('The start date must be anterior to the end date.'))
+
+        result = {'value': {}}
+
+        # No date_to set so far: automatically compute one 8 hours later
+        if date_from and not date_to:
+            result['value']['no_of_days2'] = 0
+            result['value']['total_days'] = d1+d2
+
+        # Compute and update the number of days
+        if (date_to and date_from) and (date_from <= date_to):
+            diff_day = self._get_number_of_days(date_from, date_to)
+            result['value']['no_of_days2'] = round(math.floor(diff_day))+1
+            result['value']['total_days'] = round(math.floor(diff_day))+1+d1+d2
+        else:
+            result['value']['no_of_days2'] = 0
+
+        return result
+    def onchange_compute_days3(self, cr, uid, ids, date_from, date_to,d1=0,d2=0):
+        """
+        If there are no date set for date_to, automatically set one 8 hours later than
+        the date_from.
+        Also update the number_of_days.
+        """
+        # date_to has to be greater than date_from
+        if (date_from and date_to) and (date_from > date_to):
+            raise osv.except_osv(_('Warning!'),_('The start date must be anterior to the end date.'))
+
+        result = {'value': {}}
+
+        # No date_to set so far: automatically compute one 8 hours later
+        if date_from and not date_to:
+            result['value']['no_of_days3'] = 0
+            result['value']['total_days'] = d1+d2
+
+        # Compute and update the number of days
+        if (date_to and date_from) and (date_from <= date_to):
+            diff_day = self._get_number_of_days(date_from, date_to)
+            result['value']['no_of_days3'] = round(math.floor(diff_day))+1
+            result['value']['total_days'] = round(math.floor(diff_day))+1+d1+d2
+        else:
+            result['value']['no_of_days3'] = 0
+
+        return result       
     
     _columns = {
         'contract': fields.related('indent_id', 'contract', type='boolean', relation='indent.indent', string='Contract', store=True, readonly=True),
-        'no_of_days': fields.integer("No of Days", help="Calculate number of days for contracts"),
+        'no_of_days1': fields.integer("No of Days1", help="Calculate number of days for contracts"),
+        'no_of_days2': fields.integer("No of Days2", help="Calculate number of days for contracts"),
+        'no_of_days3': fields.integer("No of Days3", help="Calculate number of days for contracts"),
+        'total_days': fields.integer("Total Days", help="Calculate number of days for contracts"),
         'date_from': fields.date('From Date', required=True),
         'date_to': fields.date('To Date'),
         'extended_date_from1': fields.date('Extended From'),

@@ -101,6 +101,16 @@ class gate_pass(osv.Model):
         'department_id': _default_stock_location,
     }
 
+    def name_get(self, cr, uid, ids, context=None):
+        res = []
+        if not ids:
+            return res
+        # name_get may receive int id instead of an id list
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+
+        return [(gatepass.id, gatepass.gate_pass_no) for gatepass in self.browse(cr, uid , ids, context=context)]
+
 gate_pass()
 
 class stock_move(osv.Model):

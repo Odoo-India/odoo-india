@@ -24,7 +24,7 @@
                             <group>
                                 <field name="date"/>
                                 <field name="department_id"/>
-                                <field name="type"/>
+                                <field name="gate_pass_type"/>
                             </group>
                         </group>
                         <notebook>
@@ -87,7 +87,7 @@
                     <field name="gate_pass_no"/>
                     <field name="partner_id"/>
                     <field name="series"/>
-                    <field name="type"/>
+                    <field name="gate_pass_type"/>
                     <field name="date"/>
                     <field name="department_id"/>
                 </tree>
@@ -129,7 +129,18 @@
                     </group>
                 </xpath>
             </field>
-        </record> 
+        </record>
+
+        <record id="view_stock_move_gate_pass_form" model="ir.ui.view">
+            <field name="name">stock.move.gate.pass.form</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_form"/>
+            <field name="arch" type="xml">
+                <field name="origin" position="after">
+                    <field name="gate_pass_id"/>
+                </field>
+            </field>
+        </record>
 
     </data>
 </openerp>

@@ -22,12 +22,27 @@
 import time
 from openerp.osv import fields, osv
 
+SERIES = [
+    ('repair', 'Repair'),
+    ('purchase', 'Purchase'),
+    ('store', 'Store')
+]
+
+GATE_PASS_TYPE = [
+    ('foc', 'Free Of Cost'),
+    ('chargeable', 'Chargeable'),
+    ('sample', 'Sample'),
+    ('contract', 'Contract'),
+    ('cash', 'Cash'),
+    ('Loan', 'Loan')
+]
+
 class stock_picking(osv.Model):
     _inherit = 'stock.picking'
 
     _columns = {
-        'series':fields.selection([('repair', 'Repair'), ('purchase', 'Purchase'), ('store', 'Store')], 'Series'),
-        'gate_pass_type':fields.selection([('foc', 'Free Of Cost'), ('chargeable', 'Chargeable'), ('sample', 'Sample'), ('contract', 'Contract'), ('cash', 'Cash'), ('Loan', 'Loan')], 'Type'),
+        'series':fields.selection(SERIES, 'Series'),
+        'gate_pass_type':fields.selection(GATE_PASS_TYPE, 'Type'),
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
 
@@ -38,17 +53,34 @@ class stock_picking_in(osv.Model):
     _table = "stock_picking"
 
     _columns = {
-        'series':fields.selection([('repair', 'Repair'), ('purchase', 'Purchase'), ('store', 'Store')], 'Series'),
-        'gate_pass_type':fields.selection([('foc', 'Free Of Cost'), ('chargeable', 'Chargeable'), ('sample', 'Sample'), ('contract', 'Contract'), ('cash', 'Cash'), ('Loan', 'Loan')], 'Type'),
+        'series':fields.selection(SERIES, 'Series'),
+        'gate_pass_type':fields.selection(GATE_PASS_TYPE, 'Type'),
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
 
     def create(self, cr, uid, vals, context=None):
         gate_pass_obj = self.pool.get('gate.pass')
+        move_obj = self.pool.get('stock.move')
         value = dict(partner_id = vals.get('partner_id'))
         gate_pass_id = gate_pass_obj.create(cr, uid, value, context=context)
         vals['gate_pass_id'] = gate_pass_id
-        return super(stock_picking_in, self).create(cr, uid, vals, context=context)
+        res = super(stock_picking_in, self).create(cr, uid, vals, context=context)
+        gate_pass_obj.write(cr, uid, gate_pass_id, {'picking_id': res}, context=context)
+        move_lines = self.browse(cr, uid, res, context=context).move_lines
+        for move in move_lines:
+            move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
+        return res
+
+    def write(self, cr, uid, ids, vals, context=None):
+        res = super(stock_picking_in, self).write(cr, uid, ids, vals, context=context)
+        move_obj = self.pool.get('stock.move')
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        for picking in self.browse(cr, uid, ids, context=context):
+            gate_pass_id = picking.gate_pass_id.id
+            for move in picking.move_lines:
+                move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
+        return res
 
 stock_picking_in()
 
@@ -57,17 +89,34 @@ class stock_picking_out(osv.Model):
     _table = "stock_picking"
 
     _columns = {
-        'series':fields.selection([('repair', 'Repair'), ('purchase', 'Purchase'), ('store', 'Store')], 'Series'),
-        'gate_pass_type':fields.selection([('foc', 'Free Of Cost'), ('chargeable', 'Chargeable'), ('sample', 'Sample'), ('contract', 'Contract'), ('cash', 'Cash'), ('Loan', 'Loan')], 'Type'),
+        'series':fields.selection(SERIES, 'Series'),
+        'gate_pass_type':fields.selection(GATE_PASS_TYPE, 'Type'),
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
 
     def create(self, cr, uid, vals, context=None):
         gate_pass_obj = self.pool.get('gate.pass')
+        move_obj = self.pool.get('stock.move')
         value = dict(partner_id = vals.get('partner_id'))
         gate_pass_id = gate_pass_obj.create(cr, uid, value, context=context)
         vals['gate_pass_id'] = gate_pass_id
-        return super(stock_picking_out, self).create(cr, uid, vals, context=context)
+        res = super(stock_picking_out, self).create(cr, uid, vals, context=context)
+        gate_pass_obj.write(cr, uid, gate_pass_id, {'picking_id': res}, context=context)
+        move_lines = self.browse(cr, uid, res, context=context).move_lines
+        for move in move_lines:
+            move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
+        return res
+
+    def write(self, cr, uid, ids, vals, context=None):
+        res = super(stock_picking_out, self).write(cr, uid, ids, vals, context=context)
+        move_obj = self.pool.get('stock.move')
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        for picking in self.browse(cr, uid, ids, context=context):
+            gate_pass_id = picking.gate_pass_id.id
+            for move in picking.move_lines:
+                move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
+        return res
 
 stock_picking_out()
 
@@ -79,8 +128,8 @@ class gate_pass(osv.Model):
         'name': fields.char('Name', size=256),
         'gate_pass_no': fields.char('Gate Pass No', size=256, required=True),
         'picking_id': fields.many2one('stock.picking', 'Picking'),
-        'series':fields.related('picking_id', 'series', type='selection', string='Series', store=True),
-        'type':fields.related('picking_id', 'gate_pass_type', type='selection', string='Type', store=True),
+        'series':fields.related('picking_id', 'series', type='selection', selection=SERIES, string='Series', store=True),
+        'gate_pass_type':fields.related('picking_id', 'gate_pass_type', type='selection', selection=GATE_PASS_TYPE, string='Type', store=True),
         'date': fields.datetime('Gate Pass Date', required=True),
         'partner_id':fields.many2one('res.partner', 'Supplier'),
         'department_id': fields.many2one('stock.location', 'Department', required=True),
@@ -97,7 +146,7 @@ class gate_pass(osv.Model):
         'gate_pass_no': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'gate.pass'),
         'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'series': 'repair',
-        'type': 'foc',
+        'gate_pass_type': 'foc',
         'department_id': _default_stock_location,
     }
 
@@ -117,7 +166,7 @@ class stock_move(osv.Model):
     _inherit = 'stock.move'
 
     _columns = {
-        'gate_pass_id':fields.related('picking_id', 'gate_pass_id', type='many2one', relation='stock.picking', string='Gate Pass', store=True),
+        'gate_pass_id':fields.many2one('gate.pass', 'Gate Pass'),
     }
 
 stock_move()

@@ -35,6 +35,7 @@ Managing Gate Passes.
     'data' : [
         'gate_pass_view.xml',
         'gate_pass_sequence.xml',
+        'gate_pass_report.xml',
     ],
     'update_xml' : [],
 

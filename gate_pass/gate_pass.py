@@ -177,6 +177,8 @@ class gate_pass(osv.Model):
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'move_lines': fields.one2many('stock.move', 'gate_pass_id', 'Products'),
         'description': fields.text('Remarks'),
+        'company_id': fields.many2one('res.company', 'Company', required=True),
+        'return_type': fields.selection([('Return', 'Return'),('Non Return', 'Non Return')], "Retrun Type"),
     }
 
     def _default_stock_location(self, cr, uid, context=None):

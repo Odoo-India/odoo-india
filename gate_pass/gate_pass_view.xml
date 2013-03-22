@@ -20,10 +20,13 @@
                                 <field name="gate_pass_no"/>
                                 <field name="partner_id"/>
                                 <field name="series"/>
+                                <field name="company_id"/>
                             </group>
                             <group>
                                 <field name="date"/>
                                 <field name="department_id"/>
+                                <field name="type"/>
+                                <field name="return_type"/>
                                 <field name="gate_pass_type"/>
                             </group>
                         </group>

@@ -201,6 +201,26 @@ class gate_pass(osv.Model):
 
         return [(gatepass.id, gatepass.gate_pass_no) for gatepass in self.browse(cr, uid , ids, context=context)]
 
+    def create(self, cr, uid, vals, context=None):
+        move_obj = self.pool.get('stock.move')
+        res = super(gate_pass, self).create(cr, uid, vals, context=context)
+        picking_id = self.browse(cr, uid, res, context=None).picking_id.id
+        move_lines = self.browse(cr, uid, res, context=context).move_lines
+        for move in move_lines:
+            move_obj.write(cr, uid, [move.id], {'picking_id': picking_id}, context=context)
+        return res
+
+    def write(self, cr, uid, ids, vals, context=None):
+        res = super(gate_pass, self).write(cr, uid, ids, vals, context=context)
+        move_obj = self.pool.get('stock.move')
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        for picking in self.browse(cr, uid, ids, context=context):
+            picking_id = picking.picking_id.id
+            for move in picking.move_lines:
+                move_obj.write(cr, uid, [move.id], {'picking_id': picking_id}, context=context)
+        return res
+
 gate_pass()
 
 class stock_move(osv.Model):

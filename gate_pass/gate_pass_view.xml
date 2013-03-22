@@ -25,7 +25,6 @@
                             <group>
                                 <field name="date"/>
                                 <field name="department_id"/>
-                                <field name="type"/>
                                 <field name="return_type"/>
                                 <field name="gate_pass_type"/>
                             </group>

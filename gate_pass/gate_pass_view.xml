@@ -111,6 +111,20 @@
         <menuitem name="Gate Passes" parent="stock.menu_stock_root" id="menu_gate_pass_main" sequence="1"/>
         <menuitem action="action_gate_pass" name="Gate Passes" parent="menu_gate_pass_main" id="menu_gate_pass" sequence="1"/>
 
+        <!-- Stock Picking In Gate Pass Form View -->
+        <record id="view_stock_picking_in_gate_pass_form" model="ir.ui.view">
+            <field name="name">stock.picking.in.gate.pass.form</field>
+            <field name="model">stock.picking.in</field>
+            <field name="inherit_id" ref="stock.view_picking_in_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/h1" position="after">
+                    <div class="oe_right oe_inline" name="buttons">
+                        <button name="open_gate_pass" string="Gate Pass" type="object"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
         <!-- Stock Picking Out Gate Pass Form View -->
         <record id="view_stock_picking_out_gate_pass_form" model="ir.ui.view">
             <field name="name">stock.picking.out.gate.pass.form</field>
@@ -119,7 +133,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet/h1" position="after">
                     <div class="oe_right oe_inline" name="buttons">
-                        <button name="open_gate_pass" string="Gate Pass" type="object"/>  
+                        <button name="open_gate_pass" string="Gate Pass" type="object"/>
                     </div>
                 </xpath>
                 <xpath expr="//group" position="after">

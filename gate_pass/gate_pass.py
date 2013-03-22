@@ -83,6 +83,26 @@ class stock_picking_in(osv.Model):
                 move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
         return res
 
+    def open_gate_pass(self, cr, uid, ids, context=None):
+        '''
+        This function returns an action that display gate pass of given picking ids.
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time'
+        gate_pass_id = self.browse(cr, uid, ids[0], context=context).gate_pass_id.id
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'gate_pass', 'view_gate_pass_form')
+        result = {
+            'name': _('Gate Passes'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': res and res[1] or False,
+            'res_model': 'gate.pass',
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': gate_pass_id,
+        }
+        return result
+
 stock_picking_in()
 
 class stock_picking_out(osv.Model):
@@ -118,7 +138,6 @@ class stock_picking_out(osv.Model):
             for move in picking.move_lines:
                 move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
         return res
-
 
     def open_gate_pass(self, cr, uid, ids, context=None):
         '''

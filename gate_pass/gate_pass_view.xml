@@ -117,6 +117,11 @@
             <field name="model">stock.picking.out</field>
             <field name="inherit_id" ref="stock.view_picking_out_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//sheet/h1" position="after">
+                    <div class="oe_right oe_inline" name="buttons">
+                        <button name="open_gate_pass" string="Gate Pass" type="object"/>  
+                    </div>
+                </xpath>
                 <xpath expr="//group" position="after">
                     <group string="Gate Pass">
                         <group>
@@ -124,7 +129,7 @@
                             <field name="gate_pass_type"/>
                         </group>
                         <group>
-                            <field name="gate_pass_id"/>
+                            <field name="gate_pass_id" invisible="1"/>
                         </group>
                     </group>
                 </xpath>

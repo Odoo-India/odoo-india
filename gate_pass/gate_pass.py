@@ -20,9 +20,12 @@
 ##############################################################################
 
 import time
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
+from openerp import netsvc
 
 SERIES = [
     ('repair', 'Repair'),
@@ -47,6 +50,23 @@ class stock_picking(osv.Model):
         'gate_pass_type':fields.selection(GATE_PASS_TYPE, 'Type'),
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
+
+    def action_confirm(self, cr, uid, ids, context=None):
+        """ Confirms picking.
+        @return: True
+        """
+        picking = False
+        pickings = self.browse(cr, uid, ids, context=context)
+        self.write(cr, uid, ids, {'state': 'confirmed'})
+        todo = []
+        for picking in pickings:
+            for r in picking.move_lines:
+                if r.state == 'draft':
+                    todo.append(r.id)
+        todo = self.action_explode(cr, uid, todo, context)
+        if len(todo):
+            picking = self.pool.get('stock.move').action_confirm(cr, uid, todo, context=context)
+        return picking
 
 stock_picking()
 
@@ -196,6 +216,12 @@ class gate_pass(osv.Model):
 
         return [(gatepass.id, gatepass.gate_pass_no) for gatepass in self.browse(cr, uid , ids, context=context)]
 
+    def action_picking_create(self, cr, uid, ids, context=None):
+        assert len(ids) == 1, 'This option should only be used for a single id at a time.'
+        picking = self.browse(cr, uid, ids[0], context=context).picking_id.id
+        picking_id = self.pool.get('stock.picking').action_confirm(cr, uid, [picking], context=context)
+        return picking_id.id
+
 gate_pass()
 
 class gate_pass_lines(osv.Model):
@@ -279,4 +305,70 @@ class indent_indent(osv.Model):
         return result
 
 indent_indent()
+
+class stock_move(osv.Model):
+    _inherit = 'stock.move'
+
+    def _create_chained_picking(self, cr, uid, picking_name, picking, picking_type, moves_todo, context=None):
+        picking_obj = self.pool.get('stock.picking')
+        return picking_obj.create(cr, uid, self._prepare_chained_picking(cr, uid, picking_name, picking, picking_type, moves_todo, context=context))
+
+    def create_chained_picking(self, cr, uid, moves, context=None):
+        res_obj = self.pool.get('res.company')
+        location_obj = self.pool.get('stock.location')
+        move_obj = self.pool.get('stock.move')
+        wf_service = netsvc.LocalService("workflow")
+        pickid = False
+        new_moves = []
+        if context is None:
+            context = {}
+        seq_obj = self.pool.get('ir.sequence')
+        for picking, todo in self._chain_compute(cr, uid, moves, context=context).items():
+            ptype = todo[0][1][5] and todo[0][1][5] or location_obj.picking_type_get(cr, uid, todo[0][0].location_dest_id, todo[0][1][0])
+            if picking:
+                # name of new picking according to its type
+                new_pick_name = seq_obj.get(cr, uid, 'stock.picking.' + ptype)
+                pickid = self._create_chained_picking(cr, uid, new_pick_name, picking, ptype, todo, context=context)
+                # Need to check name of old picking because it always considers picking as "OUT" when created from Sales Order
+                old_ptype = location_obj.picking_type_get(cr, uid, picking.move_lines[0].location_id, picking.move_lines[0].location_dest_id)
+                if old_ptype != picking.type:
+                    old_pick_name = seq_obj.get(cr, uid, 'stock.picking.' + old_ptype)
+                    self.pool.get('stock.picking').write(cr, uid, [picking.id], {'name': old_pick_name, 'type': old_ptype}, context=context)
+            else:
+                pickid = False
+            for move, (loc, dummy, delay, dummy, company_id, ptype, invoice_state) in todo:
+                new_id = move_obj.copy(cr, uid, move.id, {
+                    'location_id': move.location_dest_id.id,
+                    'location_dest_id': loc.id,
+                    'date': time.strftime('%Y-%m-%d'),
+                    'picking_id': pickid,
+                    'state': 'waiting',
+                    'company_id': company_id or res_obj._company_default_get(cr, uid, 'stock.company', context=context)  ,
+                    'move_history_ids': [],
+                    'date_expected': (datetime.strptime(move.date, '%Y-%m-%d %H:%M:%S') + relativedelta(days=delay or 0)).strftime('%Y-%m-%d'),
+                    'move_history_ids2': []}
+                )
+                move_obj.write(cr, uid, [move.id], {
+                    'move_dest_id': new_id,
+                    'move_history_ids': [(4, new_id)]
+                })
+                new_moves.append(self.browse(cr, uid, [new_id])[0])
+            if pickid:
+                wf_service.trg_validate(uid, 'stock.picking', pickid, 'button_confirm', cr)
+        if new_moves:
+            new_moves += self.create_chained_picking(cr, uid, new_moves, context)
+        return new_moves, pickid
+
+
+    def action_confirm(self, cr, uid, ids, context=None):
+        """ Confirms stock move.
+        @return: List of ids.
+        """
+        moves = self.browse(cr, uid, ids, context=context)
+        self.write(cr, uid, ids, {'state': 'confirmed'})
+        moves, picking = self.create_chained_picking(cr, uid, moves, context)
+        return picking
+
+stock_move()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

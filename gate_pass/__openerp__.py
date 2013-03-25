@@ -34,6 +34,7 @@ Managing Gate Passes.
     'depends' : ['maize_purchase'],
     'data' : [
         'gate_pass_view.xml',
+        'gate_pass_workflow.xml',
         'gate_pass_sequence.xml',
         'gate_pass_report.xml',
     ],

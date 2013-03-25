@@ -8,6 +8,9 @@
             <field name="model">gate.pass</field>
             <field name="arch" type="xml">
                 <form string="Gate Pass" version="7.0">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="confirm,pending,done"/>
+                    </header>
                     <sheet>
                         <div class="oe_title">
                             <h1>
@@ -147,6 +150,18 @@
                             <field name="gate_pass_id" invisible="1"/>
                         </group>
                     </group>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Indent Gate Pass Form View -->
+        <record id="view_indent_gate_pass_form" model="ir.ui.view">
+            <field name="name">indent.gate.pass.form</field>
+            <field name="model">indent.indent</field>
+            <field name="inherit_id" ref="indent.view_indent_indent_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/div/button[@string='Purchase Orders']" position="after">
+                        <button name="open_gate_pass" string="Gate Pass" type="object"/>
                 </xpath>
             </field>
         </record>

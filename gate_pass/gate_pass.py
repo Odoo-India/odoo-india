@@ -80,39 +80,6 @@ class stock_picking_in(osv.Model):
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
 
-    def create_gate_pass(self, cr, uid, ids, context=None):
-        gate_pass_obj = self.pool.get('gate.pass')
-        gate_pass_line_obj = self.pool.get('gate.pass.lines')
-        for picking in self.browse(cr, uid, ids, context=context):
-            unlink_ids = gate_pass_obj.search(cr, uid, [('picking_id', '=', picking.id)], context=context)
-            gate_pass_obj.unlink(cr, uid, unlink_ids, context=context)
-            gate_pass_id = gate_pass_obj.create(cr, uid, {'partner_id': picking.partner_id.id, 'picking_id': picking.id}, context=context)
-            self.write(cr, uid, [picking.id], {'gate_pass_id': gate_pass_id}, context=context)
-            for move in picking.move_lines:
-                vals = dict(product_id = move.product_id.id, product_uom_qty = move.product_qty, product_uom = move.product_uom.id, name = move.product_id.name, gate_pass_id = gate_pass_id)
-                gate_pass_line_obj.create(cr, uid, vals, context=context)
-        return gate_pass_id
-
-    def open_gate_pass(self, cr, uid, ids, context=None):
-        '''
-        This function returns an action that display gate pass of given picking ids.
-        '''
-        assert len(ids) == 1, 'This option should only be used for a single id at a time'
-        gate_pass_id = self.create_gate_pass(cr, uid, ids, context=context)
-        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'gate_pass', 'view_gate_pass_form')
-        result = {
-            'name': _('Gate Passes'),
-            'view_type': 'form',
-            'view_mode': 'form',
-            'view_id': res and res[1] or False,
-            'res_model': 'gate.pass',
-            'type': 'ir.actions.act_window',
-            'nodestroy': True,
-            'target': 'current',
-            'res_id': gate_pass_id,
-        }
-        return result
-
 stock_picking_in()
 
 class stock_picking_out(osv.Model):

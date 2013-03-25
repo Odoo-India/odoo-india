@@ -30,14 +30,53 @@ from openerp import tools
 class indent_indent(osv.Model):
     _inherit = 'indent.indent'
     _columns = {
-        'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent", readonly=True)
+        'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent", readonly=True),
+        'contract_series_id': fields.many2one('contract.series','Contract Series', help="contract_series", readonly=True, states={'draft': [('readonly', False)]})
         }
+
+    def indent_confirm(self, cr, uid, ids, context=None):
+        for record in self.browse(cr,uid,ids,context):
+            if record.contract:
+                sequence = '/'
+                if record.contract_series_id.code == 'MS':
+                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.ms')
+                elif record.contract_series_id.code == 'PR':
+                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.pr')
+                elif record.contract_series_id.code == 'OM':
+                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.om')
+                elif record.contract_series_id.code == 'TM':
+                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.tm')
+                self.write(cr,uid,record.id,{'name':sequence})
+            else:
+                sequence = self.pool.get('ir.sequence').get(cr, uid, 'indent.indent') or '/'
+                self.write(cr,uid,record.id,{'name':sequence})
+        return super(indent_indent, self).indent_confirm(cr, uid, ids, context)
     
     _defaults = {
         'contract': False
         }
     
 indent_indent()
+
+class contract_series(osv.Model):
+    _name = 'contract.series'
+    _rec_name = 'code'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.code and '[' + pckg.code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res 
+    
+    _columns = {
+        'name': fields.char('Name',size=256),
+        'code': fields.char('Code', size=64)
+        }
+contract_series()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'

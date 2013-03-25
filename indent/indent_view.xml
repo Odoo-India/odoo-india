@@ -78,13 +78,13 @@
                         </div>
                         <group>
                             <group>
-                                <field name="indent_date"/>
+                                <field name="indent_date" />
                             </group>
                             <group>
                                 <field name="required_date"/>
                             </group>
                         </group>
-                        <group string="Indent Details">
+                        <group string="Details">
                             <group>
                                 <field name="indentor_id"/>
                                 <field name="employee_id" invisible="1"/>

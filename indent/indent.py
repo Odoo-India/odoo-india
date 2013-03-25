@@ -74,8 +74,8 @@ class indent_indent(osv.Model):
         return res
 
     _columns = {
-        'name': fields.char('Indent #', size=256, required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
-        'indent_date': fields.datetime('Indent Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always',),
+        'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
         'employee_id': fields.many2one('hr.employee', 'Employee'),
@@ -83,7 +83,7 @@ class indent_indent(osv.Model):
         'department_id': fields.many2one('stock.location', 'Department', required=True,readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade",readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', readonly=True, required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
-        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange',readonly=True, states={'draft': [('readonly', False)]}),
+        'type': fields.selection([('new','New'), ('existing','Existing')],'Type', required=True, track_visibility='onchange',readonly=True, states={'draft': [('readonly', False)]}),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products',readonly=True, states={'draft': [('readonly', False)],'inprogress': [('readonly', False)],'waiting_approval': [('readonly', False)]}),
         'picking_id': fields.many2one('stock.picking','Picking', states={'draft': [('readonly', False)]}),
         'description': fields.text('Item Description', readonly=True,states={'draft': [('readonly', False)]}),
@@ -108,7 +108,7 @@ class indent_indent(osv.Model):
 
     _defaults = {
         'state': 'draft',
-        'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
+        #'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
         'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'indentor_id': lambda self, cr, uid, context: uid,
@@ -309,6 +309,8 @@ class indent_indent(osv.Model):
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
         return res
+
+
 
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
         location_id = self._default_stock_location(cr, uid, context=context)

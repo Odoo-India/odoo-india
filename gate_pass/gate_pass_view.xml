@@ -25,16 +25,16 @@
                             <group>
                                 <field name="date"/>
                                 <field name="department_id"/>
-                                <field name="return_type"/>
                                 <field name="gate_pass_type"/>
+                                <field name="return_type"/>
+                            </group>
+                            <group string="Indent Details">
+                                <field name="indent_id"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Products">
-                                <field name="move_lines"/>
-                            </page>
-                        </notebook>
-                        <!--
+                                <field name="gate_pass_lines">
                                     <form string="Products" version="7.0">
                                         <group>
                                             <group>
@@ -74,7 +74,6 @@
                                 <field name="description" class="oe_inline"/>
                             </page>
                         </notebook>
-                        -->
                     </sheet>
                 </form>
             </field>
@@ -149,17 +148,6 @@
                         </group>
                     </group>
                 </xpath>
-            </field>
-        </record>
-
-        <record id="view_stock_move_gate_pass_form" model="ir.ui.view">
-            <field name="name">stock.move.gate.pass.form</field>
-            <field name="model">stock.move</field>
-            <field name="inherit_id" ref="stock.view_move_form"/>
-            <field name="arch" type="xml">
-                <field name="origin" position="after">
-                    <field name="gate_pass_id"/>
-                </field>
             </field>
         </record>
 

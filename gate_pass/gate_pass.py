@@ -22,6 +22,7 @@
 import time
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
+import openerp.addons.decimal_precision as dp
 
 SERIES = [
     ('repair', 'Repair'),
@@ -59,36 +60,25 @@ class stock_picking_in(osv.Model):
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
 
-    def create(self, cr, uid, vals, context=None):
+    def create_gate_pass(self, cr, uid, ids, context=None):
         gate_pass_obj = self.pool.get('gate.pass')
-        move_obj = self.pool.get('stock.move')
-        value = dict(partner_id = vals.get('partner_id'))
-        gate_pass_id = gate_pass_obj.create(cr, uid, value, context=context)
-        vals['gate_pass_id'] = gate_pass_id
-        res = super(stock_picking_in, self).create(cr, uid, vals, context=context)
-        gate_pass_obj.write(cr, uid, gate_pass_id, {'picking_id': res}, context=context)
-        move_lines = self.browse(cr, uid, res, context=context).move_lines
-        for move in move_lines:
-            move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
-        return res
-
-    def write(self, cr, uid, ids, vals, context=None):
-        res = super(stock_picking_in, self).write(cr, uid, ids, vals, context=context)
-        move_obj = self.pool.get('stock.move')
-        if isinstance(ids, (int, long)):
-            ids = [ids]
+        gate_pass_line_obj = self.pool.get('gate.pass.lines')
         for picking in self.browse(cr, uid, ids, context=context):
-            gate_pass_id = picking.gate_pass_id.id
+            unlink_ids = gate_pass_obj.search(cr, uid, [('picking_id', '=', picking.id)], context=context)
+            gate_pass_obj.unlink(cr, uid, unlink_ids, context=context)
+            gate_pass_id = gate_pass_obj.create(cr, uid, {'partner_id': picking.partner_id.id, 'picking_id': picking.id}, context=context)
+            self.write(cr, uid, [picking.id], {'gate_pass_id': gate_pass_id}, context=context)
             for move in picking.move_lines:
-                move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
-        return res
+                vals = dict(product_id = move.product_id.id, product_uom_qty = move.product_qty, product_uom = move.product_uom.id, name = move.product_id.name, gate_pass_id = gate_pass_id)
+                gate_pass_line_obj.create(cr, uid, vals, context=context)
+        return gate_pass_id
 
     def open_gate_pass(self, cr, uid, ids, context=None):
         '''
         This function returns an action that display gate pass of given picking ids.
         '''
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
-        gate_pass_id = self.browse(cr, uid, ids[0], context=context).gate_pass_id.id
+        gate_pass_id = self.create_gate_pass(cr, uid, ids, context=context)
         res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'gate_pass', 'view_gate_pass_form')
         result = {
             'name': _('Gate Passes'),
@@ -115,36 +105,25 @@ class stock_picking_out(osv.Model):
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
 
-    def create(self, cr, uid, vals, context=None):
+    def create_gate_pass(self, cr, uid, ids, context=None):
         gate_pass_obj = self.pool.get('gate.pass')
-        move_obj = self.pool.get('stock.move')
-        value = dict(partner_id = vals.get('partner_id'))
-        gate_pass_id = gate_pass_obj.create(cr, uid, value, context=context)
-        vals['gate_pass_id'] = gate_pass_id
-        res = super(stock_picking_out, self).create(cr, uid, vals, context=context)
-        gate_pass_obj.write(cr, uid, gate_pass_id, {'picking_id': res}, context=context)
-        move_lines = self.browse(cr, uid, res, context=context).move_lines
-        for move in move_lines:
-            move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
-        return res
-
-    def write(self, cr, uid, ids, vals, context=None):
-        res = super(stock_picking_out, self).write(cr, uid, ids, vals, context=context)
-        move_obj = self.pool.get('stock.move')
-        if isinstance(ids, (int, long)):
-            ids = [ids]
+        gate_pass_line_obj = self.pool.get('gate.pass.lines')
         for picking in self.browse(cr, uid, ids, context=context):
-            gate_pass_id = picking.gate_pass_id.id
+            unlink_ids = gate_pass_obj.search(cr, uid, [('picking_id', '=', picking.id)], context=context)
+            gate_pass_obj.unlink(cr, uid, unlink_ids, context=context)
+            gate_pass_id = gate_pass_obj.create(cr, uid, {'partner_id': picking.partner_id.id, 'picking_id': picking.id}, context=context)
+            self.write(cr, uid, [picking.id], {'gate_pass_id': gate_pass_id}, context=context)
             for move in picking.move_lines:
-                move_obj.write(cr, uid, [move.id], {'gate_pass_id': gate_pass_id}, context=context)
-        return res
+                vals = dict(product_id = move.product_id.id, product_uom_qty = move.product_qty, product_uom = move.product_uom.id, name = move.product_id.name, gate_pass_id = gate_pass_id)
+                gate_pass_line_obj.create(cr, uid, vals, context=context)
+        return gate_pass_id
 
     def open_gate_pass(self, cr, uid, ids, context=None):
         '''
         This function returns an action that display gate pass of given picking ids.
         '''
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
-        gate_pass_id = self.browse(cr, uid, ids[0], context=context).gate_pass_id.id
+        gate_pass_id = self.create_gate_pass(cr, uid, ids, context=context)
         res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'gate_pass', 'view_gate_pass_form')
         result = {
             'name': _('Gate Passes'),
@@ -165,6 +144,15 @@ class gate_pass(osv.Model):
     _name = 'gate.pass'
     _description = 'Gate Pass'
 
+    def _get_total_amount(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        for gatepass in self.browse(cr, uid, ids, context=context):
+            total = 0.0
+            for line in gatepass.gate_pass_lines:
+                total += line.app_value
+            result[gatepass.id] = total
+        return result
+
     _columns = {
         'name': fields.char('Name', size=256),
         'gate_pass_no': fields.char('Gate Pass No', size=256, required=True),
@@ -175,10 +163,12 @@ class gate_pass(osv.Model):
         'partner_id':fields.many2one('res.partner', 'Supplier'),
         'department_id': fields.many2one('stock.location', 'Department', required=True),
         'indent_id': fields.many2one('indent.indent', 'Indent'),
-        'move_lines': fields.one2many('stock.move', 'gate_pass_id', 'Products'),
+        'gate_pass_lines': fields.one2many('gate.pass.lines', 'gate_pass_id', 'Products'),
         'description': fields.text('Remarks'),
         'company_id': fields.many2one('res.company', 'Company', required=True),
-        'return_type': fields.selection([('Return', 'Return'),('Non Return', 'Non Return')], "Retrun Type"),
+        'return_type': fields.selection([('Return', 'Return'),('Non Return', 'Non Return')], "Return Type"),
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True),
     }
 
     def _default_stock_location(self, cr, uid, context=None):
@@ -191,6 +181,7 @@ class gate_pass(osv.Model):
         'series': 'repair',
         'gate_pass_type': 'foc',
         'department_id': _default_stock_location,
+        'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'gate.pass', context=c)
     }
 
     def name_get(self, cr, uid, ids, context=None):
@@ -203,35 +194,46 @@ class gate_pass(osv.Model):
 
         return [(gatepass.id, gatepass.gate_pass_no) for gatepass in self.browse(cr, uid , ids, context=context)]
 
-    def create(self, cr, uid, vals, context=None):
-        move_obj = self.pool.get('stock.move')
-        res = super(gate_pass, self).create(cr, uid, vals, context=context)
-        picking_id = self.browse(cr, uid, res, context=None).picking_id.id
-        move_lines = self.browse(cr, uid, res, context=context).move_lines
-        for move in move_lines:
-            move_obj.write(cr, uid, [move.id], {'picking_id': picking_id}, context=context)
-        return res
-
-    def write(self, cr, uid, ids, vals, context=None):
-        res = super(gate_pass, self).write(cr, uid, ids, vals, context=context)
-        move_obj = self.pool.get('stock.move')
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-        for picking in self.browse(cr, uid, ids, context=context):
-            picking_id = picking.picking_id.id
-            for move in picking.move_lines:
-                move_obj.write(cr, uid, [move.id], {'picking_id': picking_id}, context=context)
-        return res
-
 gate_pass()
 
-class stock_move(osv.Model):
-    _inherit = 'stock.move'
-
+class gate_pass_lines(osv.Model):
+    _name = 'gate.pass.lines'
+    _description = 'Gate Pass Lines'
+  
+    def _get_subtotal_amount(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        for gatepass in self.browse(cr, uid, ids, context=context):
+            result[gatepass.id] = (gatepass.product_uom_qty * gatepass.app_rate)
+        return result
+  
     _columns = {
-        'gate_pass_id':fields.many2one('gate.pass', 'Gate Pass'),
+         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass', required=True, ondelete='cascade'),
+         'name': fields.text('Name', required=True),
+         'product_id': fields.many2one('product.product', 'Product', required=True),
+         'product_uom_qty': fields.float('Quantity', digits_compute= dp.get_precision('Product UoS'), required=True),
+         'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
+         'pen_qty': fields.float('Pen Qty'),
+         'gps_qty': fields.float('Gps Qty'),
+         'app_rate': fields.float('App Rate'),
+         'app_value': fields.function(_get_subtotal_amount, type="float", string='App Value', store=True),
+     }
+
+    def _get_uom_id(self, cr, uid, *args):
+        result = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'product', 'product_uom_unit')
+        return result and result[1] or False
+
+    _defaults = {
+        'product_uom_qty': 1,
+        'product_uom' : _get_uom_id,
     }
 
-stock_move()
+    def onchange_product_id(self, cr, uid, ids, product_id=False):
+        result = {}
+        if product_id:
+            product = self.pool.get('product.product').browse(cr, uid, product_id)
+            result = dict(value = dict(name = product.name, product_uom = product.uom_id and product.uom_id.id or False, app_rate = product.list_price))
+        return result
+
+gate_pass_lines()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

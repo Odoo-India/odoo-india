@@ -45,7 +45,7 @@
                                                 <label for="product_uom_qty"/>
                                                 <div>
                                                     <field name="product_uom_qty" class="oe_inline"/>
-                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button" invisible="1"/>
                                                 </div>
                                             </group>
                                             <group>
@@ -61,7 +61,7 @@
                                     <tree string="Products">
                                         <field name="product_id" on_change="onchange_product_id(product_id)"/>
                                         <field name="product_uom_qty"/>
-                                        <field name="product_uom" string="Unit" groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="product_uom" string="Unit" groups="product.group_uom" options='{"no_open": True}' invisible="1"/>
                                         <field name="pen_qty"/>
                                         <field name="gps_qty"/>
                                         <field name="app_rate"/>

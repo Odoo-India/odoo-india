@@ -260,7 +260,7 @@ class indent_indent(osv.Model):
 
     def open_gate_pass(self, cr, uid, ids, context=None):
         '''
-        This function returns an action that display gate pass of given picking ids.
+        This function returns an action that display gate pass of given indent ids.
         '''
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
         gate_pass_id = self.create_gate_pass(cr, uid, ids, context=context)

@@ -31,7 +31,9 @@ class indent_indent(osv.Model):
     _inherit = 'indent.indent'
     _columns = {
         'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent", readonly=True),
-        'contract_series_id': fields.many2one('contract.series','Contract Series', help="contract_series", readonly=True, states={'draft': [('readonly', False)]})
+        'contract_series_id': fields.many2one('contract.series','Contract Series', help="contract_series", readonly=True, states={'draft': [('readonly', False)]}),
+        'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", required=True, readonly=True, states={'draft': [('readonly', False)]}),
         }
 
     def indent_confirm(self, cr, uid, ids, context=None):
@@ -190,3 +192,42 @@ class purchase_order(osv.Model):
         'date_from': lambda *a: datetime.now().strftime('%Y-%m-%d'),
         'date_to': lambda *a: datetime.now().strftime('%Y-%m-%d'), 
         }
+class indent_section(osv.Model):
+    _name = 'indent.section'
+    _rec_name = 'code'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.code and '[' + pckg.code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res 
+    
+    _columns = {
+        'name': fields.char('Name',size=256, required=True),
+        'code': fields.char('Code', size=64, required=True)
+        }
+indent_section()
+
+class indent_equipment(osv.Model):
+    _name = 'indent.equipment'
+    _rec_name = 'code'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.code and '[' + pckg.code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res 
+    
+    _columns = {
+        'name': fields.char('Name',size=256, required=True),
+        'code': fields.char('Code', size=64, required=True)
+        }
+indent_equipment()

@@ -42,7 +42,7 @@ class stock_picking_in(osv.osv):
         'series_id': fields.many2one("product.order.series",'Series'),
         'remark1': fields.char("Remark1",size=256),
         'remark2': fields.char("remark2",size=256),
-        'case_code': fields.boolean("Case Code"),
+        'case_code': fields.boolean("Cash Code"),
         'challan_no': fields.char("Challan Number",size=256),
         'despatch_mode': fields.selection([('person','By Person'),
                                            ('scooter','By Scooter'),
@@ -85,6 +85,8 @@ class purchase_order_line(osv.Model):
     _columns = {
         'discount': fields.float('Discount'),
         'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
+        'person': fields.integer('Person',help="Number of Person work for this task"),
+        'contract': fields.related('order_id', 'contract', type='boolean', relation='purchase.order', string='Contract', store=True, readonly=True),
                 }
 purchase_order_line()
 class purchase_requisition(osv.osv):
@@ -190,12 +192,12 @@ class purchase_order(osv.Model):
         return result.keys()
     
     _columns = {
-        'package_and_forwording': fields.float('Packing & Forwarding'),
-        'insurance': fields.float('Insurance'),
-        'commission': fields.float('Commission'),
-        'other_discount': fields.float('Other Discount'),
-        'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
-        'po_series_id': fields.many2one('product.order.series', 'PO Series'),
+        'package_and_forwording': fields.float('Packing & Forwarding', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'insurance': fields.float('Insurance',  states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'commission': fields.float('Commission', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'other_discount': fields.float('Other Discount', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'po_series_id': fields.many2one('product.order.series', 'PO Series', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
                 'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
@@ -216,11 +218,13 @@ class purchase_order(osv.Model):
                 'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The other charge"),
-        'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise'),
-        'vat_ids': fields.many2many('account.tax', 'purchase_order_vat', 'vat_id', 'tax_id', 'VAT'),
-        'freight': fields.float('Freight'),
-        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True),
-        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True),
+        'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'vat_ids': fields.many2many('account.tax', 'purchase_order_vat', 'vat_id', 'tax_id', 'VAT', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'freight': fields.float('Freight', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'payment_term_id': fields.many2one('account.payment.term', 'Payment Term', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'service_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Service Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
     }
 
     _defaults = {

@@ -33,6 +33,7 @@ class account_tax(osv.Model):
          ('cess', 'Cess'),
          ('vat', 'VAT'),
          ('cst', 'CST'),
+         ('service', 'Service'),
          ('other', 'Other'),
         ], 'Tax Category', required=True)
     }

@@ -25,6 +25,10 @@
 <!--                 <xpath expr="//group/group/field[@name='taxes_id']" position='replace'>
                     <field name="taxes_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]" invisible="1"/>
                 </xpath> -->
+                <xpath expr="//group/group/field[@name='product_id']" position='after'>
+                    <field name="contract" invisible="1"/>
+                    <field name="person" attrs="{'invisible': [('contract', '!=', True)]}"/>
+                </xpath>
             </field>
         </record>
 
@@ -52,8 +56,9 @@
                         <group>
                             <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="amount_tax" invisible="1"/>
-                            <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','excise')]"/>
-                            <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]"/>
+                            <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','excise')]" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="service_ids" widget="many2many_tags" domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}"/>
                             <label for="insurance"/>
                             <div>
                                 <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type)"/>
@@ -134,7 +139,7 @@
             <field name="inherit_id" ref="stock.view_picking_in_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//group" position="after">
-					<group col="12">
+                    <group col="12" string="Inward Details">
                 		<group colspan="4">
                 			<field name="lr_no"/>
                 			<field name="lr_date"/>

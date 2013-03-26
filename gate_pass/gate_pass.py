@@ -161,7 +161,7 @@ class gate_pass(osv.Model):
         'gate_pass_lines': fields.one2many('gate.pass.lines', 'gate_pass_id', 'Products'),
         'description': fields.text('Remarks'),
         'company_id': fields.many2one('res.company', 'Company', required=True),
-        'return_type': fields.selection([('Return', 'Return'),('Non Return', 'Non Return')], "Return Type"),
+        'return_type': fields.selection([('Return', 'Return'), ('Non Return', 'Non Return')], 'Return Type', required=True),
         'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True),
         'state':fields.selection([('confirm','Confirm'), ('pending','Pending'), ('done','Done')], 'State', readonly=True),
     }
@@ -177,6 +177,7 @@ class gate_pass(osv.Model):
         'series': 'repair',
         'gate_pass_type': 'foc',
         'department_id': _default_stock_location,
+        'return_type': 'Return',
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'gate.pass', context=c)
     }
 

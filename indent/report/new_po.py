@@ -54,12 +54,15 @@ class new_po(report_sxw.rml_parse):
     
     def _tax(self,order):
         tax_obj = self.pool.get('account.tax')
-        excise_tax = vat_tax = ''
+        excise_tax = vat_tax = service_tax = ''
         for exc in order.excies_ids:
             excise_tax += exc.name + ' '
         for vat in order.vat_ids:
             vat_tax += vat.name + ' '
-        return self.get_value.update({'excise': excise_tax, 'vat': vat_tax})
+        for service in order.service_ids:
+            service_tax += service.name + ' '
+        self.get_value.update({'excise': excise_tax, 'vat': vat_tax,'service': service_tax})
+        return self._get_value()
     
     def _get_value(self):
         return self.get_value

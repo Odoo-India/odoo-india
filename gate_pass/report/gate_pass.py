@@ -57,7 +57,7 @@ class gate_pass(report_sxw.rml_parse):
         total =  0.0
         for product in line:
             if product.product_id:
-                total += product.product_qty
+                total += product.product_uom_qty
             else:
                 total += 0.0
         return total

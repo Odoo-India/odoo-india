@@ -312,7 +312,7 @@
         </td>
       </tr>
      </blockTable>
-     <blockTable colWidths="300.0,200.0,70.0" style="Tableau2">
+     <blockTable colWidths="300.0,240.0,30.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -333,7 +333,8 @@
         <blockTable colWidhts="480.0" style="Standard_Outline">
             <tr>
                 <td>
-                    <para style="terp_default_9"> Excise <font color="white"> ......</font>: [[ tax(order)  or '']] [[ get_value().get('excise')]]</para>
+                    <para style="terp_default_9"> Service <font color="white"> ....</font>:  [[ tax(order).get('service',False) or '']]</para>
+                    <para style="terp_default_9"> Excise <font color="white"> ......</font>: [[ get_value().get('excise') or '']]</para>
                     <para style="terp_default_9"> VAT <font color="white"> ..........</font>: [[ get_value().get('vat') or '']]</para>
                     <para style="terp_default_9"> Freight <font color="white"> .....</font>:  [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
                     <para style="terp_default_9"> Delivery <font color="white"> ...</font>: MILL-DELIVERY</para>

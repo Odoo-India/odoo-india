@@ -193,7 +193,7 @@
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="30.0,30.0,75.0,280.0,20.0,120.0" repeatRows="1" style="Table_Product_Header_Title">
+    <blockTable colWidths="20.0,60.0,65.0,280.0,20.0,110.0" repeatRows="1" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_General_Centre">Sr. No</para>
@@ -217,15 +217,15 @@
     </blockTable>
     <section>
       <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]] </para>
-      <blockTable colWidths="30.0,30.0,75.0,280.0,20.0,120.0" style="Table_Product_Line">
+      <blockTable colWidths="20.0,60.0,65.0,280.0,20.0,110.0" style="Table_Product_Line">
         <tr>
           <td>
               <para style="terp_default_Centre_9">[[ sequence(order_line) ]] </para>
           </td>
           <td>
-            <para style="terp_default_9">  [[ indent_no(order.indent_id.name) or '-' ]]</para>
-            <para style="terp_default_9">  [[ (order.indentor_id.id) or '-' ]]</para>
-            <para style="terp_default_9">  [[ formatLang(order.indent_date, date = True) or '-' ]]</para>
+            <para style="terp_default_Centre_9">  [[ indent_no(order.indent_id.name) or '-' ]]</para>
+            <para style="terp_default_Centre_9">  [[ (order.indentor_id.name) or '-' ]]</para>
+            <para style="terp_default_Centre_9">  [[ formatLang(order.indent_date, date = True) or '-' ]]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_id and order_line.product_id.default_code) or '-']]</para>

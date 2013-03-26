@@ -224,7 +224,7 @@ class purchase_order(osv.Model):
         'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'payment_term_id': fields.many2one('account.payment.term', 'Payment Term', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
-        'service_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Service Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'service_ids': fields.many2many('account.tax', 'purchase_order_service', 'service_id', 'tax_id', 'Service Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
     }
 
     _defaults = {
@@ -257,6 +257,7 @@ class purchase_order(osv.Model):
         for order in self.browse(cr, uid, ids, context=context):
             excies_ids = [excies_id.id for excies_id in order.excies_ids]
             vat_ids = [vat_id.id for vat_id in order.vat_ids]
+            service_ids = [service_id.id for service_id in order.service_ids]
             if ('excies_ids' in vals) and ('vat_ids' in vals):
                 excies_ids = vals.get('excies_ids') and vals.get('excies_ids')[0][2] or []
                 vat_ids = vals.get('vat_ids') and vals.get('vat_ids')[0][2] or []
@@ -266,8 +267,10 @@ class purchase_order(osv.Model):
             if 'vat_ids' in vals and 'excies_ids' not in vals:
                 excies_ids = [excies_id.id for excies_id in order.excies_ids]
                 vat_ids = vals.get('vat_ids') and vals.get('vat_ids')[0][2] or []
+            if 'service_ids' in vals:
+                vat_ids = vals.get('service_ids') and vals.get('service_ids')[0][2] or []
             for line in order.order_line:
-                line_obj.write(cr, uid, [line.id], {'taxes_id': [(6, 0, excies_ids + vat_ids)]}, context=context)
+                line_obj.write(cr, uid, [line.id], {'taxes_id': [(6, 0, excies_ids + vat_ids+ service_ids)]}, context=context)
         return super(purchase_order, self).write(cr, uid, ids, vals, context=context)
 
     def onchange_reset(self, cr, uid, ids, insurance_type, freight_type):

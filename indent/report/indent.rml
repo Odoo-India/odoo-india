@@ -249,7 +249,7 @@
         <td>
             <para style="P1">Indent No : [[indent_no(order.name) or False]] </para>
             <para style="P1">Indent Date: [[formatLang(order.indent_date, date = True) or False]] </para>
-            <para style="P1">Indentor Code : [[ False ]] </para>
+            <para style="P1">Indentor Code : [[(order.indentor_id and order.indentor_id.user_code) or False]] </para>
             <para style="P1">Indentor : [[(order.indentor_id and order.indentor_id.name) or False]] </para>
             <para style="P1">Indentor Dept : [[ (order.employee_department_id.name) ]] </para>
             <para style="P1">Indent Type: [[(order.type) or False]] </para>

@@ -60,7 +60,7 @@ class stock_picking(osv.Model):
                 gate_pass_id = gate_pass_obj.create(cr, uid, {'partner_id': picking.partner_id.id, 'picking_id': picking.id}, context=context)
                 self.write(cr, uid, [picking.id], {'gate_pass_id': gate_pass_id}, context=context)
                 for move in picking.move_lines:
-                    vals = dict(product_id = move.product_id.id, product_uom_qty = move.product_qty, product_uom = move.product_uom.id, name = move.product_id.name, gate_pass_id = gate_pass_id)
+                    vals = dict(product_id = move.product_id.id, product_uom_qty = move.product_qty, pen_qty = move.product_id.qty_available, gps_qty=move.product_qty, app_rate = move.product_id.standard_price, product_uom = move.product_uom.id, name = move.product_id.name, gate_pass_id = gate_pass_id)
                     gate_pass_line_obj.create(cr, uid, vals, context=context)
         return True
 

@@ -105,7 +105,7 @@
             <field name="model">gate.pass</field>
             <field name="arch" type="xml">
                 <search string="Gate Passes">
-                    <field name="name" string="Gate Pass"/>
+                    <field name="name" filter_domain="['|', ('name', 'ilike', self), ('gate_pass_no', 'ilike', self)]" string="Gate Pass"/>
                     <field name="date"/>
                     <filter string="Confirm" name="state_confirm" domain="[('state','=','confirm')]"/>
                     <filter string="Pending" name="state_pending" domain="[('state','=','pending')]"/>

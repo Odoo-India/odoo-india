@@ -9,6 +9,8 @@
             <field name="arch" type="xml">
                 <form string="Gate Pass" version="7.0">
                     <header>
+                        <button name="gate_pass_pending" string="Process" states="confirm" class="oe_highlight"/>
+                        <button name="process_incoming_shipment" string="Incoming Shipment" states="pending" class="oe_highlight" type="object"/>
                         <field name="state" widget="statusbar" statusbar_visible="confirm,pending,done"/>
                     </header>
                     <sheet>

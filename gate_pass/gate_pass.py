@@ -26,6 +26,7 @@ from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 from openerp import netsvc
+from openerp.osv.orm import browse_record
 
 SERIES = [
     ('repair', 'Repair'),
@@ -51,10 +52,23 @@ class stock_picking(osv.Model):
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
 
+    def create_gate_pass(self, cr, uid, ids, context=None):
+        gate_pass_obj = self.pool.get('gate.pass')
+        gate_pass_line_obj = self.pool.get('gate.pass.lines')
+        for picking in self.browse(cr, uid, ids, context=context):
+            if picking.type == 'out':
+                gate_pass_id = gate_pass_obj.create(cr, uid, {'partner_id': picking.partner_id.id, 'picking_id': picking.id}, context=context)
+                self.write(cr, uid, [picking.id], {'gate_pass_id': gate_pass_id}, context=context)
+                for move in picking.move_lines:
+                    vals = dict(product_id = move.product_id.id, product_uom_qty = move.product_qty, product_uom = move.product_uom.id, name = move.product_id.name, gate_pass_id = gate_pass_id)
+                    gate_pass_line_obj.create(cr, uid, vals, context=context)
+        return True
+
     def action_confirm(self, cr, uid, ids, context=None):
         """ Confirms picking.
         @return: True
         """
+        self.create_gate_pass(cr, uid, ids, context=context)
         picking = False
         pickings = self.browse(cr, uid, ids, context=context)
         self.write(cr, uid, ids, {'state': 'confirmed'})
@@ -66,6 +80,11 @@ class stock_picking(osv.Model):
         todo = self.action_explode(cr, uid, todo, context)
         if len(todo):
             picking = self.pool.get('stock.move').action_confirm(cr, uid, todo, context=context)
+        if isinstance(picking, browse_record):
+            picking = picking.id
+        gate_pass_id = self.browse(cr, uid, ids[0], context=context).gate_pass_id.id
+        if gate_pass_id:
+            self.pool.get('gate.pass').write(cr, uid, [gate_pass_id], {'in_picking_id': picking}, context=context)
         return picking
 
 stock_picking()
@@ -92,25 +111,12 @@ class stock_picking_out(osv.Model):
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
 
-    def create_gate_pass(self, cr, uid, ids, context=None):
-        gate_pass_obj = self.pool.get('gate.pass')
-        gate_pass_line_obj = self.pool.get('gate.pass.lines')
-        for picking in self.browse(cr, uid, ids, context=context):
-            unlink_ids = gate_pass_obj.search(cr, uid, [('picking_id', '=', picking.id)], context=context)
-            gate_pass_obj.unlink(cr, uid, unlink_ids, context=context)
-            gate_pass_id = gate_pass_obj.create(cr, uid, {'partner_id': picking.partner_id.id, 'picking_id': picking.id}, context=context)
-            self.write(cr, uid, [picking.id], {'gate_pass_id': gate_pass_id}, context=context)
-            for move in picking.move_lines:
-                vals = dict(product_id = move.product_id.id, product_uom_qty = move.product_qty, product_uom = move.product_uom.id, name = move.product_id.name, gate_pass_id = gate_pass_id)
-                gate_pass_line_obj.create(cr, uid, vals, context=context)
-        return gate_pass_id
-
     def open_gate_pass(self, cr, uid, ids, context=None):
         '''
         This function returns an action that display gate pass of given picking ids.
         '''
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
-        gate_pass_id = self.create_gate_pass(cr, uid, ids, context=context)
+        gate_pass_id = self.browse(cr, uid, ids[0], context=context).gate_pass_id.id
         res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'gate_pass', 'view_gate_pass_form')
         result = {
             'name': _('Gate Passes'),
@@ -144,6 +150,7 @@ class gate_pass(osv.Model):
         'name': fields.char('Name', size=256),
         'gate_pass_no': fields.char('Gate Pass No', size=256, required=True),
         'picking_id': fields.many2one('stock.picking', 'Picking'),
+        'in_picking_id': fields.many2one('stock.picking', 'Incoming Shipment'),
         'series':fields.related('picking_id', 'series', type='selection', selection=SERIES, string='Series', store=True),
         'gate_pass_type':fields.related('picking_id', 'gate_pass_type', type='selection', selection=GATE_PASS_TYPE, string='Type', store=True),
         'date': fields.datetime('Gate Pass Date', required=True),
@@ -164,7 +171,7 @@ class gate_pass(osv.Model):
         return stock_location.id
 
     _defaults = {
-        'state': 'pending',
+        'state': 'confirm',
         'gate_pass_no': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'gate.pass'),
         'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'series': 'repair',
@@ -183,11 +190,27 @@ class gate_pass(osv.Model):
 
         return [(gatepass.id, gatepass.gate_pass_no) for gatepass in self.browse(cr, uid , ids, context=context)]
 
+    def process_incoming_shipment(self, cr, uid, ids, context=None):
+        in_picking_id = self.browse(cr, uid, ids[0], context=context).in_picking_id.id
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_in_form')
+        result = {
+            'name': _('Incoming Shipment'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': res and res[1] or False,
+            'res_model': 'stock.picking.in',
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': in_picking_id,
+        }
+        return result
+
     def action_picking_create(self, cr, uid, ids, context=None):
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'
-        picking = self.browse(cr, uid, ids[0], context=context).picking_id.id
-        picking_id = self.pool.get('stock.picking').action_confirm(cr, uid, [picking], context=context)
-        return picking_id.id
+        picking = self.browse(cr, uid, ids[0], context=context).in_picking_id.id
+        self.write(cr, uid, ids, {'state': 'pending'}, context=context)
+        return picking
 
 gate_pass()
 

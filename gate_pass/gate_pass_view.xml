@@ -9,8 +9,8 @@
             <field name="arch" type="xml">
                 <form string="Gate Pass" version="7.0">
                     <header>
-                        <button name="gate_pass_pending" string="Process" states="confirm" class="oe_highlight"/>
-                        <button name="process_incoming_shipment" string="Incoming Shipment" states="pending" class="oe_highlight" type="object"/>
+                        <button name="gate_pass_pending" string="Validate" states="confirm" class="oe_highlight"/>
+                        <button name="process_incoming_shipment" string="Receive Product(s)" states="pending" class="oe_highlight" type="object"/>
                         <field name="state" widget="statusbar" statusbar_visible="confirm,pending,done"/>
                     </header>
                     <sheet>
@@ -32,9 +32,6 @@
                                 <field name="department_id"/>
                                 <field name="gate_pass_type"/>
                                 <field name="return_type"/>
-                            </group>
-                            <group string="Indent Details">
-                                <field name="indent_id"/>
                             </group>
                         </group>
                         <notebook>
@@ -130,13 +127,14 @@
                     </div>
                 </xpath>
                 <xpath expr="//group" position="after">
-                    <group string="Gate Pass">
-                        <group>
+                    <group>
+                        <group string="Gate Pass">
                             <field name="series"/>
                             <field name="gate_pass_type"/>
-                        </group>
-                        <group>
                             <field name="gate_pass_id" invisible="1"/>
+                        </group>
+                        <group string="Indent Details" attrs="{'invisible': [('gate_pass_type', '!=', 'chargeable')]}">
+                            <field name="indent_id"/>
                         </group>
                     </group>
                 </xpath>

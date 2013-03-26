@@ -259,7 +259,7 @@
         </td>
     </tr>
     </blockTable>
-    <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title"
+    <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_Details_Centre">SR No.</para>

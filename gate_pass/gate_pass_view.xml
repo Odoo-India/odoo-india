@@ -94,6 +94,7 @@
                     <field name="gate_pass_type"/>
                     <field name="date"/>
                     <field name="department_id"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>

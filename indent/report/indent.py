@@ -71,8 +71,8 @@ class indent(report_sxw.rml_parse):
         if po_line_id:
             po_line = po_line_obj.browse(self.cr, self.uid, po_line_id[0])
             for tax in po_line.taxes_id:
-                tax_dict.update({str(tax.tax_type): tax.amount * 100})
-        return tax_dict
+                self.get_value.update({str(tax.tax_type): tax.amount * 100})
+        return self._get_value()
     
     def _last_issue(self, product_id, date):
         stock_obj = self.pool.get('stock.move')

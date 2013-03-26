@@ -187,7 +187,7 @@
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="terp_default_8">[[ setLang(order.indentor_id.lang) ]]</para>
     <pto_header>
-    <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,80.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
+    <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_Details_Centre">SR No.</para>
@@ -259,7 +259,7 @@
         </td>
     </tr>
     </blockTable>
-    <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,80.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
+    <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title"
       <tr>
         <td>
           <para style="terp_tblheader_Details_Centre">SR No.</para>
@@ -304,7 +304,7 @@
     </blockTable>
     <section>
       <para style="terp_default_9">[[ repeatIn(order.product_lines,'order_line') ]]</para>
-      <blockTable colWidths="15.0,195.0,40.0,40.0,60.0,60.0,80.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Line">
+      <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Line">
         <tr>
           <td>
             <para style="terp_default_Centre_9">[[ sequence(order_line) ]] </para>
@@ -328,12 +328,12 @@
             <para style="terp_default_Centre_9">[[  formatLang(order.required_date, date = True) or '']]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[ (order_line.product_id and order_line.product_id.last_supplier_rate) or '0.0']]</para>
-            <para style="terp_default_Left_9">Excise: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('excise') or removeParentNode('para')]] %</para>
-            <para style="terp_default_Left_9">VAT: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('vat') or removeParentNode('para')]]%</para>
-            <para style="terp_default_Left_9">Edu.Cess: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('cess') or removeParentNode('para')]] %</para>
-            <para style="terp_default_Left_9">Add.Tax: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('add') or removeParentNode('para')]]%</para>
-            <para style="terp_default_Left_9">Dis: [[ check_discount(order_line.product_id.last_po_no.id).get('discount') or removeParentNode('para')]]%</para>
+            <para style="terp_default_Left_9">Service: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('service') or removeParentNode('para')]] %</para>
+            <para style="terp_default_Left_9">Excise: [[ get_value().get('excise') or removeParentNode('para')]] %</para>
+            <para style="terp_default_Left_9">VAT: [[ get_value().get('vat') or removeParentNode('para')]]%</para>
+            <para style="terp_default_Left_9">Edu.Cess: [[ get_value().get('cess') or removeParentNode('para')]] %</para>
+            <para style="terp_default_Left_9">Add.Tax: [[ get_value().get('add') or removeParentNode('para')]]%</para>
+            <para style="terp_default_Left_9">Dis: [[ check_discount(order_line.product_id.last_po_no.id).get('discount') or removeParentNode('para')]]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_uom_qty * order_line.product_id.last_supplier_rate) or '0.0']]</para>

@@ -136,7 +136,7 @@
     </tr>
     </blockTable>
     <para style="P1"> <font color="white"> </font> </para>
-    <blockTable colWidths="120.0,160.0,90.0,160.0" style="Table1">
+    <blockTable colWidths="120.0,390.0,10.0,10.0" style="Table1">
         <tr>
             <td>
                 <para style="terp_default_2">CONTRACTOR CODE </para>
@@ -154,6 +154,7 @@
     </blockTable>
     <para style="P1"> <font color="white"> </font> </para>
     <para style="terp_default_2">PROJECT : [[ order.indent_id and order.indent_id.analytic_account_id and order.indent_id.analytic_account_id.name]]</para>
+    <para style="P1"> <font color="white"> </font> </para>
     <blockTable colWidths="70.0,70.0,120.0,90.0,90.0,90.0" style="Table1">
     <tr>
         <td>
@@ -211,8 +212,8 @@
         <tr>
             <td>
                 <para style="terp_default_2">[[ (order_line.product_id and order_line.product_id.default_code) or ' ' ]] [[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
-                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.description or '')]] </para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> [[ (order.notes or '')]] </para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
             </td>
             <td>

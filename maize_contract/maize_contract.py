@@ -185,7 +185,7 @@ class purchase_order(osv.Model):
         'extended_date_from2': fields.date('Extended From'),
         'extended_date_to1': fields.date('Extended Upto'),
         'extended_date_to2': fields.date('Extended Upto'),
-        'retention': fields.selection([('leived', 'CONTRACTOR\'S RETENTION TO BE LEIVED'),('not_leived', 'CONTRACTOR\'S RETENTION NOT TO BE LEIVED')], "Retenstion Type"),
+        'retention': fields.selection([('leived', 'CONTRACTOR\'S RETENTION TO BE LEIVED'),('not_leived', 'CONTRACTOR\'S RETENTION NOT TO BE LEIVED')], "Retention Type"),
         }
     
     _defaults = {

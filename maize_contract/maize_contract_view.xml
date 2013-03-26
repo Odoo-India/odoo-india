@@ -125,6 +125,13 @@
                             <field name="total_days"/>
                         </group>
                     </group>
+                    <group string="Retention" attrs="{'invisible': [('contract', '=', False)]}">
+                        <group>
+                            <field name="retention"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
                 </xpath>
             </field>
         </record>

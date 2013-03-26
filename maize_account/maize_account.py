@@ -129,6 +129,7 @@ class account_invoice_tax(osv.osv):
          ('vat', 'VAT'),
          ('cst', 'CST'),
          ('other', 'Other'),
+         ('service', 'Service'),
         ], 'Tax Category')
     }
     _defaults = {

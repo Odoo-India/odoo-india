@@ -162,7 +162,6 @@ class gate_pass(osv.Model):
         'description': fields.text('Remarks'),
         'company_id': fields.many2one('res.company', 'Company', required=True),
         'return_type': fields.selection([('Return', 'Return'),('Non Return', 'Non Return')], "Return Type"),
-        'indent_id': fields.many2one('indent.indent', 'Indent'),
         'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True),
         'state':fields.selection([('confirm','Confirm'), ('pending','Pending'), ('done','Done')], 'State', readonly=True),
     }

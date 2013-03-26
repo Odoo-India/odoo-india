@@ -32,8 +32,8 @@ class indent_indent(osv.Model):
     _columns = {
         'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent", readonly=True),
         'contract_series_id': fields.many2one('contract.series','Contract Series', help="contract_series", readonly=True, states={'draft': [('readonly', False)]}),
-        'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", required=True, readonly=True, states={'draft': [('readonly', False)]}),
-        'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
+        'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
         }
 
     def indent_confirm(self, cr, uid, ids, context=None):
@@ -207,8 +207,8 @@ class indent_section(osv.Model):
         return res 
     
     _columns = {
-        'name': fields.char('Name',size=256, required=True),
-        'code': fields.char('Code', size=64, required=True)
+        'name': fields.char('Name',size=256),
+        'code': fields.char('Code', size=64)
         }
 indent_section()
 
@@ -227,7 +227,7 @@ class indent_equipment(osv.Model):
         return res 
     
     _columns = {
-        'name': fields.char('Name',size=256, required=True),
-        'code': fields.char('Code', size=64, required=True)
+        'name': fields.char('Name',size=256),
+        'code': fields.char('Code', size=64)
         }
 indent_equipment()

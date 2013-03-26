@@ -143,17 +143,5 @@
             </field>
         </record>
 
-        <!-- Indent Gate Pass Form View -->
-        <record id="view_indent_gate_pass_form" model="ir.ui.view">
-            <field name="name">indent.gate.pass.form</field>
-            <field name="model">indent.indent</field>
-            <field name="inherit_id" ref="indent.view_indent_indent_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//sheet/div/button[@string='Purchase Orders']" position="after">
-                        <button name="open_gate_pass" string="Gate Pass" type="object"/>
-                </xpath>
-            </field>
-        </record>
-
     </data>
 </openerp>

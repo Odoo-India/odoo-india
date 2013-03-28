@@ -217,7 +217,7 @@
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
             </td>
             <td>
-                <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
+                <para style="terp_tblheader_General_Centre"> [[ (order_line.person) or ' ' ]]</para>
             </td>
             <td>
                 <para style="Table Heading"> [[ formatLang(order_line.product_qty )]]

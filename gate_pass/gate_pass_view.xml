@@ -160,10 +160,10 @@
                     <group string="Gate Pass">
                         <group>
                             <field name="series"/>
-                            <field name="gate_pass_type"/>
                             <field name="gate_pass_id" invisible="1"/>
                         </group>
                         <group>
+                            <field name="gate_pass_type"/>
                             <field name="indent_id" attrs="{'invisible': [('gate_pass_type', '!=', 'chargeable')]}"/>
                         </group>
                     </group>

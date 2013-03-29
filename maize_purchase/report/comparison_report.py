@@ -36,6 +36,7 @@ class comparison_report(report_sxw.rml_parse):
     def _tax(self,order):
         tax_obj = self.pool.get('account.tax')
         excise_tax = vat_tax = val1 = 0.0
+        excise_name = vat_name = ''
         for line in order.order_line:
             freight_tax = order.freight
             insurance_tax = order.insurance
@@ -52,7 +53,11 @@ class comparison_report(report_sxw.rml_parse):
         if order.freight_type == 'percentage':
             freight_tax = round(( val1 * order.freight) / 100,2)
         self._get_value
-        return self.get_value.update({'excise': excise_tax, 'vat': vat_tax, 'freight': freight_tax,'insurance': insurance_tax})
+        for exices in order.excies_ids:
+            excise_name = exices.name
+        for vat in order.vat_ids:
+            vat_name = vat.name
+        return self.get_value.update({'excise': excise_tax, 'vat': vat_tax, 'freight': freight_tax,'insurance': insurance_tax, 'excise_name': excise_name, 'vat_name': vat_name})
     
     def _get_value(self):
         return self.get_value

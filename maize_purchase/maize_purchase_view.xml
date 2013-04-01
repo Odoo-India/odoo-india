@@ -97,8 +97,22 @@
             <field name="model">purchase.requisition</field>
             <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form" />
             <field name="arch" type="xml">
-                <xpath expr="//notebook/page/field[@name='purchase_ids']" position="attributes">
-                    <attribute name="readonly">False</attribute>
+                <xpath expr="//notebook/page/field[@name='purchase_ids']" position="replace">
+                    <field name="purchase_ids" attrs="{'readonly': [('state', '=', 'draft')]}">
+                        <tree string="Purchase Order">
+                            <field name="name" string="Reference"/>
+                            <field name="date_order" string="Order Date"/>
+                            <field name="partner_id"/>
+                            <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                            <field name="location_id" groups="stock.group_locations"/>
+                            <field name="minimum_planned_date"/>
+                            <field name="origin"/>
+                            <field name="state"/>
+                            <button name="purchase_cancel" states="draft,confirmed,wait_auth" string="Cancel Purchase Order" icon="gtk-cancel"/>
+                            <button name="purchase_confirm" states="draft" string="Confirm Purchase Order" icon="gtk-apply"/>
+                            <button name="purchase_approve" states="confirmed" string="Approved by Supplier" icon="gtk-ok"/>
+                        </tree>
+                    </field>
                 </xpath>
                 <xpath expr="//field[@name='exclusive']" position="attributes">
                 	<attribute name="invisible">True</attribute>

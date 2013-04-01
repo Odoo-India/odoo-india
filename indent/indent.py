@@ -146,11 +146,11 @@ class indent_indent(osv.Model):
             else:
                 return lst
         # _create_manager_list
-        obj_hr = self.pool.get('hr.employee')        
+        obj_hr = self.pool.get('hr.employee')
         document_authority_instance_obj = self.pool.get('document.authority.instance')
         for indent in self.browse(cr, uid, ids, context=context): 
             if not indent.product_lines:
-                raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent which has no line.'))            
+                raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent which has no line.'))
             employee_parent_ids = obj_hr.search(cr, uid, [])
             employee_parents = obj_hr.read(cr, uid, employee_parent_ids, ['coach_id'])
             employee_tree = dict([(item['id'], item['coach_id'][0]) for item in employee_parents if item['coach_id']])
@@ -163,7 +163,13 @@ class indent_indent(osv.Model):
                 emp = obj_hr.browse(cr,uid,auth,context=context)
                 if emp.user_id:
                     document_authority_instance_obj.create(cr, uid, {'name': emp.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
-                    priority=priority+1            
+                    priority=priority+1
+
+            # Add all authorities of the indent as followers
+            for authority in indent.indent_authority_ids:
+                if authority.name and authority.name.partner_id and authority.name.partner_id.id not in indent.message_follower_ids:
+                    self.write(cr, uid, [indent.id], {'message_follower_ids': [(4, authority.name.partner_id.id)]}, context=context)
+
         self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
         return True
 

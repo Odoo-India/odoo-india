@@ -225,6 +225,7 @@ class purchase_order(osv.Model):
         'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'payment_term_id': fields.many2one('account.payment.term', 'Payment Term', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'service_ids': fields.many2many('account.tax', 'purchase_order_service', 'service_id', 'tax_id', 'Service Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'voucher_id': fields.many2one('account.voucher', 'Payment', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
     }
 
     _defaults = {
@@ -292,6 +293,8 @@ class purchase_order(osv.Model):
     def wkf_confirm_order(self, cr, uid, ids, context=None):
         res = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)
         proc_obj = self.pool.get('procurement.order')
+        payment_term_obj = self.pool.get('account.payment.term')
+        voucher_obj = self.pool.get('account.voucher')
         for po in self.browse(cr, uid, ids, context=context):
             if not po.po_series_id:
                 raise osv.except_osv(_("Warning !"),_('You cannot confirm a purchase order without any purchase order series.'))
@@ -321,8 +324,44 @@ class purchase_order(osv.Model):
                                                                                               'last_po_year':po_year
                                                                                           },context=context)
                 po.requisition_id.tender_done(context=context)
+            totlines = []
+            total_amt = 0.0
+            flag = False
+            if po.payment_term_id:
+                totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_total, po.date_order or False, context=context)
+            journal_id = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)[0]
+            journal = self.pool.get('account.journal').browse(cr, uid, journal_id, context=context)
+            account_id = journal.default_credit_account_id or journal.default_debit_account_id
+            for line in totlines:
+                today = fields.date.context_today(self, cr, uid, context=context)
+                if line[0] == today:
+                    total_amt += line[1]
+                    flag = True
+            if flag:
+                voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id})
+                self.write(cr, uid, [po.id], {'voucher_id': voucher_id}, context=context)
         return res
-    
+
+    def open_advance_payment(self, cr, uid, ids, context=None):
+        '''
+        This function returns an action that display advance payment of given purchase order ids.
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time'
+        voucher_id = self.browse(cr, uid, ids[0], context=context).voucher_id.id
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'account_voucher', 'view_vendor_payment_form')
+        result = {
+            'name': _('Advance Payment'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': res and res[1] or False,
+            'res_model': 'account.voucher',
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': voucher_id,
+        }
+        return result
+
     def do_merge(self, cr, uid, ids, context=None):
         """ Copy the original do_merge method for set po_series_id field for new Purchase Order
         """

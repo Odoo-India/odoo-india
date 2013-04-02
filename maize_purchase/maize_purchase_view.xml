@@ -38,6 +38,9 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form" />
             <field name="arch" type="xml">
+                <xpath expr="//button[@name='view_invoice']" position="after">
+                    <button name="open_advance_payment" string="Advance Payment" type="object" attrs="{'invisible': [('voucher_id', '=', False)]}" class="oe_highlight"/>
+                </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="replace">
                 </xpath>
                 <xpath expr="//notebook/page[@string='Purchase Order']/field/tree/field[@name='taxes_id']" position="replace">
@@ -52,6 +55,7 @@
                             <field name="other_discount"/>
                             <field name="payment_term_id"/>
                             <field name="delivey"/>
+                            <field name="voucher_id" invisible="1"/>
                         </group>
                         <group>
                             <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>

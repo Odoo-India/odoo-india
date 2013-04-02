@@ -345,7 +345,8 @@ class purchase_order(osv.Model):
                     total_amt += line[1]
                     flag = True
             if flag:
-                voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id})
+                note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, po.name or '', po.indent_id.name or '',)
+                voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
                 self.write(cr, uid, [po.id], {'voucher_id': voucher_id}, context=context)
         return res
 

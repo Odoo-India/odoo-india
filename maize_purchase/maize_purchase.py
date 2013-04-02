@@ -76,7 +76,7 @@ class purchase_order_line(osv.Model):
         cur_obj=self.pool.get('res.currency')
         tax_obj = self.pool.get('account.tax')
         for line in self.browse(cr, uid, ids, context=context):
-            res[line.id] -= line.discount
+            res[line.id] -= (res[line.id] * line.discount) / 100
             taxes = tax_obj.compute_all(cr, uid, line.taxes_id, res[line.id], 1, line.product_id, line.order_id.partner_id)
             cur = line.order_id.pricelist_id.currency_id
             res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])

@@ -282,8 +282,8 @@
             <para style="terp_default_Centre_9">[[ order_line.product_uom.name or 'NO']]</para>
             <para style="terp_default_Centre_9">[[ order_line.price_unit or '0.0']]</para>
           </td>
-          <td>mobile
-            <para style="terp_default_Centre_9"> </para>
+          <td>
+            <para style="terp_default_Centre_9"> [[ order_line.discount or '0']]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
@@ -566,8 +566,8 @@
             <para style="terp_default_Centre_9">[[ order_line.product_uom.name or 'NO']]</para>
             <para style="terp_default_Centre_9">[[ order_line.price_unit or '0.0']]</para>
           </td>
-          <td>mobile
-            <para style="terp_default_Centre_9"> </para>
+          <td>
+            <para style="terp_default_Centre_9"> [[ order_line.discount or '0']]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
@@ -850,8 +850,8 @@
             <para style="terp_default_Centre_9">[[ order_line.product_uom.name or 'NO']]</para>
             <para style="terp_default_Centre_9">[[ order_line.price_unit or '0.0']]</para>
           </td>
-          <td>mobile
-            <para style="terp_default_Centre_9"> </para>
+          <td>
+            <para style="terp_default_Centre_9"> [[ formatLang(order_line.discount) or '0.00']]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>

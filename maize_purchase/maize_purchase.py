@@ -233,6 +233,13 @@ class purchase_order(osv.Model):
         'freight_type': 'fix'
      }
     
+    def search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False):
+        if order is None:
+            self._order = 'amount_total'
+        else:
+            self._order = 'name DESC'
+        return super(purchase_order, self).search(cr, user, args, offset, limit, order, context, count)
+    
 #    def create(self, cr, uid, vals, context=None):
 #        series_obj = self.pool.get('product.order.series')
 #        if vals.get('name','/')=='/':

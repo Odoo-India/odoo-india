@@ -26,6 +26,7 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp import tools
+from lxml import etree
 
 class indent_indent(osv.Model):
     _inherit = 'indent.indent'
@@ -35,6 +36,21 @@ class indent_indent(osv.Model):
         'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
         'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
         }
+
+    def fields_view_get(self, cr, user, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+        if context is None: 
+            context = {}
+        res = super(indent_indent, self).fields_view_get(cr, user, view_id, view_type, context, toolbar=toolbar, submenu=submenu)
+        doc = etree.XML(res['arch'])
+        nodes = doc.xpath("//div[@name='buttons']/button[@string='Enquiry']")
+        if context.get('search_default_contract_contract'):
+            if 'product_lines' in res['fields'].keys() and 'product_id' in res['fields']['product_lines']['views']['form']['fields'].keys():
+               domain = [('type','=', 'service')]
+               res['fields']['product_lines']['views']['form']['fields']['product_id']['domain'] = domain
+            for node in nodes:
+                node.set('modifiers','{"invisible":true}')
+        res['arch'] = etree.tostring(doc)
+        return res
 
     def indent_confirm(self, cr, uid, ids, context=None):
         for record in self.browse(cr,uid,ids,context):

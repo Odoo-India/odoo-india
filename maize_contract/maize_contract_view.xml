@@ -6,7 +6,6 @@
             <field name="name">inherit.indent.indent.form</field>
             <field name="model">indent.indent</field>
             <field name="inherit_id" ref="indent.view_indent_indent_form" />
-            <field name="priority">20</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position='after'>
                     <field name="contract" invisible="1"/>
@@ -76,12 +75,25 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_contract_search"/>
-            <field name="view_id" ref="view_contract_indent_tree"/>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     Click to create a new Contract.
                 </p>
             </field>
+        </record>
+        
+        <record id="action_contract_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_contract_indent_tree"/>
+            <field name="act_window_id" ref="action_contract_view"/>
+        </record>
+        
+        <record id="action_contract_form_view1" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="inherit_indetn_form_view"/>
+            <field name="act_window_id" ref="action_contract_view"/>
         </record>
         <!-- override search view for add default search -->
         <record id='indent.action_indent_indent' model='ir.actions.act_window'>
@@ -97,6 +109,21 @@
                 </p>
             </field>
         </record>
+        
+        <record id="action_indent_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="indent.view_indent_indent_tree"/>
+            <field name="act_window_id" ref="indent.action_indent_indent"/>
+        </record>
+        
+        <record id="action_indent_form_view1" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="indent.view_indent_indent_form"/>
+            <field name="act_window_id" ref="indent.action_indent_indent"/>
+        </record>
+        
         <menuitem action="action_contract_view" name="Contracts" parent="indent.menu_indent_indent_main" id="menu_contract_main" sequence="2"/>
     
         <!-- Purchase Order Form View -->

@@ -467,3 +467,66 @@ class purchase_order(osv.Model):
         return orders_info
     
 purchase_order()
+
+class stock_picking(osv.osv):
+    _inherit = "stock.picking"
+    _columns = {
+            'type': fields.selection([('out', 'Sending Goods'), ('receipt', 'Receipt'),('in', 'Getting Goods'), ('internal', 'Internal')], 'Shipping Type', required=True, select=True, help="Shipping type specify, goods coming in or going out."),
+                }
+stock_picking()
+
+class stock_picking_receipt(osv.osv):
+    _name = "stock.picking.receipt"
+    _inherit = "stock.picking"
+    _table = "stock_picking"
+    _description = "Receipt"
+
+    def check_access_rights(self, cr, uid, operation, raise_exception=True):
+        #override in order to redirect the check of acces rights on the stock.picking object
+        return self.pool.get('stock.picking').check_access_rights(cr, uid, operation, raise_exception=raise_exception)
+
+    def check_access_rule(self, cr, uid, ids, operation, context=None):
+        #override in order to redirect the check of acces rules on the stock.picking object
+        return self.pool.get('stock.picking').check_access_rule(cr, uid, ids, operation, context=context)
+
+    def _workflow_trigger(self, cr, uid, ids, trigger, context=None):
+        #override in order to trigger the workflow of stock.picking at the end of create, write and unlink operation
+        #instead of it's own workflow (which is not existing)
+        return self.pool.get('stock.picking')._workflow_trigger(cr, uid, ids, trigger, context=context)
+
+    def _workflow_signal(self, cr, uid, ids, signal, context=None):
+        #override in order to fire the workflow signal on given stock.picking workflow instance
+        #instead of it's own workflow (which is not existing)
+        return self.pool.get('stock.picking')._workflow_signal(cr, uid, ids, signal, context=context)
+    
+    _columns = {
+        'state': fields.selection(
+            [('draft', 'Draft'),
+            ('approved', 'Approved'), 
+            ('auto', 'Waiting Another Operation'),
+            ('confirmed', 'Waiting Availability'),
+            ('assigned', 'Ready to Receive'),
+            ('done', 'Received'),
+            ('cancel', 'Cancelled'),],
+            'Status', readonly=True, select=True,
+            help="""* Draft: not confirmed yet and will not be scheduled until confirmed\n
+                 * Approved: waiting for manager approval to proceed further\n
+                 * Waiting Another Operation: waiting for another move to proceed before it becomes automatically available (e.g. in Make-To-Order flows)\n
+                 * Waiting Availability: still waiting for the availability of products\n
+                 * Ready to Receive: products reserved, simply waiting for confirmation.\n
+                 * Received: has been processed, can't be modified or cancelled anymore\n
+                 * Cancelled: has been cancelled, can't be confirmed anymore"""),
+    }
+    _defaults = {
+        'type': 'receipt',
+    }    
+stock_picking_receipt()
+#----------------------------------------------------------
+# Stock Location
+#----------------------------------------------------------
+class stock_location(osv.osv):
+    _inherit = "stock.location"
+    _columns = {
+            'chained_picking_type': fields.selection([('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'Receipt')], 'Shipping Type', help="Shipping Type of the Picking List that will contain the chained move (leave empty to automatically detect the type based on the source and destination locations)."),
+                }
+stock_location()

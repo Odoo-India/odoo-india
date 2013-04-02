@@ -18,7 +18,7 @@
         </record>
         
         <record id="product_tm" model="contract.series">
-            <field name="code">OM</field>
+            <field name="code">TM</field>
             <field name="name">TEMPORARY MAINTENAN</field>
         </record>
         

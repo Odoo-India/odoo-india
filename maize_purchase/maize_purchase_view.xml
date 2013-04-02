@@ -208,6 +208,19 @@
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
 
+				<xpath expr="//field[@name='stock_journal_id']" position="after">
+                    <field name="inward_id"/>
+                    <field name="inward_date"/>
+                    <field name="challan_no"/>
+                    <field name="tr_code"/>
+				</xpath>
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="excisable_item"/>
+                    <field name="gp_received"/>
+                    <field name="gp_date"/>
+                    <field name="purchase_id"/>
+                </xpath>
+
                 <xpath expr="//button[@name='draft_force_assign']" position="before">
                     <button name="button_approve" states="draft" string="Approved by manager" class="oe_highlight"/>
                 </xpath>

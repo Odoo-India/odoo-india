@@ -500,6 +500,14 @@ class stock_picking_receipt(osv.osv):
         return self.pool.get('stock.picking')._workflow_signal(cr, uid, ids, signal, context=context)
     
     _columns = {
+        'purchase_id': fields.many2one('purchase.order', 'Purchase Order',ondelete='set null', select=True),
+        'inward_id': fields.many2one('stock.picking.in', 'Inward',ondelete='set null'),
+        'inward_date': fields.date('Inward Date'),
+        'challan_no': fields.integer('Challan Number'),
+        'tr_code': fields.integer('TR Code'),
+        'excisable_item': fields.boolean('Excisable Item'),
+        'gp_received': fields.boolean('GP Received'),
+        'gp_date': fields.date('GP Received Date'),
         'state': fields.selection(
             [('draft', 'Draft'),
             ('approved', 'Approved'), 
@@ -528,5 +536,12 @@ class stock_location(osv.osv):
     _inherit = "stock.location"
     _columns = {
             'chained_picking_type': fields.selection([('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'Receipt')], 'Shipping Type', help="Shipping Type of the Picking List that will contain the chained move (leave empty to automatically detect the type based on the source and destination locations)."),
+                }
+stock_location()
+
+class stock_move(osv.osv):
+    _inherit = "stock.move"
+    _columns = {
+            'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type'),
                 }
 stock_location()

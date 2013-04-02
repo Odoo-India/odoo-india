@@ -102,7 +102,7 @@
             <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form" />
             <field name="arch" type="xml">
                 <xpath expr="//notebook/page/field[@name='purchase_ids']" position="replace">
-                    <field name="purchase_ids" attrs="{'readonly': [('state', '=', 'draft')]}">
+                    <field name="purchase_ids">
                         <tree string="Purchase Order">
                             <field name="name" string="Reference"/>
                             <field name="date_order" string="Order Date"/>

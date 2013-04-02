@@ -390,54 +390,55 @@ class indent_indent(osv.Model):
         wf_service = netsvc.LocalService("workflow")
         for indent in self.browse(cr,uid,ids,context):
             po_grp_partners = obj_purchase_order.read_group(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')], ['partner_id'], ['partner_id'])
-            po_without_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')])
-            for po_grp_partner in po_grp_partners:
-                if po_grp_partner['partner_id_count'] > 1:
-                    po_to_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0])])
-                    obj_purchase_order.action_cancel(cr,uid,po_to_merge,context)
-                    obj_purchase_order.action_cancel_draft(cr,uid,po_to_merge,context)
-                    po_merged_id = obj_purchase_order.do_merge(cr,uid,po_to_merge,context).keys()[0]
-                    series_obj = self.pool.get('product.order.series')
-                    po = obj_purchase_order.browse(cr,uid,po_merged_id,context=context)
-                    series_code= po and po.po_series_id and po.po_series_id.code or False
-                    if series_code:
-                        vals = {'company_id':1,'po_series_id':po.po_series_id.id}
-                        if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
-                            seqq = self.create_series_sequence(cr,uid,vals,context)
-                        po_seq = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
-                        obj_purchase_order.write(cr,uid,po_merged_id,{'name':po_seq})
-                    order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
-                    today = order.date_order
-                    year = datetime.datetime.today().year
-                    month = datetime.datetime.today().month
-                    if month < 4:
-                        po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
-                    else:
-                        po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
-                    for line in order.order_line:
-                        self.pool.get('product.product').write(cr,uid,line.product_id.id,{
-                                                                      'last_supplier_rate': line.price_unit,
-                                                                      'last_po_no':order.id,
-                                                                      'last_po_series':order.po_series_id.id,
-                                                                      'last_supplier_code':order.partner_id.id,
-                                                                      'last_po_date':order.date_order,
-                                                                      'last_po_year':po_year
-                                                                  },context=context)
-                    obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
-                    wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
-                    wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
-                else:
-                    # write purchase order series
-                    for p in po_without_merge:
+            po_grp_series = obj_purchase_order.read_group(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')], ['po_series_id'], ['po_series_id'])
+            for po_grp_ser in po_grp_series:
+                for po_grp_partner in po_grp_partners:
+                    if po_grp_partner['partner_id_count'] > 1 and po_grp_ser['po_series_id_count'] > 1:
+                        po_to_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0]), ('po_series_id', '=', po_grp_ser['po_series_id'][0])])
+                        obj_purchase_order.action_cancel(cr,uid,po_to_merge,context)
+                        obj_purchase_order.action_cancel_draft(cr,uid,po_to_merge,context)
+                        po_merged_id = obj_purchase_order.do_merge(cr,uid,po_to_merge,context).keys()[0]
                         series_obj = self.pool.get('product.order.series')
-                        po = obj_purchase_order.browse(cr,uid,p,context=context)
+                        po = obj_purchase_order.browse(cr,uid,po_merged_id,context=context)
                         series_code= po and po.po_series_id and po.po_series_id.code or False
                         if series_code:
                             vals = {'company_id':1,'po_series_id':po.po_series_id.id}
                             if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
                                 seqq = self.create_series_sequence(cr,uid,vals,context)
                             po_seq = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
-                            obj_purchase_order.write(cr,uid,p,{'name':po_seq})
+                            obj_purchase_order.write(cr,uid,po_merged_id,{'name':po_seq})
+                        order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
+                        today = order.date_order
+                        year = datetime.datetime.today().year
+                        month = datetime.datetime.today().month
+                        if month < 4:
+                            po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
+                        else:
+                            po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
+                        for line in order.order_line:
+                            self.pool.get('product.product').write(cr,uid,line.product_id.id,{
+                                                                          'last_supplier_rate': line.price_unit,
+                                                                          'last_po_no':order.id,
+                                                                          'last_po_series':order.po_series_id.id,
+                                                                          'last_supplier_code':order.partner_id.id,
+                                                                          'last_po_date':order.date_order,
+                                                                          'last_po_year':po_year
+                                                                      },context=context)
+                        obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
+                        wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
+                        wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
+                    else:
+                        # write purchase order series
+                        po_without_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0]), ('po_series_id', '=', po_grp_ser['po_series_id'][0])])[0]
+                        series_obj = self.pool.get('product.order.series')
+                        po = obj_purchase_order.browse(cr,uid,po_without_merge,context=context)
+                        series_code= po and po.po_series_id and po.po_series_id.code or False
+                        if series_code:
+                            vals = {'company_id':1,'po_series_id':po.po_series_id.id}
+                            if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
+                                seqq = self.create_series_sequence(cr,uid,vals,context)
+                            po_seq = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
+                            obj_purchase_order.write(cr,uid,po_without_merge,{'name':po_seq})
             self.write(cr, uid, indent.id, {'purchase_count': True}, context=context)
         return True
 

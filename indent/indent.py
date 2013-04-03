@@ -147,10 +147,16 @@ class indent_indent(osv.Model):
                 return lst
         # _create_manager_list
         obj_hr = self.pool.get('hr.employee')
+        document_authority_obj = self.pool.get('document.authority')
         document_authority_instance_obj = self.pool.get('document.authority.instance')
+        document_authority_ids = document_authority_obj.search(cr, uid, [('document', '=', 'indent')], context=context)
         for indent in self.browse(cr, uid, ids, context=context): 
             if not indent.product_lines:
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent which has no line.'))
+
+            for authority in document_authority_obj.browse(cr, uid, document_authority_ids, context=context):
+                document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': 'indent', 'indent_id': indent.id, 'priority': authority.priority}, context=context)
+
             employee_parent_ids = obj_hr.search(cr, uid, [])
             employee_parents = obj_hr.read(cr, uid, employee_parent_ids, ['coach_id'])
             employee_tree = dict([(item['id'], item['coach_id'][0]) for item in employee_parents if item['coach_id']])
@@ -158,7 +164,7 @@ class indent_indent(osv.Model):
                 raise osv.except_osv(_('Configuration Error!'), _('Create related employee for %s' % indent.indentor_id.name))
             parent_employee_ids = _create_parent_category_list(indent.employee_id.id, [indent.employee_id.id])
             new_parent_employee_id = list(reversed(parent_employee_ids))
-            priority=1
+            priority=11
             for auth in new_parent_employee_id:
                 emp = obj_hr.browse(cr,uid,auth,context=context)
                 if emp.user_id:

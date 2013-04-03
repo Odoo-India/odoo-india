@@ -560,17 +560,18 @@ class document_authority(osv.Model):
         # name_get may receive int id instead of an id list
         if isinstance(ids, (int, long)):
             ids = [ids]
-
+        
         return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
 
-    columns = {
+    _columns = {
         'name': fields.many2one('res.users', 'Authority', required=True),
         'document': fields.selection([('indent','Indent'), ('order','Purchase Order')], 'Document', required=True),
         'priority': fields.integer('Priority'),
         'active': fields.boolean('Active', help="If the active field is set to False, it will allow you to hide the document authority without removing it."),
         'description': fields.text('Description'),
     }
-    defaults = {
+
+    _defaults = {
         'active': True,
     }
 

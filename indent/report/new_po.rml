@@ -415,18 +415,7 @@
                 <para style="Space bet user and signature">
                     <font color="white"> </font>
                 </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
+                <image x="14.0cm" y="27.6cm" height="40.0" width="150">[[ order.validator.sign or removeParentNode('image') ]]</image>
                 <para style="Space bet user and signature">
                     <font color="white"> </font>
                 </para>
@@ -699,18 +688,7 @@
                 <para style="Space bet user and signature">
                     <font color="white"> </font>
                 </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
+                <image x="14.0cm" y="27.6cm" height="40.0" width="150">[[ order.validator.sign or removeParentNode('image') ]]</image>
                 <para style="Space bet user and signature">
                     <font color="white"> </font>
                 </para>
@@ -983,18 +961,7 @@
                 <para style="Space bet user and signature">
                     <font color="white"> </font>
                 </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
+                <image x="14.0cm" y="27.6cm" height="40.0" width="150">[[ order.validator.sign or removeParentNode('image') ]]</image>
                 <para style="Space bet user and signature">
                     <font color="white"> </font>
                 </para>

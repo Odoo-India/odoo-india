@@ -317,12 +317,12 @@ class purchase_order(osv.Model):
                     
                     for line in order.order_line:
                         today = order.date_order
-                        year = datetime.datetime.today().year
-                        month = datetime.datetime.today().month
+                        year = datetime.today().year
+                        month = datetime.today().month
                         if month<4:
-                            po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
+                            po_year=str(datetime.today().year-1)+'-'+str(datetime.today().year)
                         else:
-                            po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
+                            po_year=str(datetime.today().year)+'-'+str(datetime.today().year+1)
                         self.pool.get('product.product').write(cr,uid,line.product_id.id,{
                                                                                               'last_supplier_rate': line.price_unit,
                                                                                               'last_po_no':order.id,

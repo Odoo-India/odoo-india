@@ -25,6 +25,7 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.tools import amount_to_text_en as text
+from openerp import tools
 from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
@@ -847,5 +848,14 @@ class procurement_order(osv.osv):
         return res
 
 procurement_order()
+
+class res_users(osv.Model):
+    _inherit = 'res.users'
+
+    _columns = {
+        'sign': fields.binary("Sign", help="This field holds the image used for the signature, limited to 1024x1024px."),
+    }
+
+res_users()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

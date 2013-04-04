@@ -171,5 +171,17 @@
             </field>
         </record>
 
+        <!-- Stock Picking In Gate Pass Form View -->
+        <record id="view_stock_picking_in_gate_pass_form" model="ir.ui.view">
+            <field name="name">stock.picking.in.gate.pass.form</field>
+            <field name="model">stock.picking.in</field>
+            <field name="inherit_id" ref="maize_purchase.maize_view_stock_picking_in_inherit_form"/>
+            <field name="arch" type="xml">
+                <field name="gp_no" position="replace">
+                    <field name="gate_pass_id" string="Gate Pass No"/>
+                </field>
+            </field>
+        </record>
+
     </data>
 </openerp>

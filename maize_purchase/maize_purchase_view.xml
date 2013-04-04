@@ -38,9 +38,6 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form" />
             <field name="arch" type="xml">
-                <xpath expr="//button[@name='view_invoice']" position="after">
-                    <button name="open_advance_payment" string="Advance Payment" type="object" attrs="{'invisible': [('voucher_id', '=', False)]}" class="oe_highlight"/>
-                </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="replace">
                 </xpath>
                 <xpath expr="//notebook/page[@string='Purchase Order']/field/tree/field[@name='taxes_id']" position="replace">
@@ -94,7 +91,19 @@
                 </xpath>
             </field>
         </record>
-        
+
+        <!-- Purchase Order Advance Payment Form View -->
+        <record id="view_purchase_order_advance_payment_form" model="ir.ui.view">
+            <field name="name">purchase.order.advance.payment.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_2_stock_picking"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='invoice_open']" position="after">
+                    <button name="open_advance_payment" string="Advance Payment" type="object" attrs="{'invisible': [('voucher_id', '=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+
         <!-- Purchase Requisition Form Inherit for add field -->
         <record id="view_maize_purchase_requisition_order" model="ir.ui.view">
             <field name="name">inherit.purchase.requisition.form</field>

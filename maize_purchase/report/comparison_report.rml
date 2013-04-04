@@ -163,7 +163,7 @@
             <para style="terp_tblheader_Details_Centre"> Unit Price</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and 'Discount' or removeParentNode('td')]]</para>
+          <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and 'Discount (%)' or removeParentNode('td')]]</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['package_and_forwording'] == True and 'Pack &amp; Forward' or removeParentNode('td')]]</para>

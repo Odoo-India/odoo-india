@@ -33,6 +33,7 @@ This module inherits the base product module which maintains some product histor
 """,
     'depends' : ['purchase_requisition','maize_product','maize_partner','maize_account', 'maize_contract', 'account_voucher'],
     'data' : [
+        'security/ir.model.access.csv',
         'wizard/comparison_report_view.xml',
         'maize_purchase_view.xml',
         'maize_tax_data.xml',

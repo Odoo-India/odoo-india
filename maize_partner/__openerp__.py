@@ -31,6 +31,7 @@
 """,
     'depends' : ['base', 'maize_product'],
     'data' : [
+        'security/ir.model.access.csv',
         'po_series_data.xml',
         'maize_partner_data.xml',
         'maize_partner_view.xml',

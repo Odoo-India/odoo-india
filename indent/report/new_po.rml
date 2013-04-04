@@ -241,7 +241,7 @@
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="30.0,300.0,55.0,55.0,50.0,80.0" repeatRows="1" style="Table_Product_Header_Title">
+    <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" repeatRows="1" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_General_Centre">Sr.No.</para>
@@ -259,13 +259,13 @@
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Delivery Date Ind. No.</para>
+          <para style="terp_tblheader_Details_Centre">Delivery Date Indent No</para>
         </td>
       </tr>
     </blockTable>mobile
     <section>
       <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]]</para>
-      <blockTable colWidths="30.0,300.0,55.0,55.0,50.0,80.0" style="Table_Product_Line">
+      <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" style="Table_Product_Line">
         <tr>
           <td>
             <para style="terp_tblheader_General_Centre">[[ sequence(order_line) ]]</para>
@@ -525,7 +525,7 @@
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="30.0,300.0,55.0,55.0,50.0,80.0" repeatRows="1" style="Table_Product_Header_Title">
+    <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" repeatRows="1" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_General_Centre">Sr.No.</para>
@@ -543,13 +543,13 @@
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Delivery Date Ind. No.</para>
+          <para style="terp_tblheader_Details_Centre">Delivery Date Indent No</para>
         </td>
       </tr>
     </blockTable>mobile
     <section>
       <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]]</para>
-      <blockTable colWidths="30.0,300.0,55.0,55.0,50.0,80.0" style="Table_Product_Line">
+      <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" style="Table_Product_Line">
         <tr>
           <td>
             <para style="terp_tblheader_General_Centre">[[ sequence(order_line) ]]</para>
@@ -809,7 +809,7 @@
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="30.0,300.0,55.0,55.0,50.0,80.0" repeatRows="1" style="Table_Product_Header_Title">
+    <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" repeatRows="1" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_General_Centre">Sr.No.</para>
@@ -827,13 +827,13 @@
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Delivery Date Ind. No.</para>
+          <para style="terp_tblheader_Details_Centre">Delivery Date Indent No.</para>
         </td>
       </tr>
     </blockTable>mobile
     <section>
       <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]]</para>
-      <blockTable colWidths="30.0,300.0,55.0,55.0,50.0,80.0" style="Table_Product_Line">
+      <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" style="Table_Product_Line">
         <tr>
           <td>
             <para style="terp_tblheader_General_Centre">[[ sequence(order_line) ]]</para>

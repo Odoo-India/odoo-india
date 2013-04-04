@@ -20,12 +20,13 @@
 ##############################################################################
 
 import time
-import datetime
+from datetime import datetime
 from openerp.osv import fields, osv
 from openerp import netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.osv.orm import browse_record, browse_null
+from lxml import etree
 
 class stock_picking_in(osv.osv):
     _inherit = "stock.picking.in"
@@ -468,14 +469,37 @@ class purchase_order(osv.Model):
     
 purchase_order()
 
-class stock_picking(osv.osv):
+class stock_picking(osv.Model):
     _inherit = "stock.picking"
     _columns = {
             'type': fields.selection([('out', 'Sending Goods'), ('receipt', 'Receipt'),('in', 'Getting Goods'), ('internal', 'Internal')], 'Shipping Type', required=True, select=True, help="Shipping type specify, goods coming in or going out."),
                 }
+    
+    def do_partial(self, cr, uid, ids, partial_datas, context=None):
+        receipt_obj = self.pool.get('stock.picking.receipt')
+        stock_move = self.pool.get('stock.move')
+        res = super(stock_picking,self).do_partial(cr, uid, ids, partial_datas, context=context)
+        if context.get('default_type') == 'in':
+            move_line = []
+            for pick in self.browse(cr, uid, ids, context=context):
+                for move in pick.move_lines:
+                    dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id, move.purchase_line_id and move.purchase_line_id.price_unit or 0, context)
+                    move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                vals = {'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
+                        'partner_id': pick.partner_id.id,
+                        'stock_journal_id': pick.stock_journal_id or False,
+                        'origin': pick.origin or False,
+                        'type': 'receipt',
+                        'inward_id': pick.id or False,
+                        'inward_date': datetime.today().strftime('%m-%d-%Y'),
+                        'purchase_id': pick.purchase_id.id or False,
+                        'move_lines': [(6,0, move_line)]
+                        }
+            receipt_id = receipt_obj.create(cr, uid, vals, context=context)
+        return res
 stock_picking()
 
-class stock_picking_receipt(osv.osv):
+class stock_picking_receipt(osv.Model):
     _name = "stock.picking.receipt"
     _inherit = "stock.picking"
     _table = "stock_picking"
@@ -524,10 +548,12 @@ class stock_picking_receipt(osv.osv):
                  * Ready to Receive: products reserved, simply waiting for confirmation.\n
                  * Received: has been processed, can't be modified or cancelled anymore\n
                  * Cancelled: has been cancelled, can't be confirmed anymore"""),
+        'party_id': fields.many2one('res.partner', 'Party Name'),
     }
     _defaults = {
         'type': 'receipt',
-    }    
+    }
+
 stock_picking_receipt()
 #----------------------------------------------------------
 # Stock Location
@@ -543,5 +569,53 @@ class stock_move(osv.osv):
     _inherit = "stock.move"
     _columns = {
             'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type'),
+            'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
+            'diff': fields.float('Diff.', digits_compute= dp.get_precision('Account'), help="Amount to be add or less"),
+            'amount': fields.float('Amount.', digits_compute= dp.get_precision('Account'), help="Total Amount"),
+            'bill_no': fields.integer('Bill No'),
+            'bill_date': fields.date('Bill Date'),
+            'excies': fields.float('Excies.', digits_compute= dp.get_precision('Account')),
+            'cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
+            'high_cess': fields.float('High cess.', digits_compute= dp.get_precision('Account')),
+            'import_duty': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
+            'cenvat': fields.float('CentVAT.', digits_compute= dp.get_precision('Account')),
+            'c_cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
+            'c_high_cess': fields.float('High Cess.', digits_compute= dp.get_precision('Account')),
+            'tax_cal': fields.float('Tax Cal', digits_compute= dp.get_precision('Account')),
                 }
-stock_location()
+        
+    def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
+        res = {}
+        purchase_obj = self.pool.get('purchase.order')
+        purchase_line_obj = self.pool.get('purchase.order.line')
+        tax_obj = self.pool.get('account.tax')
+        tax = tax_obj.search(cr, uid, [('amount', '=', '0.12'), ('tax_type','=', 'excise')])
+        tax_data = tax_obj.browse(cr, uid, tax, context=context)
+        val = 0.0
+        first = True
+        line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])[0]
+        line = purchase_line_obj.browse(cr, uid, line_id, context=context)
+        if line.order_id.excies_ids:
+            for c in tax_obj.compute_all(cr, uid, line.order_id.excies_ids, line.price_subtotal, 1, line.product_id, line.order_id.partner_id)['taxes']:
+                val += c.get('amount', 0.0)
+                if c.get('parent_tax') and first:
+                    res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
+                    first = False
+                elif c.get('parent_tax'):
+                    res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
+                else:
+                    res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
+            res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': line.price_subtotal-(val+diff+import_duty)})
+        else:
+            for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, 1, line.product_id, line.order_id.partner_id)['taxes']:
+                val += c.get('amount', 0.0)
+                if c.get('parent_tax') and first:
+                    res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
+                    first = False
+                elif c.get('parent_tax'):
+                    res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
+                else:
+                    res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
+            res.update({'rate': line.price_unit,'diff': diff or 0.0, 'import_duty': import_duty or 0.0, 'amount': tax_cal-(val+diff+import_duty)})
+        return {'value': res}
+stock_move()

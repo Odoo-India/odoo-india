@@ -33,6 +33,7 @@ The user will create an contract
 """,
     'depends' : ['indent'],
     'data' : [
+        'security/ir.model.access.csv',
         'contract_data.xml',
         'maize_contract_sequence.xml',
         'contract_report.xml',

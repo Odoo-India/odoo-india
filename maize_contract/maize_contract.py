@@ -206,7 +206,6 @@ class purchase_order(osv.Model):
     
     _defaults = {
         'date_from': lambda *a: datetime.now().strftime('%Y-%m-%d'),
-        'date_to': lambda *a: datetime.now().strftime('%Y-%m-%d'), 
         }
 class indent_section(osv.Model):
     _name = 'indent.section'

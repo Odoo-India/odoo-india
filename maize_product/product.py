@@ -250,7 +250,7 @@ class product_product(osv.Model):
             seq_id = self.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('sub_group_id','=',sub_id and sub_id[0] or False)])
             seq_id.sort()
             product_code=1
-            if record.type=='product':
+            if record.type=='product' or record.type == 'service':
                 if len(seq_id)>=2:
                     last_rec=self.browse(cr,uid,seq_id[-2])
                     product_code = int(last_rec.default_code[6:9])+1

@@ -256,6 +256,18 @@
             	</xpath>
            	</field>
         </record>
-        
+
+        <!-- Product Search View -->
+        <record id="view_product_inherited_search" model="ir.ui.view">
+            <field name="name">product.product.search.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">
+               <field name="name" position="replace">
+                    <field name="name" string="Product" filter_domain="['|', '|', '|', '|', '|', ('name', 'ilike', self), ('default_code', 'ilike', self), ('description', 'ilike', self), ('desc2', 'ilike', self), ('desc3', 'ilike', self), ('desc4', 'ilike', self)]"/>
+                </field>
+            </field>
+        </record>
+
     </data>
 </openerp>

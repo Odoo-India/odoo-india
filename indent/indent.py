@@ -36,7 +36,6 @@ class indent_indent(osv.Model):
     _order = "name desc"
     _track = {
         'state': {
-            'indent.mt_indent_confirmed': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'confirm',
             'indent.mt_indent_waiting_approval': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'waiting_approval',
             'indent.mt_indent_inprogress': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'inprogress',
             'indent.mt_indent_received': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'received',
@@ -94,7 +93,7 @@ class indent_indent(osv.Model):
         'shipment_done': fields.function(_check_shipment_done, type="boolean", string="Shipment Done"),
         'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
         'active': fields.boolean('Active'),
-        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
+        'state':fields.selection([('draft','Draft'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 
     def _default_employee_id(self, cr, uid, context=None):
@@ -177,7 +176,7 @@ class indent_indent(osv.Model):
                 if authority.name and authority.name.partner_id and authority.name.partner_id.id not in indent.message_follower_ids:
                     self.write(cr, uid, [indent.id], {'message_follower_ids': [(4, authority.name.partner_id.id)]}, context=context)
 
-        self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
+        self.write(cr, uid, ids, {'state': 'waiting_approval'}, context=context)
         return True
 
     def action_picking_create(self, cr, uid, ids, context=None):

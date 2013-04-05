@@ -52,11 +52,9 @@
                 <form string="Indents" version="7.0">
                     <header>
                         <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight"/>
-                        <button name="indent_validate" string="Validate" states="confirm" class="oe_highlight"/>
-                        <button name="indent_reject" string="Reject" states="confirm"/>
                         <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight"/>
                         <button name="indent_reject" string="Reject" states="waiting_approval"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
                     </header>
                     <sheet>
                     	<div class="oe_title">
@@ -204,7 +202,6 @@
                     <field name="indent_date"/>
                     <field name="required_date"/>
                     <filter string="Draft" name="state_draft" domain="[('state','=','draft')]"/>
-                    <filter string="Confirm" name="state_confirm" domain="[('state','=','confirm')]"/>
                     <filter string="Waiting For Approval" name="state_waiting_approval" domain="[('state','=','waiting_approval')]"/>
                     <filter string="Inprogress" name="state_inprogress" domain="[('state','=','inprogress')]"/>
                     <filter string="Received" name="state_received" domain="[('state','=','received')]"/>

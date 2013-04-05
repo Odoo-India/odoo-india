@@ -2,7 +2,7 @@
 <document filename="indent.pdf">
   <template pageSize="(842.0,595.0)" title="Indent" author="Martin Simon" allowSplitting="20">
     <pageTemplate id="first">
-      <frame id="first" x1="8.0" y1="8.0" width="840" height="525"/>
+      <frame id="first" x1="1.0" y1="1.0" width="840" height="525"/>
     </pageTemplate>
   </template>
   <stylesheet>
@@ -355,7 +355,7 @@
         </tr>
       </blockTable>
     </section>
-    <blockTable colWidths="390.0,110.0,30.0,290.0" style="Tableau2">
+    <blockTable colWidths="390.0,115.0,30.0,285.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -387,7 +387,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> DEPARTMENT ENGINEER</para>
@@ -395,7 +395,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.employee_id.coach_id and order.employee_id.coach_id.user_id) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> DEPARTMENT HEAD</para>
@@ -403,7 +403,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.employee_id.coach_id and order.employee_id.coach_id.coach_id and order.employee_id.coach_id.coach_id.user_id) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER(PROJECT TECH &amp; PLANNING) </para>
@@ -411,7 +411,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[0].name) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER(MAINTENANCE)</para>
@@ -419,7 +419,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[1].name) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER (STORE &amp; PURCHASE)</para>

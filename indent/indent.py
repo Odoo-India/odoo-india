@@ -93,7 +93,8 @@ class indent_indent(osv.Model):
         'shipment_done': fields.function(_check_shipment_done, type="boolean", string="Shipment Done"),
         'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
         'active': fields.boolean('Active'),
-        'state':fields.selection([('draft','Draft'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
+        'item_for': fields.selection([('store','Store'),('capital','Capital')],'Item For'),
+        'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 
     def _default_employee_id(self, cr, uid, context=None):

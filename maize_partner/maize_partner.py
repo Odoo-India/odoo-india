@@ -102,6 +102,19 @@ account_journal()
 class res_users(osv.Model):
     _inherit = "res.users"
     
+    def name_search(self, cr, user, name, args=None, operator='ilike', context=None, limit=100):
+        if not args:
+            args = []
+        if context is None:
+            context = {}
+        ids = []
+        if name:
+            ids = self.search(cr, user, [('user_code', 'ilike', name)]+ args, limit=limit, context=context)
+        if not ids:
+            ids = self.search(cr, user, [('name', 'ilike', name)]+ args, limit=limit, context=context)#fix it ilike should be replace with operator
+
+        return self.name_get(cr, user, ids, context=context)
+    
     def name_get(self, cr, uid, ids, context=None):
         res = []
         if not ids:

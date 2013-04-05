@@ -483,7 +483,7 @@ class stock_picking(osv.Model):
             move_line = []
             for pick in self.browse(cr, uid, ids, context=context):
                 for move in pick.move_lines:
-                    dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id, move.purchase_line_id and move.purchase_line_id.price_unit or 0, context)
+                    dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0, move.purchase_line_id and move.purchase_line_id.price_unit or 0, context)
                     move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                 vals = {'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                         'partner_id': pick.partner_id.id,

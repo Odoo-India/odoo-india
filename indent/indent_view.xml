@@ -176,7 +176,7 @@
             <field name="name">indent.indent.tree</field>
             <field name="model">indent.indent</field>
             <field name="arch" type="xml">
-                <tree string="Indents" colors="gray:state=='received';red:shipment_done==True;green:purchase_count==True;">
+                <tree string="Indents" colors="gray:state=='received';red:shipment_done==True;green:purchase_count==True;green:state=='waiting_approval';">
                     <field name="name"/>
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
@@ -398,6 +398,19 @@
                         </group>
                     </page>
                 </xpath>
+            </field>
+        </record>
+
+        <!-- Employee Form View -->
+        <record id="view_hr_employee_form_inherited" model="ir.ui.view">
+            <field name="name">hr.employee.form.inherited</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <field name="category_ids" position="after">
+                    <label for="absent"/>
+                    <field name="absent"/>
+                </field>
             </field>
         </record>
 

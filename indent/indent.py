@@ -32,7 +32,7 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FO
 class indent_indent(osv.Model):
     _name = 'indent.indent'
     _description = 'Indent'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
     _order = "name desc"
     _track = {
         'state': {
@@ -122,6 +122,9 @@ class indent_indent(osv.Model):
         'active': True,
     }
 
+    def _needaction_domain_get(self, cr, uid, context=None):
+        return [('state', '=', 'waiting_approval')]
+
     def copy(self, cr, uid, id, default=None, context=None):
         if default is None:
             default = {}
@@ -168,7 +171,7 @@ class indent_indent(osv.Model):
             priority=11
             for auth in new_parent_employee_id:
                 emp = obj_hr.browse(cr,uid,auth,context=context)
-                if emp.user_id:
+                if emp.user_id and not emp.absent:
                     document_authority_instance_obj.create(cr, uid, {'name': emp.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
                     priority=priority+1
 
@@ -857,5 +860,14 @@ class res_users(osv.Model):
     }
 
 res_users()
+
+class hr_employee(osv.Model):
+    _inherit = "hr.employee"
+
+    _columns = {
+        'absent': fields.boolean("Not in office"),
+    }
+
+hr_employee()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

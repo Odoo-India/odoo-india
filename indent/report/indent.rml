@@ -387,7 +387,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> DEPARTMENT ENGINEER</para>
@@ -395,7 +395,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.employee_id.coach_id and order.employee_id.coach_id.user_id) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.employee_id.coach_id and order.employee_id.coach_id.user_id, order) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> DEPARTMENT HEAD</para>
@@ -403,7 +403,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.employee_id.coach_id and order.employee_id.coach_id.coach_id and order.employee_id.coach_id.coach_id.user_id) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.employee_id.coach_id and order.employee_id.coach_id.coach_id and order.employee_id.coach_id.coach_id.user_id, order) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER(PROJECT TECH &amp; PLANNING) </para>
@@ -411,7 +411,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[0].name) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[0].name, order) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER(MAINTENANCE)</para>
@@ -419,7 +419,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[1].name) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[1].name, order) ]]</image>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER (STORE &amp; PURCHASE)</para>

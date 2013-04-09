@@ -102,7 +102,7 @@
     <paraStyle name="terp_default_Right_new" fontName="Helvetica" fontSize="9.0" leading="0" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_2" fontName="Helvetica" fontSize="9.0" leading="3" alignment="LEFT" spaceBefore="4.0" spaceAfter="4.0"/>
     <paraStyle name="terp_default_8_italic" rightIndent="0.0" leftIndent="20.0" fontName="Helvetica-Oblique" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="terp_default_Note" rightIndent="0.0" leftIndent="9.0" fontName="Helvetica-Oblique" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Centre" fontName="Helvetica" fontSize="9.0" leading="3" alignment="CENTER" spaceBefore="4.0" spaceAfter="4.0"/>
     <paraStyle name="Space bet user and signature" fontName="Helvetica" fontSize="4.0" leading="5" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <images/>
   </stylesheet>
@@ -264,28 +264,27 @@
     <para style="terp_default_2"> ENGINEERS REMARK &amp; SIGN :  </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table9">
         <tr>
             <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id,order.indent_id)]]</image>
                 <para style="terp_default_2"> ENGINEER SIGN </para>
             </td>
             <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id,order.indent_id) ]]</image>
                 <para style="terp_default_2"> DEPT HEAD</para>
             </td>
             <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id,order.indent_id) ]]</image>
                 <para style="terp_default_2"> ENGG HEAD </para>
             </td>
             <td>
-                <para style="Table Heading"> MD </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id,order.indent_id) ]]</image>
+                <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
     </blockTable>
+    <para style="terp_default_2"> <font color="white"> </font> </para>
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
         <tr>
             <td>
@@ -296,6 +295,7 @@
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> ENGINEER SIGN </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
             </td>
             <td>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
@@ -322,7 +322,7 @@
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="Table Heading"> MD </para>
+                <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
     </blockTable>
@@ -486,28 +486,27 @@
     <para style="terp_default_2"> ENGINEERS REMARK &amp; SIGN :  </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table9">
         <tr>
             <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id,order.indent_id)]]</image>
                 <para style="terp_default_2"> ENGINEER SIGN </para>
             </td>
             <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id,order.indent_id) ]]</image>
                 <para style="terp_default_2"> DEPT HEAD</para>
             </td>
             <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id,order.indent_id) ]]</image>
                 <para style="terp_default_2"> ENGG HEAD </para>
             </td>
             <td>
-                <para style="Table Heading"> MD </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id,order.indent_id) ]]</image>
+                <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
     </blockTable>
+    <para style="terp_default_2"> <font color="white"> </font> </para>
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
         <tr>
             <td>
@@ -518,6 +517,7 @@
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> ENGINEER SIGN </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
             </td>
             <td>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
@@ -544,7 +544,7 @@
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="Table Heading"> MD </para>
+                <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
     </blockTable>
@@ -709,28 +709,27 @@
     <para style="terp_default_2"> ENGINEERS REMARK &amp; SIGN :  </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
-    <para style="terp_default_2"> <font color="white"> </font> </para>
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table9">
         <tr>
             <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id,order.indent_id)]]</image>
                 <para style="terp_default_2"> ENGINEER SIGN </para>
             </td>
             <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id,order.indent_id) ]]</image>
                 <para style="terp_default_2"> DEPT HEAD</para>
             </td>
             <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id,order.indent_id) ]]</image>
                 <para style="terp_default_2"> ENGG HEAD </para>
             </td>
             <td>
-                <para style="Table Heading"> MD </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id,order.indent_id) ]]</image>
+                <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
     </blockTable>
+    <para style="terp_default_2"> <font color="white"> </font> </para>
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
         <tr>
             <td>
@@ -741,6 +740,7 @@
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> ENGINEER SIGN </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
             </td>
             <td>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
@@ -767,7 +767,7 @@
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
                 <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="Table Heading"> MD </para>
+                <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
     </blockTable>

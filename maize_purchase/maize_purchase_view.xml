@@ -354,5 +354,58 @@
             <field name="name">Issue</field>
         </record>
         <menuitem action="stock.action_picking_tree6" name="Issue" id="stock.menu_action_picking_tree6" parent="stock.menu_stock_warehouse_mgmt" sequence="2" groups="stock.group_locations"/>
+        
+        <!--  Stock Move Search View Inherit -->
+        <record id="view_stock_move_search_inherit" model="ir.ui.view">
+            <field name="name">stock.move.search.inherit</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_search"/>
+            <field name="arch" type="xml">
+            <xpath expr="//group/filter[@string='Product']" position='after'>
+                <filter string="Supplier" name="groupby_supplier" domain="[]" context="{'group_by':'supplier_id'}"/>
+                <filter string="Inward Number" name="groupby_inward" domain="[]" context="{'group_by':'picking_id'}"/>
+                <filter string="Indentor" name="groupby_indentor" domain="[]" context="{'group_by':'indentor_id'}"/>
+            </xpath>
+            <xpath expr="//field[@name='prodlot_id']" position='after'>
+                <field name="po_name"/>
+                <field name="payment_id"/>
+            </xpath>
+            </field>
+        </record>
+        
+        <record id="view_stock_move_tree_inherit" model="ir.ui.view">
+            <field name="name">stock.move.tree.inherit</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_tree"/>
+            <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position='after'>
+                <field name="po_name"/>
+                <field name="payment_id"/>
+                <field name="supplier_id"/>
+                <field name="indentor_id"/>
+                <!-- field name="gate_pass_id"/>
+                <field name="despatch_mode"/-->
+            </xpath>
+            </field>
+        </record>
+        
+        <record id="stock.action_move_form2" model="ir.actions.act_window">
+            <field name="name">Stock Moves</field>
+            <field name="res_model">stock.move</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="stock.view_move_tree"/>
+            <field name="search_view_id" ref="view_stock_move_search_inherit"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a stock movement.
+              </p><p>
+                This menu gives you the full traceability of inventory
+                operations on a specific product. You can filter on the product
+                to see all the past or future movements for the product.
+              </p>
+            </field>
+        </record>
     </data>
 </openerp>

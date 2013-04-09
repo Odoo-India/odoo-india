@@ -96,7 +96,6 @@ class stock_picking_in(osv.Model):
     _columns = {
         'series':fields.selection(SERIES, 'Series'),
         'gate_pass_type':fields.selection(GATE_PASS_TYPE, 'Type'),
-        'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
     }
 
 stock_picking_in()

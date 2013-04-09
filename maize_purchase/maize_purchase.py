@@ -483,7 +483,8 @@ class stock_picking(osv.Model):
             move_line = []
             for pick in self.browse(cr, uid, ids, context=context):
                 for move in pick.move_lines:
-                    dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0, move.purchase_line_id and move.purchase_line_id.price_unit or 0, context)
+                    partial_data = partial_datas.get('move%s'%(move.id), {})
+                    dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0, move.purchase_line_id and (move.purchase_line_id.price_unit * partial_data.get('product_qty',0.0)) or 0, context)
                     move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                 vals = {'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                         'partner_id': pick.partner_id.id,
@@ -582,6 +583,12 @@ class stock_move(osv.osv):
             'c_cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
             'c_high_cess': fields.float('High Cess.', digits_compute= dp.get_precision('Account')),
             'tax_cal': fields.float('Tax Cal', digits_compute= dp.get_precision('Account')),
+            'supplier_id': fields.related('picking_id', 'purchase_id', 'partner_id', type='many2one', relation='res.partner', string="Supplier", store=True),
+            'po_name': fields.related('picking_id', 'purchase_id','name', type="char", size=64, relation='puchase.order', string="PO Number", store=True),
+            'payment_id': fields.related('picking_id', 'purchase_id', 'payment_term_id','name', type="char", size=64, relation='account.payment.term',string="Payment", store=True),
+            'indentor_id': fields.related('picking_id', 'purchase_id', 'indentor_id', type="many2one", relation='res.users', string="Indentor", store=True),
+            #'gate_pass_id': fields.related('picking_id', 'gp_no', type="many2one", relation='gate.pass', string="Gate Pass No", store=True),
+            #'despatch_mode': fields.related('picking_id', 'despatch_mode', type="selection", relation='stock.picking', string="Mode of Despatch", store=True),
                 }
         
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):

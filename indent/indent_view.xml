@@ -308,6 +308,19 @@
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
                 </field>
+                <xpath expr="//notebook/page[@string='Additional Info']" position="after">
+                    <page string="Status">
+                        <field name="picking_authority_ids" readonly="1">
+                            <tree string="Status" editable="bottom">
+                                <field name="date"/>
+                                <field name="name"/>
+                                <field name="priority"/>
+                                <field name="description"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
             </field>
         </record>
 

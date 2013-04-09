@@ -109,7 +109,7 @@ class indent_indent(osv.Model):
 
     _defaults = {
         'state': 'draft',
-        #'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
+        'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
         'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'indentor_id': lambda self, cr, uid, context: uid,
@@ -575,7 +575,7 @@ class document_authority(osv.Model):
 
     _columns = {
         'name': fields.many2one('res.users', 'Authority', required=True),
-        'document': fields.selection([('indent','Indent'), ('order','Purchase Order')], 'Document', required=True),
+        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
         'priority': fields.integer('Priority'),
         'active': fields.boolean('Active', help="If the active field is set to False, it will allow you to hide the document authority without removing it."),
         'description': fields.text('Description'),
@@ -604,7 +604,7 @@ class document_authority_instance(osv.Model):
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
         'name': fields.many2one('res.users', 'Authority', required=True),
-        'document': fields.selection([('indent','Indent'), ('order','Purchase Order')], 'Document', required=True),
+        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
         'priority': fields.integer('Priority'),
         'description': fields.text('Description'),
         'date': fields.datetime('Date'),
@@ -635,9 +635,116 @@ class stock_picking(osv.Model):
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
+        'picking_authority_ids': fields.one2many('picking.authority', 'picking_id', 'Authority'),
     }
 
+    def action_confirm(self, cr, uid, ids, context=None):
+        picking_authority_obj = self.pool.get('picking.authority')
+        for picking in self.browse(cr, uid, ids, context=context):
+            if picking.type == 'internal':
+                if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.coach_id and picking.indent_id.employee_id.coach_id.user_id and picking.indent_id.employee_id.coach_id.user_id.id:
+                    picking_authority_obj.create(cr, uid, {'name': picking.indent_id.employee_id.coach_id.user_id.id, 'document': 'picking', 'picking_id': picking.id, 'priority': 1}, context=context)
+                if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.user_id and picking.indent_id.employee_id.user_id.id:
+                    picking_authority_obj.create(cr, uid, {'name': picking.indent_id.employee_id.user_id.id, 'document': 'picking', 'picking_id': picking.id, 'priority': 2}, context=context)
+        return super(stock_picking, self).action_confirm(cr, uid, ids, context=context)
+
+    def check_approval(self, cr, uid, ids):
+        picking_authority_obj = self.pool.get('picking.authority')
+        for picking in self.browse(cr, uid, ids):
+            if picking.type == 'internal':
+                authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in picking.picking_authority_ids]
+                sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+                count = 0
+                for authority in sort_authorities:
+                    count += 1
+                    if authority[1] == uid:
+                        if authority[3] == 'approve':
+                            raise osv.except_osv(_("Warning !"),_('You have already approved an inward.'))
+                        write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
+                        picking_authority_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
+                        for write_id in write_ids:
+                            desc = picking_authority_obj.browse(cr, uid, write_id[0]).description
+                            description = 'Approved by higher authority - %s' %(authority[4],)
+                            if desc:
+                                description = 'Approved by higher authority - %s' %(authority[4],) + '\n' + desc
+                            picking_authority_obj.write(cr, uid, [write_id[0]], {'description': description})
+                        break
+
+        for picking in self.browse(cr, uid, ids):
+            if picking.type == 'internal':
+                authorities = [(authority.id, authority.priority, authority.state) for authority in picking.picking_authority_ids]
+                sort_authorities = sorted(authorities, key=lambda element: (element[1]))
+                for authority in sort_authorities:
+                    if authority[2] == 'approve':
+                        return True
+                    elif authority[2] == 'pending' or authority[2] == 'reject':
+                        return False
+        return True
+
+    def check_reject(self, cr, uid, ids):
+        picking_authority_obj = self.pool.get('picking.authority')
+        for picking in self.browse(cr, uid, ids):
+            if picking.type == 'internal':
+                authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in picking.picking_authority_ids]
+                sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+                count = 0
+                for authority in sort_authorities:
+                    count += 1
+                    if authority[1] == uid:
+                        if authority[3] == 'reject':
+                            raise osv.except_osv(_("Warning !"),_('You have already rejected an inward.'))
+                        write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
+                        picking_authority_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
+                        for write_id in write_ids:
+                            desc = picking_authority_obj.browse(cr, uid, write_id[0]).description
+                            description = 'Rejected by higher authority - %s' %(authority[4],)
+                            if desc:
+                                description = 'Rejected by higher authority - %s' %(authority[4],) + '\n' + desc
+                            picking_authority_obj.write(cr, uid, [write_id[0]], {'description': description})
+                        break
+
+        for picking in self.browse(cr, uid, ids):
+            if picking.type == 'internal':
+                authorities = [(authority.id, authority.priority, authority.state) for authority in picking.picking_authority_ids]
+                sort_authorities = sorted(authorities, key=lambda element: (element[1]))
+                for authority in sort_authorities:
+                    if authority[2] == 'approve' or authority[2] == 'pending':
+                        return False
+                    elif authority[2] == 'reject':
+                        return True
+        return True
+
 stock_picking()
+
+class picking_authority(osv.Model):
+    _name = 'picking.authority'
+    _description = 'Picking Authority'
+
+    def name_get(self, cr, uid, ids, context=None):
+        res = []
+        if not ids:
+            return res
+        # name_get may receive int id instead of an id list
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+
+        return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
+
+    _columns = {
+        'picking_id': fields.many2one('stock.picking', 'Picking', required=True, ondelete='cascade'),
+        'name': fields.many2one('res.users', 'Authority', required=True),
+        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
+        'priority': fields.integer('Priority'),
+        'description': fields.text('Description'),
+        'date': fields.datetime('Date'),
+        'state':fields.selection([('pending','Pending'), ('approve','Approved'), ('reject','Rejected')], 'State', required=True)
+    }
+    _defaults = {
+        'state': 'pending',
+        'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
+    }
+
+picking_authority()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'

@@ -308,53 +308,8 @@
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
                 </field>
-                <xpath expr="//button[@name='draft_force_assign']" position="before">
-                    <button name="button_approve" states="draft" string="Approved by manager" class="oe_highlight"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_force_assign']" position="replace">
-                    <button name="draft_force_assign" states="approved" string="Confirm" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_validate']" position="replace">
-                    <button name="draft_validate" states="approved" string="Confirm &amp; Transfer" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
             </field>
         </record>
-        
-        <!-- Stock Picking In Form Inherit View -->
-        <record id="view_stock_picking_in_inherit_form" model="ir.ui.view">
-            <field name="name">stock.picking.in.inherit</field>
-            <field name="model">stock.picking.in</field>
-            <field name="inherit_id" ref="stock.view_picking_in_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//button[@name='draft_force_assign']" position="before">
-                    <button name="button_approve" states="draft" string="Approved by manager" class="oe_highlight"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_force_assign']" position="replace">
-                    <button name="draft_force_assign" states="approved" string="Confirm" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_validate']" position="replace">
-                    <button name="draft_validate" states="approved" string="Confirm &amp; Transfer" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- Stock Picking Out Form Inherit View -->
-        <record id="view_stock_picking_out_inherit_form" model="ir.ui.view">
-            <field name="name">stock.picking.out.inherit</field>
-            <field name="model">stock.picking.out</field>
-            <field name="inherit_id" ref="stock.view_picking_out_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//button[@name='draft_force_assign']" position="before">
-                    <button name="button_approve" states="draft" string="Approved by manager" class="oe_highlight"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_force_assign']" position="replace">
-                    <button name="draft_force_assign" states="approved" string="Confirm" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_validate']" position="replace">
-                    <button name="draft_validate" states="approved" string="Confirm &amp; Transfer" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-            </field>
-        </record> 
 
         <!-- Purchase Order Form View -->
         <record id="view_purchase_order_form" model="ir.ui.view">

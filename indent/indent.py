@@ -635,79 +635,9 @@ class stock_picking(osv.Model):
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
-        'state': fields.selection([
-            ('draft', 'Draft'),
-            ('approved', 'Approved'),
-            ('auto', 'Waiting Another Operation'),
-            ('confirmed', 'Waiting Availability'),
-            ('assigned', 'Ready to Transfer'),
-            ('done', 'Transferred'),
-            ('cancel', 'Cancelled'),
-            ], 'Status', readonly=True, select=True, track_visibility='onchange', help="""
-            * Draft: not confirmed yet and will not be scheduled until confirmed\n
-            * Approved: waiting for manager approval to proceed further\n
-            * Waiting Another Operation: waiting for another move to proceed before it becomes automatically available (e.g. in Make-To-Order flows)\n
-            * Waiting Availability: still waiting for the availability of products\n
-            * Ready to Transfer: products reserved, simply waiting for confirmation.\n
-            * Transferred: has been processed, can't be modified or cancelled anymore\n
-            * Cancelled: has been cancelled, can't be confirmed anymore"""
-        ),
     }
-
-    def check_manager_approval(self, cr, uid, ids):
-        indent = self.browse(cr, uid, ids[0]).indent_id
-        manager = indent and indent.employee_department_id and indent.employee_department_id.manager_id and indent.employee_department_id.manager_id.user_id and indent.employee_department_id.manager_id.user_id.id or False
-        if manager and manager == uid:
-            return True
-        elif manager and manager != uid:
-            return False
-        return True
 
 stock_picking()
-
-class stock_picking_in(osv.Model):
-    _inherit = 'stock.picking.in'
-    _columns = {
-        'state': fields.selection(
-            [('draft', 'Draft'),
-            ('approved', 'Approved'),
-            ('auto', 'Waiting Another Operation'),
-            ('confirmed', 'Waiting Availability'),
-            ('assigned', 'Ready to Receive'),
-            ('done', 'Received'),
-            ('cancel', 'Cancelled'),],
-            'Status', readonly=True, select=True,
-            help="""* Draft: not confirmed yet and will not be scheduled until confirmed\n
-                 * Approved: waiting for manager approval to proceed further\n
-                 * Waiting Another Operation: waiting for another move to proceed before it becomes automatically available (e.g. in Make-To-Order flows)\n
-                 * Waiting Availability: still waiting for the availability of products\n
-                 * Ready to Receive: products reserved, simply waiting for confirmation.\n
-                 * Received: has been processed, can't be modified or cancelled anymore\n
-                 * Cancelled: has been cancelled, can't be confirmed anymore"""),
-    }
-stock_picking_in()
-
-class stock_picking_out(osv.Model):
-    _inherit = 'stock.picking.out'
-    _columns = {
-        'state': fields.selection(
-            [('draft', 'Draft'),
-            ('approved', 'Approved'),
-            ('auto', 'Waiting Another Operation'),
-            ('confirmed', 'Waiting Availability'),
-            ('assigned', 'Ready to Deliver'),
-            ('done', 'Delivered'),
-            ('cancel', 'Cancelled'),],
-            'Status', readonly=True, select=True,
-            help="""* Draft: not confirmed yet and will not be scheduled until confirmed\n
-                 * Approved: waiting for manager approval to proceed further\n
-                 * Waiting Another Operation: waiting for another move to proceed before it becomes automatically available (e.g. in Make-To-Order flows)\n
-                 * Waiting Availability: still waiting for the availability of products\n
-                 * Ready to Deliver: products reserved, simply waiting for confirmation.\n
-                 * Delivered: has been processed, can't be modified or cancelled anymore\n
-                 * Cancelled: has been cancelled, can't be confirmed anymore"""),
-    }
-stock_picking_out()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'

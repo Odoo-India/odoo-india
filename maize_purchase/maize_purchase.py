@@ -476,7 +476,7 @@ class stock_picking(osv.Model):
             'ac_code_id': fields.many2one('ac.code', 'AC Code', help="AC Code"),
             'mc_code_id': fields.related('indent_id','analytic_account_id', relation='account.analytic.account', type='many2one', string="Project"),
             'tr_code_id': fields.many2one('tr.code', 'TR Code', help="TR Code"),
-            'cylinder': fields.text('Cylinder', help="MC Code"),
+            'cylinder': fields.char('Cylinder Number', size=50),
                 }
     
     def do_partial(self, cr, uid, ids, partial_datas, context=None):

@@ -504,6 +504,6 @@
             id="menu_maize_tr_code"
             parent="maize_product.menu_maize_config" sequence="13"/>
             
-        <report id="report_issue_slip" model="stock.picking" name="stock.issue.slip" string="Issue Slip" rml="maize_purchase/report/issue_report.rml"/>
+        <report id="report_issue_slip" model="stock.picking" name="maize.stock.issue.slip" string="Issue Slip" rml="maize_purchase/report/issue_report.rml"/>
     </data>
 </openerp>

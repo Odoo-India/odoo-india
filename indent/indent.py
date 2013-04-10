@@ -256,20 +256,21 @@ class indent_indent(osv.Model):
 
     def action_receive_products(self, cr, uid, ids, context=None):
         '''
-        This function returns an action that display incoming shipment of given indent ids.
+        This function returns an action that display internal move of given indent ids.
         '''
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
         picking_id = self.browse(cr, uid, ids[0], context=context).picking_id.id
-        incoming_ship_id = self.pool.get('stock.picking.in').search(cr,uid,[('purchase_id.indent_id.id','=',ids[0])])
-        domain = [('purchase_id.indent_id.id','=',ids[0])]
-        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_in_tree')
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_form')
         result = {
             'name': _('Receive Product'),
             'view_type': 'form',
-            "view_mode": 'tree,form',
+            'view_mode': 'form',
+            'view_id': res and res[1] or False,
             'res_model': 'stock.picking.in',
-            'domain': domain,
             'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': picking_id,
         }
         return result
 

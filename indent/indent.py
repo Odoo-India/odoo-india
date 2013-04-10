@@ -55,7 +55,6 @@ class indent_indent(osv.Model):
                     if req_id.state == 'done':
                         po_done = True
                 res[record] = po_done
-                self.write(cr,uid,record,{'process_purchase_done':True})
             else:
                 res[record] = False
         return res
@@ -128,15 +127,16 @@ class indent_indent(osv.Model):
     def copy(self, cr, uid, id, default=None, context=None):
         if default is None:
             default = {}
-        default.update({
-            'name': self.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
-            'indent_date': time.strftime('%Y-%m-%d %H:%M:%S'),
-            'required_date': time.strftime('%Y-%m-%d %H:%M:%S'),
-            'product_lines': [],
-            'picking_id': False,
-            'indent_authority_ids': [],
-            'state': 'draft',
-        })
+        if context.get('default_contract') == False:
+            default.update({
+                'name': self.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
+                'indent_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'required_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'product_lines': [],
+                'picking_id': False,
+                'indent_authority_ids': [],
+                'state': 'draft',
+            })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
 
     def indent_confirm(self, cr, uid, ids, context=None):

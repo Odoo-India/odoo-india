@@ -473,6 +473,10 @@ class stock_picking(osv.Model):
     _inherit = "stock.picking"
     _columns = {
             'type': fields.selection([('out', 'Sending Goods'), ('receipt', 'Receipt'),('in', 'Getting Goods'), ('internal', 'Internal')], 'Shipping Type', required=True, select=True, help="Shipping type specify, goods coming in or going out."),
+            'ac_code_id': fields.many2one('ac.code', 'AC Code', help="AC Code"),
+            'mc_code_id': fields.related('indent_id','analytic_account_id', relation='account.analytic.account', type='many2one', string="Project"),
+            'tr_code_id': fields.many2one('tr.code', 'TR Code', help="TR Code"),
+            'cylinder': fields.text('Cylinder', help="MC Code"),
                 }
     
     def do_partial(self, cr, uid, ids, partial_datas, context=None):
@@ -626,3 +630,43 @@ class stock_move(osv.osv):
             res.update({'rate': line.price_unit,'diff': diff or 0.0, 'import_duty': import_duty or 0.0, 'amount': tax_cal-(val+diff+import_duty)})
         return {'value': res}
 stock_move()
+
+class ac_code(osv.Model):
+    _name = 'ac.code'
+    _rec_name = 'code'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.code and '[' + pckg.code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res 
+    
+    _columns = {
+        'name': fields.char('Name',size=256),
+        'code': fields.char('Code', size=64)
+        }
+ac_code()
+
+class tr_code(osv.Model):
+    _name = 'tr.code'
+    _rec_name = 'code'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.code and '[' + pckg.code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res 
+    
+    _columns = {
+        'name': fields.char('Name',size=256),
+        'code': fields.char('Code', size=64)
+        }
+tr_code()

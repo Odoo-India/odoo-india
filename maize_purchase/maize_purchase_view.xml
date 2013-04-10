@@ -355,6 +355,21 @@
         </record>
         <menuitem action="stock.action_picking_tree6" name="Issue" id="stock.menu_action_picking_tree6" parent="stock.menu_stock_warehouse_mgmt" sequence="2" groups="stock.group_locations"/>
         
+        <!--  Stock Picking form view inherit -->
+        <record id="inherit_view_stock_picking_form" model="ir.ui.view">
+            <field name="name">stock.picking.form.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="ac_code_id"/>
+                    <field name="mc_code_id"/>
+                    <field name="tr_code_id"/>
+                    <field name="cylinder"/>
+                </field>
+            </field>
+        </record>
+        
         <!--  Stock Move Search View Inherit -->
         <record id="view_stock_move_search_inherit" model="ir.ui.view">
             <field name="name">stock.move.search.inherit</field>
@@ -407,6 +422,88 @@
               </p>
             </field>
         </record>
+        
+        <!-- Ac code -->
+        <record id="ac_code_form_view" model="ir.ui.view">
+            <field name="name">ac.code.form</field>
+            <field name="model">ac.code</field>
+            <field name="arch" type="xml">
+                <form string="AC Code" version="7.0">
+                    <sheet>
+                        <group>
+                            <group col="4">
+                                <field name="code"/>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="ac_code_list_view" model="ir.ui.view">
+            <field name="name">ac.code.list</field>
+            <field name="model">ac.code</field>
+            <field name="arch" type="xml">
+                <tree string="AC Code" version="7.0">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="ac_code_form_action" model="ir.actions.act_window">
+            <field name="name">AC Code</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ac.code</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="ac_code_list_view"/>
+        </record>
+        
+        <menuitem action="ac_code_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_ac_code"
+            parent="maize_product.menu_maize_config" sequence="10"/>
+        <!--TR code -->
+        <record id="tr_code_form_view" model="ir.ui.view">
+            <field name="name">tr.code.form</field>
+            <field name="model">tr.code</field>
+            <field name="arch" type="xml">
+                <form string="TR Code" version="7.0">
+                    <sheet>
+                        <group>
+                            <group col="4">
+                                <field name="code"/>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="tr_code_list_view" model="ir.ui.view">
+            <field name="name">tr.code.list</field>
+            <field name="model">tr.code</field>
+            <field name="arch" type="xml">
+                <tree string="TR Code" version="7.0">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="tr_code_form_action" model="ir.actions.act_window">
+            <field name="name">TR Code</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tr.code</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="tr_code_list_view"/>
+        </record>
+    
+        <menuitem action="tr_code_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_tr_code"
+            parent="maize_product.menu_maize_config" sequence="13"/>
+            
         <report id="report_issue_slip" model="stock.picking" name="stock.issue.slip" string="Issue Slip" rml="maize_purchase/report/issue_report.rml"/>
     </data>
 </openerp>

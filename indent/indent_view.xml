@@ -308,6 +308,7 @@
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
                 </field>
+                <xpath expr="//button[@name='draft_validate']" position="replace"/>
                 <xpath expr="//notebook/page[@string='Additional Info']" position="after">
                     <page string="Status">
                         <field name="picking_authority_ids" readonly="1">

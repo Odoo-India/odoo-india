@@ -658,8 +658,6 @@ class stock_picking(osv.Model):
                 for authority in sort_authorities:
                     count += 1
                     if authority[1] == uid:
-                        if authority[3] == 'approve':
-                            raise osv.except_osv(_("Warning !"),_('You have already approved an inward.'))
                         write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                         picking_authority_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
                         for write_id in write_ids:
@@ -691,8 +689,6 @@ class stock_picking(osv.Model):
                 for authority in sort_authorities:
                     count += 1
                     if authority[1] == uid:
-                        if authority[3] == 'reject':
-                            raise osv.except_osv(_("Warning !"),_('You have already rejected an inward.'))
                         write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                         picking_authority_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
                         for write_id in write_ids:

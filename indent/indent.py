@@ -459,6 +459,12 @@ class indent_product_lines(osv.Model):
     _name = 'indent.product.lines'
     _description = 'Indent Product Lines'
 
+    def _amount_subtotal(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        for line in self.browse(cr, uid, ids, context=context):
+            result[line.id] = (line.product_uom_qty * line.price_unit)
+        return result
+
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
         'name': fields.text('Description', required=True),
@@ -469,10 +475,20 @@ class indent_product_lines(osv.Model):
         'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
         'product_uos_qty': fields.float('Quantity (UoS)' ,digits_compute= dp.get_precision('Product UoS')),
         'product_uos': fields.many2one('product.uom', 'Product UoS'),
+        'price_unit': fields.float('Unit Price', required=True, digits_compute= dp.get_precision('Product Price')),
+        'price_subtotal': fields.function(_amount_subtotal, string='Subtotal', digits_compute= dp.get_precision('Account'), store=True),
         'qty_available': fields.float('Stock'),
         'virtual_available': fields.float('Forecasted Qty'),
         'name': fields.text('Purpose', required=True),
         'specification': fields.text('Item Specification'),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
+        'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor No', store=True, readonly=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', string='Indent Date', store=True, readonly=True),
+        'department_id': fields.related('indent_id', 'department_id', type='many2one', relation='stock.location', string='Department', store=True, readonly=True),
+        'item_for': fields.related('indent_id', 'item_for', type='selection', selection=[('store','Store'),('capital','Capital')], string='Indent Type', store=True, readonly=True),
+        'requirement': fields.related('indent_id', 'requirement', type='selection', selection=[('ordinary','Ordinary'), ('urgent','Urgent')], string='Req Code', store=True, readonly=True),
+        'required_date': fields.related('indent_id', 'required_date', type='datetime', string='Req Date', store=True, readonly=True),
+        'product_code': fields.related('product_id', 'default_code', type='char', string='Product Code', store=True, readonly=True),
     }
 
     def _get_uom_id(self, cr, uid, *args):
@@ -547,6 +563,7 @@ class indent_product_lines(osv.Model):
 
         result['qty_available'] = product_obj.qty_available
         result['virtual_available'] = product_obj.virtual_available
+        result['price_unit'] = product_obj.list_price
         if warning_msgs:
             warning = {
                        'title': _('Configuration Error!'), 'message' : warning_msgs

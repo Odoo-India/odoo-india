@@ -119,6 +119,7 @@
                                                     <field name="product_uos_qty" class="oe_inline"/>
                                                     <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
                                                 </div>
+                                                 <field name="price_unit"/>
                                             </group>
                                             <group>
                                                 <field name="type"/>
@@ -145,6 +146,8 @@
                                         <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
                                         <field name="name"/>
                                         <field name="specification"/>
+                                        <field name="price_unit"/>
+                                        <field name="price_subtotal"/>
                                     </tree>
                                 </field>
                             </page>
@@ -241,6 +244,47 @@
         <menuitem action="action_indent_indent" name="Indents" parent="menu_indent_indent_main" id="menu_indent_indent" sequence="1"/>
         <menuitem id="stock.menu_stock_warehouse_mgmt" name="Receive/Deliver By Orders" parent="stock.menu_stock_root" sequence="2"/>
         <menuitem id="stock.menu_stock_products_moves" name="Receive/Deliver Products" parent="stock.menu_stock_root" sequence="3"/>
+
+        <!-- Indent Analysis Tree View -->
+        <record id='view_indent_product_line_tree' model='ir.ui.view'>
+            <field name="name">indent.product.lines.tree</field>
+            <field name="model">indent.product.lines</field>
+            <field name="arch" type="xml">
+                <tree string="Indent Analysis" create="false" delete="false">
+                    <field name="indentor_code"/>
+                    <field name="indentor_id"/>
+                    <field name="indent_id" string="Indent No"/>
+                    <field name="indent_date"/>
+                    <field name="department_id"/>
+                    <field name="item_for"/>
+                    <field name="requirement"/>
+                    <field name="required_date"/>
+                    <field name="product_code"/>
+                    <field name="product_id"/>
+                    <field name="product_uom_qty"/>
+                    <field name="product_uom"/>
+                    <field name="name" string="Purpose"/>
+                    <field name="price_unit" string="Rate"/>
+                    <field name="price_subtotal" string="Value"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Indent Analysis Action -->
+        <record id='action_indent_product_line' model='ir.actions.act_window'>
+            <field name="name">Indent Analysis</field>
+            <field name="res_model">indent.product.lines</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new indent.
+                </p>
+            </field>
+        </record>
+
+        <!-- Indent Analysis Menu -->
+        <menuitem action="action_indent_product_line" id="menu_indent_product_line_report" parent="stock.next_id_61" sequence="5"/>
 
         <!-- Document Authority Form View -->
         <record id="view_document_authority_form" model="ir.ui.view">

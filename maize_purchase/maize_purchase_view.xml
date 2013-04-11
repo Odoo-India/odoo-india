@@ -568,6 +568,7 @@
         <report id="report_issue_slip" model="stock.picking" name="maize.stock.issue.slip" string="Issue Slip" rml="maize_purchase/report/issue_report.rml"/>
         
         <!-- Purchase Order Tree View -->
+        <!--
         <record id="purchase.purchase_order_tree" model="ir.ui.view">
             <field name="name">purchase.order.tree</field>
             <field name="model">purchase.order</field>
@@ -590,8 +591,9 @@
                 </tree>
             </field>
         </record>
-
+-->
         <!-- Purchase Order Search View -->
+        <!--
         <record id="purchase.view_purchase_order_filter" model="ir.ui.view">
             <field name="name">purchase.order.list.select</field>
             <field name="model">purchase.order</field>
@@ -622,6 +624,6 @@
                 </search>
             </field>
         </record>
-
+-->
     </data>
 </openerp>

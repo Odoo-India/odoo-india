@@ -194,6 +194,7 @@
                     <field name="shipment_done" invisible="1"/>
                     <field name="purchase_count" invisible="1"/>
                     <field name="requisition_done" invisible="1"/>
+                    <field name="amount_total"/>
                     <field name="state"/>
                 </tree>
             </field>

@@ -222,8 +222,8 @@
                         <filter string="Project" context="{'group_by': 'analytic_account_id'}"/>
                         <filter string="Requirement" context="{'group_by': 'requirement'}"/>
                         <filter string="Indent Type" context="{'group_by': 'type'}"/>
-                        <filter string="Status" context="{'group_by': 'state'}"/>
                         <filter string="Date" context="{'group_by': 'indent_date'}"/>
+                        <filter string="Status" context="{'group_by': 'state'}"/>
                     </group>
                 </search>
             </field>

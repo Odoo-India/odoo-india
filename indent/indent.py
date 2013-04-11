@@ -72,6 +72,15 @@ class indent_indent(osv.Model):
             res[record] = shipped
         return res
 
+    def _total_amount(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        for indent in self.browse(cr, uid, ids, context=context):
+            total = 0.0
+            for line in indent.product_lines:
+                total += line.price_subtotal
+            result[indent.id] = total
+        return result
+
     _columns = {
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always',),
         'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
@@ -93,6 +102,7 @@ class indent_indent(osv.Model):
         'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
         'active': fields.boolean('Active'),
         'item_for': fields.selection([('store','Store'),('capital','Capital')],'Item For'),
+        'amount_total': fields.function(_total_amount, type="float", string='Total', store=True),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 

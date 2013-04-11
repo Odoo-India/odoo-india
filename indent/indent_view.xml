@@ -150,6 +150,9 @@
                                         <field name="price_subtotal"/>
                                     </tree>
                                 </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total"/>
+                                </group>
                             </page>
                             <page string="Status">
                                 <field name="indent_authority_ids" readonly="1">

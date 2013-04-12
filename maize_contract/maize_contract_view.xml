@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        
+        <record id="inherit_indetn_form_view" model="ir.ui.view">
+            <field name="name">inherit.indent.indent.form</field>
+            <field name="model">indent.indent</field>
+            <field name="inherit_id" ref="indent.view_indent_indent_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position='after'>
+                    <field name="contract" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='required_date']" position='before'>
+                    <field name="contract_series_id" attrs="{'invisible': [('contract', '=', False)]}"/>
+                </xpath>
+                <xpath expr="//label[@for='name']" position='replace'>
+                    <!-- <label string="Contract" attrs="{'invisible': [('contract', '=', False)]}" class="oe_edit_only"/> -->
+                    <!-- <label string="Indent" attrs="{'invisible': [('contract', '=', True)]}" class="oe_edit_only"/> -->
+                </xpath>
+                <xpath expr="//field[@name='required_date']" position='replace'>
+                    <field name="required_date" attrs="{'invisible': [('contract', '=', True)]}"/>
+                </xpath>
+                <xpath expr="//div[@name='buttons']/button[@string='Inward']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('purchase_count', '=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//div[@name='buttons']/button[@string='Issue Reciept(s)']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('purchase_count', '=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='analytic_account_id']" position='after'>
+                    <field name="indent_section_id"/>
+                </xpath>
+                <xpath expr="//field[@name='company_id']" position='after'>
+                    <field name="indent_equipment_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id='view_contract_indent_tree' model='ir.ui.view'>
+            <field name="name">contract.contract.tree</field>
+            <field name="model">indent.indent</field>
+            <field name="arch" type="xml">
+                <tree string="Indents" colors="gray:state=='received';red:shipment_done==True;green:purchase_count==True;">
+                    <field name="name" string="Contract #"/>
+                    <field name="indentor_id"/>
+                    <field name="indent_date"/>
+                    <field name="required_date"/>
+                    <field name="department_id"/>
+                    <field name="analytic_account_id"/>
+                    <field name="requirement"/>
+                    <field name="type"/>
+                    <field name="shipment_done" invisible="1"/>
+                    <field name="purchase_count" invisible="1"/>
+                    <field name="requisition_done" invisible="1"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="view_contract_search" model="ir.ui.view">
+            <field name="name">contract.search</field>
+            <field name="model">indent.indent</field>
+            <field name="inherit_id" ref="indent.view_indent_indent_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position='after'>
+                	<filter string="Indent" name="indent_indent" domain="[('contract','=', False)]"/>
+                    <filter string="Contract" name="contract_contract" domain="[('contract','=', True)]"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id='action_contract_view' model='ir.actions.act_window'>
+            <field name="name">Contracts</field>
+            <field name="domain">[('contract', '=', True)]</field>
+            <field name="context">{'default_contract': True}</field>
+            <field name="res_model">indent.indent</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_contract_search"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new Contract.
+                </p>
+            </field>
+        </record>
+        
+        <record id="action_contract_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_contract_indent_tree"/>
+            <field name="act_window_id" ref="action_contract_view"/>
+        </record>
+        
+        <record id="action_contract_form_view1" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="inherit_indetn_form_view"/>
+            <field name="act_window_id" ref="action_contract_view"/>
+        </record>
+        <!-- override search view for add default search -->
+        <record id='indent.action_indent_indent' model='ir.actions.act_window'>
+            <field name="name">Indents</field>
+            <field name="res_model">indent.indent</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('contract', '=', False)]</field>
+            <field name="context">{'default_contract': False}</field>
+            <field name="view_id" ref="indent.view_indent_indent_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new indent.
+                </p>
+            </field>
+        </record>
+        
+        <record id="action_indent_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="indent.view_indent_indent_tree"/>
+            <field name="act_window_id" ref="indent.action_indent_indent"/>
+        </record>
+        
+        <record id="action_indent_form_view1" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="indent.view_indent_indent_form"/>
+            <field name="act_window_id" ref="indent.action_indent_indent"/>
+        </record>
+        
+        <menuitem action="action_contract_view" name="Contracts" parent="indent.menu_indent_indent_main" id="menu_contract_main" sequence="2"/>
+    
+        <!-- Purchase Order Form View -->
+        <record id="view_contract_purchase_order_form" model="ir.ui.view">
+            <field name="name">contract.purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="before">
+                    <group attrs="{'invisible': [('contract', '=', False)]}" col="6"  string="Number Of Days For Contract">
+                        <group>
+                            <field name="date_from" on_change="onchange_compute_days1(date_from, date_to,no_of_days2,no_of_days3)"/>
+                            <field name="extended_date_from1" on_change="onchange_compute_days2(extended_date_from1, extended_date_to1, no_of_days1,no_of_days3)"/>
+                            <field name="extended_date_from2" on_change="onchange_compute_days3(extended_date_from2, extended_date_to2, no_of_days1,no_of_days2)"/>
+                        </group>
+                        <group>
+                            <field name="date_to" on_change="onchange_compute_days1(date_from, date_to,no_of_days2,no_of_days3)"/>
+                            <field name="extended_date_to1" on_change="onchange_compute_days2(extended_date_from1, extended_date_to1, no_of_days1,no_of_days3)"/>
+                            <field name="extended_date_to2" on_change="onchange_compute_days3(extended_date_from2, extended_date_to2, no_of_days1,no_of_days2)"/>
+                        </group>
+                        <group>
+                            <field name="contract" invisible="1"/>
+                            <field name="no_of_days1"/>
+                            <field name="no_of_days2"/>
+                            <field name="no_of_days3"/>
+                            <field name="total_days"/>
+                        </group>
+                    </group>
+                    <group string="Retention" attrs="{'invisible': [('contract', '=', False)]}">
+                        <group>
+                            <field name="retention"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        
+        <!--  Inherit for remove incoming shipments button from PO -->
+        <record id="view_inherit_purchase_order_2_stock_picking" model="ir.ui.view">
+            <field name="name">inherit.purchase.order.2.stock.picking</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_2_stock_picking"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='buttons']/button[@string='Incoming Shipments']" position="replace">
+                    <button type="object"
+                            name="view_picking"
+                            string="Incoming Shipments" attrs="{'invisible': ['|',('contract', '=', True),('state', '!=', 'approved')]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

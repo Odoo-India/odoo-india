@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <!-- Gate Pass Form View -->
+        <record id='view_gate_pass_form' model='ir.ui.view'>
+            <field name="name">gate.pass.form</field>
+            <field name="model">gate.pass</field>
+            <field name="arch" type="xml">
+                <form string="Gate Pass" version="7.0">
+                    <header>
+                        <button name="gate_pass_pending" string="Validate" states="confirm" class="oe_highlight"/>
+                        <button name="process_incoming_shipment" string="Receive Product(s)" states="pending" class="oe_highlight" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="confirm,pending,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <label for="name" class="oe_edit_only"/>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="gate_pass_no"/>
+                                <field name="partner_id"/>
+                                <field name="series"/>
+                                <field name="company_id"/>
+                            </group>
+                            <group>
+                                <field name="date"/>
+                                <field name="department_id"/>
+                                <field name="gate_pass_type"/>
+                                <field name="return_type"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="gate_pass_lines">
+                                    <form string="Products" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field name="product_id" on_change="onchange_product_id(product_id)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field name="product_uom_qty" class="oe_inline"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button" invisible="1"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="pen_qty"/>
+                                                <field name="gps_qty"/>
+                                                <field name="app_rate"/>
+                                                <field name="app_value"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                    </form>
+                                    <tree string="Products">
+                                        <field name="product_id" on_change="onchange_product_id(product_id)"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="product_uom" string="Unit" groups="product.group_uom" options='{"no_open": True}' invisible="1"/>
+                                        <field name="pen_qty"/>
+                                        <field name="gps_qty"/>
+                                        <field name="app_rate"/>
+                                        <field name="app_value"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total"/>
+                                </group>
+                                <div class="oe_clear">
+                                    <label for="description"/>
+                                </div>
+                                <field name="description" class="oe_inline"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Gate Pass Tree View -->
+        <record id='view_gate_pass_tree' model='ir.ui.view'>
+            <field name="name">gate.pass.tree</field>
+            <field name="model">gate.pass</field>
+            <field name="arch" type="xml">
+                <tree string="Gate Passes">
+                    <field name="gate_pass_no"/>
+                    <field name="partner_id"/>
+                    <field name="series"/>
+                    <field name="gate_pass_type"/>
+                    <field name="date"/>
+                    <field name="department_id"/>
+                    <field name="return_type"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Gate Pass Search View -->
+        <record id="view_gate_pass_search" model="ir.ui.view">
+            <field name="name">gate.pass.search</field>
+            <field name="model">gate.pass</field>
+            <field name="arch" type="xml">
+                <search string="Gate Passes">
+                    <field name="name" filter_domain="['|', ('name', 'ilike', self), ('gate_pass_no', 'ilike', self)]" string="Gate Pass"/>
+                    <field name="date"/>
+                    <filter string="Confirm" name="state_confirm" domain="[('state','=','confirm')]"/>
+                    <filter string="Pending" name="state_pending" domain="[('state','=','pending')]"/>
+                    <filter string="Done" name="state_done" domain="[('state','=','done')]"/>
+                    <field name="series"/>
+                    <field name="gate_pass_type"/>
+                    <field name="partner_id"/>
+                    <field name="department_id"/>
+                    <field name="return_type"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Series" context="{'group_by': 'series'}"/>
+                        <filter string="Type" context="{'group_by': 'gate_pass_type'}"/>
+                        <filter string="Supplier" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Department" context="{'group_by': 'department_id'}"/>
+                        <filter string="Return Type" context="{'group_by': 'return_type'}"/>
+                        <filter string="Date" context="{'group_by': 'date'}"/>
+                        <filter string="Status" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Gate Pass Action -->
+        <record id='action_gate_pass' model='ir.actions.act_window'>
+            <field name="name">Gate Passes</field>
+            <field name="res_model">gate.pass</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new gate pass.
+                </p>
+            </field>
+        </record>
+
+        <!-- Gate Pass Menu -->
+        <menuitem name="Gate Passes" parent="stock.menu_stock_root" id="menu_gate_pass_main" sequence="1"/>
+        <menuitem action="action_gate_pass" name="Gate Passes" parent="menu_gate_pass_main" id="menu_gate_pass" sequence="1"/>
+
+        <!-- Stock Picking Out Gate Pass Form View -->
+        <record id="view_stock_picking_out_gate_pass_form" model="ir.ui.view">
+            <field name="name">stock.picking.out.gate.pass.form</field>
+            <field name="model">stock.picking.out</field>
+            <field name="inherit_id" ref="stock.view_picking_out_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/h1" position="after">
+                    <div class="oe_right oe_inline" name="buttons">
+                        <button name="open_gate_pass" string="Gate Pass" type="object"/>
+                    </div>
+                </xpath>
+                <xpath expr="//group" position="after">
+                    <group string="Gate Pass">
+                        <group>
+                            <field name="series"/>
+                            <field name="gate_pass_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="gate_pass_type"/>
+                            <field name="indent_id" attrs="{'invisible': [('gate_pass_type', '!=', 'chargeable')]}" domain="[('contract', '=', False)]"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

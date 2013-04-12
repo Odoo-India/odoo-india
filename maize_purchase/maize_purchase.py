@@ -19,12 +19,55 @@
 #
 ##############################################################################
 
-import datetime
+import time
+from datetime import datetime
 from openerp.osv import fields, osv
 from openerp import netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.osv.orm import browse_record, browse_null
+from lxml import etree
+
+class stock_picking_in(osv.osv):
+    _inherit = "stock.picking.in"
+    _columns = {
+        'lr_no': fields.char("LR No",size=64),
+        'lr_date': fields.date("LR Date"),
+        'transporter':fields.char("Transporter",size=256),
+        'hpressure':fields.integer("HPressure"),
+        'dest_from': fields.char("Destination From",size=64),
+        'dest_to': fields.char("Destination To",size=64),
+        'lab_no':fields.integer("Lab No"),
+        'gp_no': fields.integer("Gate Pass No"),
+        'gp_year': fields.char("GP Year",size=64),
+        'series_id': fields.many2one("product.order.series",'Series'),
+        'remark1': fields.char("Remark1",size=256),
+        'remark2': fields.char("remark2",size=256),
+        'case_code': fields.boolean("Cash Code"),
+        'challan_no': fields.char("Challan Number",size=256),
+        'despatch_mode': fields.selection([('person','By Person'),
+                                           ('scooter','By Scooter'),
+                                           ('tanker','By Tanker'),
+                                           ('truck','By Truck'),
+                                           ('auto_rickshaw','By Auto Rickshaw'),
+                                           ('loading_rickshaw','By Loading Rickshaw'),
+                                           ('tempo','By Tempo'),
+                                           ('metador','By Metador'),
+                                           ('rickshaw_tempo','By Rickshaw Tempo'),
+                                           ('cart','By Cart'),
+                                           ('cycle','By Cycle'),
+                                           ('pedal_rickshaw','By Pedal Rickshaw'),
+                                           ('car','By Car'),
+                                           ('post_parcel','By Post Parcel'),
+                                           ('courier','By Courier'),
+                                           ('tractor','By Tractor'),
+                                           ('hand_cart','By Hand Cart'),
+                                           ('camel_cart','By Camel Cart'),
+                                           ('others','Others'),],"Despatch Mode"),
+        'other_dispatch': fields.char("Other Dispatch",size=256),
+            
+    }
+stock_picking_in()
 
 class purchase_order_line(osv.Model):
     _inherit = 'purchase.order.line'
@@ -34,7 +77,7 @@ class purchase_order_line(osv.Model):
         cur_obj=self.pool.get('res.currency')
         tax_obj = self.pool.get('account.tax')
         for line in self.browse(cr, uid, ids, context=context):
-            res[line.id] -= line.discount
+            res[line.id] -= (res[line.id] * line.discount) / 100
             taxes = tax_obj.compute_all(cr, uid, line.taxes_id, res[line.id], 1, line.product_id, line.order_id.partner_id)
             cur = line.order_id.pricelist_id.currency_id
             res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
@@ -43,6 +86,8 @@ class purchase_order_line(osv.Model):
     _columns = {
         'discount': fields.float('Discount'),
         'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
+        'person': fields.integer('Person',help="Number of Person work for this task"),
+        'contract': fields.related('order_id', 'contract', type='boolean', relation='purchase.order', string='Contract', store=True, readonly=True),
                 }
 purchase_order_line()
 class purchase_requisition(osv.osv):
@@ -148,12 +193,12 @@ class purchase_order(osv.Model):
         return result.keys()
     
     _columns = {
-        'package_and_forwording': fields.float('Packing & Forwarding'),
-        'insurance': fields.float('Insurance'),
-        'commission': fields.float('Commission'),
-        'other_discount': fields.float('Other Discount'),
-        'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
-        'po_series_id': fields.many2one('product.order.series', 'PO Series'),
+        'package_and_forwording': fields.float('Packing & Forwarding', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'insurance': fields.float('Insurance',  states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'commission': fields.float('Commission', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'other_discount': fields.float('Other Discount', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'po_series_id': fields.many2one('product.order.series', 'PO Series', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
                 'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
@@ -173,18 +218,31 @@ class purchase_order(osv.Model):
             store={
                 'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
                 'purchase.order.line': (_get_order, None, 10),
-            }, multi="sums",help="The other charge"),
-        'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise'),
-        'vat_ids': fields.many2many('account.tax', 'purchase_order_vat', 'vat_id', 'tax_id', 'VAT'),
-        'freight': fields.float('Freight'),
-        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True),
-        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True),
+            }, multi="sums",help="Other Charges(computed as Packing & Forwarding - (Commission + Other Discount))"),
+        'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'vat_ids': fields.many2many('account.tax', 'purchase_order_vat', 'vat_id', 'tax_id', 'VAT', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'freight': fields.float('Freight', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Type', required=True, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'payment_term_id': fields.many2one('account.payment.term', 'Payment Term', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'service_ids': fields.many2many('account.tax', 'purchase_order_service', 'service_id', 'tax_id', 'Service Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'voucher_id': fields.many2one('account.voucher', 'Payment', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'contract_id': fields.related('indent_id', 'contract_series_id', relation="contract.series", type="many2one", help="Contract Series",store=True),
+        'supplier_code': fields.related('partner_id', 'supp_code', type='char', string='Supplier Code', store=True, readonly=True),
+        'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor Code', store=True, readonly=True),
     }
 
     _defaults = {
         'insurance_type': 'fix',
         'freight_type': 'fix'
      }
+    
+    def search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False):
+        if order is None:
+            self._order = 'amount_total'
+        else:
+            self._order = 'name DESC'
+        return super(purchase_order, self).search(cr, user, args, offset, limit, order, context, count)
     
 #    def create(self, cr, uid, vals, context=None):
 #        series_obj = self.pool.get('product.order.series')
@@ -211,6 +269,7 @@ class purchase_order(osv.Model):
         for order in self.browse(cr, uid, ids, context=context):
             excies_ids = [excies_id.id for excies_id in order.excies_ids]
             vat_ids = [vat_id.id for vat_id in order.vat_ids]
+            service_ids = [service_id.id for service_id in order.service_ids]
             if ('excies_ids' in vals) and ('vat_ids' in vals):
                 excies_ids = vals.get('excies_ids') and vals.get('excies_ids')[0][2] or []
                 vat_ids = vals.get('vat_ids') and vals.get('vat_ids')[0][2] or []
@@ -220,8 +279,10 @@ class purchase_order(osv.Model):
             if 'vat_ids' in vals and 'excies_ids' not in vals:
                 excies_ids = [excies_id.id for excies_id in order.excies_ids]
                 vat_ids = vals.get('vat_ids') and vals.get('vat_ids')[0][2] or []
+            if 'service_ids' in vals:
+                vat_ids = vals.get('service_ids') and vals.get('service_ids')[0][2] or []
             for line in order.order_line:
-                line_obj.write(cr, uid, [line.id], {'taxes_id': [(6, 0, excies_ids + vat_ids)]}, context=context)
+                line_obj.write(cr, uid, [line.id], {'taxes_id': [(6, 0, excies_ids + vat_ids+ service_ids)]}, context=context)
         return super(purchase_order, self).write(cr, uid, ids, vals, context=context)
 
     def onchange_reset(self, cr, uid, ids, insurance_type, freight_type):
@@ -243,6 +304,8 @@ class purchase_order(osv.Model):
     def wkf_confirm_order(self, cr, uid, ids, context=None):
         res = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)
         proc_obj = self.pool.get('procurement.order')
+        payment_term_obj = self.pool.get('account.payment.term')
+        voucher_obj = self.pool.get('account.voucher')
         for po in self.browse(cr, uid, ids, context=context):
             if not po.po_series_id:
                 raise osv.except_osv(_("Warning !"),_('You cannot confirm a purchase order without any purchase order series.'))
@@ -257,12 +320,12 @@ class purchase_order(osv.Model):
                     
                     for line in order.order_line:
                         today = order.date_order
-                        year = datetime.datetime.today().year
-                        month = datetime.datetime.today().month
+                        year = datetime.today().year
+                        month = datetime.today().month
                         if month<4:
-                            po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
+                            po_year=str(datetime.today().year-1)+'-'+str(datetime.today().year)
                         else:
-                            po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
+                            po_year=str(datetime.today().year)+'-'+str(datetime.today().year+1)
                         self.pool.get('product.product').write(cr,uid,line.product_id.id,{
                                                                                               'last_supplier_rate': line.price_unit,
                                                                                               'last_po_no':order.id,
@@ -272,8 +335,45 @@ class purchase_order(osv.Model):
                                                                                               'last_po_year':po_year
                                                                                           },context=context)
                 po.requisition_id.tender_done(context=context)
+            totlines = []
+            total_amt = 0.0
+            flag = False
+            if po.payment_term_id:
+                totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_total, po.date_order or False, context=context)
+            journal_id = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)[0]
+            journal = self.pool.get('account.journal').browse(cr, uid, journal_id, context=context)
+            account_id = journal.default_credit_account_id or journal.default_debit_account_id
+            for line in totlines:
+                today = fields.date.context_today(self, cr, uid, context=context)
+                if line[0] == today:
+                    total_amt += line[1]
+                    flag = True
+            if flag:
+                note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, po.name or '', po.indent_id.name or '',)
+                voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
+                self.write(cr, uid, [po.id], {'voucher_id': voucher_id}, context=context)
         return res
-    
+
+    def open_advance_payment(self, cr, uid, ids, context=None):
+        '''
+        This function returns an action that display advance payment of given purchase order ids.
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time'
+        voucher_id = self.browse(cr, uid, ids[0], context=context).voucher_id.id
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'account_voucher', 'view_vendor_payment_form')
+        result = {
+            'name': _('Advance Payment'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': res and res[1] or False,
+            'res_model': 'account.voucher',
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': voucher_id,
+        }
+        return result
+
     def do_merge(self, cr, uid, ids, context=None):
         """ Copy the original do_merge method for set po_series_id field for new Purchase Order
         """
@@ -371,3 +471,205 @@ class purchase_order(osv.Model):
         return orders_info
     
 purchase_order()
+
+class stock_picking(osv.Model):
+    _inherit = "stock.picking"
+    _columns = {
+            'type': fields.selection([('out', 'Sending Goods'), ('receipt', 'Receipt'),('in', 'Getting Goods'), ('internal', 'Internal')], 'Shipping Type', required=True, select=True, help="Shipping type specify, goods coming in or going out."),
+            'ac_code_id': fields.many2one('ac.code', 'AC Code', help="AC Code"),
+            'mc_code_id': fields.related('indent_id','analytic_account_id', relation='account.analytic.account', type='many2one', string="Project"),
+            'tr_code_id': fields.many2one('tr.code', 'TR Code', help="TR Code"),
+            'cylinder': fields.char('Cylinder Number', size=50),
+                }
+    
+    def do_partial(self, cr, uid, ids, partial_datas, context=None):
+        receipt_obj = self.pool.get('stock.picking.receipt')
+        stock_move = self.pool.get('stock.move')
+        res = super(stock_picking,self).do_partial(cr, uid, ids, partial_datas, context=context)
+        if context.get('default_type') == 'in':
+            move_line = []
+            for pick in self.browse(cr, uid, ids, context=context):
+                for move in pick.move_lines:
+                    partial_data = partial_datas.get('move%s'%(move.id), {})
+                    dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0, move.purchase_line_id and (move.purchase_line_id.price_unit * partial_data.get('product_qty',0.0)) or 0, context)
+                    move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                vals = {'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
+                        'partner_id': pick.partner_id.id,
+                        'stock_journal_id': pick.stock_journal_id or False,
+                        'origin': pick.origin or False,
+                        'type': 'receipt',
+                        'inward_id': pick.id or False,
+                        'inward_date': datetime.today().strftime('%m-%d-%Y'),
+                        'purchase_id': pick.purchase_id.id or False,
+                        'move_lines': [(6,0, move_line)]
+                        }
+            receipt_id = receipt_obj.create(cr, uid, vals, context=context)
+        return res
+stock_picking()
+
+class stock_picking_receipt(osv.Model):
+    _name = "stock.picking.receipt"
+    _inherit = "stock.picking"
+    _table = "stock_picking"
+    _description = "Receipt"
+
+    def check_access_rights(self, cr, uid, operation, raise_exception=True):
+        #override in order to redirect the check of acces rights on the stock.picking object
+        return self.pool.get('stock.picking').check_access_rights(cr, uid, operation, raise_exception=raise_exception)
+
+    def check_access_rule(self, cr, uid, ids, operation, context=None):
+        #override in order to redirect the check of acces rules on the stock.picking object
+        return self.pool.get('stock.picking').check_access_rule(cr, uid, ids, operation, context=context)
+
+    def _workflow_trigger(self, cr, uid, ids, trigger, context=None):
+        #override in order to trigger the workflow of stock.picking at the end of create, write and unlink operation
+        #instead of it's own workflow (which is not existing)
+        return self.pool.get('stock.picking')._workflow_trigger(cr, uid, ids, trigger, context=context)
+
+    def _workflow_signal(self, cr, uid, ids, signal, context=None):
+        #override in order to fire the workflow signal on given stock.picking workflow instance
+        #instead of it's own workflow (which is not existing)
+        return self.pool.get('stock.picking')._workflow_signal(cr, uid, ids, signal, context=context)
+    
+    _columns = {
+        'purchase_id': fields.many2one('purchase.order', 'Purchase Order',ondelete='set null', select=True),
+        'inward_id': fields.many2one('stock.picking.in', 'Inward',ondelete='set null'),
+        'inward_date': fields.date('Inward Date'),
+        'challan_no': fields.integer('Challan Number'),
+        'tr_code': fields.integer('TR Code'),
+        'excisable_item': fields.boolean('Excisable Item'),
+        'gp_received': fields.boolean('GP Received'),
+        'gp_date': fields.date('GP Received Date'),
+        'state': fields.selection(
+            [('draft', 'Draft'),
+            ('approved', 'Approved'), 
+            ('auto', 'Waiting Another Operation'),
+            ('confirmed', 'Waiting Availability'),
+            ('assigned', 'Ready to Receive'),
+            ('done', 'Received'),
+            ('cancel', 'Cancelled'),],
+            'Status', readonly=True, select=True,
+            help="""* Draft: not confirmed yet and will not be scheduled until confirmed\n
+                 * Approved: waiting for manager approval to proceed further\n
+                 * Waiting Another Operation: waiting for another move to proceed before it becomes automatically available (e.g. in Make-To-Order flows)\n
+                 * Waiting Availability: still waiting for the availability of products\n
+                 * Ready to Receive: products reserved, simply waiting for confirmation.\n
+                 * Received: has been processed, can't be modified or cancelled anymore\n
+                 * Cancelled: has been cancelled, can't be confirmed anymore"""),
+        'party_id': fields.many2one('res.partner', 'Party Name'),
+    }
+    _defaults = {
+        'type': 'receipt',
+    }
+
+stock_picking_receipt()
+#----------------------------------------------------------
+# Stock Location
+#----------------------------------------------------------
+class stock_location(osv.osv):
+    _inherit = "stock.location"
+    _columns = {
+            'chained_picking_type': fields.selection([('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'Receipt')], 'Shipping Type', help="Shipping Type of the Picking List that will contain the chained move (leave empty to automatically detect the type based on the source and destination locations)."),
+                }
+stock_location()
+
+class stock_move(osv.osv):
+    _inherit = "stock.move"
+    _columns = {
+            'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type'),
+            'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
+            'diff': fields.float('Diff.', digits_compute= dp.get_precision('Account'), help="Amount to be add or less"),
+            'amount': fields.float('Amount.', digits_compute= dp.get_precision('Account'), help="Total Amount"),
+            'bill_no': fields.integer('Bill No'),
+            'bill_date': fields.date('Bill Date'),
+            'excies': fields.float('Excies.', digits_compute= dp.get_precision('Account')),
+            'cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
+            'high_cess': fields.float('High cess.', digits_compute= dp.get_precision('Account')),
+            'import_duty': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
+            'cenvat': fields.float('CentVAT.', digits_compute= dp.get_precision('Account')),
+            'c_cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
+            'c_high_cess': fields.float('High Cess.', digits_compute= dp.get_precision('Account')),
+            'tax_cal': fields.float('Tax Cal', digits_compute= dp.get_precision('Account')),
+            'supplier_id': fields.related('picking_id', 'purchase_id', 'partner_id', type='many2one', relation='res.partner', string="Supplier", store=True),
+            'po_name': fields.related('picking_id', 'purchase_id','name', type="char", size=64, relation='puchase.order', string="PO Number", store=True),
+            'payment_id': fields.related('picking_id', 'purchase_id', 'payment_term_id','name', type="char", size=64, relation='account.payment.term',string="Payment", store=True),
+            'indentor_id': fields.related('picking_id', 'purchase_id', 'indentor_id', type="many2one", relation='res.users', string="Indentor", store=True),
+            #'gate_pass_id': fields.related('picking_id', 'gp_no', type="many2one", relation='gate.pass', string="Gate Pass No", store=True),
+            #'despatch_mode': fields.related('picking_id', 'despatch_mode', type="selection", relation='stock.picking', string="Mode of Despatch", store=True),
+                }
+        
+    def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
+        res = {}
+        purchase_obj = self.pool.get('purchase.order')
+        purchase_line_obj = self.pool.get('purchase.order.line')
+        tax_obj = self.pool.get('account.tax')
+        tax = tax_obj.search(cr, uid, [('amount', '=', '0.12'), ('tax_type','=', 'excise')])
+        tax_data = tax_obj.browse(cr, uid, tax, context=context)
+        val = 0.0
+        first = True
+        line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])[0]
+        line = purchase_line_obj.browse(cr, uid, line_id, context=context)
+        if line.order_id.excies_ids:
+            for c in tax_obj.compute_all(cr, uid, line.order_id.excies_ids, line.price_subtotal, 1, line.product_id, line.order_id.partner_id)['taxes']:
+                val += c.get('amount', 0.0)
+                if c.get('parent_tax') and first:
+                    res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
+                    first = False
+                elif c.get('parent_tax'):
+                    res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
+                else:
+                    res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
+            res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': line.price_subtotal-(val+diff+import_duty)})
+        else:
+            for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, 1, line.product_id, line.order_id.partner_id)['taxes']:
+                val += c.get('amount', 0.0)
+                if c.get('parent_tax') and first:
+                    res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
+                    first = False
+                elif c.get('parent_tax'):
+                    res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
+                else:
+                    res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
+            res.update({'rate': line.price_unit,'diff': diff or 0.0, 'import_duty': import_duty or 0.0, 'amount': tax_cal-(val+diff+import_duty)})
+        return {'value': res}
+stock_move()
+
+class ac_code(osv.Model):
+    _name = 'ac.code'
+    _rec_name = 'code'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.code and '[' + pckg.code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res 
+    
+    _columns = {
+        'name': fields.char('Name',size=256),
+        'code': fields.char('Code', size=64)
+        }
+ac_code()
+
+class tr_code(osv.Model):
+    _name = 'tr.code'
+    _rec_name = 'code'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.code and '[' + pckg.code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res 
+    
+    _columns = {
+        'name': fields.char('Name',size=256),
+        'code': fields.char('Code', size=64)
+        }
+tr_code()

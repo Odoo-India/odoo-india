@@ -25,17 +25,17 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.tools import amount_to_text_en as text
+from openerp import tools
 from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
 class indent_indent(osv.Model):
     _name = 'indent.indent'
     _description = 'Indent'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
     _order = "name desc"
     _track = {
         'state': {
-            'indent.mt_indent_confirmed': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'confirm',
             'indent.mt_indent_waiting_approval': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'waiting_approval',
             'indent.mt_indent_inprogress': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'inprogress',
             'indent.mt_indent_received': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'received',
@@ -55,7 +55,6 @@ class indent_indent(osv.Model):
                     if req_id.state == 'done':
                         po_done = True
                 res[record] = po_done
-                self.write(cr,uid,record,{'process_purchase_done':True})
             else:
                 res[record] = False
         return res
@@ -73,9 +72,18 @@ class indent_indent(osv.Model):
             res[record] = shipped
         return res
 
+    def _total_amount(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        for indent in self.browse(cr, uid, ids, context=context):
+            total = 0.0
+            for line in indent.product_lines:
+                total += line.price_subtotal
+            result[indent.id] = total
+        return result
+
     _columns = {
-        'name': fields.char('Indent #', size=256, required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
-        'indent_date': fields.datetime('Indent Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always',),
+        'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
         'employee_id': fields.many2one('hr.employee', 'Employee'),
@@ -83,7 +91,7 @@ class indent_indent(osv.Model):
         'department_id': fields.many2one('stock.location', 'Department', required=True,readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade",readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')],'Requirement', readonly=True, required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
-        'type': fields.selection([('new','New'), ('existing','Existing')],'Indent Type', required=True, track_visibility='onchange',readonly=True, states={'draft': [('readonly', False)]}),
+        'type': fields.selection([('new','New'), ('existing','Existing')],'Type', required=True, track_visibility='onchange',readonly=True, states={'draft': [('readonly', False)]}),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products',readonly=True, states={'draft': [('readonly', False)],'inprogress': [('readonly', False)],'waiting_approval': [('readonly', False)]}),
         'picking_id': fields.many2one('stock.picking','Picking', states={'draft': [('readonly', False)]}),
         'description': fields.text('Item Description', readonly=True,states={'draft': [('readonly', False)]}),
@@ -93,6 +101,8 @@ class indent_indent(osv.Model):
         'shipment_done': fields.function(_check_shipment_done, type="boolean", string="Shipment Done"),
         'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
         'active': fields.boolean('Active'),
+        'item_for': fields.selection([('store','Store'),('capital','Capital')],'Item For'),
+        'amount_total': fields.function(_total_amount, type="float", string='Total', store=True),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 
@@ -121,18 +131,22 @@ class indent_indent(osv.Model):
         'active': True,
     }
 
+    def _needaction_domain_get(self, cr, uid, context=None):
+        return [('state', '=', 'waiting_approval')]
+
     def copy(self, cr, uid, id, default=None, context=None):
         if default is None:
             default = {}
-        default.update({
-            'name': self.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
-            'indent_date': time.strftime('%Y-%m-%d %H:%M:%S'),
-            'required_date': time.strftime('%Y-%m-%d %H:%M:%S'),
-            'product_lines': [],
-            'picking_id': False,
-            'indent_authority_ids': [],
-            'state': 'draft',
-        })
+        if context.get('default_contract') == False:
+            default.update({
+                'name': self.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
+                'indent_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'required_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'product_lines': [],
+                'picking_id': False,
+                'indent_authority_ids': [],
+                'state': 'draft',
+            })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
 
     def indent_confirm(self, cr, uid, ids, context=None):
@@ -146,11 +160,17 @@ class indent_indent(osv.Model):
             else:
                 return lst
         # _create_manager_list
-        obj_hr = self.pool.get('hr.employee')        
+        obj_hr = self.pool.get('hr.employee')
+        document_authority_obj = self.pool.get('document.authority')
         document_authority_instance_obj = self.pool.get('document.authority.instance')
+        document_authority_ids = document_authority_obj.search(cr, uid, [('document', '=', 'indent')], context=context)
         for indent in self.browse(cr, uid, ids, context=context): 
             if not indent.product_lines:
-                raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent which has no line.'))            
+                raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent which has no line.'))
+
+            for authority in document_authority_obj.browse(cr, uid, document_authority_ids, context=context):
+                document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': 'indent', 'indent_id': indent.id, 'priority': authority.priority}, context=context)
+
             employee_parent_ids = obj_hr.search(cr, uid, [])
             employee_parents = obj_hr.read(cr, uid, employee_parent_ids, ['coach_id'])
             employee_tree = dict([(item['id'], item['coach_id'][0]) for item in employee_parents if item['coach_id']])
@@ -158,13 +178,19 @@ class indent_indent(osv.Model):
                 raise osv.except_osv(_('Configuration Error!'), _('Create related employee for %s' % indent.indentor_id.name))
             parent_employee_ids = _create_parent_category_list(indent.employee_id.id, [indent.employee_id.id])
             new_parent_employee_id = list(reversed(parent_employee_ids))
-            priority=1
+            priority=11
             for auth in new_parent_employee_id:
                 emp = obj_hr.browse(cr,uid,auth,context=context)
-                if emp.user_id:
+                if emp.user_id and not emp.absent:
                     document_authority_instance_obj.create(cr, uid, {'name': emp.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
-                    priority=priority+1            
-        self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
+                    priority=priority+1
+
+            # Add all authorities of the indent as followers
+            for authority in indent.indent_authority_ids:
+                if authority.name and authority.name.partner_id and authority.name.partner_id.id not in indent.message_follower_ids:
+                    self.write(cr, uid, [indent.id], {'message_follower_ids': [(4, authority.name.partner_id.id)]}, context=context)
+
+        self.write(cr, uid, ids, {'state': 'waiting_approval'}, context=context)
         return True
 
     def action_picking_create(self, cr, uid, ids, context=None):
@@ -240,20 +266,21 @@ class indent_indent(osv.Model):
 
     def action_receive_products(self, cr, uid, ids, context=None):
         '''
-        This function returns an action that display incoming shipment of given indent ids.
+        This function returns an action that display internal move of given indent ids.
         '''
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
         picking_id = self.browse(cr, uid, ids[0], context=context).picking_id.id
-        incoming_ship_id = self.pool.get('stock.picking.in').search(cr,uid,[('purchase_id.indent_id.id','=',ids[0])])
-        domain = [('purchase_id.indent_id.id','=',ids[0])]
-        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_in_tree')
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_form')
         result = {
             'name': _('Receive Product'),
             'view_type': 'form',
-            "view_mode": 'tree,form',
+            'view_mode': 'form',
+            'view_id': res and res[1] or False,
             'res_model': 'stock.picking.in',
-            'domain': domain,
             'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': picking_id,
         }
         return result
 
@@ -309,6 +336,8 @@ class indent_indent(osv.Model):
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
         return res
+
+
 
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
         location_id = self._default_stock_location(cr, uid, context=context)
@@ -382,54 +411,55 @@ class indent_indent(osv.Model):
         wf_service = netsvc.LocalService("workflow")
         for indent in self.browse(cr,uid,ids,context):
             po_grp_partners = obj_purchase_order.read_group(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')], ['partner_id'], ['partner_id'])
-            po_without_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')])
-            for po_grp_partner in po_grp_partners:
-                if po_grp_partner['partner_id_count'] > 1:
-                    po_to_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0])])
-                    obj_purchase_order.action_cancel(cr,uid,po_to_merge,context)
-                    obj_purchase_order.action_cancel_draft(cr,uid,po_to_merge,context)
-                    po_merged_id = obj_purchase_order.do_merge(cr,uid,po_to_merge,context).keys()[0]
-                    series_obj = self.pool.get('product.order.series')
-                    po = obj_purchase_order.browse(cr,uid,po_merged_id,context=context)
-                    series_code= po and po.po_series_id and po.po_series_id.code or False
-                    if series_code:
-                        vals = {'company_id':1,'po_series_id':po.po_series_id.id}
-                        if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
-                            seqq = self.create_series_sequence(cr,uid,vals,context)
-                        po_seq = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
-                        obj_purchase_order.write(cr,uid,po_merged_id,{'name':po_seq})
-                    order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
-                    today = order.date_order
-                    year = datetime.datetime.today().year
-                    month = datetime.datetime.today().month
-                    if month < 4:
-                        po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
-                    else:
-                        po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
-                    for line in order.order_line:
-                        self.pool.get('product.product').write(cr,uid,line.product_id.id,{
-                                                                      'last_supplier_rate': line.price_unit,
-                                                                      'last_po_no':order.id,
-                                                                      'last_po_series':order.po_series_id.id,
-                                                                      'last_supplier_code':order.partner_id.id,
-                                                                      'last_po_date':order.date_order,
-                                                                      'last_po_year':po_year
-                                                                  },context=context)
-                    obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
-                    wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
-                    wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
-                else:
-                    # write purchase order series
-                    for p in po_without_merge:
+            po_grp_series = obj_purchase_order.read_group(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')], ['po_series_id'], ['po_series_id'])
+            for po_grp_ser in po_grp_series:
+                for po_grp_partner in po_grp_partners:
+                    if po_grp_partner['partner_id_count'] > 1 and po_grp_ser['po_series_id_count'] > 1:
+                        po_to_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0]), ('po_series_id', '=', po_grp_ser['po_series_id'][0])])
+                        obj_purchase_order.action_cancel(cr,uid,po_to_merge,context)
+                        obj_purchase_order.action_cancel_draft(cr,uid,po_to_merge,context)
+                        po_merged_id = obj_purchase_order.do_merge(cr,uid,po_to_merge,context).keys()[0]
                         series_obj = self.pool.get('product.order.series')
-                        po = obj_purchase_order.browse(cr,uid,p,context=context)
+                        po = obj_purchase_order.browse(cr,uid,po_merged_id,context=context)
                         series_code= po and po.po_series_id and po.po_series_id.code or False
                         if series_code:
                             vals = {'company_id':1,'po_series_id':po.po_series_id.id}
                             if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
                                 seqq = self.create_series_sequence(cr,uid,vals,context)
                             po_seq = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
-                            obj_purchase_order.write(cr,uid,p,{'name':po_seq})
+                            obj_purchase_order.write(cr,uid,po_merged_id,{'name':po_seq})
+                        order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
+                        today = order.date_order
+                        year = datetime.datetime.today().year
+                        month = datetime.datetime.today().month
+                        if month < 4:
+                            po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
+                        else:
+                            po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
+                        for line in order.order_line:
+                            self.pool.get('product.product').write(cr,uid,line.product_id.id,{
+                                                                          'last_supplier_rate': line.price_unit,
+                                                                          'last_po_no':order.id,
+                                                                          'last_po_series':order.po_series_id.id,
+                                                                          'last_supplier_code':order.partner_id.id,
+                                                                          'last_po_date':order.date_order,
+                                                                          'last_po_year':po_year
+                                                                      },context=context)
+                        obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
+                        wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
+                        wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
+                    else:
+                        # write purchase order series
+                        po_without_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0]), ('po_series_id', '=', po_grp_ser['po_series_id'][0])])[0]
+                        series_obj = self.pool.get('product.order.series')
+                        po = obj_purchase_order.browse(cr,uid,po_without_merge,context=context)
+                        series_code= po and po.po_series_id and po.po_series_id.code or False
+                        if series_code:
+                            vals = {'company_id':1,'po_series_id':po.po_series_id.id}
+                            if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
+                                seqq = self.create_series_sequence(cr,uid,vals,context)
+                            po_seq = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
+                            obj_purchase_order.write(cr,uid,po_without_merge,{'name':po_seq})
             self.write(cr, uid, indent.id, {'purchase_count': True}, context=context)
         return True
 
@@ -438,6 +468,12 @@ indent_indent()
 class indent_product_lines(osv.Model):
     _name = 'indent.product.lines'
     _description = 'Indent Product Lines'
+
+    def _amount_subtotal(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        for line in self.browse(cr, uid, ids, context=context):
+            result[line.id] = (line.product_uom_qty * line.price_unit)
+        return result
 
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
@@ -449,10 +485,20 @@ class indent_product_lines(osv.Model):
         'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
         'product_uos_qty': fields.float('Quantity (UoS)' ,digits_compute= dp.get_precision('Product UoS')),
         'product_uos': fields.many2one('product.uom', 'Product UoS'),
+        'price_unit': fields.float('Unit Price', required=True, digits_compute= dp.get_precision('Product Price')),
+        'price_subtotal': fields.function(_amount_subtotal, string='Subtotal', digits_compute= dp.get_precision('Account'), store=True),
         'qty_available': fields.float('Stock'),
         'virtual_available': fields.float('Forecasted Qty'),
         'name': fields.text('Purpose', required=True),
         'specification': fields.text('Item Specification'),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
+        'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor No', store=True, readonly=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', string='Indent Date', store=True, readonly=True),
+        'department_id': fields.related('indent_id', 'department_id', type='many2one', relation='stock.location', string='Department', store=True, readonly=True),
+        'item_for': fields.related('indent_id', 'item_for', type='selection', selection=[('store','Store'),('capital','Capital')], string='Indent Type', store=True, readonly=True),
+        'requirement': fields.related('indent_id', 'requirement', type='selection', selection=[('ordinary','Ordinary'), ('urgent','Urgent')], string='Req Code', store=True, readonly=True),
+        'required_date': fields.related('indent_id', 'required_date', type='datetime', string='Req Date', store=True, readonly=True),
+        'product_code': fields.related('product_id', 'default_code', type='char', string='Product Code', store=True, readonly=True),
     }
 
     def _get_uom_id(self, cr, uid, *args):
@@ -527,6 +573,7 @@ class indent_product_lines(osv.Model):
 
         result['qty_available'] = product_obj.qty_available
         result['virtual_available'] = product_obj.virtual_available
+        result['price_unit'] = product_obj.list_price
         if warning_msgs:
             warning = {
                        'title': _('Configuration Error!'), 'message' : warning_msgs
@@ -539,6 +586,34 @@ class indent_product_lines(osv.Model):
         return self.product_id_change(cr, uid, ids, product, qty=qty, uom=uom, qty_uos=qty_uos, uos=uos, name=name, date_order=date_order)
 
 indent_product_lines()
+
+class document_authority(osv.Model):
+    _name = 'document.authority'
+    _description = 'Document Authority'
+
+    def name_get(self, cr, uid, ids, context=None):
+        res = []
+        if not ids:
+            return res
+        # name_get may receive int id instead of an id list
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        
+        return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
+
+    _columns = {
+        'name': fields.many2one('res.users', 'Authority', required=True),
+        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
+        'priority': fields.integer('Priority'),
+        'active': fields.boolean('Active', help="If the active field is set to False, it will allow you to hide the document authority without removing it."),
+        'description': fields.text('Description'),
+    }
+
+    _defaults = {
+        'active': True,
+    }
+
+document_authority()
 
 class document_authority_instance(osv.Model):
     _name = 'document.authority.instance'
@@ -557,7 +632,7 @@ class document_authority_instance(osv.Model):
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
         'name': fields.many2one('res.users', 'Authority', required=True),
-        'document': fields.selection([('indent','Indent'), ('order','Purchase Order')], 'Document', required=True),
+        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
         'priority': fields.integer('Priority'),
         'description': fields.text('Description'),
         'date': fields.datetime('Date'),
@@ -588,35 +663,112 @@ class stock_picking(osv.Model):
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
-        'state': fields.selection([
-            ('draft', 'Draft'),
-            ('approved', 'Approved'),
-            ('auto', 'Waiting Another Operation'),
-            ('confirmed', 'Waiting Availability'),
-            ('assigned', 'Ready to Transfer'),
-            ('done', 'Transferred'),
-            ('cancel', 'Cancelled'),
-            ], 'Status', readonly=True, select=True, track_visibility='onchange', help="""
-            * Draft: not confirmed yet and will not be scheduled until confirmed\n
-            * Approved: waiting for manager approval to proceed further\n
-            * Waiting Another Operation: waiting for another move to proceed before it becomes automatically available (e.g. in Make-To-Order flows)\n
-            * Waiting Availability: still waiting for the availability of products\n
-            * Ready to Transfer: products reserved, simply waiting for confirmation.\n
-            * Transferred: has been processed, can't be modified or cancelled anymore\n
-            * Cancelled: has been cancelled, can't be confirmed anymore"""
-        ),
+        'picking_authority_ids': fields.one2many('picking.authority', 'picking_id', 'Authority'),
     }
 
-    def check_manager_approval(self, cr, uid, ids):
-        indent = self.browse(cr, uid, ids[0]).indent_id
-        manager = indent and indent.employee_department_id and indent.employee_department_id.manager_id and indent.employee_department_id.manager_id.user_id and indent.employee_department_id.manager_id.user_id.id or False
-        if manager and manager == uid:
-            return True
-        elif manager and manager != uid:
-            return False
+    def action_confirm(self, cr, uid, ids, context=None):
+        picking_authority_obj = self.pool.get('picking.authority')
+        for picking in self.browse(cr, uid, ids, context=context):
+            if picking.type == 'internal':
+                if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.coach_id and picking.indent_id.employee_id.coach_id.user_id and picking.indent_id.employee_id.coach_id.user_id.id:
+                    picking_authority_obj.create(cr, uid, {'name': picking.indent_id.employee_id.coach_id.user_id.id, 'document': 'picking', 'picking_id': picking.id, 'priority': 1}, context=context)
+                if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.user_id and picking.indent_id.employee_id.user_id.id:
+                    picking_authority_obj.create(cr, uid, {'name': picking.indent_id.employee_id.user_id.id, 'document': 'picking', 'picking_id': picking.id, 'priority': 2}, context=context)
+        return super(stock_picking, self).action_confirm(cr, uid, ids, context=context)
+
+    def check_approval(self, cr, uid, ids):
+        picking_authority_obj = self.pool.get('picking.authority')
+        for picking in self.browse(cr, uid, ids):
+            if picking.type == 'internal':
+                authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in picking.picking_authority_ids]
+                sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+                count = 0
+                for authority in sort_authorities:
+                    count += 1
+                    if authority[1] == uid:
+                        write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
+                        picking_authority_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
+                        for write_id in write_ids:
+                            desc = picking_authority_obj.browse(cr, uid, write_id[0]).description
+                            description = 'Approved by higher authority - %s' %(authority[4],)
+                            if desc:
+                                description = 'Approved by higher authority - %s' %(authority[4],) + '\n' + desc
+                            picking_authority_obj.write(cr, uid, [write_id[0]], {'description': description})
+                        break
+
+        for picking in self.browse(cr, uid, ids):
+            if picking.type == 'internal':
+                authorities = [(authority.id, authority.priority, authority.state) for authority in picking.picking_authority_ids]
+                sort_authorities = sorted(authorities, key=lambda element: (element[1]))
+                for authority in sort_authorities:
+                    if authority[2] == 'approve':
+                        return True
+                    elif authority[2] == 'pending' or authority[2] == 'reject':
+                        return False
+        return True
+
+    def check_reject(self, cr, uid, ids):
+        picking_authority_obj = self.pool.get('picking.authority')
+        for picking in self.browse(cr, uid, ids):
+            if picking.type == 'internal':
+                authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in picking.picking_authority_ids]
+                sort_authorities = sorted(authorities, key=lambda element: (element[2]))
+                count = 0
+                for authority in sort_authorities:
+                    count += 1
+                    if authority[1] == uid:
+                        write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
+                        picking_authority_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
+                        for write_id in write_ids:
+                            desc = picking_authority_obj.browse(cr, uid, write_id[0]).description
+                            description = 'Rejected by higher authority - %s' %(authority[4],)
+                            if desc:
+                                description = 'Rejected by higher authority - %s' %(authority[4],) + '\n' + desc
+                            picking_authority_obj.write(cr, uid, [write_id[0]], {'description': description})
+                        break
+
+        for picking in self.browse(cr, uid, ids):
+            if picking.type == 'internal':
+                authorities = [(authority.id, authority.priority, authority.state) for authority in picking.picking_authority_ids]
+                sort_authorities = sorted(authorities, key=lambda element: (element[1]))
+                for authority in sort_authorities:
+                    if authority[2] == 'approve' or authority[2] == 'pending':
+                        return False
+                    elif authority[2] == 'reject':
+                        return True
         return True
 
 stock_picking()
+
+class picking_authority(osv.Model):
+    _name = 'picking.authority'
+    _description = 'Picking Authority'
+
+    def name_get(self, cr, uid, ids, context=None):
+        res = []
+        if not ids:
+            return res
+        # name_get may receive int id instead of an id list
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+
+        return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
+
+    _columns = {
+        'picking_id': fields.many2one('stock.picking', 'Picking', required=True, ondelete='cascade'),
+        'name': fields.many2one('res.users', 'Authority', required=True),
+        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
+        'priority': fields.integer('Priority'),
+        'description': fields.text('Description'),
+        'date': fields.datetime('Date'),
+        'state':fields.selection([('pending','Pending'), ('approve','Approved'), ('reject','Rejected')], 'State', required=True)
+    }
+    _defaults = {
+        'state': 'pending',
+        'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
+    }
+
+picking_authority()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
@@ -760,5 +912,23 @@ class procurement_order(osv.osv):
         return res
 
 procurement_order()
+
+class res_users(osv.Model):
+    _inherit = 'res.users'
+
+    _columns = {
+        'sign': fields.binary("Sign", help="This field holds the image used for the signature, limited to 1024x1024px."),
+    }
+
+res_users()
+
+class hr_employee(osv.Model):
+    _inherit = "hr.employee"
+
+    _columns = {
+        'absent': fields.boolean("Not in office"),
+    }
+
+hr_employee()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

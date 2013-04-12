@@ -16,18 +16,11 @@
             <field name="flow_start">True</field>
         </record>
 
-        <record model="workflow.activity" id="act_confirm">
-            <field name="wkf_id" ref="wkf_indent"/>
-            <field name="name">activity.confirm</field>
-            <field name="kind">function</field>
-            <field name="action">indent_confirm()</field>
-        </record>
-
         <record model="workflow.activity" id="act_waiting_approval">
             <field name="wkf_id" ref="wkf_indent"/>
             <field name="name">activity.waiting.approval</field>
             <field name="kind">function</field>
-            <field name="action">write({'state': 'waiting_approval'})</field>
+            <field name="action">indent_confirm()</field>
         </record>
 
         <record model="workflow.activity" id="act_inprogress">
@@ -55,22 +48,10 @@
         </record>
 
         <!-- Indent Workflow Transitions -->
-        <record model="workflow.transition" id="trans_draft_confirm">
+        <record model="workflow.transition" id="trans_draft_waiting_approval">
             <field name="act_from" ref="act_draft"/>
-            <field name="act_to" ref="act_confirm"/>
-            <field name="signal">indent_confirm</field>
-        </record>
-
-        <record model="workflow.transition" id="trans_confirm_waiting_approval">
-            <field name="act_from" ref="act_confirm"/>
             <field name="act_to" ref="act_waiting_approval"/>
-            <field name="signal">indent_validate</field>
-        </record>
-
-        <record model="workflow.transition" id="trans_confirm_reject">
-            <field name="act_from" ref="act_confirm"/>
-            <field name="act_to" ref="act_reject"/>
-            <field name="signal">indent_reject</field>
+            <field name="signal">indent_confirm</field>
         </record>
 
         <record model="workflow.transition" id="trans_waiting_approval_waiting_approval">

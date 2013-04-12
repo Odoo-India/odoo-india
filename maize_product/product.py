@@ -111,8 +111,7 @@ product_sub_group()
 class product_product(osv.Model):
     _inherit = 'product.product'
     _order = 'id desc,default_code'
-    _columns = {
-        }    
+
     def last_supplier_code(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
@@ -216,7 +215,9 @@ class product_product(osv.Model):
             ('confirm', 'Confirmed'),
             ('done', 'Approve')],
             'Status', readonly=True, required=True,
-            track_visibility='onchange'),        
+            track_visibility='onchange'),
+        'min_qty': fields.related('orderpoint_ids', 'product_min_qty', type="float", relation="stock.warehouse.orderpoint", help="Minimum Qantity for this Product"),
+        'max_qty': fields.related('orderpoint_ids', 'product_max_qty', type="float", relation="stock.warehouse.orderpoint", help="Maximum Qantity for this Product"),
         }
     _defaults = {
                 'sale_ok':False,
@@ -250,7 +251,7 @@ class product_product(osv.Model):
             seq_id = self.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('sub_group_id','=',sub_id and sub_id[0] or False)])
             seq_id.sort()
             product_code=1
-            if record.type=='product':
+            if record.type=='product' or record.type == 'service':
                 if len(seq_id)>=2:
                     last_rec=self.browse(cr,uid,seq_id[-2])
                     product_code = int(last_rec.default_code[6:9])+1

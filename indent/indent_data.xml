@@ -3,16 +3,10 @@
     <data noupdate="1">
 
         <!-- Indent-related subtypes for messaging / Chatter -->
-        <record id="mt_indent_confirmed" model="mail.message.subtype">
-            <field name="name">Confirmed</field>
-            <field name="res_model">indent.indent</field>
-            <field name="description">Indent confirmed</field>
-        </record>
-
         <record id="mt_indent_waiting_approval" model="mail.message.subtype">
             <field name="name">Waiting Approval</field>
             <field name="res_model">indent.indent</field>
-            <field name="description">Indent is waiting for approval</field>
+            <field name="description">Indent is confirmed and waiting for approval</field>
         </record>
 
         <record id="mt_indent_inprogress" model="mail.message.subtype">

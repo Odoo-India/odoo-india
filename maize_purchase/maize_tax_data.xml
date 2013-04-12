@@ -2,6 +2,19 @@
 <openerp>
     <data noupdate="1">
 
+        <record id="seq_type_picking_receipt" model="ir.sequence.type">
+            <field name="name">Picking Receipt</field>
+            <field name="code">stock.picking.receipt</field>
+        </record>  
+        
+        <record id="seq_picking_receipt" model="ir.sequence">
+            <field name="name">Picking Receipt</field>
+            <field name="code">stock.picking.receipt</field>
+            <field name="prefix">RCPT/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
         <record id="maize_no_excise" model="account.tax">
             <field name="name"> No Excise</field>
             <field name="tax_type">excise</field>

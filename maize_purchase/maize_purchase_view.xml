@@ -8,7 +8,7 @@
             <field name="groups_id" eval="[(6, 0, [ref('product.group_uom'), ref('purchase.group_analytic_accounting')])]"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='order_line']/tree" position="attributes">
-                    <attribute name="editable"/>
+                    <attribute name="editable">True</attribute>
                 </xpath>
             </field>
         </record>
@@ -25,6 +25,10 @@
 <!--                 <xpath expr="//group/group/field[@name='taxes_id']" position='replace'>
                     <field name="taxes_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]" invisible="1"/>
                 </xpath> -->
+                <xpath expr="//group/group/field[@name='product_id']" position='after'>
+                    <field name="contract" invisible="1"/>
+                    <field name="person" attrs="{'invisible': [('contract', '!=', True)]}"/>
+                </xpath>
             </field>
         </record>
 
@@ -48,12 +52,14 @@
                             <field name="other_discount"/>
                             <field name="payment_term_id"/>
                             <field name="delivey"/>
+                            <field name="voucher_id" invisible="1"/>
                         </group>
                         <group>
                             <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="amount_tax" invisible="1"/>
-                            <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','excise')]"/>
-                            <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]"/>
+                            <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','excise')]" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="service_ids" widget="many2many_tags" domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}"/>
                             <label for="insurance"/>
                             <div>
                                 <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type)"/>
@@ -85,15 +91,41 @@
                 </xpath>
             </field>
         </record>
-        
+
+        <!-- Purchase Order Advance Payment Form View -->
+        <record id="view_purchase_order_advance_payment_form" model="ir.ui.view">
+            <field name="name">purchase.order.advance.payment.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_2_stock_picking"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='invoice_open']" position="after">
+                    <button name="open_advance_payment" string="Advance Payment" type="object" attrs="{'invisible': [('voucher_id', '=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+
         <!-- Purchase Requisition Form Inherit for add field -->
         <record id="view_maize_purchase_requisition_order" model="ir.ui.view">
             <field name="name">inherit.purchase.requisition.form</field>
             <field name="model">purchase.requisition</field>
             <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form" />
             <field name="arch" type="xml">
-                <xpath expr="//notebook/page/field[@name='purchase_ids']" position="attributes">
-                    <attribute name="readonly">False</attribute>
+                <xpath expr="//notebook/page/field[@name='purchase_ids']" position="replace">
+                    <field name="purchase_ids">
+                        <tree string="Purchase Order">
+                            <field name="name" string="Reference"/>
+                            <field name="date_order" string="Order Date"/>
+                            <field name="partner_id"/>
+                            <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                            <field name="location_id" groups="stock.group_locations"/>
+                            <field name="minimum_planned_date"/>
+                            <field name="origin"/>
+                            <field name="state"/>
+                            <button name="purchase_cancel" states="draft,confirmed,wait_auth" string="Cancel Purchase Order" icon="gtk-cancel"/>
+                            <button name="purchase_confirm" states="draft" string="Confirm Purchase Order" icon="gtk-apply"/>
+                            <button name="purchase_approve" states="confirmed" string="Approved by Supplier" icon="gtk-ok"/>
+                        </tree>
+                    </field>
                 </xpath>
                 <xpath expr="//field[@name='exclusive']" position="attributes">
                 	<attribute name="invisible">True</attribute>
@@ -127,6 +159,455 @@
                     <field name="coach_id" string="Manager"/>
                 </xpath>                
             </field>
+        </record>
+        <record id="maize_view_stock_picking_in_inherit_form" model="ir.ui.view">
+            <field name="name">maize,stock.picking.in.inherit</field>
+            <field name="model">stock.picking.in</field>
+            <field name="inherit_id" ref="stock.view_picking_in_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="after">
+                    <group col="12" string="Inward Details">
+                		<group colspan="4">
+                			<field name="lr_no"/>
+                			<field name="lr_date"/>
+                			<field name="hpressure"/>
+                			<field name="transporter"/>
+                			<field name="series_id"/>
+               			</group>
+               			<group colspan="4">
+               				<field name="lab_no"/>
+               				<field name="gp_no"/>
+               				<field name="gp_year"/>
+							<field name="dest_from"/>
+							<field name="despatch_mode"/>
+               			</group>
+               			<group colspan="4">
+               				<field name="case_code"/>
+                			<field name="challan_no"/>
+                			<field name="despatch_mode"/>
+                			<field name="dest_to"/>
+               				<field name="other_dispatch" attrs="{'invisible': [('despatch_mode','=','others')]}"/>
+               			</group>
+                	</group>
+                </xpath>
+            </field>
+        </record>
+		<!-- RECEIPT FORM --> 
+        <record id="view_picking_receipt_tree" model="ir.ui.view">
+            <field name="name">stock.picking.receipt.tree</field>
+            <field name="model">stock.picking.receipt</field>
+            <field name="arch" type="xml">
+                <tree colors="blue:state == 'draft';grey:state == 'done';red:state not in ('cancel', 'done') and date &lt; current_date" string="Picking list">
+                    <field name="name"/>
+                    <field name="partner_id" string="Supplier"/>
+                    <field name="backorder_id"/>
+                    <field name="origin"/>
+                    <field name="date"/>
+                    <field name="min_date"/>
+                    <field name="invoice_state" groups="account.group_account_invoice"/>
+                    <field name="stock_journal_id" widget="selection" groups="account.group_account_user"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_picking_receipt_form" model="ir.ui.view">
+            <field name="name">stock.picking.receipt.form</field>
+            <field name="model">stock.picking.receipt</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+
+				<xpath expr="//field[@name='stock_journal_id']" position="after">
+                    <field name="inward_id"/>
+                    <field name="inward_date"/>
+                    <field name="challan_no"/>
+                    <field name="tr_code"/>
+                    <field name="party_id"/>
+				</xpath>
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="excisable_item"/>
+                    <field name="gp_received"/>
+                    <field name="gp_date"/>
+                    <field name="purchase_id"/>
+                </xpath>
+
+                <xpath expr="//button[@name='draft_force_assign']" position="before">
+                    <button name="button_approve" states="draft" string="Approved by manager" class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//button[@name='draft_force_assign']" position="replace">
+                    <button name="draft_force_assign" states="approved" string="Confirm" type="object" class="oe_highlight" groups="base.group_user"/>
+                </xpath>
+                <xpath expr="/form/header//button[@name='%(stock.act_stock_return_picking)d']" position="replace">
+                    <button name="%(stock.act_stock_return_picking)d" string="Return Products" states="done" type="action"/>
+                </xpath>
+                <xpath expr="//button[@name='draft_validate']" position="replace">
+                    <button name="draft_validate" states="approved" string="Confirm &amp; Receive" type="object" class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//button[@name='action_process']" position="replace">
+                    <button name="action_process" states="assigned" string="Receive" type="object" class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="replace">
+                    <field name="partner_id" on_change="onchange_partner_in(partner_id)"  string="Supplier"/>
+                </xpath>
+                <xpath expr="//field[@name='move_lines']" position="replace">
+                    <field name="move_lines" context="{'address_in_id': partner_id, 'picking_type': 'in', 'form_view_ref':'view_move_picking_form', 'tree_view_ref':'view_move_picking_tree'}"/>
+                </xpath>
+                <xpath expr="/form/sheet" position="after">
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </xpath>
+                <xpath expr="//notebook/page[@string='Products']/field[@name='move_lines']" position="replace">
+                    <field name="move_lines" context="{'address_in_id': partner_id, 'form_view_ref':'view_move_picking_form', 'tree_view_ref':'view_move_picking_tree', 'picking_type': 'internal'}">
+	                    <tree editable="top">
+	                        <field name="product_id"/>
+	                        <field name="rate"/>
+	                        <field name="diff" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+	                        <field name="amount"/>
+	                        <field name="bill_no"/>
+	                        <field name="bill_date"/>
+	                        <field name="tax_cal" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+	                        <field name="excies"/>
+	                        <field name="cess"/>
+	                        <field name="high_cess"/>
+	                        <field name="import_duty" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+	                        <field name="cenvat"/>
+	                        <field name="c_cess"/>
+	                        <field name="c_high_cess"/>
+	                        <field name="state"/>
+	                    </tree>
+	                </field>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_receipt_search" model="ir.ui.view">
+            <field name="name">stock.picking.receipt.search</field>
+            <field name="model">stock.picking.receipt</field>
+            <field name="arch" type="xml">
+                <search string="Picking list">
+                    <field name="name" string="Picking List" filter_domain="['|',('name','ilike', self),('origin','ilike',self)]"/>
+                    <filter icon="terp-check" name="available" string="Ready" domain="[('state','=','assigned')]" help="Assigned Delivery Orders"/>
+                    <filter icon="terp-camera_test" name="confirmed" string="Waiting" domain="[('state','=','confirmed')]" help="Confirmed Delivery Orders"/>
+                    <filter icon="terp-dialog-close" name="done" string="Done" domain="[('state','=','done')]" help="Delivery orders already processed"/>
+                    <separator/>
+                    <filter icon="terp-accessories-archiver-minus" string="Back Orders" domain="[('backorder_id', '!=', False)]" help="Is a Back Order"/>
+                    <separator/>
+                    <filter icon="terp-dolar" name="to_invoice" string="To Invoice" domain="[('invoice_state','=','2binvoiced')]" help="Delivery orders to invoice"/>
+                    <field name="stock_journal_id"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Order Date" icon="terp-go-month" domain="[]"  context="{'group_by':'date'}"/>
+                        <filter string="Expected Date" icon="terp-go-month" domain="[]"  context="{'group_by':'min_date'}"/>
+                        <filter string="Journal" icon="terp-folder-orange" domain="[]" context="{'group_by':'stock_journal_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        
+        <record id="action_picking_tree4_receipt" model="ir.actions.act_window">
+            <field name="name">Receipts</field>
+            <field name="res_model">stock.picking.receipt</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type','=','receipt')]</field>
+            <field name="context">{'contact_display': 'partner_address', 'default_type': 'receipt'}</field>
+            <field name="search_view_id" ref="view_picking_receipt_search"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create an incoming shipment. 
+              </p><p>
+                The Incoming Shipments is the list of all orders you will
+                receive from your suppliers. An incoming shipment contains a
+                list of products to be received according to the original
+                purchase order.
+              </p>
+            </field>
+        </record>
+        
+    	<record id="action_receipt_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_picking_receipt_tree"/>
+            <field name="act_window_id" ref="action_picking_tree4_receipt"/>
         </record>  
+		<record id="action_receipt_form_view1" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_picking_receipt_form"/>
+            <field name="act_window_id" ref="action_picking_tree4_receipt"/>
+        </record>        
+        <menuitem action="action_picking_tree4_receipt" id="menu_action_picking_tree4_receipt" parent="stock.menu_stock_warehouse_mgmt" sequence="2"/>
+        
+        <!-- Change the name of Incoming Shippment -->
+        <record id="stock.action_picking_tree4" model="ir.actions.act_window">
+            <field name="name">Inward</field>
+        </record>
+        <menuitem action="stock.action_picking_tree4" name="Inward" id="stock.menu_action_picking_tree4" parent="stock.menu_stock_warehouse_mgmt" sequence="1"/>
+        
+        <!-- Change the name of Internal Move -->
+        <record id="stock.action_picking_tree6" model="ir.actions.act_window">
+            <field name="name">Issue</field>
+        </record>
+        <menuitem action="stock.action_picking_tree6" name="Issue" id="stock.menu_action_picking_tree6" parent="stock.menu_stock_warehouse_mgmt" sequence="2" groups="stock.group_locations"/>
+        
+        <!--  Stock Picking form view inherit -->
+        <record id="inherit_view_stock_picking_form" model="ir.ui.view">
+            <field name="name">stock.picking.form.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="ac_code_id"/>
+                    <field name="mc_code_id"/>
+                    <field name="tr_code_id"/>
+                    <field name="cylinder"/>
+                </field>
+            </field>
+        </record>
+        
+        <!--  Stock Move Search View Inherit -->
+        <record id="view_stock_move_search_inherit" model="ir.ui.view">
+            <field name="name">stock.move.search.inherit</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_search"/>
+            <field name="arch" type="xml">
+            <xpath expr="//group/filter[@string='Product']" position='after'>
+                <filter string="Supplier" name="groupby_supplier" domain="[]" context="{'group_by':'supplier_id'}"/>
+                <filter string="Inward Number" name="groupby_inward" domain="[]" context="{'group_by':'picking_id'}"/>
+                <filter string="Indentor" name="groupby_indentor" domain="[]" context="{'group_by':'indentor_id'}"/>
+            </xpath>
+            <xpath expr="//field[@name='prodlot_id']" position='after'>
+                <field name="po_name"/>
+                <field name="payment_id"/>
+            </xpath>
+            </field>
+        </record>
+        
+        <record id="view_stock_move_tree_inherit" model="ir.ui.view">
+            <field name="name">stock.move.tree.inherit</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_tree"/>
+            <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position='after'>
+                <field name="po_name"/>
+                <field name="payment_id"/>
+                <field name="supplier_id"/>
+                <field name="indentor_id"/>
+                <!-- field name="gate_pass_id"/>
+                <field name="despatch_mode"/-->
+            </xpath>
+            </field>
+        </record>
+        
+        <record id="stock.action_move_form2" model="ir.actions.act_window">
+            <field name="name">Stock Moves</field>
+            <field name="res_model">stock.move</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="stock.view_move_tree"/>
+            <field name="search_view_id" ref="view_stock_move_search_inherit"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a stock movement.
+              </p><p>
+                This menu gives you the full traceability of inventory
+                operations on a specific product. You can filter on the product
+                to see all the past or future movements for the product.
+              </p>
+            </field>
+        </record>
+        
+        <!-- Ac code -->
+        <record id="ac_code_form_view" model="ir.ui.view">
+            <field name="name">ac.code.form</field>
+            <field name="model">ac.code</field>
+            <field name="arch" type="xml">
+                <form string="AC Code" version="7.0">
+                    <sheet>
+                        <group>
+                            <group col="4">
+                                <field name="code"/>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="ac_code_list_view" model="ir.ui.view">
+            <field name="name">ac.code.list</field>
+            <field name="model">ac.code</field>
+            <field name="arch" type="xml">
+                <tree string="AC Code" version="7.0">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="ac_code_form_action" model="ir.actions.act_window">
+            <field name="name">AC Code</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ac.code</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="ac_code_list_view"/>
+        </record>
+        
+        <menuitem action="ac_code_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_ac_code"
+            parent="maize_product.menu_maize_config" sequence="10"/>
+        <!--TR code -->
+        <record id="tr_code_form_view" model="ir.ui.view">
+            <field name="name">tr.code.form</field>
+            <field name="model">tr.code</field>
+            <field name="arch" type="xml">
+                <form string="TR Code" version="7.0">
+                    <sheet>
+                        <group>
+                            <group col="4">
+                                <field name="code"/>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="tr_code_list_view" model="ir.ui.view">
+            <field name="name">tr.code.list</field>
+            <field name="model">tr.code</field>
+            <field name="arch" type="xml">
+                <tree string="TR Code" version="7.0">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="tr_code_form_action" model="ir.actions.act_window">
+            <field name="name">TR Code</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tr.code</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="tr_code_list_view"/>
+        </record>
+    
+        <menuitem action="tr_code_form_action"
+            groups="base.group_no_one"
+            id="menu_maize_tr_code"
+            parent="maize_product.menu_maize_config" sequence="13"/>
+            
+        <!--  Series/Supplier wise Report -->
+        
+        <record id="view_maize_series_tree" model="ir.ui.view">
+            <field name="name">maize.series.tree</field>
+            <field name="model">purchase.order</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <tree string="Serise/Supplier Analysis" create="false">
+                    <field name="partner_id" string="SUPPCODE NAME"/>
+                    <field name="contract_id" string="SERIES"/>
+                    <field name="amount_total" string="AMOUNT" sum="Total Amount"/>
+                    <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="maize_series_search_report" model="ir.ui.view">
+            <field name="name">purchase.order.search.report</field>
+            <field name="model">purchase.order</field>
+            <field name="arch" type="xml">
+                <search string="Search Purchase Order">
+                    <field name="name" string="Reference"/>
+                    <filter icon="terp-mail-message-new" string="Unread Messages" name="message_unread" domain="[('message_unread','=',True)]"/>
+                    <separator/>
+                    <filter icon="terp-document-new" name="draft" string="Quotations" domain="[('state','=','draft')]" help="Purchase orders which are in draft state"/>
+                    <filter icon="terp-check" name="approved" string="Purchase Orders" domain="[('state','not in',('draft','cancel'))]" help="Approved purchase orders"/>
+                    <filter icon="terp-emblem-important" name="exception" string="Exception" domain="[('state','in',('except_invoice','except_picking'))]" help="Purchase orders which are in exception state"/>
+                    <separator/>
+                    <filter icon="terp-gtk-go-back-rtl" name="not_invoiced" string="Not Invoiced" domain="[('invoice_ids','=', False)]" help="Purchase orders that include lines not invoiced."/>
+                    <field name="partner_id"/>
+                    <field name="product_id"/>
+                    <field name="create_uid"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Supplier" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                        <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'contract_id'}"/>
+                        <filter string="Company" icon="terp-partner" domain="[]" context="{'group_by':'company_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <record id="maize_seires_report" model="ir.actions.act_window">
+            <field name="name">Serise/Supplier Analysis</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,graph</field>
+            <field name="search_view_id"  eval="maize_series_search_report"/>
+            <field name="help">Series/Supplier Wise Analysis allows you to easily check and analyse your Contract.</field>
+        </record>
+        
+        <record id="maize_action_product_report_view" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_maize_series_tree"/>
+            <field name="act_window_id" ref="maize_seires_report"/>
+        </record>
+        <menuitem action="maize_seires_report"
+            id="menu_action_maize_series_report"
+            parent="stock.next_id_61" sequence="6"/>
+        <report id="report_issue_slip" model="stock.picking" name="maize.stock.issue.slip" string="Issue Slip" rml="maize_purchase/report/issue_report.rml"/>
+
+        <!-- Purchase Order Tree View -->
+        <record id="purchase.purchase_order_tree" model="ir.ui.view">
+            <field name="name">purchase.order.tree</field>
+            <field name="model">purchase.order</field>
+            <field name="arch" type="xml">
+                <tree fonts="bold:message_unread==True" colors="grey:state=='cancel';blue:state in ('wait','confirmed');red:state in ('except_invoice','except_picking')" string="Purchase Order">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="supplier_code"/>
+                    <field name="partner_id"/>
+                    <field name="po_series_id"/>
+                    <field name="name" string="Number"/>
+                    <field name="date_order"/>
+                    <field name="indentor_code"/>
+                    <field name="indent_id"/>
+                    <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                    <field name="minimum_planned_date" invisible="context.get('quotation_only', False)"/>
+                    <field name="origin"/>
+                    <field name="amount_untaxed" sum="Total Untaxed amount" string="Untaxed"/>
+                    <field name="amount_total" sum="Total amount"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Purchase Order Search View -->
+        <record id="view_purchase_order_filter_inherited" model="ir.ui.view">
+            <field name="name">purchase.order.filter.inherited</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+               <field name="name" position="replace">
+                    <field name="name" string="Purchase Order" filter_domain="['|', '|', ('name', 'ilike', self), ('indentor_code', 'ilike', self), ('supplier_code', 'ilike', self)]"/>
+                </field>
+                <field name="partner_id" position="after">
+                    <field name="po_series_id"/>
+                </field>
+               <filter string="Supplier" position="after">
+                    <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'po_series_id'}"/>
+                </filter>
+            </field>
+        </record>
+
     </data>
 </openerp>

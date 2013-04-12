@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequence for contract -->
+        <record id="seq_contract_ms_code" model="ir.sequence.type">
+            <field name="name">Contract MS</field>
+            <field name="code">contract.ms</field>
+        </record>
+
+        <record id="seq_contract_ms" model="ir.sequence">
+            <field name="name">Contract MS</field>
+            <field name="code">contract.ms</field>
+            <field name="prefix">MS/</field>
+            <field name="padding">3</field>
+        </record>
+
+        <!-- Sequence for contract -->
+        <record id="seq_contract_pr_code" model="ir.sequence.type">
+            <field name="name">Contract PR</field>
+            <field name="code">contract.pr</field>
+        </record>
+
+        <record id="seq_contract_pr" model="ir.sequence">
+            <field name="name">Contract PR</field>
+            <field name="code">contract.pr</field>
+            <field name="prefix">PR/</field>
+            <field name="padding">3</field>
+        </record>
+        
+        <!-- Sequence for contract -->
+        <record id="seq_contract_om_code" model="ir.sequence.type">
+            <field name="name">Contract OM</field>
+            <field name="code">contract.om</field>
+        </record>
+
+        <record id="seq_contract_om" model="ir.sequence">
+            <field name="name">Contract OM</field>
+            <field name="code">contract.om</field>
+            <field name="prefix">OM/</field>
+            <field name="padding">3</field>
+        </record>
+
+        <!-- Sequence for contract -->
+        <record id="seq_contract_tm_code" model="ir.sequence.type">
+            <field name="name">Contract TM</field>
+            <field name="code">contract.tm</field>
+        </record>
+
+        <record id="seq_contract_tm" model="ir.sequence">
+            <field name="name">Contract TM</field>
+            <field name="code">contract.tm</field>
+            <field name="prefix">TM/</field>
+            <field name="padding">3</field>
+        </record> 
+        
+        
+    </data>
+</openerp>        

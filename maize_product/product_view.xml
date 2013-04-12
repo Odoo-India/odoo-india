@@ -256,6 +256,62 @@
             	</xpath>
            	</field>
         </record>
+
+        <!-- Product Search View -->
+        <record id="view_product_inherited_search" model="ir.ui.view">
+            <field name="name">product.product.search.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@string='Group by...']" position="inside">
+                    <filter string='Major Group' icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'major_group_id'}"/>
+                    <filter string='Sub Group' icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'sub_group_id'}"/>
+                </xpath>
+                <field name="name" position="replace">
+                    <field name="name" string="Product" filter_domain="['|', '|', '|', '|', '|', ('name', 'ilike', self), ('default_code', 'ilike', self), ('description', 'ilike', self), ('desc2', 'ilike', self), ('desc3', 'ilike', self), ('desc4', 'ilike', self)]"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_maize_product_report_tree" model="ir.ui.view">
+            <field name="name">maize.product.product.tree.inherit</field>
+            <field name="model">product.product</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <tree string="Product Analysis" create="false">
+                    <field name="default_code" string="Code"/>
+                    <field name="name" string="Description"/>
+                    <field name="categ_id" invisible="1"/>
+                    <field name="type" invisible="1"/>
+                    <field name="uom_id" string="Unit of Measure" groups="product.group_uom"/>
+                    <field name="ex_chapter" string="Chapter"/>
+                    <field name="min_qty" string="Min_Level"/>
+                    <field name="max_qty" string="Max_Level"/>
+                    <field name="major_group_id" invisible="1"/>
+                    <field name="sub_group_id"  invisible="1"/>
+                    <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="maize_action_product_report" model="ir.actions.act_window">
+            <field name="name">Product Analysis</field>
+            <field name="res_model">product.product</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,graph</field>
+            <field name="search_view_id"  eval="view_product_inherited_search"/>
+            <field name="help">Product Analysis allows you to easily check and analyse your company stock.</field>
+        </record>
+
+        <record id="maize_action_product_report_view" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_maize_product_report_tree"/>
+            <field name="act_window_id" ref="maize_action_product_report"/>
+        </record>
+        <menuitem action="maize_action_product_report"
+            id="menu_action_maize_product_report"
+            parent="stock.next_id_61" sequence="5"/>
         
     </data>
 </openerp>

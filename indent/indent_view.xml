@@ -52,11 +52,9 @@
                 <form string="Indents" version="7.0">
                     <header>
                         <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight"/>
-                        <button name="indent_validate" string="Validate" states="confirm" class="oe_highlight"/>
-                        <button name="indent_reject" string="Reject" states="confirm"/>
                         <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight"/>
                         <button name="indent_reject" string="Reject" states="waiting_approval"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
                     </header>
                     <sheet>
                     	<div class="oe_title">
@@ -78,13 +76,13 @@
                         </div>
                         <group>
                             <group>
-                                <field name="indent_date"/>
+                                <field name="indent_date" />
                             </group>
                             <group>
                                 <field name="required_date"/>
                             </group>
                         </group>
-                        <group string="Indent Details">
+                        <group string="Details">
                             <group>
                                 <field name="indentor_id"/>
                                 <field name="employee_id" invisible="1"/>
@@ -95,7 +93,8 @@
                             <group>
                                 <field name="requirement"/>
                                 <field name="type"/>
-                                <field name="company_id"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="item_for"/>
                             </group>
                         </group>
                         <notebook>
@@ -120,6 +119,7 @@
                                                     <field name="product_uos_qty" class="oe_inline"/>
                                                     <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
                                                 </div>
+                                                 <field name="price_unit"/>
                                             </group>
                                             <group>
                                                 <field name="type"/>
@@ -146,8 +146,13 @@
                                         <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
                                         <field name="name"/>
                                         <field name="specification"/>
+                                        <field name="price_unit"/>
+                                        <field name="price_subtotal"/>
                                     </tree>
                                 </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total"/>
+                                </group>
                             </page>
                             <page string="Status">
                                 <field name="indent_authority_ids" readonly="1">
@@ -177,7 +182,7 @@
             <field name="name">indent.indent.tree</field>
             <field name="model">indent.indent</field>
             <field name="arch" type="xml">
-                <tree string="Indents" colors="gray:state=='received';red:shipment_done==True;green:purchase_count==True;">
+                <tree string="Indents" colors="gray:state=='received';red:shipment_done==True;green:purchase_count==True;green:state=='waiting_approval';">
                     <field name="name"/>
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
@@ -189,6 +194,7 @@
                     <field name="shipment_done" invisible="1"/>
                     <field name="purchase_count" invisible="1"/>
                     <field name="requisition_done" invisible="1"/>
+                    <field name="amount_total"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -204,7 +210,6 @@
                     <field name="indent_date"/>
                     <field name="required_date"/>
                     <filter string="Draft" name="state_draft" domain="[('state','=','draft')]"/>
-                    <filter string="Confirm" name="state_confirm" domain="[('state','=','confirm')]"/>
                     <filter string="Waiting For Approval" name="state_waiting_approval" domain="[('state','=','waiting_approval')]"/>
                     <filter string="Inprogress" name="state_inprogress" domain="[('state','=','inprogress')]"/>
                     <filter string="Received" name="state_received" domain="[('state','=','received')]"/>
@@ -218,8 +223,8 @@
                         <filter string="Project" context="{'group_by': 'analytic_account_id'}"/>
                         <filter string="Requirement" context="{'group_by': 'requirement'}"/>
                         <filter string="Indent Type" context="{'group_by': 'type'}"/>
-                        <filter string="Status" context="{'group_by': 'state'}"/>
                         <filter string="Date" context="{'group_by': 'indent_date'}"/>
+                        <filter string="Status" context="{'group_by': 'state'}"/>
                     </group>
                 </search>
             </field>
@@ -244,10 +249,127 @@
         <menuitem id="stock.menu_stock_warehouse_mgmt" name="Receive/Deliver By Orders" parent="stock.menu_stock_root" sequence="2"/>
         <menuitem id="stock.menu_stock_products_moves" name="Receive/Deliver Products" parent="stock.menu_stock_root" sequence="3"/>
 
+        <!-- Indent Analysis Tree View -->
+        <record id='view_indent_product_lines_tree' model='ir.ui.view'>
+            <field name="name">indent.product.lines.tree</field>
+            <field name="model">indent.product.lines</field>
+            <field name="arch" type="xml">
+                <tree string="Indent Analysis" create="false" delete="false">
+                    <field name="indentor_code"/>
+                    <field name="indentor_id"/>
+                    <field name="indent_id" string="Indent No"/>
+                    <field name="indent_date"/>
+                    <field name="department_id"/>
+                    <field name="item_for"/>
+                    <field name="requirement"/>
+                    <field name="required_date"/>
+                    <field name="product_code"/>
+                    <field name="product_id"/>
+                    <field name="product_uom_qty"/>
+                    <field name="product_uom"/>
+                    <field name="name" string="Purpose"/>
+                    <field name="price_unit" string="Rate"/>
+                    <field name="price_subtotal" string="Value"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Indent Analysis Search View -->
+        <record id="view_indent_product_lines_search" model="ir.ui.view">
+            <field name="name">indent.product.lines.search</field>
+            <field name="model">indent.product.lines</field>
+            <field name="arch" type="xml">
+                <search string="Indents">
+                    <field name="name" string="Indent" filter_domain="['|', '|', ('name', 'ilike', self), ('indentor_code', 'ilike', self), ('product_code', 'ilike', self)]"/>
+                    <field name="indent_date"/>
+                    <field name="required_date"/>
+                    <field name="indentor_id"/>
+                    <field name="indent_id"/>
+                    <field name="department_id"/>
+                    <field name="product_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Indentor" context="{'group_by': 'indentor_id'}"/>
+                        <filter string="Indent" context="{'group_by': 'indent_id'}"/>
+                        <filter string="Department" context="{'group_by': 'department_id'}"/>
+                        <filter string="Type" context="{'group_by': 'item_for'}"/>
+                        <filter string="Product" context="{'group_by': 'product_id'}"/>
+                        <filter string="Requirement" context="{'group_by': 'requirement'}"/>
+                        <filter string="Indent Date" context="{'group_by': 'indent_date'}"/>
+                        <filter string="Required Date" context="{'group_by': 'required_date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Indent Analysis Action -->
+        <record id='action_indent_product_lines' model='ir.actions.act_window'>
+            <field name="name">Indent Analysis</field>
+            <field name="res_model">indent.product.lines</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new indent.
+                </p>
+            </field>
+        </record>
+
+        <!-- Indent Analysis Menu -->
+        <menuitem action="action_indent_product_lines" id="menu_indent_product_lines_report" parent="stock.next_id_61" sequence="5"/>
+
+        <!-- Document Authority Form View -->
+        <record id="view_document_authority_form" model="ir.ui.view">
+            <field name="name">document.authority.form</field>
+            <field name="model">document.authority</field>
+            <field name="arch" type="xml">
+                <form string="Document Authority" version="7.0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="document"/>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="priority"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <label for="description"/>
+                        <field name="description"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+         <!-- Document Authority Tree View -->
+         <record id='view_document_authority_tree' model='ir.ui.view'>
+             <field name="name">document.authority.tree</field>
+             <field name="model">document.authority</field>
+             <field name="arch" type="xml">
+                 <tree string="Document Authorities" editable="bottom">
+                     <field name="document"/>
+                     <field name="name"/>
+                     <field name="priority"/>
+                     <field name="description"/>
+                 </tree>
+             </field>
+         </record>
+
+         <!-- Document Authority Action -->
+         <record id='action_document_authority' model='ir.actions.act_window'>
+             <field name="name">Document Authorities</field>
+             <field name="res_model">document.authority</field>
+             <field name="view_type">form</field>
+             <field name="view_mode">tree,form</field>
+             <field name="help" type="html">
+                 <p class="oe_view_nocontent_create">
+                     Click to create a new document authority.
+                 </p>
+             </field>
+         </record>
+
         <menuitem name="Indent Management" parent="stock.menu_stock_configuration" id="menu_indent_configuration" sequence="41"/>
-        <!--
         <menuitem action="action_document_authority" name="Document Authorities" parent="menu_indent_configuration" id="menu_document_authority" sequence="2"/>
-        -->
 
         <!-- Stock Picking Form View -->
         <record id="view_stock_picking_form" model="ir.ui.view">
@@ -261,53 +383,22 @@
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
                 </field>
-                <xpath expr="//button[@name='draft_force_assign']" position="before">
-                    <button name="button_approve" states="draft" string="Approved by manager" class="oe_highlight"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_force_assign']" position="replace">
-                    <button name="draft_force_assign" states="approved" string="Confirm" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_validate']" position="replace">
-                    <button name="draft_validate" states="approved" string="Confirm &amp; Transfer" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-            </field>
-        </record>
-        
-        <!-- Stock Picking In Form Inherit View -->
-        <record id="view_stock_picking_in_inherit_form" model="ir.ui.view">
-            <field name="name">stock.picking.in.inherit</field>
-            <field name="model">stock.picking.in</field>
-            <field name="inherit_id" ref="stock.view_picking_in_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//button[@name='draft_force_assign']" position="before">
-                    <button name="button_approve" states="draft" string="Approved by manager" class="oe_highlight"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_force_assign']" position="replace">
-                    <button name="draft_force_assign" states="approved" string="Confirm" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_validate']" position="replace">
-                    <button name="draft_validate" states="approved" string="Confirm &amp; Transfer" type="object" class="oe_highlight" groups="base.group_user"/>
+                <xpath expr="//button[@name='draft_validate']" position="replace"/>
+                <xpath expr="//notebook/page[@string='Additional Info']" position="after">
+                    <page string="Status">
+                        <field name="picking_authority_ids" readonly="1">
+                            <tree string="Status" editable="bottom">
+                                <field name="date"/>
+                                <field name="name"/>
+                                <field name="priority"/>
+                                <field name="description"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </page>
                 </xpath>
             </field>
         </record>
-
-        <!-- Stock Picking Out Form Inherit View -->
-        <record id="view_stock_picking_out_inherit_form" model="ir.ui.view">
-            <field name="name">stock.picking.out.inherit</field>
-            <field name="model">stock.picking.out</field>
-            <field name="inherit_id" ref="stock.view_picking_out_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//button[@name='draft_force_assign']" position="before">
-                    <button name="button_approve" states="draft" string="Approved by manager" class="oe_highlight"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_force_assign']" position="replace">
-                    <button name="draft_force_assign" states="approved" string="Confirm" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_validate']" position="replace">
-                    <button name="draft_validate" states="approved" string="Confirm &amp; Transfer" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
-            </field>
-        </record> 
 
         <!-- Purchase Order Form View -->
         <record id="view_purchase_order_form" model="ir.ui.view">
@@ -337,5 +428,35 @@
                 </field>
             </field>
         </record>
+
+        <!-- User's Signature Form View -->
+        <record id="view_res_users_signature_form" model="ir.ui.view">
+            <field name="name">res.users.signature.form</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@string='Access Rights']" position="after">
+                    <page string="Signature">
+                        <group>
+                            <field name="sign" widget='image' class="oe_left oe_avatar"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Employee Form View -->
+        <record id="view_hr_employee_form_inherited" model="ir.ui.view">
+            <field name="name">hr.employee.form.inherited</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <field name="category_ids" position="after">
+                    <label for="absent"/>
+                    <field name="absent"/>
+                </field>
+            </field>
+        </record>
+
     </data>
 </openerp>

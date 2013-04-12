@@ -37,7 +37,8 @@ class new_po(report_sxw.rml_parse):
                                   'indent_no': self._indent_no,
                                   'tax': self._tax,
                                   'get_value': self._get_value,
-                                  'sequence': self._serial_no,})
+                                  'sequence': self._serial_no,
+                                  'change_date': self._change_date,})
         
         self.context = context
     
@@ -54,12 +55,15 @@ class new_po(report_sxw.rml_parse):
     
     def _tax(self,order):
         tax_obj = self.pool.get('account.tax')
-        excise_tax = vat_tax = ''
+        excise_tax = vat_tax = service_tax = ''
         for exc in order.excies_ids:
             excise_tax += exc.name + ' '
         for vat in order.vat_ids:
             vat_tax += vat.name + ' '
-        return self.get_value.update({'excise': excise_tax, 'vat': vat_tax})
+        for service in order.service_ids:
+            service_tax += service.name + ' '
+        self.get_value.update({'excise': excise_tax, 'vat': vat_tax,'service': service_tax})
+        return self._get_value()
     
     def _get_value(self):
         return self.get_value
@@ -69,6 +73,10 @@ class new_po(report_sxw.rml_parse):
         amt_en = text.amount_to_text(order.amount_total, 'en', 'RUPEES')
         return amt_en.replace('Cent', 'Paise').upper() + '(ONLY)'
 
+    def _change_date(self,order):
+        self.cr.execute('select write_date from purchase_order where id=%s', (order,))
+        write_date = self.cr.fetchone()[0].split(' ')[0]
+        return write_date
 report_sxw.report_sxw('report.new.purchase.order1','purchase.order','addons/indent/report/new_po.rml',parser=new_po, header=False)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -163,7 +163,7 @@
             <para style="terp_tblheader_Details_Centre"> Unit Price</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and 'Discount' or removeParentNode('td')]]</para>
+          <para style="terp_tblheader_Details_Centre"> [[ data['form']['discount'] == True and 'Discount (%)' or removeParentNode('td')]]</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre"> [[ data['form']['package_and_forwording'] == True and 'Pack &amp; Forward' or removeParentNode('td')]]</para>
@@ -218,15 +218,19 @@
             <para style="terp_default_8"> [[ data['form']['delivey'] == True and (po_line.delivey  or '0.00') or removeParentNode('td')]]</para>
         </td>
         <td>
-            <para style="terp_default_8"> [[ (data['form']['excise'] == True or removeParentNode('td')) and tax(po_line or '0.00') ]] [[ get_value().get('excise') or '0.00']]</para>
+            <para style="terp_default_8"> [[ (data['form']['excise'] == True or removeParentNode('td')) and tax(po_line or '0.00') ]] [[ get_value().get('excise_name') or ' ']]</para>
+            <para style="terp_default_8"> [[ (data['form']['excise'] == True or removeParentNode('td')) and get_value().get('excise') or '0.00']]</para>
         </td>
         <td>
-            <para style="terp_default_8"> [[ (data['form']['vat'] == True or removeParentNode('td')) and tax(po_line or '0.00') ]] [[ get_value().get('vat') or '0.00']]</para>
+            <para style="terp_default_8"> [[ (data['form']['vat'] == True or removeParentNode('td')) and tax(po_line or '0.00') ]] [[ get_value().get('vat_name') or ' ']]</para>
+            <para style="terp_default_8"> [[ (data['form']['vat'] == True or removeParentNode('td')) and get_value().get('vat') or '0.00']]</para>
         </td>
         <td>
+            <para style="terp_default_8"> [[ data['form']['insurance'] == True and (po_line.insurance_type == 'percentage' and formatLang(po_line.insurance) + ' %') or removeParentNode('para')]]</para>
             <para style="terp_default_8"> [[ data['form']['insurance'] == True and ((po_line.insurance_type == 'fix' and formatLang(po_line.insurance)) or (po_line.insurance_type == 'percentage' and get_value().get('insurance')) or '0.00') or removeParentNode('td')]]</para>
         </td>
         <td>
+            <para style="terp_default_8"> [[ data['form']['freight'] == True and (po_line.freight_type == 'percentage' and formatLang(po_line.freight) + ' %') or removeParentNode('para')]]</para>
             <para style="terp_default_8"> [[ data['form']['freight'] == True and ((po_line.freight_type == 'fix' and formatLang(po_line.freight)) or (po_line.freight_type == 'percentage' and get_value().get('freight')) or '0.00') or removeParentNode('td')]]</para>
         </td>
         <td>

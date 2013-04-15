@@ -45,7 +45,7 @@
                     <field name="purchase_id"/>
                     <group expand="1" string="Group By...">
                         <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id'}"/>
-                        <filter string="Purchase Order" name="Indentor" context="{'group_by':'purchase_id'}"/>
+                        <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id'}"/>
                         <filter string="Department" context="{'group_by':'department_id'}"/>
                         <filter string="Requirement" context="{'group_by':'requirement'}"/>
                         <filter string="Type" context="{'group_by':'type'}"/>
@@ -68,7 +68,7 @@
             <field name="view_mode">tree</field>
             <field name="search_view_id" ref="view_indent_purchase_report_search"/>
             <field name="view_id" ref="view_indent_purchase_report_tree"/>
-            <field name="context">{'search_default_Indentor':1, 'group_by_no_leaf':0, 'group_by':[]}</field>
+            <field name="context">{'search_default_Purchase':1, 'group_by_no_leaf':0, 'group_by':[]}</field>
             <field name="help">This report performs analysis on your indents.</field>
         </record>
 

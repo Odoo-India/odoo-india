@@ -22,7 +22,6 @@
 import indent
 import new_po
 import new_rfq
-import indent_report
 import indent_purchase_report
 import indentor_wise_indent_report
 

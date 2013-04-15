@@ -38,6 +38,7 @@ The user will create an contract
         'maize_contract_sequence.xml',
         'contract_report.xml',
         'maize_contract_view.xml',
+        'report/indent_report_view.xml',
     ],
     'update_xml' : [],
 

@@ -279,6 +279,19 @@
 	                    </tree>
 	                </field>
                 </xpath>
+                <xpath expr="//field[@name='note']" position="before">
+                <group class="oe_subtotal_footer oe_right">
+                       <field name="amount_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                       <field name="total_diff" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                       <div class="oe_subtotal_footer_separator oe_inline">
+                           <label for="amount_total"/>
+                           <button name="button_dummy"
+                               states="draft" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                       </div>
+                       <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                   </group>
+                   <div class="oe_clear"/>
+                </xpath>
             </field>
         </record>
 
@@ -602,12 +615,113 @@
                 </field>
                 <field name="partner_id" position="after">
                     <field name="po_series_id"/>
+                    <field name="indent_id"/>
+                    <field name="product_id"/>
+                    <field name="create_uid"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Supplier" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                        <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'po_series_id'}"/>
+                        <filter string="Source" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'origin'}"/>
+                        <filter string="Order Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_order'}"/>
+                        <filter string="Expected Date" icon="terp-go-month" domain="[]" context="{'group_by':'minimum_planned_date'}"/>
+                        <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                    </group>
                 </field>
                <filter string="Supplier" position="after">
                     <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'po_series_id'}"/>
                 </filter>
             </field>
         </record>
+        <!--  Advance Note Report -->
+        
+        <record id="view_maize_purchase_order_line_tree" model="ir.ui.view">
+            <field name="name">maize.purchase.order.line.tree</field>
+            <field name="model">purchase.order.line</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <tree string="Advance Note Register" create="false">
+                    <field name="po_series_id"/>
+                    <field name="advance_no"/>
+                    <field name="advance_date"/>
+                    <field name="po_indentor_id"/>
+                    <field name="po_supplier_id"/>
+                    <field name="po_excise"/>
+                    <field name="po_cess"/>
+                    <field name="po_st"/>
+                    <field name="po_name"/>
+                    <field name="po_date"/>
+                    <field name="product_id"/>
+                    <field name="price_subtotal"/>
+                    <field name="advance_percentage"/>
+                    <field name="line_advance"/>
+                    <field name="po_payment_term_id"/>
+                    <field name="product_qty"/>
+                    <field name="product_uom"/>
+                    <field name="discount"/>
+                    <field name="po_delivery"/>
+                    <field name="date_planned" string="Delivery Date"/>
+                    <field name="po_amount"/>
+                    <field name="price_unit" string="Rate"/>
+                    <field name="price_subtotal" string="Ordered"/>
+                    <field name="received_amount"/>
+                    <field name="pending_amount"/>
+                    <field name="last_month_consumption"/>
+                    <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
 
+        <record id="maize_advance_note_search_report" model="ir.ui.view">
+            <field name="name">purchase.order.line.advance.report</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <search string="Search Advance Note">
+                    <field name="advance_amount"/>
+                    <field name="name" string="Reference"/>
+                    <filter icon="terp-mail-message-new" string="Unread Messages" name="message_unread" domain="[('message_unread','=',True)]"/>
+                    <separator/>
+                    <filter icon="terp-document-new" name="draft" string="Quotations" domain="[('state','=','draft')]" help="Purchase orders which are in draft state"/>
+                    <filter icon="terp-check" name="approved" string="Purchase Orders" domain="[('state','not in',('draft','cancel'))]" help="Approved purchase orders"/>
+                    <filter icon="terp-emblem-important" name="exception" string="Exception" domain="[('state','in',('except_invoice','except_picking'))]" help="Purchase orders which are in exception state"/>
+                    <separator/>
+                    <filter icon="terp-gtk-go-back-rtl" name="not_invoiced" string="Not Invoiced" domain="[('invoice_ids','=', False)]" help="Purchase orders that include lines not invoiced."/>
+                    <field name="po_name"/>
+                    <field name="product_id"/>
+                    <field name="po_date"/>
+                    <field name="advance_date"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Supplier" icon="terp-partner" domain="[]" context="{'group_by':'po_supplier_id'}"/>
+                        <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Product" icon="terp-partner" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'po_series_id'}"/>
+                        <filter string="Payment Term" icon="terp-partner" domain="[]" context="{'group_by':'po_payment_term_id'}"/>
+                        <filter string="Indentor" icon="terp-partner" domain="[]" context="{'group_by':'po_indentor_id'}"/>
+                        <filter string="Purchase Order" icon="terp-partner" domain="[]" context="{'group_by':'po_name'}"/>
+                        <filter string="PO Date" icon="terp-partner" domain="[]" context="{'group_by':'po_date'}"/>
+                        <filter string="Company" icon="terp-partner" domain="[]" context="{'group_by':'company_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <record id="maize_advance_note_report" model="ir.actions.act_window">
+            <field name="name">Advance Note</field>
+            <field name="res_model">purchase.order.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="search_view_id"  eval="maize_advance_note_search_report"/>
+            <field name="help">Advance Note Register</field>
+        </record>
+        
+        <record id="maize_action_advance_note_view" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_maize_purchase_order_line_tree"/>
+            <field name="act_window_id" ref="maize_advance_note_report"/>
+        </record>
+        <menuitem action="maize_advance_note_report"
+            id="menu_action_maize_advance_note_report"
+            parent="stock.next_id_61" sequence="7"/>
     </data>
 </openerp>

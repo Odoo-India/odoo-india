@@ -328,6 +328,7 @@
             <para style="terp_default_Centre_9">[[  formatLang(order.required_date, date = True) or '']]</para>
           </td>
           <td>
+            <para style="terp_default_Centre_9">Rate: [[ (order_line.product_id.last_supplier_rate) or '0.0']]</para>
             <para style="terp_default_Left_9">Service: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('service') or removeParentNode('para')]] %</para>
             <para style="terp_default_Left_9">Excise: [[ get_value().get('excise') or removeParentNode('para')]] %</para>
             <para style="terp_default_Left_9">VAT: [[ get_value().get('vat') or removeParentNode('para')]]%</para>
@@ -339,7 +340,7 @@
             <para style="terp_default_Centre_9">[[ (order_line.product_uom_qty * order_line.product_id.last_supplier_rate) or '0.0']]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[  last_supplier((order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.partner_id))) or False]]</para>
+            <para style="terp_default_Centre_9">[[  last_supplier((order_line.product_id and (order_line.product_id.last_supplier_code))) or '']]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9"> [[ last_consumption_qty(order_line.product_id).get('last_year_qty') or '0']] </para>
@@ -411,7 +412,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[0].name, order) ]]</image>
+                <!--image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[1].name, order) ]]</image-->
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER(MAINTENANCE)</para>
@@ -419,7 +420,7 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[1].name, order) ]]</image>
+                <!--image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign( order.indent_authority_ids[0].name, order) ]]</image-->
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> MANAGER (STORE &amp; PURCHASE)</para>

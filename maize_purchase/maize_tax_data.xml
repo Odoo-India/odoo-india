@@ -70,6 +70,21 @@
             <field name="tax_type">vat</field>
             <field name="amount">0.00</field>
         </record>
+        <record id="maize_vat_paid_form" model="account.tax">
+            <field name="name"> Tax Paid</field>
+            <field name="tax_type">vat</field>
+            <field name="amount">0.00</field>
+        </record>
+        <record id="maize_vat_cst_form" model="account.tax">
+            <field name="name"> C.S.T</field>
+            <field name="tax_type">vat</field>
+            <field name="amount">0.00</field>
+        </record>
+        <record id="maize_vat_extra_form" model="account.tax">
+            <field name="name"> Tax Extra</field>
+            <field name="tax_type">vat</field>
+            <field name="amount">0.00</field>
+        </record>
         <record id="maize_vat_1" model="account.tax">
             <field name="name"> Add Tax 1%</field>
             <field name="tax_type">other</field>

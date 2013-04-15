@@ -21,6 +21,7 @@
 
 import time
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from openerp.osv import fields, osv
 from openerp import netsvc
 import openerp.addons.decimal_precision as dp
@@ -76,19 +77,94 @@ class purchase_order_line(osv.Model):
         res = super(purchase_order_line, self)._amount_line(cr, uid, ids, prop, arg, context=context)
         cur_obj=self.pool.get('res.currency')
         tax_obj = self.pool.get('account.tax')
+        child = []
+        res = dict([(id, {'price_subtotal': 0.0, 'po_excise':0.0,'po_st':0.0,'po_cess':0.0,'line_advance':0.0}) for id in ids])
         for line in self.browse(cr, uid, ids, context=context):
-            res[line.id] -= (res[line.id] * line.discount) / 100
-            taxes = tax_obj.compute_all(cr, uid, line.taxes_id, res[line.id], 1, line.product_id, line.order_id.partner_id)
+            if line.discount != 0.0:
+                line.price_unit -= (line.price_unit * line.discount) / 100
+            else:
+                line.price_unit
+            taxes = tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, line.product_id, line.order_id.partner_id)
             cur = line.order_id.pricelist_id.currency_id
-            res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
+            res[line.id]['price_subtotal'] = cur_obj.round(cr, uid, cur, taxes['total'])
+            res[line.id]['line_advance']= (res[line.id]['price_subtotal'] * line.advance_percentage) / 100
+            for tax in taxes['taxes']:
+                if not tax.get('parent_tax', False):
+                    res[line.id]['po_excise'] = tax.get('amount', 0)
+                elif tax.get('price_unit') in child:
+                    res[line.id]['po_st'] = tax.get('amount', 0)
+                else:
+                    res[line.id]['po_cess'] = tax.get('amount', 0)
+                    child.append(tax.get('price_unit'))
         return res
-
+    
+    def _received_amount(self, cr, uid, ids, prop, arg, context=None):
+        res = dict([(id, {'received_amount': 0.0, 'pending_amount':0.0}) for id in ids])
+        picking_in_obj = self.pool.get('stock.picking.in')
+        move_obj = self.pool.get('stock.move')
+        for po_line in self.browse(cr, uid, ids, context=context):
+            move_id = move_obj.search(cr, uid, [('type', '=', 'in'), ('origin', '=', po_line.order_id.name), ('state', '=', 'done')])
+            if move_id:
+                move = move_obj.browse(cr, uid, move_id[0])
+                amount = move.product_qty * po_line.price_subtotal
+                res[po_line.id]['received_amount'] = amount
+                res[po_line.id]['pending_amount'] = po_line.price_subtotal - amount
+        return res
+    
+    def _last_consumption(self, cr, uid, ids, prop, arg, context=None):
+        last_month = str(datetime.now() - relativedelta(months=1)).split('-')[1]
+        current_year = str(datetime.now()).split('-')[0]
+        res = {}
+        consume_amount = 0.0
+        list = []
+        stock_obj = self.pool.get('stock.move')
+        for line in self.browse(cr, uid, ids, context=context):
+            stock_id = stock_obj.search(cr, uid, [('product_id', '=', line.product_id.id), ('type', '=', 'internal'),('state', '=', 'done'), ('create_date', '<=', last_month+'-31-'+current_year),('create_date', '>=', last_month+'-1-'+current_year)])
+            if stock_id:
+                for id in stock_id:
+                    if id not in list:
+                        stock_data = stock_obj.browse(cr, uid, id)
+                        consume_amount += stock_data.product_qty * line.price_unit
+                    list.append(id)
+                res[line.id] =  consume_amount
+            else:
+                res[line.id] = 0.0
+        return res
+        
+    def _get_advance_percentage(self, cr, uid, ids, prop, arg, context=None):
+        res = {}
+        for po_line in self.browse(cr, uid, ids, context=context):
+            if po_line.advance_amount and po_line.po_amount:
+                res[po_line.id] = (po_line.advance_amount * 100) / po_line.po_amount
+            else:
+                res[po_line.id] = 0
+        return res
+    
     _columns = {
         'discount': fields.float('Discount'),
-        'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
+        'price_subtotal': fields.function(_amount_line, multi="tax", string='Subtotal', digits_compute= dp.get_precision('Account'),store=True),
         'person': fields.integer('Person',help="Number of Person work for this task"),
         'contract': fields.related('order_id', 'contract', type='boolean', relation='purchase.order', string='Contract', store=True, readonly=True),
-                }
+        'po_name': fields.related('order_id', 'name', type='char', size=64, relation='purchase.order', string='PO No', store=True, readonly=True),
+        'po_date': fields.related('order_id', 'date_order', type='date', relation='purchase.order', string='PO Date', store=True, readonly=True),
+        'po_supplier_id': fields.related('order_id', 'partner_id', type='many2one', relation='res.partner', string='Supplier Name', store=True, readonly=True),
+        'po_amount': fields.related('order_id', 'amount_total', type='float', relation='purchase.order', string='Approx. Value', store=True, readonly=True),
+        'advance_no': fields.related('order_id', 'voucher_id', 'id', type='integer', relation='account.voucher', string='Advance Note No', store=True, readonly=True),
+        'advance_amount': fields.related('order_id', 'voucher_id', 'amount', type='float', relation='account.voucher', string='Advance Amount', store=True, readonly=True),
+        'advance_date': fields.related('order_id', 'voucher_id', 'date', type='date', relation='account.voucher', string="Date",store=True),
+        'advance_percentage': fields.function(_get_advance_percentage, string="(%)", digits_compute= dp.get_precision('Account'),store=True),
+        'po_series_id': fields.related('order_id', 'po_series_id', type="many2one", relation="product.order.series", string="PO Sr", store=True),
+        'po_payment_term_id': fields.related('order_id', 'payment_term_id', type="many2one", relation='account.payment.term', string="Payment Term", store=True),
+        'po_delivery': fields.related('order_id', 'delivey', type="char", relation="purchase.order",string="Mill Delivery/Ex-Godown",store=True),
+        'po_indentor_id': fields.related('order_id', 'indentor_id', type="many2one", relation="res.users", string="Indentor",store=True),
+        'po_excise': fields.function(_amount_line, multi="tax", string='Excise', digits_compute= dp.get_precision('Account'),store=True),
+        'po_cess': fields.function(_amount_line, multi="tax",string='Cess', digits_compute= dp.get_precision('Account'),store=True),
+        'po_st': fields.function(_amount_line, multi="tax",string='ST', digits_compute= dp.get_precision('Account'),store=True),
+        'line_advance': fields.function(_amount_line, multi="tax", string="Advance", digits_compute= dp.get_precision('Account'),store=True),
+        'received_amount': fields.function(_received_amount, multi="amount", string="Received", digits_compute= dp.get_precision('Account'),store=True),
+        'pending_amount': fields.function(_received_amount, multi="amount", string="Pending", digits_compute= dp.get_precision('Account'),store=True),
+        'last_month_consumption': fields.function(_last_consumption, string="Last Month Consumption", digits_compute= dp.get_precision('Account'),store=True),
+          }
 purchase_order_line()
 class purchase_requisition(osv.osv):
     _inherit = "purchase.requisition"
@@ -149,7 +225,7 @@ class purchase_order(osv.Model):
             for line in order.order_line:
                 val1 += line.price_subtotal
                 amount_untaxed = val1
-                for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, 1, line.product_id, order.partner_id)['taxes']:
+                for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, line.product_qty, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
             other_charge = order.package_and_forwording  - (order.commission + order.other_discount)
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
@@ -489,9 +565,10 @@ class stock_picking(osv.Model):
         if context.get('default_type') == 'in':
             move_line = []
             for pick in self.browse(cr, uid, ids, context=context):
+                if not pick.purchase_id:
+                    raise osv.except_osv(_('Configuration Error!'), _('Inward Not create without any Puchase Order'))
                 for move in pick.move_lines:
-                    partial_data = partial_datas.get('move%s'%(move.id), {})
-                    dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0, move.purchase_line_id and (move.purchase_line_id.price_unit * partial_data.get('product_qty',0.0)) or 0, context)
+                    dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0,0, context)
                     move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                 vals = {'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                         'partner_id': pick.partner_id.id,
@@ -530,7 +607,25 @@ class stock_picking_receipt(osv.Model):
         #override in order to fire the workflow signal on given stock.picking workflow instance
         #instead of it's own workflow (which is not existing)
         return self.pool.get('stock.picking')._workflow_signal(cr, uid, ids, signal, context=context)
+
+    def _total_amount(self, cr, uid, ids, name, args, context=None):
+        result = dict([(id, {'amount_total':0.0,'total_diff':0.0,'amount_subtotal':0.0}) for id in ids])
+        for receipt in self.browse(cr, uid, ids, context=context):
+            total = 0.0
+            diff = 0.0
+            import_duty = 0.0
+            for line in receipt.move_lines:
+                diff += line.diff
+                total += line.amount
+                import_duty += line.import_duty
+            result[receipt.id]['total_diff'] = diff + import_duty
+            result[receipt.id]['amount_subtotal'] = total
+            result[receipt.id]['amount_total'] = total - ( diff + import_duty)
+        return result
     
+    def button_dummy(self, cr, uid, ids, context=None):
+        return True
+
     _columns = {
         'purchase_id': fields.many2one('purchase.order', 'Purchase Order',ondelete='set null', select=True),
         'inward_id': fields.many2one('stock.picking.in', 'Inward',ondelete='set null'),
@@ -557,6 +652,9 @@ class stock_picking_receipt(osv.Model):
                  * Received: has been processed, can't be modified or cancelled anymore\n
                  * Cancelled: has been cancelled, can't be confirmed anymore"""),
         'party_id': fields.many2one('res.partner', 'Party Name'),
+        'amount_total': fields.function(_total_amount, multi="cal",type="float", string='Total', store=True),
+        'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff(computed as (Diff + Import Duty))", store=True),
+        'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
     }
     _defaults = {
         'type': 'receipt',
@@ -609,8 +707,8 @@ class stock_move(osv.osv):
         first = True
         line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])[0]
         line = purchase_line_obj.browse(cr, uid, line_id, context=context)
-        if line.order_id.excies_ids:
-            for c in tax_obj.compute_all(cr, uid, line.order_id.excies_ids, line.price_subtotal, 1, line.product_id, line.order_id.partner_id)['taxes']:
+        if line.order_id.excies_ids and tax_cal == 0:
+            for c in tax_obj.compute_all(cr, uid, line.order_id.excies_ids, line.price_subtotal, line.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
                 val += c.get('amount', 0.0)
                 if c.get('parent_tax') and first:
                     res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
@@ -619,9 +717,9 @@ class stock_move(osv.osv):
                     res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
                 else:
                     res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
-            res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': line.price_subtotal-(val+diff+import_duty)})
+            res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': line.price_subtotal+val})
         else:
-            for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, 1, line.product_id, line.order_id.partner_id)['taxes']:
+            for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, line.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
                 val += c.get('amount', 0.0)
                 if c.get('parent_tax') and first:
                     res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
@@ -630,7 +728,7 @@ class stock_move(osv.osv):
                     res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
                 else:
                     res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
-            res.update({'rate': line.price_unit,'diff': diff or 0.0, 'import_duty': import_duty or 0.0, 'amount': tax_cal-(val+diff+import_duty)})
+            res.update({'rate': line.price_unit,'diff': diff or 0.0, 'import_duty': import_duty or 0.0, 'amount': tax_cal+val})
         return {'value': res}
 stock_move()
 

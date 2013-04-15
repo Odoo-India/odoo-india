@@ -491,14 +491,6 @@ class indent_product_lines(osv.Model):
         'virtual_available': fields.float('Forecasted Qty'),
         'name': fields.text('Purpose', required=True),
         'specification': fields.text('Item Specification'),
-        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
-        'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor No', store=True, readonly=True),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', string='Indent Date', store=True, readonly=True),
-        'department_id': fields.related('indent_id', 'department_id', type='many2one', relation='stock.location', string='Department', store=True, readonly=True),
-        'item_for': fields.related('indent_id', 'item_for', type='selection', selection=[('store','Store'),('capital','Capital')], string='Indent Type', store=True, readonly=True),
-        'requirement': fields.related('indent_id', 'requirement', type='selection', selection=[('ordinary','Ordinary'), ('urgent','Urgent')], string='Req Code', store=True, readonly=True),
-        'required_date': fields.related('indent_id', 'required_date', type='datetime', string='Req Date', store=True, readonly=True),
-        'product_code': fields.related('product_id', 'default_code', type='char', string='Product Code', store=True, readonly=True),
     }
 
     def _get_uom_id(self, cr, uid, *args):

@@ -35,6 +35,7 @@ class indentor_wise_indent_report(osv.osv):
             ('05', 'May'), ('06', 'June'), ('07', 'July'), ('08', 'August'), ('09', 'September'),
             ('10', 'October'), ('11', 'November'), ('12', 'December')], 'Month', readonly=True),
         'day': fields.char('Day', size=128, readonly=True),
+        'contract': fields.boolean('Contract'),
         'department_id': fields.many2one('stock.location', 'Department', readonly=True),
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')], 'Requirement', readonly=True),
         'type': fields.selection([('new','New'), ('existing','Existing')], 'Type', readonly=True),
@@ -61,6 +62,7 @@ class indentor_wise_indent_report(osv.osv):
                 select
                     min(doc.id) as id,
                     i.name as name,
+                    i.contract as contract,
                     doc.name as authority,
                     i.department_id as department_id,
                     i.requirement as requirement,
@@ -82,6 +84,7 @@ class indentor_wise_indent_report(osv.osv):
                 where doc.name is not null
                 group by
                     i.name,
+                    i.contract,
                     i.department_id,
                     i.requirement,
                     i.type,

@@ -22,5 +22,6 @@
 import contract
 import indent_report
 import indent_purchase_report
+import indentor_wise_indent_report
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

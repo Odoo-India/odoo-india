@@ -23,5 +23,6 @@ import indent
 import new_po
 import new_rfq
 import indent_report
+import indent_purchase_report
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

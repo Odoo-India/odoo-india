@@ -40,6 +40,7 @@ The user will raise an indent form to the stores, The store keeper checks for th
         'indent_sequence.xml',
         'purchase_report.xml',
         'report/indent_report_view.xml',
+        'report/indent_purchase_report_view.xml',
     ],
     'update_xml' : ['security/ir.model.access.csv', 'security/indent_security.xml'],
 

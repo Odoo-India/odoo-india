@@ -101,7 +101,7 @@ class indent_indent(osv.Model):
         'shipment_done': fields.function(_check_shipment_done, type="boolean", string="Shipment Done"),
         'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
         'active': fields.boolean('Active'),
-        'item_for': fields.selection([('store','Store'),('capital','Capital')],'Item For'),
+        'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item For'),
         'amount_total': fields.function(_total_amount, type="float", string='Total', store=True),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }

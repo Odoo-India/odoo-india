@@ -314,9 +314,6 @@
             </field>
         </record>
 
-        <!-- Indent Analysis Menu -->
-        <menuitem action="action_indent_product_lines" id="menu_indent_product_lines_report" parent="stock.next_id_61" sequence="5"/>
-
         <!-- Document Authority Form View -->
         <record id="view_document_authority_form" model="ir.ui.view">
             <field name="name">document.authority.form</field>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Indent Report Tree View -->
+        <record id="view_indent_report_tree" model="ir.ui.view">
+            <field eval="1" name="priority"/>
+            <field name="name">indent.report.tree</field>
+            <field name="model">indent.report</field>
+            <field name="arch" type="xml">
+                <tree string="Indent Analysis" create="false" delete="false">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="indentor_id"/>
+                    <field name="year" invisible="1"/>
+                    <field name="day" invisible="1"/>
+                    <field name="month" invisible="1"/>
+                    <field name="product_code"/>
+                    <field name="product_id"/>
+                    <field name="department_id"/>
+                    <field name="requirement"/>
+                    <field name="type"/>
+                    <field name="item_for"/>
+                    <field name="nbr" sum="# of Lines"/>
+                    <field name="product_uom_qty" sum="# of Qty"/>
+                    <field name="product_uom" invisible="not context.get('set_visible',False)"/>
+                    <field name="price_total" sum="Total Price"/>
+                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Indent Graph View -->
+        <record id="view_indent_report_graph" model="ir.ui.view">
+             <field name="name">indent.report.graph</field>
+             <field name="model">indent.report</field>
+             <field name="arch" type="xml">
+                 <graph string="Indent Analysis" type="bar">
+                     <field name="product_id"/>
+                     <field name="price_total"/>
+                     <field name="state" group="True"/>
+                 </graph>
+             </field>
+        </record>
+
+        <!-- Indent Search Search View -->
+        <record id="view_indent_report_search" model="ir.ui.view">
+            <field name="name">indent.report.search</field>
+            <field name="model">indent.report</field>
+            <field name="arch" type="xml">
+                <search string="Indent Analysis">
+                    <field name="date"/>
+                    <filter string="Draft" name="state_draft" domain="[('state','=','draft')]"/>
+                    <filter string="Waiting For Approval" name="state_waiting_approval" domain="[('state','=','waiting_approval')]"/>
+                    <filter string="Inprogress" name="state_inprogress" domain="[('state','=','inprogress')]"/>
+                    <filter string="Received" name="state_received" domain="[('state','=','received')]"/>
+                    <filter string="Rejected" name="state_reject" domain="[('state','=','reject')]"/>
+                    <separator/>
+                    <filter icon="terp-personal" string="My Indents" help="My Indents" domain="[('indentor_id', '=', uid)]"/>
+                    <field name="product_id"/>
+                    <field name="indentor_id"/>
+                    <group expand="1" string="Group By...">
+                        <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id'}"/>
+                        <filter string="Product" context="{'group_by':'product_id','set_visible':True}"/>
+                        <filter string="Unit of Measure" context="{'group_by':'product_uom'}"/>
+                        <filter string="Department" context="{'group_by':'department_id'}"/>
+                        <filter string="Requirement" context="{'group_by':'requirement'}"/>
+                        <filter string="Type" context="{'group_by':'type'}"/>
+                        <filter string="Item For" context="{'group_by':'item_for'}"/>
+                        <filter string="Project" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
+                        <filter string="Status" context="{'group_by':'state'}"/>
+                        <filter string="Day" context="{'group_by':'day'}"/>
+                        <filter string="Month" name="order_month" context="{'group_by':'month'}"/>
+                        <filter string="Year" context="{'group_by':'year'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Indent Report Action -->
+        <record id="action_indent_report" model="ir.actions.act_window">
+            <field name="name">Indent Analysis</field>
+            <field name="res_model">indent.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,graph</field>
+            <field name="search_view_id" ref="view_indent_report_search"/>
+            <field name="view_id" ref="view_indent_report_tree"/>
+            <field name="context">{'search_default_year':1,'search_default_month':1,'search_default_Indentor':1,'group_by_no_leaf':0,'group_by':[]}</field>
+            <field name="help">This report performs analysis on your indents.</field>
+        </record>
+
+        <!-- Indent Report Menus -->
+        <menuitem action="action_indent_report" id="menu_indent_report" parent="stock.next_id_61" sequence="5"/>
+
+    </data>
+</openerp>

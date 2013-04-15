@@ -34,6 +34,9 @@
             <field name="arch" type="xml">
                 <search string="Indent Purchase Analysis">
                     <field name="date"/>
+                    <filter string="Indent" name="state_draft" domain="[('contract','=',False)]"/>
+                    <filter string="Contract" name="state_draft" domain="[('contract','=',True)]"/>
+                    <separator/>
                     <filter string="Draft" name="state_draft" domain="[('state','=','draft')]"/>
                     <filter string="Waiting For Approval" name="state_waiting_approval" domain="[('state','=','waiting_approval')]"/>
                     <filter string="Inprogress" name="state_inprogress" domain="[('state','=','inprogress')]"/>

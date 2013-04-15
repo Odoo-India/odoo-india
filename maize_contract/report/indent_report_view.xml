@@ -51,8 +51,8 @@
             <field name="arch" type="xml">
                 <search string="Indent Analysis">
                     <field name="date"/>
-                    <filter string="Indent" name="state_draft" domain="[('contract','=',False)]"/>
-                    <filter string="Contract" name="state_draft" domain="[('contract','=',True)]"/>
+                    <filter string="Indent" name="indent" domain="[('contract','=',False)]"/>
+                    <filter string="Contract" name="contract" domain="[('contract','=',True)]"/>
                     <separator/>
                     <filter string="Draft" name="state_draft" domain="[('state','=','draft')]"/>
                     <filter string="Waiting For Approval" name="state_waiting_approval" domain="[('state','=','waiting_approval')]"/>

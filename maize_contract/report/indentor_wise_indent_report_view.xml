@@ -13,6 +13,7 @@
                     <field name="date"/>
                     <field name="authority"/>
                     <field name="indentor_id"/>
+                    <field name="indent_id" invisible="1"/>
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>
                     <field name="month" invisible="1"/>
@@ -47,7 +48,7 @@
                     <field name="authority"/>
                     <field name="indentor_id"/>
                     <group expand="1" string="Group By...">
-                        <filter string="Indent" name="Indent" context="{'group_by':'name'}"/>
+                        <filter string="Indent" name="Indent" context="{'group_by':'indent_id'}"/>
                         <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id'}"/>
                         <filter string="Authority" name="Authority" context="{'group_by':'authority'}"/>
                         <filter string="Department" context="{'group_by':'department_id'}"/>

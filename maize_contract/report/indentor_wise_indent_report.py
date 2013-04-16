@@ -41,6 +41,7 @@ class indentor_wise_indent_report(osv.osv):
         'type': fields.selection([('new','New'), ('existing','Existing')], 'Type', readonly=True),
         'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item For', readonly=True),
         'authority': fields.many2one('res.users', 'Authority', readonly=True),
+        'indent_id': fields.many2one('indent.indent', 'Indent', readonly=True),
         'indentor_id': fields.many2one('res.users', 'Indentor', readonly=True),
         'nbr': fields.integer('# of Lines', readonly=True),
         'state':fields.selection([
@@ -61,6 +62,7 @@ class indentor_wise_indent_report(osv.osv):
             create or replace view indentor_wise_indent_report as (
                 select
                     min(doc.id) as id,
+                    i.id as indent_id,
                     i.name as name,
                     i.contract as contract,
                     doc.name as authority,
@@ -83,6 +85,7 @@ class indentor_wise_indent_report(osv.osv):
                     left join stock_location sl on (sl.id=i.department_id)
                 where doc.name is not null
                 group by
+                    i.id,
                     i.name,
                     i.contract,
                     i.department_id,

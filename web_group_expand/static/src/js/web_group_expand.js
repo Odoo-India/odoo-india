@@ -14,7 +14,7 @@ openerp.web_group_expand = function(openerp) {
             $("ul#ul_group_by").remove();
             if(search.groupbys.length)
             	{
-            	$("ul.oe_view_manager_switch.oe_button_group.oe_right").before('<ul id="ul_group_by"class="oe_view_manager_switch oe_button_group oe_right"><li class="oe_i group_expand" style="border: none;border-top: 1px solid #ababab;position:relative;font-size:13px;transform: rotate(90deg);-webkit-transform: rotate(90deg);"><a id="group_by_expand"><hr style="height:2px; visibility:hidden; margin-bottom:-7px;"/>( )</a></li><li class="oe_i group_expand"><a style="top:3px;position:relative;" id="group_by_reset">P</a></li></ul>')
+            	$("tbody tr.oe_header_row:eq(1) td:eq(0) div:eq(1)").append('<ul id="ul_group_by"class="oe_view_manager_switch oe_button_group oe_right"><li class="oe_i group_expand" style="border: none;border-top: 1px solid #ababab;position:relative;font-size:13px;transform: rotate(90deg);-webkit-transform: rotate(90deg);"><a id="group_by_expand"><hr style="height:2px; visibility:hidden; margin-bottom:-7px;"/>( )</a></li><li class="oe_i group_expand"><a style="top:3px;position:relative;" id="group_by_reset">P</a></li></ul>')
             	$("a#group_by_reset").click(function(){
             		var x = document.getElementsByTagName('span');
             		for (i = 0; i < x.length; i++) {

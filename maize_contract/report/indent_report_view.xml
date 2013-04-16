@@ -12,6 +12,7 @@
                     <field name="name"/>
                     <field name="date"/>
                     <field name="indentor_id"/>
+                    <field name="indent_id" invisible="1"/>
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>
                     <field name="month" invisible="1"/>
@@ -67,6 +68,7 @@
                     <field name="product_id"/>
                     <field name="indentor_id"/>
                     <group expand="1" string="Group By...">
+                        <filter string="Indent" name="Indent" context="{'group_by':'indent_id'}"/>
                         <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id'}"/>
                         <filter string="Product" context="{'group_by':'product_id','set_visible':True}"/>
                         <filter string="Unit of Measure" context="{'group_by':'product_uom'}"/>

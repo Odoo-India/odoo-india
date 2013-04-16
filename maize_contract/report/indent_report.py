@@ -46,6 +46,7 @@ class indent_report(osv.osv):
         'product_code': fields.char('Product Code', size=64, readonly=True),
         'product_uom': fields.many2one('product.uom', 'Unit of Measure', readonly=True),
         'product_uom_qty': fields.float('# of Qty', readonly=True),
+        'indent_id': fields.many2one('indent.indent', 'Indent', readonly=True),
         'indentor_id': fields.many2one('res.users', 'Indentor', readonly=True),
         'price_unit': fields.float('Rate', readonly=True),
         'price_total': fields.float('Value', readonly=True),
@@ -68,6 +69,7 @@ class indent_report(osv.osv):
             create or replace view indent_report as (
                 select
                     min(l.id) as id,
+                    i.id as indent_id,
                     i.name as name,
                     i.contract as contract,
                     i.department_id as department_id,
@@ -100,6 +102,7 @@ class indent_report(osv.osv):
                     left join stock_location sl on (sl.id=i.department_id)
                 where l.product_id is not null
                 group by
+                    i.id,
                     i.name,
                     i.contract,
                     i.department_id,

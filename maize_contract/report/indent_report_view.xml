@@ -19,13 +19,16 @@
                     <field name="product_id"/>
                     <field name="department_id"/>
                     <field name="requirement"/>
+                    <field name="required_date"/>
                     <field name="type"/>
                     <field name="item_for"/>
+                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                     <field name="nbr" sum="# of Lines"/>
                     <field name="product_uom_qty" sum="# of Qty"/>
                     <field name="product_uom" invisible="not context.get('set_visible',False)"/>
+                    <field name="purpose"/>
+                    <field name="price_unit"/>
                     <field name="price_total" sum="Total Price"/>
-                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                     <field name="state"/>
                 </tree>
             </field>

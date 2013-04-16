@@ -231,17 +231,11 @@
                     <field name="purchase_id"/>
                 </xpath>
 
-                <xpath expr="//button[@name='draft_force_assign']" position="before">
-                    <button name="button_approve" states="draft" string="Approved by manager" class="oe_highlight"/>
-                </xpath>
-                <xpath expr="//button[@name='draft_force_assign']" position="replace">
-                    <button name="draft_force_assign" states="approved" string="Confirm" type="object" class="oe_highlight" groups="base.group_user"/>
-                </xpath>
                 <xpath expr="/form/header//button[@name='%(stock.act_stock_return_picking)d']" position="replace">
                     <button name="%(stock.act_stock_return_picking)d" string="Return Products" states="done" type="action"/>
                 </xpath>
                 <xpath expr="//button[@name='draft_validate']" position="replace">
-                    <button name="draft_validate" states="approved" string="Confirm &amp; Receive" type="object" class="oe_highlight"/>
+                    <button name="draft_validate" states="draft" string="Confirm &amp; Receive" type="object" class="oe_highlight"/>
                 </xpath>
                 <xpath expr="//button[@name='action_process']" position="replace">
                     <button name="action_process" states="assigned" string="Receive" type="object" class="oe_highlight"/>
@@ -250,7 +244,7 @@
                     <field name="partner_id" on_change="onchange_partner_in(partner_id)"  string="Supplier"/>
                 </xpath>
                 <xpath expr="//field[@name='move_lines']" position="replace">
-                    <field name="move_lines" context="{'address_in_id': partner_id, 'picking_type': 'in', 'form_view_ref':'view_move_picking_form', 'tree_view_ref':'view_move_picking_tree'}"/>
+                    <field name="move_lines" context="{'address_in_id': partner_id, 'picking_type': 'receipt', 'form_view_ref':'view_move_picking_form', 'tree_view_ref':'view_move_picking_tree'}"/>
                 </xpath>
                 <xpath expr="/form/sheet" position="after">
                     <div class="oe_chatter">

@@ -655,6 +655,7 @@ class stock_picking_receipt(osv.Model):
         'amount_total': fields.function(_total_amount, multi="cal",type="float", string='Total', store=True),
         'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff(computed as (Diff + Import Duty))", store=True),
         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
+        'department_id': fields.related('purchase_id', 'indent_id', 'department_id', type="many2one", relation="stock.location", store=True),
     }
     _defaults = {
         'type': 'receipt',
@@ -673,6 +674,23 @@ stock_location()
 
 class stock_move(osv.osv):
     _inherit = "stock.move"
+    
+    def _get_year(self, cr, uid, ids, name, args, context=None):
+        res = dict([(id, {'inward_year':'','puchase_year':'','indent_year':''}) for id in ids])
+        move_year = po_year = indent_year = ''
+        for move in self.browse(cr, uid, ids, context=context):
+            move_date = datetime.strptime(move.create_date,'%Y-%m-%d %H:%M:%S').year
+            move_year=str(move_date-1)+''+str(move_date)
+            res[move.id]['inward_year'] = move_year
+            if move.picking_id and move.picking_id.purchase_id:
+                po_date = datetime.strptime(move.picking_id.purchase_id.date_order,'%Y-%m-%d').year
+                po_year=str(po_date-1)+''+str(po_date)
+                if move.picking_id.purchase_id.indent_date:
+                    indent_date = datetime.strptime(move.picking_id.purchase_id.indent_date,'%Y-%m-%d %H:%M:%S').year
+                    indent_year=str(indent_date-1)+''+str(indent_date)
+                res[move.id]['puchase_year'] = po_year 
+                res[move.id]['indent_year'] = indent_year
+        return res
     _columns = {
             'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type'),
             'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
@@ -692,6 +710,11 @@ class stock_move(osv.osv):
             'po_name': fields.related('picking_id', 'purchase_id','name', type="char", size=64, relation='puchase.order', string="PO Number", store=True),
             'payment_id': fields.related('picking_id', 'purchase_id', 'payment_term_id','name', type="char", size=64, relation='account.payment.term',string="Payment", store=True),
             'indentor_id': fields.related('picking_id', 'purchase_id', 'indentor_id', type="many2one", relation='res.users', string="Indentor", store=True),
+            'po_series_id': fields.related('picking_id', 'purchase_id', 'po_series_id', type="many2one", relation='product.order.series', string="PO series", store=True),
+            'indent_id': fields.related('picking_id', 'purchase_id', 'indent_id', type="many2one", relation='indent.indent', string="Indent", store=True),
+            'inward_year':fields.function(_get_year, multi="year", string="Inward Year",store=True),
+            'puchase_year':fields.function(_get_year, multi="year", string="Puchase Year", store=True),
+            'indent_year':fields.function(_get_year, multi="year", string="Puchase Year", store=True),
             #'gate_pass_id': fields.related('picking_id', 'gp_no', type="many2one", relation='gate.pass', string="Gate Pass No", store=True),
             #'despatch_mode': fields.related('picking_id', 'despatch_mode', type="selection", relation='stock.picking', string="Mode of Despatch", store=True),
                 }

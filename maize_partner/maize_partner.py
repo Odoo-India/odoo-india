@@ -37,7 +37,9 @@ class res_partner(osv.Model):
     _inherit = 'res.partner'
     _rec_name = 'supp_code'
     def name_get(self, cr, uid, ids, context=None):
-        if not len(ids):
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        elif not len(ids):
             return []
         res = []
         for pckg in self.browse(cr, uid, ids, context=context):

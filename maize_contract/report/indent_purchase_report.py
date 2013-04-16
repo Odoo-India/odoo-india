@@ -41,6 +41,7 @@ class indent_purchase_report(osv.osv):
         'type': fields.selection([('new','New'), ('existing','Existing')], 'Type', readonly=True),
         'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item For', readonly=True),
         'purchase_id': fields.many2one('purchase.order', 'Purchase Order', readonly=True),
+        'indent_id': fields.many2one('indent.indent', 'Indent', readonly=True),
         'indentor_id': fields.many2one('res.users', 'Indentor', readonly=True),
         'price_total': fields.float('Total Price', readonly=True),
         'nbr': fields.integer('# of Lines', readonly=True),
@@ -62,6 +63,7 @@ class indent_purchase_report(osv.osv):
             create or replace view indent_purchase_report as (
                 select
                     min(po.id) as id,
+                    i.id as indent_id,
                     i.name as name,
                     i.contract as contract,
                     i.department_id as department_id,
@@ -84,6 +86,7 @@ class indent_purchase_report(osv.osv):
                 where po.indent_id is not null
                 group by
                     po.id,
+                    i.id,
                     i.name,
                     i.contract,
                     po.name,

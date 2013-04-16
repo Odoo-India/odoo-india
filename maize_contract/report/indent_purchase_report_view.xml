@@ -13,6 +13,7 @@
                     <field name="date"/>
                     <field name="indentor_id"/>
                     <field name="purchase_id"/>
+                    <field name="indent_id" invisible="1"/>
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>
                     <field name="month" invisible="1"/>
@@ -47,6 +48,7 @@
                     <field name="indentor_id"/>
                     <field name="purchase_id"/>
                     <group expand="1" string="Group By...">
+                        <filter string="Indent" name="Indent" context="{'group_by':'indent_id'}"/>
                         <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id'}"/>
                         <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id'}"/>
                         <filter string="Department" context="{'group_by':'department_id'}"/>

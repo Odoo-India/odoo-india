@@ -38,7 +38,7 @@ Managing Gate Passes.
         'gate_pass_sequence.xml',
         'gate_pass_report.xml',
     ],
-    'update_xml' : [],
+    'update_xml' : ['security/ir.model.access.csv'],
 
     'demo': [],
 

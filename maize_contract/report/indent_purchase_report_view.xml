@@ -49,14 +49,14 @@
                     <field name="purchase_id"/>
                     <group expand="1" string="Group By...">
                         <filter string="Indent" name="Indent" context="{'group_by':'indent_id'}"/>
-                        <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id'}"/>
-                        <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id'}"/>
-                        <filter string="Department" context="{'group_by':'department_id'}"/>
-                        <filter string="Requirement" context="{'group_by':'requirement'}"/>
-                        <filter string="Type" context="{'group_by':'type'}"/>
-                        <filter string="Item For" context="{'group_by':'item_for'}"/>
-                        <filter string="Project" context="{'group_by':'analytic_account_id'}" groups="analytic.group_analytic_accounting"/>
-                        <filter string="Status" context="{'group_by':'state'}"/>
+                        <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id','indentor_id_view': True}"/>
+                        <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id','purchase_id_view': True}"/>
+                        <filter string="Department" context="{'group_by':'department_id','po_supplier_id_view': True}"/>
+                        <filter string="Requirement" context="{'group_by':'requirement','po_supplier_id_view': True}"/>
+                        <filter string="Type" context="{'group_by':'type','po_supplier_id_view': True}"/>
+                        <filter string="Item For" context="{'group_by':'item_for','po_supplier_id_view': True}"/>
+                        <filter string="Project" context="{'group_by':'analytic_account_id','po_supplier_id_view': True}" groups="analytic.group_analytic_accounting"/>
+                        <filter string="Status" context="{'group_by':'state','po_supplier_id_view': True}"/>
                         <filter string="Day" context="{'group_by':'day'}"/>
                         <filter string="Month" name="order_month" context="{'group_by':'month'}"/>
                         <filter string="Year" context="{'group_by':'year'}"/>

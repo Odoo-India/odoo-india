@@ -521,8 +521,8 @@
             <field name="priority">20</field>
             <field name="arch" type="xml">
                 <tree string="Serise/Supplier Analysis" create="false">
-                    <field name="partner_id" string="SUPPCODE NAME"/>
-                    <field name="contract_id" string="SERIES"/>
+                    <field name="partner_id" string="SUPPCODE NAME" invisible="context.get('partner_id_view',False)"/>
+                    <field name="contract_id" string="SERIES" invisible="context.get('contract_id_view',False)"/>
                     <field name="amount_total" string="AMOUNT" sum="Total Amount"/>
                     <field name="company_id" groups="base.group_multi_company" invisible="1"/>
                     <field name="state" invisible="1"/>
@@ -547,9 +547,9 @@
                     <field name="product_id"/>
                     <field name="create_uid"/>
                     <group expand="0" string="Group By...">
-                        <filter string="Supplier" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                        <filter string="Supplier" icon="terp-partner" domain="[]" context="{'group_by':'partner_id','partner_id_view':True}"/>
                         <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
-                        <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'contract_id'}"/>
+                        <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'contract_id','contract_id_view':True}"/>
                         <filter string="Company" icon="terp-partner" domain="[]" context="{'group_by':'company_id'}"/>
                     </group>
                 </search>
@@ -636,21 +636,21 @@
             <field name="priority">20</field>
             <field name="arch" type="xml">
                 <tree string="Advance Note Register" create="false">
-                    <field name="po_series_id"/>
+                    <field name="po_series_id" invisible="context.get('po_series_id_view',False)"/>
                     <field name="advance_no"/>
                     <field name="advance_date"/>
-                    <field name="po_indentor_id"/>
-                    <field name="po_supplier_id"/>
+                    <field name="po_indentor_id" invisible="context.get('po_indentor_id_view',False)"/>
+                    <field name="po_supplier_id" invisible="context.get('po_supplier_id_view',False)"/>
                     <field name="po_excise"/>
                     <field name="po_cess"/>
                     <field name="po_st"/>
-                    <field name="po_name"/>
-                    <field name="po_date"/>
-                    <field name="product_id"/>
+                    <field name="po_name"  invisible="context.get('po_name_view',False)"/>
+                    <field name="po_date" invisible="context.get('po_date_view',False)"/>
+                    <field name="product_id" invisible="context.get('product_id_view',False)"/>
                     <field name="price_subtotal"/>
                     <field name="advance_percentage"/>
                     <field name="line_advance"/>
-                    <field name="po_payment_term_id"/>
+                    <field name="po_payment_term_id" invisible="context.get('po_payment_term_id_view',False)"/>
                     <field name="product_qty"/>
                     <field name="product_uom"/>
                     <field name="discount"/>
@@ -675,26 +675,24 @@
                 <search string="Search Advance Note">
                     <field name="advance_amount"/>
                     <field name="name" string="Reference"/>
-                    <filter icon="terp-mail-message-new" string="Unread Messages" name="message_unread" domain="[('message_unread','=',True)]"/>
                     <separator/>
                     <filter icon="terp-document-new" name="draft" string="Quotations" domain="[('state','=','draft')]" help="Purchase orders which are in draft state"/>
                     <filter icon="terp-check" name="approved" string="Purchase Orders" domain="[('state','not in',('draft','cancel'))]" help="Approved purchase orders"/>
                     <filter icon="terp-emblem-important" name="exception" string="Exception" domain="[('state','in',('except_invoice','except_picking'))]" help="Purchase orders which are in exception state"/>
                     <separator/>
-                    <filter icon="terp-gtk-go-back-rtl" name="not_invoiced" string="Not Invoiced" domain="[('invoice_ids','=', False)]" help="Purchase orders that include lines not invoiced."/>
                     <field name="po_name"/>
                     <field name="product_id"/>
                     <field name="po_date"/>
                     <field name="advance_date"/>
                     <group expand="0" string="Group By...">
-                        <filter string="Supplier" icon="terp-partner" domain="[]" context="{'group_by':'po_supplier_id'}"/>
+                        <filter string="Supplier" icon="terp-partner" domain="[]" context="{'group_by':'po_supplier_id','po_supplier_id_view': True}"/>
                         <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
-                        <filter string="Product" icon="terp-partner" domain="[]" context="{'group_by':'product_id'}"/>
-                        <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'po_series_id'}"/>
-                        <filter string="Payment Term" icon="terp-partner" domain="[]" context="{'group_by':'po_payment_term_id'}"/>
-                        <filter string="Indentor" icon="terp-partner" domain="[]" context="{'group_by':'po_indentor_id'}"/>
-                        <filter string="Purchase Order" icon="terp-partner" domain="[]" context="{'group_by':'po_name'}"/>
-                        <filter string="PO Date" icon="terp-partner" domain="[]" context="{'group_by':'po_date'}"/>
+                        <filter string="Product" icon="terp-partner" domain="[]" context="{'group_by':'product_id','product_id_view': True}"/>
+                        <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'po_series_id','po_series_id_view': True}"/>
+                        <filter string="Payment Term" icon="terp-partner" domain="[]" context="{'group_by':'po_payment_term_id','po_payment_term_id_view': True}"/>
+                        <filter string="Indentor" icon="terp-partner" domain="[]" context="{'group_by':'po_indentor_id','po_indentor_id_view': True}"/>
+                        <filter string="Purchase Order" icon="terp-partner" domain="[]" context="{'group_by':'po_name','po_name_view': True}"/>
+                        <filter string="PO Date" icon="terp-partner" domain="[]" context="{'group_by':'po_date','po_date_view': True}"/>
                         <filter string="Company" icon="terp-partner" domain="[]" context="{'group_by':'company_id'}"/>
                     </group>
                 </search>

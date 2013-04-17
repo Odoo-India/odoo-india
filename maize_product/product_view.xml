@@ -270,6 +270,9 @@
                 <field name="name" position="replace">
                     <field name="name" string="Product" filter_domain="['|', '|', '|', '|', '|', ('name', 'ilike', self), ('default_code', 'ilike', self), ('description', 'ilike', self), ('desc2', 'ilike', self), ('desc3', 'ilike', self), ('desc4', 'ilike', self)]"/>
                 </field>
+                <xpath expr="//group/filter[@string='Default Unit of Measure']" position="replace">
+                    <filter string='Default Unit of Measure' icon="terp-mrp" domain="[]" context="{'group_by' : 'uom_id', 'uom_id_view':True}"/>
+                </xpath>
             </field>
         </record>
 
@@ -283,7 +286,7 @@
                     <field name="name" string="Description"/>
                     <field name="categ_id" invisible="1"/>
                     <field name="type" invisible="1"/>
-                    <field name="uom_id" string="Unit of Measure" groups="product.group_uom"/>
+                    <field name="uom_id" string="Unit of Measure" groups="product.group_uom" invisible="context.get('uom_id_view', False)"/>
                     <field name="ex_chapter" string="Chapter"/>
                     <field name="min_qty" string="Min_Level"/>
                     <field name="max_qty" string="Max_Level"/>

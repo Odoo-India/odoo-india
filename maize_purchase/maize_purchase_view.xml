@@ -173,7 +173,7 @@
                 			<field name="hpressure"/>
                 			<field name="transporter"/>
                 			<field name="series_id"/>
-                			<field name="maize_in"/>
+                			<field name="maize_in" groups="indent.group_maize_data"/>
                			</group>
                			<group colspan="4">
                				<field name="lab_no"/>
@@ -230,7 +230,7 @@
                     <field name="gp_received"/>
                     <field name="gp_date"/>
                     <field name="purchase_id"/>
-                    <field name="maize_receipt"/>
+                    <field name="maize_receipt" groups="indent.group_maize_data"/>
                 </xpath>
 
                 <xpath expr="/form/header//button[@name='%(stock.act_stock_return_picking)d']" position="replace">

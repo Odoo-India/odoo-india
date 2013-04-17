@@ -161,7 +161,7 @@
                         <group>
                             <field name="series"/>
                             <field name="gate_pass_id" invisible="1"/>
-                            <field name="maize_out"/>
+                            <field name="maize_out" groups="indent.group_maize_data"/>
                         </group>
                         <group>
                             <field name="gate_pass_type"/>

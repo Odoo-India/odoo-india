@@ -208,20 +208,22 @@ class indent_indent(osv.Model):
             authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in indent.indent_authority_ids]
             sort_authorities = sorted(authorities, key=lambda element: (element[2]))
             count = 0
+            count_auth = 0
             for authority in sort_authorities:
                 count += 1
                 if authority[1] == uid:
+                    count_auth += 1
                     if authority[3] == 'approve':
                         raise osv.except_osv(_("Warning !"),_('You have already approved an indent.'))
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
-                    for write_id in write_ids:
-                        desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
-                        description = 'Approved by higher authority - %s' %(authority[4],)
-                        if desc:
-                            description = 'Approved by higher authority - %s' %(authority[4],) + '\n' + desc
-                        document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
-                    break
+                    if count_auth == 1:
+                        for write_id in write_ids:
+                            desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
+                            description = 'Approved by higher authority - %s' %(authority[4],)
+                            if desc:
+                                description = 'Approved by higher authority - %s' %(authority[4],) + '\n' + desc
+                            document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
 
         for indent in self.browse(cr, uid, ids):
             authorities = [(authority.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
@@ -239,20 +241,22 @@ class indent_indent(osv.Model):
             authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in indent.indent_authority_ids]
             sort_authorities = sorted(authorities, key=lambda element: (element[2]))
             count = 0
+            count_auth = 0
             for authority in sort_authorities:
                 count += 1
                 if authority[1] == uid:
+                    count_auth += 1
                     if authority[3] == 'reject':
                         raise osv.except_osv(_("Warning !"),_('You have already rejected an indent.'))
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
-                    for write_id in write_ids:
-                        desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
-                        description = 'Rejected by higher authority - %s' %(authority[4],)
-                        if desc:
-                            description = 'Rejected by higher authority - %s' %(authority[4],) + '\n' + desc
-                        document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
-                    break
+                    if count_auth == 1:
+                        for write_id in write_ids:
+                            desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
+                            description = 'Rejected by higher authority - %s' %(authority[4],)
+                            if desc:
+                                description = 'Rejected by higher authority - %s' %(authority[4],) + '\n' + desc
+                            document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
 
         for indent in self.browse(cr, uid, ids):
             authorities = [(authority.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]

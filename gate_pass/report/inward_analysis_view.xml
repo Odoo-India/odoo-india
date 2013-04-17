@@ -53,6 +53,11 @@
                 <field name="half_high_cess"/>
                 <field name="half_import_duty"/>
                 <field name="half_cenvat"/>
+                <field name="despatch_mode"/>
+                <field name="cylinder"/>
+                <field name="tr_code_id"/>
+                <field name="ac_code_id"/>
+                <field name="payment_id"/>
                 <field name="indentor_id"/>
                 <field name="purchase_id" />
                 <field name="po_series_id" />
@@ -112,6 +117,10 @@
                     <filter string="Purchase Order" name="group_oreder" icon="terp-folder-orange" context="{'group_by':'purchase_id'}"/>
                     <filter string="Purchase Series" name="group_series" icon="terp-folder-orange" context="{'group_by':'po_series_id'}"/>
                     <filter string="Department" name="group_department" icon="terp-folder-orange" context="{'group_by':'department_id'}"/>
+                    <filter string="Payment Term" name="group_payment" icon="terp-folder-orange" context="{'group_by':'payment_id'}"/>
+                    <filter string="Despatch Mode" name="group_despatch_mode" icon="terp-folder-orange" context="{'group_by':'despatch_mode'}"/>
+                    <filter string="TR Code" name="group_tr_code" icon="terp-folder-orange" context="{'group_by':'tr_code_id'}"/>
+                    <filter string="AC Code" name="group_ac_code" icon="terp-folder-orange" context="{'group_by':'ac_code_id'}"/>
                     <filter string="Indent" name="group_indent" icon="terp-folder-orange" context="{'group_by':'indent_id'}"/>
                     <filter string="Indentor" name="group_indentor" icon="terp-folder-orange" context="{'group_by':'indentor_id'}"/>
                     <filter string="Company" name="group_state" icon="terp-go-home" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>

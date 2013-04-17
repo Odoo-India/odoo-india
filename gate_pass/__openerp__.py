@@ -37,6 +37,7 @@ Managing Gate Passes.
         'gate_pass_workflow.xml',
         'gate_pass_sequence.xml',
         'gate_pass_report.xml',
+        'report/inward_analysis_view.xml'
     ],
     'update_xml' : ['security/ir.model.access.csv'],
 

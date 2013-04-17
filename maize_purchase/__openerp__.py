@@ -38,7 +38,6 @@ This module inherits the base product module which maintains some product histor
         'maize_purchase_view.xml',
         'maize_tax_data.xml',
         'code_data.xml',
-        'report/inward_analysis_view.xml',
     ],
     'update_xml' : [],
 

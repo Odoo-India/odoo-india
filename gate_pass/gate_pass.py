@@ -209,6 +209,8 @@ class gate_pass(osv.Model):
     def action_picking_create(self, cr, uid, ids, context=None):
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'
         picking = self.browse(cr, uid, ids[0], context=context).in_picking_id.id
+        if not picking:
+            raise osv.except_osv(_("Error !"),_('An inward related to the gate pass is not created.'))
         self.pool.get('stock.picking.in').write(cr, uid, [picking], {'gate_pass_id': ids[0]}, context=context)
         self.write(cr, uid, ids, {'state': 'pending'}, context=context)
         return picking

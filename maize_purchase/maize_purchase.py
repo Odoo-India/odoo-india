@@ -567,9 +567,14 @@ class stock_picking(osv.Model):
             for pick in self.browse(cr, uid, ids, context=context):
                 if not pick.purchase_id:
                     raise osv.except_osv(_('Configuration Error!'), _('Inward Not create without any Puchase Order'))
-                for move in pick.move_lines:
-                    dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0,0, context)
-                    move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                if pick.backorder_id:
+                    for move in pick.backorder_id.move_lines:
+                        dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0,0, context)
+                        move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                else:
+                    for move in pick.move_lines:
+                        dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0,0, context)
+                        move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                 vals = {'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                         'partner_id': pick.partner_id.id,
                         'stock_journal_id': pick.stock_journal_id or False,
@@ -702,7 +707,7 @@ class stock_move(osv.osv):
             'cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
             'high_cess': fields.float('High cess.', digits_compute= dp.get_precision('Account')),
             'import_duty': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
-            'cenvat': fields.float('CentVAT.', digits_compute= dp.get_precision('Account')),
+            'cenvat': fields.float('CenVAT.', digits_compute= dp.get_precision('Account')),
             'c_cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
             'c_high_cess': fields.float('High Cess.', digits_compute= dp.get_precision('Account')),
             'tax_cal': fields.float('Tax Cal', digits_compute= dp.get_precision('Account')),

@@ -33,6 +33,8 @@
                 <field name="product_qty" string="Challan" sum="Total Challan "/>
                 <field name="product_qty" string="Received" sum="Total Received"/>
                 <field name="product_uom"/>
+                <field name="bill_no"/>
+                <field name="bill_date"/>
                 <field name="rate"/>
                 <field name="diff"/>
                 <field name="indent_year"/>
@@ -40,16 +42,24 @@
                 <field name="product_qty_in" sum="Total incoming quantity" />
                 <field name="product_qty_out" sum="Total outgoing quantity"/>
                 <field name="value"  sum="Total value"/>
-                <field name="day_diff1"/>
-                <field name="day_diff"/>
+                <field name="excies"/>
                 <field name="tr_code"/>
                 <field name="department_id"/>
-                <field name="day_diff2" string="Delay(Days)"/>
-                <field name="excies"/>
+                <field name="cess"/>
+                <field name="high_cess"/>
+                <field name="import_duty"/>
+                <field name="cenvat"/>
+                <field name="half_cess"/>
+                <field name="half_high_cess"/>
+                <field name="half_import_duty"/>
+                <field name="half_cenvat"/>
+                <field name="indentor_id"/>
                 <field name="purchase_id" />
                 <field name="po_series_id" />
                 <field name="indent_id" />
-                <field name="indentor_id"/>
+                <field name="day_diff1"/>
+                <field name="day_diff"/>
+                <field name="day_diff2" string="Delay(Days)"/>
            </tree>
         </field>
     </record>

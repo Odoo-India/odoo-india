@@ -71,6 +71,16 @@ class report_stock_move(osv.osv):
         'excies': fields.float('Excies.', digits_compute= dp.get_precision('Account')),
         'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
         'department_id': fields.many2one('stock.location', 'Dept. Code'),
+        'bill_no': fields.integer('Bill No'),
+        'bill_date': fields.date('Bill Date'),
+        'cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
+        'high_cess': fields.float('High cess.', digits_compute= dp.get_precision('Account')),
+        'import_duty': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
+        'cenvat': fields.float('CenVAT.', digits_compute= dp.get_precision('Account')),
+        'half_cess': fields.float('50% Cess.', digits_compute= dp.get_precision('Account')),
+        'half_high_cess': fields.float('50% High cess.', digits_compute= dp.get_precision('Account')),
+        'half_import_duty': fields.float('50% Import Duty.', digits_compute= dp.get_precision('Account')),
+        'half_cenvat': fields.float('50% CenVAT.', digits_compute= dp.get_precision('Account')),
     }
 
     def init(self, cr):
@@ -118,6 +128,16 @@ class report_stock_move(osv.osv):
                         al.excies as excies,
                         al.rate as rate,
                         al.department_id as department_id,
+                        al.bill_no as bill_no,
+                        al.bill_date as bill_date,
+                        al.cess as cess,
+                        al.high_cess as high_cess,
+                        al.import_duty as import_duty,
+                        al.cenvat as cenvat,
+                        al.half_cess as half_cess,
+                        al.half_high_cess as half_high_cess,
+                        al.half_import_duty as half_import_duty,
+                        al.half_cenvat as half_cenvat,
                         sum(al.in_value - al.out_value) as value
                     FROM (SELECT
                         CASE WHEN sp.type in ('out') THEN
@@ -160,6 +180,16 @@ class report_stock_move(osv.osv):
                         sm.diff as diff,
                         sm.excies as excies,
                         sm.rate as rate,
+                        sm.bill_no as bill_no,
+                        sm.bill_date as bill_date,
+                        sm.cess as cess,
+                        sm.high_cess as high_cess,
+                        sm.import_duty as import_duty,
+                        sm.cenvat as cenvat,
+                        (sm.cess / 2 ) as half_cess,
+                        (sm.high_cess / 2 ) as half_high_cess,
+                        (sm.import_duty / 2 ) as half_import_duty,
+                        (sm.cenvat / 2 ) as half_cenvat,
                             sm.company_id as company_id,
                             sm.state as state,
                             sm.product_uom as product_uom,
@@ -186,13 +216,13 @@ class report_stock_move(osv.osv):
                         sm.id,sp.type, sm.date,sm.partner_id,
                         sm.product_id,sm.state,sm.product_uom,sm.date_expected,
                         sm.product_id,pt.standard_price, sm.picking_id, sm.product_qty,
-                        sm.company_id,sm.product_qty, sm.location_id,sm.location_dest_id,pu.factor,pt.categ_id, sp.stock_journal_id,sp.gate_pass_id,sp.gp_date,sp.challan_no, sp.case_code,sp.purchase_id,sp.tr_code,sp.lr_no,sp.lr_date,sp.department_id,sm.po_series_id,sm.indent_id,sm.inward_year,sm.puchase_year,sm.indent_year,sm.indentor_id,sm.diff,sm.excies,sm.rate)
+                        sm.company_id,sm.product_qty, sm.location_id,sm.location_dest_id,pu.factor,pt.categ_id, sp.stock_journal_id,sp.gate_pass_id,sp.gp_date,sp.challan_no, sp.case_code,sp.purchase_id,sp.tr_code,sp.lr_no,sp.lr_date,sp.department_id,sm.po_series_id,sm.indent_id,sm.inward_year,sm.puchase_year,sm.indent_year,sm.indentor_id,sm.diff,sm.excies,sm.rate,sm.bill_no,sm.bill_date,sm.cess,sm.high_cess,sm.import_duty,sm.cenvat)
                     AS al
                     GROUP BY
                         al.out_qty,al.in_qty,al.curr_year,al.curr_month,
                         al.curr_day,al.curr_day_diff,al.curr_day_diff1,al.curr_day_diff2,al.dp,al.location_id,al.location_dest_id,
                         al.partner_id,al.product_id,al.state,al.product_uom,
-                        al.picking_id,al.company_id,al.type,al.product_qty, al.categ_id, al.stock_journal,al.gate_pass_id,al.gp_date,al.challan_no,al.case_code,al.purchase_id,al.po_series_id,al.indent_id,al.inward_year,al.puchase_year,al.indent_year,al.indentor_id,al.tr_code,al.diff,al.lr_no,al.lr_date,al.excies,al.rate,al.department_id)
+                        al.picking_id,al.company_id,al.type,al.product_qty, al.categ_id, al.stock_journal,al.gate_pass_id,al.gp_date,al.challan_no,al.case_code,al.purchase_id,al.po_series_id,al.indent_id,al.inward_year,al.puchase_year,al.indent_year,al.indentor_id,al.tr_code,al.diff,al.lr_no,al.lr_date,al.excies,al.rate,al.department_id,al.bill_no,al.bill_date,al.cess,al.high_cess,al.import_duty,al.cenvat,al.half_cess,al.half_high_cess,al.half_import_duty,al.half_cenvat)
         """)
 
 report_stock_move()

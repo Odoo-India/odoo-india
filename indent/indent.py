@@ -809,6 +809,7 @@ class purchase_requisition(osv.Model):
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
+        'maize': fields.char('Maize', size=256),
     }
 
     def make_purchase_order(self, cr, uid, ids, partner_id, context=None):

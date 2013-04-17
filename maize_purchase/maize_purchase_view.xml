@@ -173,6 +173,7 @@
                 			<field name="hpressure"/>
                 			<field name="transporter"/>
                 			<field name="series_id"/>
+                			<field name="maize_in"/>
                			</group>
                			<group colspan="4">
                				<field name="lab_no"/>

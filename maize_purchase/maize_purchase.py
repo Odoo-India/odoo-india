@@ -66,6 +66,7 @@ class stock_picking_in(osv.osv):
                                            ('camel_cart','By Camel Cart'),
                                            ('others','Others'),],"Despatch Mode"),
         'other_dispatch': fields.char("Other Dispatch",size=256),
+        'maize_in': fields.char('Maize', size=256),
             
     }
 stock_picking_in()

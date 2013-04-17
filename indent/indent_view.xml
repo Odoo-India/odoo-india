@@ -315,6 +315,7 @@
                     <field name="indent_id"/>
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
+                    <field name="maize"/>
                 </field>
                 <xpath expr="//button[@name='draft_validate']" position="replace"/>
                 <xpath expr="//notebook/page[@string='Additional Info']" position="after">
@@ -344,6 +345,7 @@
                     <field name="indent_id"/>
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
+                    <field name="maize"/>
                 </field>
             </field>
         </record>

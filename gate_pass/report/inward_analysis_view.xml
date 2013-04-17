@@ -102,6 +102,10 @@
                     <field name="company_id" groups="base.group_multi_company"/>
                     <field name="date"/>
                 </group>
+                <group string="Display">
+                        <filter string="Show Sales Team" context="{'invisible_section': False}" domain="[]" help="Show Sales Team"/>
+                        <filter string="Show Countries" context="{'invisible_country': False}" help="Show Countries"/>
+                </group>
                 <group expand="1" string="Group By...">
                     <filter name="group_partner" string="Supplier" icon="terp-partner" context="{'group_by':'partner_id'}"/>
                     <filter name="group_categ_id" string="Product Category" icon="terp-stock_symbol-selection" context="{'group_by':'categ_id'}"/>

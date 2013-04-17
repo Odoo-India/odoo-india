@@ -103,6 +103,7 @@ class indent_indent(osv.Model):
         'active': fields.boolean('Active'),
         'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item For'),
         'amount_total': fields.function(_total_amount, type="float", string='Total', store=True),
+        'maize': fields.char('Maize', size=256, readonly=True, states={'draft': [('readonly', False)]}),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 

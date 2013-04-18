@@ -63,12 +63,17 @@ class import_indent_data(osv.osv_memory):
         indent = []
         for data in data_lines:
             try:
-                if data['APRVID'] == 'Y':
-                    wf_service = netsvc.LocalService('workflow')
+                if data['INDENTNO']:
                     indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])[0]
-                    print "indentindentindent", indent, data["INDENTNO"]
-                    wf_service.trg_validate(uid, 'indent.indent', indent, 'indent_confirm', cr)
-                    wf_service.trg_validate(uid, 'indent.indent', indent, 'indent_inprogress', cr)
+                    print "self.pool.get('indent.indent').browse(cr,uid,indent)>>>>>>>>.", self.pool.get('indent.indent').browse(cr,uid,indent)
+                    dd = self.pool.get('indent.indent').browse(cr,uid,indent).description
+                    self.pool.get('indent.indent').write(cr,uid,indent,{'description':dd})
+
+#                if data['APRVID'] == 'Y':
+#                    wf_service = netsvc.LocalService('workflow')
+#                    indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])[0]
+#                    wf_service.trg_validate(uid, 'indent.indent', indent, 'indent_confirm', cr)
+#                    wf_service.trg_validate(uid, 'indent.indent', indent, 'indent_inprogress', cr)
 #                print "data111111111111111111111111", data["INDENTOR"]
 #                inderntor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])[0]
 #                print ">>>>>>>>>>>>>>>>>>>>", inderntor

@@ -39,6 +39,7 @@ The user will raise an indent form to the stores, The store keeper checks for th
         'stock_workflow.xml',
         'indent_sequence.xml',
         'purchase_report.xml',
+        'wizard/import_indent_data.xml',
     ],
     'update_xml' : ['security/ir.model.access.csv', 'security/indent_security.xml'],
 

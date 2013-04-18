@@ -65,9 +65,7 @@ class import_po_line_data(osv.osv_memory):
                     if data["PONO"] and data['POSERIES']:
                         po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
                     if data["ITEMCODE"]:
-                        print ">>>>>>>>>>>>>>>>>deere", data["ITEMCODE"]
                         product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
-                        print ">>>>>>>>", product
                     if data["PORATE"]:
                         rate = data["PORATE"]
                         

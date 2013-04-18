@@ -68,12 +68,18 @@ class stock_picking(osv.Model):
         """ Confirms picking.
         @return: True
         """
+        picking_authority_obj = self.pool.get('picking.authority')
         self.create_gate_pass(cr, uid, ids, context=context)
         picking = False
         pickings = self.browse(cr, uid, ids, context=context)
         self.write(cr, uid, ids, {'state': 'confirmed'})
         todo = []
         for picking in pickings:
+            if picking.type == 'internal':
+                if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.coach_id and picking.indent_id.employee_id.coach_id.user_id and picking.indent_id.employee_id.coach_id.user_id.id:
+                    picking_authority_obj.create(cr, uid, {'name': picking.indent_id.employee_id.coach_id.user_id.id, 'document': 'picking', 'picking_id': picking.id, 'priority': 1}, context=context)
+                if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.user_id and picking.indent_id.employee_id.user_id.id:
+                    picking_authority_obj.create(cr, uid, {'name': picking.indent_id.employee_id.user_id.id, 'document': 'picking', 'picking_id': picking.id, 'priority': 2}, context=context)
             for r in picking.move_lines:
                 if r.state == 'draft':
                     todo.append(r.id)

@@ -1,0 +1,7 @@
+1). Copy this script folder to your Desktop.
+2). Open CONNECTION.PY and update following informationrelated to ddn and host:
+	e.g OPENERP_DEFAULT_USER_NAME = 'admin'
+	    OPENERP_DEFAULT_PASSWORD = 'admin'
+	    OPENERP_HOSTNAME = '127.0.0.1'
+            OPENERP_PORT = 8069
+            OPENERP_DEFAULT_DATABASE = 'openerp'

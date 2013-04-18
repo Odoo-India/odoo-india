@@ -20,7 +20,8 @@
                     <field name="product_uom_qty" sum="Total Quntity"/>
                     <field name="product_uom" invisible="context.get('product_uom_view',False)"/>
                     <field name="price_unit"/>
-                    <field name="price_total"  sum="Total Price"/>
+                    <field name="price_total"  sum="Total Untax"/>
+                    <field name="puchase_total" sum="Total"/>
                     <field name="po_series_id" invisible="context.get('po_series_id',True)"/>
                     <field name="indent_id" invisible="1"/>
                     <field name="year" invisible="1"/>

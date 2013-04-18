@@ -662,6 +662,9 @@ class stock_picking(osv.Model):
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
         'picking_authority_ids': fields.one2many('picking.authority', 'picking_id', 'Authority'),
         'maize': fields.char('Maize', size=256),
+        'maize_in': fields.char('Maize', size=256),
+        'maize_out': fields.char('Maize', size=256),
+        'maize_receipt': fields.char('Maize', size=256),
     }
 
     def action_confirm(self, cr, uid, ids, context=None):

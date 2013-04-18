@@ -35,6 +35,10 @@ This module inherits the base product module which maintains some product histor
     'data' : [
         'security/ir.model.access.csv',
         'wizard/comparison_report_view.xml',
+        'wizard/import_po_data.xml',
+        'wizard/import_po_line_data.xml',
+        #'wizard/import_inward_data.xml',
+        #'wizard/import_inward_line_data.xml',
         'maize_purchase_view.xml',
         'maize_tax_data.xml',
         'code_data.xml',

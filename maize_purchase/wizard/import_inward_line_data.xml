@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-      <record id="view_import_inward_form" model="ir.ui.view">
-        <field name="name">import_inward_data_form</field>
-        <field name="model">import.inward.data</field>
+      <record id="view_import_inward_form_line" model="ir.ui.view">
+        <field name="name">import_inward_data__lineform</field>
+        <field name="model">import.inward.line.data</field>
         <field name="arch" type="xml">
             <form string="Import Inward" version="7.0">
                <group>
-                    <separator string="Import Inward Data"/>
+                    <separator string="Import Inward Line Data"/>
                </group>
                <footer>
                     <button name="do_import_inward_data" string="Import" type="object" class="oe_highlight"/>
@@ -18,13 +18,13 @@
         </field>
     </record>
     <act_window 
-        name="Import Inward"
-        res_model="import.inward.data"
+        name="Import Inward Lines"
+        res_model="import.inward.line.data"
         src_model="stock.picking.in"
         view_mode="form"
         target="new"
         key2="client_action_multi"
-        id="action_indent_line_import" />
+        id="action_inword_line_import" />
 
     </data>
 </openerp>

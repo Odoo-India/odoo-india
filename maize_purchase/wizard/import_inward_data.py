@@ -45,7 +45,7 @@ class import_inward_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ashvin/Desktop/script/INWARDHEADER.csv"
+        file_path = "/home/ron/Desktop/MAIZE/INWARDHEADER.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -59,15 +59,8 @@ class import_inward_data(osv.osv_memory):
         rejected =[]
         for data in data_lines:
             try:
-#                if data['APRVID'] == 'Y':
-#                    wf_service = netsvc.LocalService('workflow')
-#                    indent = self.pool.get('indent.indent').search(cr,uid,[('name','=',data["INDENTNO"])])[0]
-#                    wf_service.trg_validate(uid, 'indent.indent', indent, 'indent_inprogress', cr)
-#                print "data111111111111111111111111", data["INDENTOR"]
-
                 if data["INWARDNO"]:
                     name = data["INWARDNO"]
-
                 if data["INWDATE"]:
                     if data["INWDATE"] == 'NULL' or data["INWDATE"] == '' or data["INWDATE"] == '00:00.0' or data["INWDATE"] == '  ':
                         value = ''
@@ -101,7 +94,7 @@ class import_inward_data(osv.osv_memory):
                     else:
                         value1=datetime.datetime.strptime(data["LRDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
                     lrdate = value1
-                    
+
                 if data["FRDESTI"]:
                     frdesti = data["FRDESTI"]
                 if data["TODESTI"]:
@@ -139,12 +132,13 @@ class import_inward_data(osv.osv_memory):
                     note = data["REMARK2"]                     
 #                if data["REMARK1"] or data["REMARK2"] or data["REMARK3"] or data["REMARK4"]:
 #                    note= data["REMARK1"] +'\n'+ data["REMARK2"] +'\n'+ data["REMARK3"] +'\n'+ data["REMARK4"]
-                vals = {'name':name,
+                vals = {
+                        'maize_in':name,
                         'date':indate,
                         'partner_id': partner,
                         'gp_year':gpyr,
                         'gp_no':gpsno,
-                        #'challan_no':challan,
+                        'challan_no':challan,
                         'lr_no':lrno,
                         'lr_date':lrdate,
                         'dest_from':frdesti,
@@ -154,8 +148,7 @@ class import_inward_data(osv.osv_memory):
                         'note':note,
 
                 }
-                data['po'] = inward_pool.create(cr, uid, vals, context)
-            
+                ok = inward_pool.create(cr, uid, vals, context)
             except:
                 rejected.append(data['INWARDNO'])
                 _logger.warning("Skipping Record with Inward code '%s'."%(data['INWARDNO']), exc_info=True)

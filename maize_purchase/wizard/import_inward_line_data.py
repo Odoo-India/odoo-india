@@ -45,7 +45,7 @@ class import_inward_line_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ashvin/Desktop/script/INWARDHEADER.csv"
+        file_path = "/home/ron/Desktop/MAIZE/INWARDTRANS.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -54,117 +54,117 @@ class import_inward_line_data(osv.osv_memory):
             return True            
 
         _logger.info("Starting Import PO Process from file '%s'."%(file_path))
-        inward_pool =self.pool.get('stock.move')
+        move_pool =self.pool.get('stock.move')
+        picking_pool =self.pool.get('stock.picking.in')
         indent = []
         rejected =[]
+        exist_po = []
+        po_picking_key = {}
+        po_exist = []
+        picking_exist = []
+        exist_picking = []
         for data in data_lines:
             try:
-#                if data['APRVID'] == 'Y':
-#                    wf_service = netsvc.LocalService('workflow')
-#                    indent = self.pool.get('indent.indent').search(cr,uid,[('name','=',data["INDENTNO"])])[0]
-#                    wf_service.trg_validate(uid, 'indent.indent', indent, 'indent_inprogress', cr)
-#                print "data111111111111111111111111", data["INDENTOR"]
+                maze_name = data["INWARDNO"]
+                if not maze_name in exist_picking:
+                    name = ''
+                    purchase_id = False
+                    if data["ITEMCODE"]:
+                        product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+                    if data["INDENTOR"]:
+                        inwrd_num = data["INDENTOR"]
+                    if data["INDENTNO"]:
+                        maize_no = data["INDENTNO"]
+                    if data["INWARDNO"]:
+                        search_picking = data["INWARDNO"]
+                        picking_id = self.pool.get('stock.picking').search(cr,1,[('maize_in','=',search_picking)])[0]
+                    if data["RECVQTY"]:
+                        rqty = data["RECVQTY"]
+                    if data["INWRATE"]:
+                        rate = data["INWRATE"]
+                    if data["POYEAR"]:
+                        poyear = data["POYEAR"]
+                    if data["POSERIES"]:
+                        poseries = data["POSERIES"]
+                        name += poseries
+                    if data["PONO"]:
+                        pono = '/'+data["PONO"]
+                        name += pono
+                    if name:
+                        purchase_id = self.pool.get('purchase.order').search(cr,1,[('maize','=',name)])
+                    vals = {
+                            'name':name,
+                            'picking_id': picking_id,
+                            'product_id': product,
+                            'product_qty': rqty,
+                            'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
+                            'date': '03/29/2013',
+                            'location_id': 12,
+                            'location_dest_id': 12,
+                            'state': 'draft',
+                            'price_unit':float(rate),
+                            'company_id':1,
+                    }
+                    move_pool.create(cr, uid, vals, context)
+                    exist_picking.append(maze_name)
+                else:
+                    picking_id = self.pool.get('stock.picking').search(cr,1,[('maize_in','=',maze_name)])[0]
+                    picking_data = self.pool.get('stock.picking').browse(cr, uid, picking_id,context) 
+                    pick_vals = {
+                            'maize_in':picking_data.maize_in,
+                            'date':picking_data.date,
+                            'purchase_id':picking_data.purchase_id,
+                            'partner_id': picking_data.partner_id.id,
+                            'gp_year':picking_data.gp_year,
+                            'gp_no':picking_data.gp_no,
+                            'lr_no':picking_data.lr_no,
+                            'lr_date':picking_data.lr_date,
+                            'dest_from':picking_data.dest_from,
+                            'dest_to':picking_data.dest_to,
+                            'despatch_mode':picking_data.despatch_mode,
+                            'note':picking_data.note,
+                        }
+                    
+                    new_picking_id = self.pool.get('stock.picking.in').create(cr, uid, pick_vals,context)
 
-                if data["INDENTOR"]:name = data["INWARDNO"]
-                if data["INDENTNO"]:name = data["INDENTNO"]
-                if data["ITEMCODE"]:name = data["ITEMCODE"]
-                if data["SQTY"]:name = data["SQTY"]
-                if data["RATE"]:name = data["RATE"]
-                if data["VALUE"]:name = data["VALUE"]
-                if data["ENQYEAR"]:name = data["ENQYEAR"]
-                if data["ENQDATE"]:name = data["ENQDATE"]
-                if data["POYEAR"]:name = data["POYEAR"]
-                if data["POSERIES"]:name = data["POSERIES"]
-                if data["ENQDATE"]:name = data["ENQDATE"]
-                if data["ENQDATE"]:name = data["ENQDATE"]
-                if data["INWDATE"]:
-                    if data["INWDATE"] == 'NULL' or data["INWDATE"] == '' or data["INWDATE"] == '00:00.0' or data["INWDATE"] == '  ':
-                        value = ''
-                    else:
-                        value=datetime.datetime.strptime(data["INWDATE"], '%d-%m-%y').strftime("%Y-%m-%d 00:00:00")
-                    indate = value
-                gpsno = ''
-                gpyr = ''
-                lrno = ''
-                frdesti = ''
-                todesti = ''
-                labno = ''
-                note = ''
-                if data["GPS_NO"]:
-                    gpsno = data["GPS_NO"]
-                if data["GPS_YEAR"]:
-                    gpyr = data["GPS_YEAR"]
-                    
-                if data["CHALLAN"]:
-                    challan = data["CHALLAN"] 
-                    
-                if data["SUPPCODE"]:
-                    partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])[0]
+                    if data["ITEMCODE"]:
+                        product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+                    if data["INDENTOR"]:
+                        inwrd_num = data["INDENTOR"]
+                    if data["INDENTNO"]:
+                        maize_no = data["INDENTNO"]
+                    if data["INWARDNO"]:
+                        search_picking = data["INWARDNO"]
+                        picking_id = self.pool.get('stock.picking').search(cr,1,[('maize_in','=',search_picking)])[0]
+                    if data["RECVQTY"]:
+                        rqty = data["RECVQTY"]
+                    if data["INWRATE"]:
+                        rate = data["INWRATE"]
+                    if data["POYEAR"]:
+                        poyear = data["POYEAR"]
+                    if data["POSERIES"]:
+                        poseries = data["POSERIES"]
+                        name += poseries
+                    if data["PONO"]:
+                        pono = '/'+data["PONO"]
+                        name += pono
+                    if name:
+                        purchase_id = self.pool.get('purchase.order').search(cr,1,[('maize','=',name)])
+                    new_vals = {
+                            'name':name,
+                            'picking_id': new_picking_id,
+                            'product_id': product,
+                            'product_qty': rqty,
+                            'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
+                            'date': '03/29/2013',
+                            'location_id': 12,
+                            'location_dest_id': 12,
+                            'state': 'draft',
+                            'price_unit':float(rate),
+                            'company_id':1,
+                    }
+                    move_pool.create(cr, uid, new_vals, context)
 
-                if data["LRNO"]:
-                    lrno = data["LRNO"]
-                    
-                if data["LRDATE"]:
-                    if data["LRDATE"] == 'NULL' or data["LRDATE"] == '' or data["LRDATE"] == '00:00.0' or data["LRDATE"] == '  ':
-                        value1 = False
-                    else:
-                        value1=datetime.datetime.strptime(data["LRDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
-                    lrdate = value1
-                    
-                if data["FRDESTI"]:
-                    frdesti = data["FRDESTI"]
-                if data["TODESTI"]:
-                    todesti = data["TODESTI"]
-
-                if data["DESPATCH"]:
-                    if data["DESPATCH"] == 'By tempo':
-                        despatch = 'tempo'
-                    elif data["DESPATCH"] == 'By truck':
-                        despatch = 'truck'
-                    elif data["DESPATCH"] == 'By scooter':
-                        despatch = 'scooter'
-                    elif data["DESPATCH"] == 'By person':
-                        despatch = 'person'
-                    elif data["DESPATCH"] == 'By auto rickshaw':
-                        despatch = 'auto_rickshaw'
-                    elif data["DESPATCH"] == 'By cycle':
-                        despatch = 'cycle'
-                    elif data["DESPATCH"] == 'By pedal rickshaw':
-                        despatch = 'pedal_rickshaw'
-                    elif data["DESPATCH"] == 'By tanker':
-                        despatch = 'tanker'
-                    elif data["DESPATCH"] == 'By courier':
-                        despatch = 'courier'
-                    elif data["DESPATCH"] == 'By loading rickshaw':
-                        despatch = 'loading_rickshaw'
-                    elif data["DESPATCH"] == 'By car':
-                        despatch = 'car'
-                    else:
-                        despatch = ''
-                if data["LABNO"]:
-                    labno = data["LABNO"]
-                    
-                if data["REMARK2"]:
-                    note = data["REMARK2"]                     
-#                if data["REMARK1"] or data["REMARK2"] or data["REMARK3"] or data["REMARK4"]:
-#                    note= data["REMARK1"] +'\n'+ data["REMARK2"] +'\n'+ data["REMARK3"] +'\n'+ data["REMARK4"]
-                vals = {'name':name,
-                        'date':indate,
-                        'partner_id': partner,
-                        'gp_year':gpyr,
-                        'gp_no':gpsno,
-                        #'challan_no':challan,
-                        'lr_no':lrno,
-                        'lr_date':lrdate,
-                        'dest_from':frdesti,
-                        'dest_to':todesti,
-                        'dest_to':todesti,
-                        'despatch_mode':despatch,
-                        'note':note,
-
-                }
-                data['po'] = inward_pool.create(cr, uid, vals, context)
-            
             except:
                 rejected.append(data['INWARDNO'])
                 _logger.warning("Skipping Record with Inward code '%s'."%(data['INWARDNO']), exc_info=True)

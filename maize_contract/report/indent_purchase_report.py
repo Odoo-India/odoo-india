@@ -28,9 +28,9 @@ class indent_purchase_report(osv.osv):
     _auto = False
 
     _columns = {
-        'purchase_maize_id': fields.char('Maize Purchase', size=256, readonly=True),
-        'name': fields.char('Indent #', size=256, readonly=True),
-        'date': fields.date('Indent Date', readonly=True),
+        'purchase_maize_id': fields.char('Maize PO Number', size=256, readonly=True),
+        'name': fields.char('Maize Indent No', size=256, readonly=True),
+        'date': fields.date('Date of Indent', readonly=True),
         'year': fields.char('Year', size=4, readonly=True),
         'month': fields.selection([('01', 'January'), ('02', 'February'), ('03', 'March'), ('04', 'April'),
             ('05', 'May'), ('06', 'June'), ('07', 'July'), ('08', 'August'), ('09', 'September'),
@@ -41,7 +41,7 @@ class indent_purchase_report(osv.osv):
         'requirement': fields.selection([('ordinary','Ordinary'), ('urgent','Urgent')], 'Requirement', readonly=True),
         'type': fields.selection([('new','New'), ('existing','Existing')], 'Type', readonly=True),
         'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item For', readonly=True),
-        'purchase_id': fields.many2one('purchase.order', 'Purchase Order', readonly=True),
+        'purchase_id': fields.many2one('purchase.order', 'PO Number', readonly=True),
         'indent_id': fields.many2one('indent.indent', 'Indent', readonly=True),
         'indentor_id': fields.many2one('res.users', 'Indentor', readonly=True),
         'price_total': fields.float('Total Price', readonly=True),
@@ -60,7 +60,8 @@ class indent_purchase_report(osv.osv):
         'product_uom_qty': fields.float('Qty', readonly=True),
         'price_unit': fields.float('Rate', readonly=True),
         'price_total': fields.float('Value', readonly=True),
-        'product_uom': fields.many2one('product.uom', 'Product Unit of Measure'),
+        'product_uom': fields.many2one('product.uom', 'Unit'),
+        'partner_id':fields.many2one('res.partner', 'Supplier', readonly=True),
     }
     _order = 'date desc'
 
@@ -75,12 +76,12 @@ class indent_purchase_report(osv.osv):
                     i.contract as contract,
                     i.department_id as department_id,
                     po.id as purchase_id,
-                    po.maize as maize,
                     l.product_qty as product_uom_qty,
                     l.price_unit as price_unit,
                     l.product_uom as product_uom,
                     sum(l.product_qty * l.price_unit) as price_total,
                     po.maize as purchase_maize_id,
+                    po.partner_id as partner_id,
                     i.requirement as requirement,
                     i.type as type,
                     i.item_for as item_for,
@@ -109,6 +110,7 @@ class indent_purchase_report(osv.osv):
                     i.name,
                     i.contract,
                     po.name,
+                    po.maize,
                     i.department_id,
                     i.requirement,
                     i.type,
@@ -122,7 +124,7 @@ class indent_purchase_report(osv.osv):
                     l.product_qty,
                     l.price_unit,
                     l.product_uom,
-                    po.maize,
+                    po.partner_id,
                     i.analytic_account_id
             )
         """)

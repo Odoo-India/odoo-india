@@ -29,6 +29,7 @@ class indent_report(osv.osv):
 
     _columns = {
         'name': fields.char('Indent #', size=256, readonly=True),
+        'maize_indent': fields.char('Maize Indent', size=256),
         'date': fields.date('Indent Date', readonly=True),
         'year': fields.char('Year', size=4, readonly=True),
         'month': fields.selection([('01', 'January'), ('02', 'February'), ('03', 'March'), ('04', 'April'),
@@ -70,7 +71,8 @@ class indent_report(osv.osv):
                 select
                     min(l.id) as id,
                     i.id as indent_id,
-                    i.maize as name,
+                    i.id as name,
+                    i.maize as maize_indent,
                     i.contract as contract,
                     i.department_id as department_id,
                     i.requirement as requirement,
@@ -120,7 +122,8 @@ class indent_report(osv.osv):
                     i.indent_date,
                     i.indentor_id,
                     i.state,
-                    i.analytic_account_id
+                    i.analytic_account_id,
+                    i.maize
             )
         """)
 indent_report()

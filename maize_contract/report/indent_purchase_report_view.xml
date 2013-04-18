@@ -10,22 +10,22 @@
             <field name="arch" type="xml">
                 <tree string="Maize Purchase Analysis" create="false" delete="false">
                     <field name="purchase_id" invisible="context.get('purchase_id_view',False)"/>
-                    <field name="name" invisible="context.get('indent_id_view',False)"/>
-                    <field name="date"/>
+                    <field name="purchase_maize_id" invisible="context.get('purchase_maize_id',True)"/>
                     <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
-                    <field name="name" invisible="context.get('indent_id_view',False)"/>
-                    <field name="purchase_maize_id" invisible="context.get('purchase_maize_id_view',False)"/>
-                    <field name="po_series_id" />
-                    <field name="indent_id" invisible="1"/>
-                    <field name="date"/>
+                    <field name="id" string="Indent No" invisible="context.get('indentor_id_view',False)"/>
+                    <field name="name" invisible="context.get('name',True)"/>
+                    <field name="date" invisible="context.get('date',True)"/>
+                    <field name="partner_id" invisible="context.get('partner_id_view',False)"/>
                     <field name="product_id"/>
-                    <field name="year" invisible="1"/>
-                    <field name="day" invisible="1"/>
-                    <field name="month" invisible="1"/>
                     <field name="product_uom_qty"/>
                     <field name="product_uom" invisible="context.get('product_uom_view',False)"/>
                     <field name="price_unit"/>
-                    <field name="price_total"/>
+                    <field name="price_total"  sum="Total Price"/>
+                    <field name="po_series_id" invisible="context.get('po_series_id',True)"/>
+                    <field name="indent_id" invisible="1"/>
+                    <field name="year" invisible="1"/>
+                    <field name="day" invisible="1"/>
+                    <field name="month" invisible="1"/>
                     <field name="department_id" invisible="context.get('department_id',True)"/>
                     <field name="requirement" invisible="context.get('requirement',True)"/>
                     <field name="type" invisible="context.get('type',True)"/>
@@ -58,11 +58,12 @@
                     <field name="purchase_id"/>
                     <group string="Display">
                         <filter name="group_department" string="Department" icon="terp-stock_symbol-selection" context="{'group_by':'department_id', 'department_id': False}"/>
-                        <filter name="group_requirement" string="Requirement" icon="terp-stock_symbol-selection" context="{'group_by':'requirement', 'requirement': False}"/>
-                        <filter name="group_type" string="Type" icon="terp-stock_symbol-selection" context="{'group_by':'type', 'type': False}"/>
-                        <filter name="group_item_for" string="Item For" icon="terp-stock_symbol-selection" context="{'group_by':'item_for', 'item_for': False}"/>
                         <filter name="group_analytic_accounting" string="Project" context="{'group_by':'analytic_account_id','analytic_account_id': False}" groups="analytic.group_analytic_accounting"/>
                         <filter name="group_state" string="State" icon="terp-stock_symbol-selection" context="{'group_by':'state','state': False}"/>
+                        <filter name="group_series" string="PO Series" icon="terp-stock_symbol-selection" context="{'group_by':'po_series_id', 'po_series_id': False}"/>
+                        <filter name="group_date" string="Date of Indent" icon="terp-stock_symbol-selection" context="{'group_by':'date', 'date': False}"/>
+                        <filter name="group_purchase_maize_id" string="Maize PO" icon="terp-stock_symbol-selection" context="{'group_by':'purchase_maize_id', 'purchase_maize_id': False}"/>
+                        <filter name="group_name" string="Maize Indent" icon="terp-stock_symbol-selection" context="{'group_by':'name', 'name': False}"/>
                     </group>
                     <group expand="1" string="Group By...">
                         <filter string="Indent" name="Indent" context="{'group_by':'indent_id', 'indent_id_view':True}"/>
@@ -70,10 +71,9 @@
                         <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id','purchase_id_view': True}"/>
                         <filter string="Purchase Order (maize)" name="Purchase" context="{'group_by':'purchase_maize_id','purchase_maize_id_view': True}"/>
                         <filter string="Department" context="{'group_by':'department_id','department_id_view': True}"/>
-                        <filter string="Requirement" context="{'group_by':'requirement','requirement_view': True}"/>
-                        <filter string="Type" context="{'group_by':'type','type_view': True}"/>
-                        <filter string="Item For" context="{'group_by':'item_for','item_for_view': True}"/>
                         <filter string="Product UOM" context="{'group_by':'product_uom','product_uom_view': True}"/>
+                        <filter string="Supplier" context="{'group_by':'partner_id','partner_id_view': True}"/>
+                        <filter string="PO Series" context="{'group_by':'po_series_id','po_series_id_view': True}"/>
                         <filter string="Project" context="{'group_by':'analytic_account_id','analytic_account_id_view': True}" groups="analytic.group_analytic_accounting"/>
                         <filter string="Status" context="{'group_by':'state','state_view': True}"/>
                         <filter string="Day" context="{'group_by':'day'}"/>

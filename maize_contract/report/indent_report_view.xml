@@ -10,6 +10,7 @@
             <field name="arch" type="xml">
                 <tree string="Indent Analysis" create="false" delete="false">
                     <field name="name" invisible="context.get('indent_id_view',False)"/>
+                    <field name="maize_indent" invisible="context.get('maize_indent',True)"/>
                     <field name="date"/>
                     <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
                     <field name="indent_id" invisible="1"/>
@@ -68,12 +69,13 @@
                     <field name="product_id"/>
                     <field name="indentor_id"/>
                     <group string="Display">
-                        <filter name="group_department" string="Department" icon="terp-stock_symbol-selection" context="{'department_id': False}"/>
-                        <filter name="group_requirement" string="Requirement" icon="terp-stock_symbol-selection" context="{'requirement': False}"/>
-                        <filter name="group_type" string="Type" icon="terp-stock_symbol-selection" context="{'type': False}"/>
-                        <filter name="group_item_for" string="Item For" icon="terp-stock_symbol-selection" context="{'item_for': False}"/>
-                        <filter name="group_analytic_account_id" string="Project" icon="terp-stock_symbol-selection" context="{'analytic_account_id': False}"/>
-                        <filter name="group_state" string="State" icon="terp-stock_symbol-selection" context="{'state': False}"/>
+                        <filter name="group_maize_indent" string="Maize Indent" icon="terp-stock_symbol-selection" context="{'group_by':'maize_indent','maize_indent': False}"/>
+                        <filter name="group_department" string="Department" icon="terp-stock_symbol-selection" context="{'group_by':'department_id','department_id': False}"/>
+                        <filter name="group_requirement" string="Requirement" icon="terp-stock_symbol-selection" context="{'group_by':'requirement', 'requirement': False}"/>
+                        <filter name="group_type" string="Type" icon="terp-stock_symbol-selection" context="{'group_by':'type', 'type': False}"/>
+                        <filter name="group_item_for" string="Item For" icon="terp-stock_symbol-selection" context="{'group_by':'item_for', 'item_for': False}"/>
+                        <filter name="group_analytic_account_id" string="Project" icon="terp-stock_symbol-selection" context="{'group_by':'analytic_account_id','analytic_account_id': False}" groups="analytic.group_analytic_accounting"/>
+                        <filter name="group_state" string="Status" icon="terp-stock_symbol-selection" context="{'group_by':'state','state': False}"/>
                     </group>
                     <group expand="1" string="Group By...">
                         <filter string="Indent" name="Indent" context="{'group_by':'indent_id','indent_id_view': True}"/>

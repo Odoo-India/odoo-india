@@ -29,7 +29,7 @@ class indent_purchase_report(osv.osv):
 
     _columns = {
         'purchase_maize_id': fields.char('Maize PO Number', size=256, readonly=True),
-        'name': fields.char('Maize Indent No', size=256, readonly=True),
+        'indent_maize_id': fields.char('Maize Indent No', size=256, readonly=True),
         'date': fields.date('Date of Indent', readonly=True),
         'year': fields.char('Year', size=4, readonly=True),
         'month': fields.selection([('01', 'January'), ('02', 'February'), ('03', 'March'), ('04', 'April'),
@@ -72,7 +72,7 @@ class indent_purchase_report(osv.osv):
                 select
                     min(po.id) as id,
                     i.id as indent_id,
-                    i.maize as name,
+                    i.maize as indent_maize_id,
                     i.contract as contract,
                     i.department_id as department_id,
                     po.id as purchase_id,

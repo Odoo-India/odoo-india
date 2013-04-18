@@ -18,19 +18,19 @@
                     <field name="month" invisible="1"/>
                     <field name="product_code" invisible="context.get('product_id_view',False)"/>
                     <field name="product_id" invisible="context.get('product_id_view',False)"/>
-                    <field name="department_id" invisible="1"/>
-                    <field name="requirement" invisible="1"/>
+                    <field name="department_id" invisible="context.get('department_id',True)"/>
+                    <field name="requirement" invisible="context.get('requirement',True)"/>
                     <field name="required_date"/>
-                    <field name="type" invisible="1"/>
-                    <field name="item_for" invisible="1"/>
-                    <field name="analytic_account_id" invisible="1" groups="analytic.group_analytic_accounting"/>
+                    <field name="type" invisible="context.get('type',True)"/>
+                    <field name="item_for" invisible="context.get('item_for',True)"/>
+                    <field name="analytic_account_id" invisible="context.get('analytic_account_id',True)" groups="analytic.group_analytic_accounting"/>
                     <field name="nbr" sum="# of Lines" invisible="1"/>
                     <field name="product_uom_qty" sum="# of Qty"/>
                     <field name="product_uom" invisible="context.get('product_uom_view',False)"/>
                     <field name="purpose" invisible="1"/>
                     <field name="price_unit"/>
                     <field name="price_total" sum="Total Price"/>
-                    <field name="state" invisible="1"/>
+                    <field name="state" invisible="context.get('state',True)"/>
                 </tree>
             </field>
         </record>
@@ -67,6 +67,14 @@
                     <filter icon="terp-personal" string="My Indents" help="My Indents" domain="[('indentor_id', '=', uid)]"/>
                     <field name="product_id"/>
                     <field name="indentor_id"/>
+                    <group string="Display">
+                        <filter name="group_department" string="Department" icon="terp-stock_symbol-selection" context="{'department_id': False}"/>
+                        <filter name="group_requirement" string="Requirement" icon="terp-stock_symbol-selection" context="{'requirement': False}"/>
+                        <filter name="group_type" string="Type" icon="terp-stock_symbol-selection" context="{'type': False}"/>
+                        <filter name="group_item_for" string="Item For" icon="terp-stock_symbol-selection" context="{'item_for': False}"/>
+                        <filter name="group_analytic_account_id" string="Project" icon="terp-stock_symbol-selection" context="{'analytic_account_id': False}"/>
+                        <filter name="group_state" string="State" icon="terp-stock_symbol-selection" context="{'state': False}"/>
+                    </group>
                     <group expand="1" string="Group By...">
                         <filter string="Indent" name="Indent" context="{'group_by':'indent_id','indent_id_view': True}"/>
                         <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id','indentor_id_view': True}"/>

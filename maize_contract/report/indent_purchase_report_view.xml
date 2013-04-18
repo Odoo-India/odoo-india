@@ -9,10 +9,11 @@
             <field name="model">indent.purchase.report</field>
             <field name="arch" type="xml">
                 <tree string="Indent Purchase Analysis" create="false" delete="false">
-                    <field name="name" invisible="context.get('indentor_id_view',False)"/>
+                    <field name="name" invisible="context.get('indent_id_view',False)"/>
                     <field name="date"/>
                     <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
                     <field name="purchase_id" invisible="context.get('purchase_id_view',False)"/>
+                    <field name="purchase_maize_id" invisible="context.get('purchase_id_view',False)"/>
                     <field name="indent_id" invisible="1"/>
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>
@@ -48,9 +49,10 @@
                     <field name="indentor_id"/>
                     <field name="purchase_id"/>
                     <group expand="1" string="Group By...">
-                        <filter string="Indent" name="Indent" context="{'group_by':'indent_id'}"/>
+                        <filter string="Indent" name="Indent" context="{'group_by':'indent_id', 'indent_id_view':True}"/>
                         <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id','indentor_id_view': True}"/>
                         <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id','purchase_id_view': True}"/>
+                        <filter string="Purchase Order (maize)" name="Purchase" context="{'group_by':'purchase_maize_id','purchase_id_view': True}"/>
                         <filter string="Department" context="{'group_by':'department_id','department_id_view': True}"/>
                         <filter string="Requirement" context="{'group_by':'requirement','requirement_view': True}"/>
                         <filter string="Type" context="{'group_by':'type','type_view': True}"/>

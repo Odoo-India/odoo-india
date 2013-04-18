@@ -28,6 +28,7 @@ class indent_purchase_report(osv.osv):
     _auto = False
 
     _columns = {
+        'purchase_maize_id': fields.char('Maize Purchase', size=256, readonly=True),
         'name': fields.char('Indent #', size=256, readonly=True),
         'date': fields.date('Indent Date', readonly=True),
         'year': fields.char('Year', size=4, readonly=True),
@@ -64,10 +65,11 @@ class indent_purchase_report(osv.osv):
                 select
                     min(po.id) as id,
                     i.id as indent_id,
-                    i.name as name,
+                    i.maize as name,
                     i.contract as contract,
                     i.department_id as department_id,
                     po.id as purchase_id,
+                    po.maize as purchase_maize_id,
                     i.requirement as requirement,
                     i.type as type,
                     i.item_for as item_for,
@@ -97,7 +99,8 @@ class indent_purchase_report(osv.osv):
                     i.indent_date,
                     i.indentor_id,
                     i.state,
-                    i.analytic_account_id
+                    i.analytic_account_id,
+                    po.maize
             )
         """)
 indent_purchase_report()

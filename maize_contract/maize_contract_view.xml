@@ -11,7 +11,7 @@
                     <field name="contract" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='required_date']" position='before'>
-                    <field name="contract_series_id" attrs="{'invisible': [('contract', '=', False)]}"/>
+                    <field name="contract_series_id" attrs="{'invisible': [('contract', '=', False)],'required': [('contract', '=', True)]}"/>
                 </xpath>
                 <xpath expr="//label[@for='name']" position='replace'>
                     <!-- <label string="Contract" attrs="{'invisible': [('contract', '=', False)]}" class="oe_edit_only"/> -->

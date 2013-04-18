@@ -119,7 +119,7 @@ class indent_indent(osv.Model):
 
     _defaults = {
         'state': 'draft',
-        'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
+        #'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
         'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'indentor_id': lambda self, cr, uid, context: uid,

@@ -1,5 +1,0 @@
-#for filename in ALL_Indian_States.py MAJORGRP.py SUBGRP.py DEPTMST.py PROJMAS.py HR_DEPARTMENT.py INDENTOR.py HR_EMPLOYEE.py SUPPLIER_import.py ITEMMAST.py ITEM_SUPPLIER.py INDENTHEADER.py INDENTTRANS.py CONTRACTHEADER.py CONTRACTTRANS.py; do
-for filename in CONTRACTTRANS.py; do
-#for filename in INDENTHEADER.py INDENTTRANS.py CONTRACTHEADER.py CONTRACTTRANS.py; do
-    python $filename; 
-done

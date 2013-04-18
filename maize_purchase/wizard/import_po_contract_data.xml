@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      <record id="view_import_po_contract_form1111" model="ir.ui.view">
+        <field name="name">import_po_contract_data_form</field>
+        <field name="model">import.po.contract.data</field>
+        <field name="arch" type="xml">
+            <form string="Import po Contract" version="7.0">
+               <group>
+                    <separator string="Import PO Data"/>
+               </group>
+               <footer>
+                    <button name="do_import_po_contract_data" string="Import" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+               </footer>
+           </form>
+        </field>
+    </record>
+    <act_window 
+        name="Import Contract"
+        res_model="import.po.contract.data"
+        src_model="purchase.order"
+        view_mode="form"
+        target="new"
+        key2="client_action_multi"
+        id="action_po_contract_import111" />
+
+    </data>
+</openerp>

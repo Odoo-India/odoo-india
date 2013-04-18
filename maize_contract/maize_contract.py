@@ -31,7 +31,7 @@ from lxml import etree
 class indent_indent(osv.Model):
     _inherit = 'indent.indent'
     _columns = {
-        'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent", readonly=True),
+        'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent"),
         'contract_series_id': fields.many2one('contract.series','Contract Series', help="contract_series", readonly=True, states={'draft': [('readonly', False)]}),
         'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
         'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
@@ -52,24 +52,41 @@ class indent_indent(osv.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
-    def indent_confirm(self, cr, uid, ids, context=None):
-        for record in self.browse(cr,uid,ids,context):
-            if record.contract:
-                sequence = '/'
-                if record.contract_series_id.code == 'MS':
-                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.ms')
-                elif record.contract_series_id.code == 'PR':
-                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.pr')
-                elif record.contract_series_id.code == 'OM':
-                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.om')
-                elif record.contract_series_id.code == 'TM':
-                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.tm')
-                self.write(cr,uid,record.id,{'name':sequence})
-            else:
-                sequence = self.pool.get('ir.sequence').get(cr, uid, 'indent.indent') or '/'
-                self.write(cr,uid,record.id,{'name':sequence})
-        return super(indent_indent, self).indent_confirm(cr, uid, ids, context)
+#    def indent_confirm(self, cr, uid, ids, context=None):
+#        for record in self.browse(cr,uid,ids,context):
+#            if record.contract:
+#                sequence = '/'
+#                if record.contract_series_id.code == 'MS':
+#                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.ms')
+#                elif record.contract_series_id.code == 'PR':
+#                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.pr')
+#                elif record.contract_series_id.code == 'OM':
+#                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.om')
+#                elif record.contract_series_id.code == 'TM':
+#                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.tm')
+#                self.write(cr,uid,record.id,{'name':sequence})
+#            else:
+#                sequence = self.pool.get('ir.sequence').get(cr, uid, 'indent.indent') or '/'
+#                self.write(cr,uid,record.id,{'name':sequence})
+#        return super(indent_indent, self).indent_confirm(cr, uid, ids, context)
     
+    def create(self, cr, uid, vals, context=None):
+        co_series = self.pool.get('contract.series')
+        if vals.get('contract'):
+            co = co_series.browse(cr,uid,vals['contract_series_id']).code
+            if co == 'MS':
+                sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.ms')
+            elif co == 'PR':
+                sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.pr')
+            elif co == 'OM':
+                sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.om')
+            elif co == 'TM':
+                sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.tm')
+        else:
+            sequence = self.pool.get('ir.sequence').get(cr, uid, 'indent.indent')
+        vals['name']=sequence
+        result = super(indent_indent, self).create(cr, uid, vals, context=context)
+        return result
     _defaults = {
         'contract': False
         }

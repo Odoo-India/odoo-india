@@ -46,6 +46,8 @@ class indent_purchase_report(osv.osv):
         'indentor_id': fields.many2one('res.users', 'Indentor', readonly=True),
         'price_total': fields.float('Total Price', readonly=True),
         'nbr': fields.integer('# of Lines', readonly=True),
+        'product_id': fields.many2one('product.product', 'Product', readonly=True),
+        'po_series_id': fields.char('PO Series', size=64, readonly=True),
         'state':fields.selection([
             ('draft','Draft'),
             ('confirm','Confirm'),
@@ -55,6 +57,10 @@ class indent_purchase_report(osv.osv):
             ('reject','Rejected')
             ], 'State', readonly=True),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', readonly=True),
+        'product_uom_qty': fields.float('Qty', readonly=True),
+        'price_unit': fields.float('Rate', readonly=True),
+        'price_total': fields.float('Value', readonly=True),
+        'product_uom': fields.many2one('product.uom', 'Product Unit of Measure'),
     }
     _order = 'date desc'
 
@@ -69,23 +75,34 @@ class indent_purchase_report(osv.osv):
                     i.contract as contract,
                     i.department_id as department_id,
                     po.id as purchase_id,
+                    po.maize as maize,
+                    l.product_qty as product_uom_qty,
+                    l.price_unit as price_unit,
+                    l.product_uom as product_uom,
+                    sum(l.product_qty * l.price_unit) as price_total,
                     po.maize as purchase_maize_id,
                     i.requirement as requirement,
                     i.type as type,
                     i.item_for as item_for,
                     1 as nbr,
                     i.indent_date as date,
+                    l.product_id as product_id,
                     to_char(i.indent_date, 'YYYY') as year,
                     to_char(i.indent_date, 'MM') as month,
                     to_char(i.indent_date, 'YYYY-MM-DD') as day,
                     i.indentor_id as indentor_id,
+                    ps.name as po_series_id,
                     i.state,
                     i.analytic_account_id as analytic_account_id
                 from
                     indent_indent i
                     left join purchase_order po on (i.id=po.indent_id)
                     left join stock_location sl on (sl.id=i.department_id)
-                where po.indent_id is not null
+                    left join purchase_order_line l on (l.order_id = po.id)
+                    left join product_product p on (l.product_id=p.id)
+                    left join product_template t on (p.product_tmpl_id=t.id)
+                    left join product_order_series ps on (po.po_series_id = ps.id)
+                where po.indent_id is not null and l.product_id is not null
                 group by
                     po.id,
                     i.id,
@@ -100,7 +117,13 @@ class indent_purchase_report(osv.osv):
                     i.indentor_id,
                     i.state,
                     i.analytic_account_id,
-                    po.maize
+                    l.product_id,
+                    ps.name,
+                    l.product_qty,
+                    l.price_unit,
+                    l.product_uom,
+                    po.maize,
+                    i.analytic_account_id
             )
         """)
 indent_purchase_report()

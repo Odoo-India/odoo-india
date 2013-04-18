@@ -107,13 +107,17 @@ class import_inward_line_data(osv.osv_memory):
                     }
                     move_pool.create(cr, uid, vals, context)
                     exist_picking.append(maze_name)
+                    if purchase_id:
+                        pur_data = self.pool.get('purchase.order').browse(cr, uid, purchase_id[0],context)
+                        picking_pool.write(cr, uid, picking_id, {'purchase_id': purchase_id[0], 'origin': pur_data.name})
                 else:
                     picking_id = self.pool.get('stock.picking').search(cr,1,[('maize_in','=',maze_name)])[0]
                     picking_data = self.pool.get('stock.picking').browse(cr, uid, picking_id,context) 
                     pick_vals = {
                             'maize_in':picking_data.maize_in,
                             'date':picking_data.date,
-                            'purchase_id':picking_data.purchase_id,
+                            'purchase_id':picking_data.purchase_id.id,
+                            'origin':picking_data.origin or '',
                             'partner_id': picking_data.partner_id.id,
                             'gp_year':picking_data.gp_year,
                             'gp_no':picking_data.gp_no,
@@ -164,7 +168,6 @@ class import_inward_line_data(osv.osv_memory):
                             'company_id':1,
                     }
                     move_pool.create(cr, uid, new_vals, context)
-
             except:
                 rejected.append(data['INWARDNO'])
                 _logger.warning("Skipping Record with Inward code '%s'."%(data['INWARDNO']), exc_info=True)

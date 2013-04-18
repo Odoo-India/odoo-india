@@ -13,58 +13,58 @@
                 <field name="day" invisible="1"/>
                 <field name="type" invisible="1"/>
                 <field name="company_id" invisible="1"/>
-                <field name="partner_id" context="{'contact_display':'partner'}" />
+                <field name="partner_id" context="{'contact_display':'partner'}" invisible="context.get('partner_id_view',False)"/>
                 <field name="picking_id" invisible="1"/>
                 <field name="location_id" invisible="1"/>
                 <field name="location_dest_id" invisible="1"/>
-                <field name="product_id" />
-                <field name="lr_no"/>
-                <field name="lr_date"/>
-                <field name="categ_id" invisible="1"/>
+                <field name="product_id" invisible="context.get('product_id_view',False)"/>
+                <field name="lr_no" invisible="context.get('lr_no',True)"/>
+                <field name="lr_date" invisible="context.get('lr_no',True)"/>
+                <field name="categ_id" invisible="context.get('categ_id',True)"/>
                 <field name="stock_journal" invisible="1"/>
                 <field name="state" invisible="1"/>
                 <field name="id" string="No"/>
                 <field name="inward_year"/>
                 <field name="date"/>
-                <field name="gate_pass_id"/>
-                <field name="gp_date"/>
+                <field name="gate_pass_id" invisible="context.get('gate_pass_id',True)"/>
+                <field name="gp_date" invisible="context.get('gate_pass_id',True)"/>
                 <field name="challan_no"/>
                 <field name="case_code"/>
                 <field name="product_qty" string="Challan" sum="Total Challan "/>
                 <field name="product_qty" string="Received" sum="Total Received"/>
-                <field name="product_uom"/>
-                <field name="bill_no"/>
-                <field name="bill_date"/>
+                <field name="product_uom" invisible="context.get('product_uom_view',False)"/>
+                <field name="bill_no" invisible="context.get('bill_no',True)"/>
+                <field name="bill_date" invisible="context.get('bill_no',True)"/>
                 <field name="rate"/>
                 <field name="diff"/>
-                <field name="indent_year"/>
-                <field name="puchase_year"/>
+                <field name="indent_year" invisible="context.get('indent',True)"/>
+                <field name="puchase_year" invisible="context.get('tax',True)"/>
                 <field name="product_qty_in" sum="Total incoming quantity" />
                 <field name="product_qty_out" sum="Total outgoing quantity"/>
                 <field name="value"  sum="Total value"/>
-                <field name="excies"/>
+                <field name="excies" invisible="context.get('tax',True)"/>
                 <field name="tr_code"/>
-                <field name="department_id"/>
-                <field name="cess"/>
-                <field name="high_cess"/>
-                <field name="import_duty"/>
-                <field name="cenvat"/>
-                <field name="half_cess"/>
-                <field name="half_high_cess"/>
-                <field name="half_import_duty"/>
-                <field name="half_cenvat"/>
+                <field name="department_id" invisible="context.get('department_id_view',False)"/>
+                <field name="cess" invisible="context.get('tax',True)"/>
+                <field name="high_cess" invisible="context.get('tax',True)"/>
+                <field name="import_duty" invisible="context.get('tax',True)"/>
+                <field name="cenvat" invisible="context.get('tax',True)"/>
+                <field name="half_cess" invisible="context.get('tax',True)"/>
+                <field name="half_high_cess" invisible="context.get('tax',True)"/>
+                <field name="half_import_duty" invisible="context.get('tax',True)"/>
+                <field name="half_cenvat" invisible="context.get('tax',True)"/>
                 <field name="despatch_mode"/>
                 <field name="cylinder"/>
-                <field name="tr_code_id"/>
-                <field name="ac_code_id"/>
-                <field name="payment_id"/>
-                <field name="indentor_id"/>
-                <field name="purchase_id" />
-                <field name="po_series_id" />
-                <field name="indent_id" />
-                <field name="day_diff1"/>
-                <field name="day_diff"/>
-                <field name="day_diff2" string="Delay(Days)"/>
+                <field name="tr_code_id" invisible="context.get('tr_code_id_view',False)"/>
+                <field name="ac_code_id" invisible="context.get('ac_code_id_view',False)"/>
+                <field name="payment_id" invisible="context.get('po',True)"/>
+                <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
+                <field name="purchase_id" invisible="context.get('po',True)"/>
+                <field name="po_series_id" invisible="context.get('po',True)"/>
+                <field name="indent_id" invisible="context.get('indent',True)"/>
+                <field name="day_diff1" invisible="context.get('indent',True)"/>
+                <field name="day_diff" invisible="context.get('indent',True)"/>
+                <field name="day_diff2" string="Delay(Days)" invisible="context.get('indent',True)"/>
            </tree>
         </field>
     </record>
@@ -103,30 +103,36 @@
                     <field name="date"/>
                 </group>
                 <group string="Display">
-                        <filter string="Show Sales Team" context="{'invisible_section': False}" domain="[]" help="Show Sales Team"/>
-                        <filter string="Show Countries" context="{'invisible_country': False}" help="Show Countries"/>
+                    <filter name="group_categ_id" string="Product Category" icon="terp-stock_symbol-selection" context="{'categ_id': False}"/>
+                    <filter name="group_lr_no" string="LR " icon="terp-stock_symbol-selection" context="{'lr_no': False}"/>
+                    <filter name="group_gate_pass_id" string="Gate Pass" icon="terp-stock_symbol-selection" context="{'gate_pass_id': False}"/>
+                    <filter name="group_bill_no" string="Bill" icon="terp-stock_symbol-selection" context="{'bill_no': False}"/>
+                    <filter name="group_tax" string="Tax(Excies,Cess etc.)" icon="terp-stock_symbol-selection" context="{'tax': False}"/>
+                    <filter name="group_purchase" string="Purchase" icon="terp-stock_symbol-selection" context="{'po': False}"/>
+                    <filter name="group_indent" string="Indent" icon="terp-stock_symbol-selection" context="{'indent': False}"/>
+                    <filter name="group_lead_time" string="Lead Time" icon="terp-stock_symbol-selection" context="{'lead': False}"/>
                 </group>
                 <group expand="1" string="Group By...">
-                    <filter name="group_partner" string="Supplier" icon="terp-partner" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_partner" string="Supplier" icon="terp-partner" context="{'group_by':'partner_id','partner_id_view':True}"/>
                     <filter name="group_categ_id" string="Product Category" icon="terp-stock_symbol-selection" context="{'group_by':'categ_id'}"/>
-                    <filter name="group_product" string="Product" icon="terp-accessories-archiver" context="{'group_by':'product_id'}"/>
-                    <filter name="group_picking" string="Shipment" icon="terp-accessories-archiver" context="{'group_by':'picking_id'}"/>
-                    <filter string="Source Location" name="src_location" icon="terp-gtk-jump-to-rtl" context="{'group_by':'location_id'}"/>
-                    <filter string="Dest. Location" name="dest_location" icon="terp-gtk-jump-to-ltr"  context="{'group_by':'location_dest_id'}"/>
+                    <filter name="group_product" string="Product" icon="terp-accessories-archiver" context="{'group_by':'product_id','product_id_view': True}"/>
+                    <filter name="group_picking" string="Shipment" icon="terp-accessories-archiver" context="{'group_by':'picking_id','picking_id_view':True}"/>
+                    <filter string="Source Location" name="src_location" icon="terp-gtk-jump-to-rtl" context="{'group_by':'location_id','location_id_view':True}"/>
+                    <filter string="Dest. Location" name="dest_location" icon="terp-gtk-jump-to-ltr"  context="{'group_by':'location_dest_id','location_dest_id_view':True}"/>
                     <filter string="Type" name="group_type" icon="terp-stock_symbol-selection" context="{'group_by':'type'}" help="Shipping type specify, goods coming in or going out"/>
                     <filter string="Status" name="group_state" icon="terp-stock_effects-object-colorize" context="{'group_by':'state'}"/>
-                    <filter string="Stock journal" name="group_stock_journal" icon="terp-folder-orange" context="{'group_by':'stock_journal'}"/>
+                    <filter string="Stock journal" name="group_stock_journal" icon="terp-folder-orange" context="{'group_by':'stock_journal','stock_journal_view':True}"/>
                     <filter string="Gate Pass" name="group_gate_pass" icon="terp-folder-orange" context="{'group_by':'gate_pass_id'}"/>
-                    <filter string="Product UOM" name="group_uom" icon="terp-folder-orange" context="{'group_by':'product_uom'}"/>
+                    <filter string="Product UOM" name="group_uom" icon="terp-folder-orange" context="{'group_by':'product_uom','product_uom_view': True}"/>
                     <filter string="Purchase Order" name="group_oreder" icon="terp-folder-orange" context="{'group_by':'purchase_id'}"/>
                     <filter string="Purchase Series" name="group_series" icon="terp-folder-orange" context="{'group_by':'po_series_id'}"/>
-                    <filter string="Department" name="group_department" icon="terp-folder-orange" context="{'group_by':'department_id'}"/>
+                    <filter string="Department" name="group_department" icon="terp-folder-orange" context="{'group_by':'department_id','department_id_view':True}"/>
                     <filter string="Payment Term" name="group_payment" icon="terp-folder-orange" context="{'group_by':'payment_id'}"/>
                     <filter string="Despatch Mode" name="group_despatch_mode" icon="terp-folder-orange" context="{'group_by':'despatch_mode'}"/>
-                    <filter string="TR Code" name="group_tr_code" icon="terp-folder-orange" context="{'group_by':'tr_code_id'}"/>
-                    <filter string="AC Code" name="group_ac_code" icon="terp-folder-orange" context="{'group_by':'ac_code_id'}"/>
+                    <filter string="TR Code" name="group_tr_code" icon="terp-folder-orange" context="{'group_by':'tr_code_id','tr_code_id_view':True}"/>
+                    <filter string="AC Code" name="group_ac_code" icon="terp-folder-orange" context="{'group_by':'ac_code_id','ac_code_id_view':True}"/>
                     <filter string="Indent" name="group_indent" icon="terp-folder-orange" context="{'group_by':'indent_id'}"/>
-                    <filter string="Indentor" name="group_indentor" icon="terp-folder-orange" context="{'group_by':'indentor_id'}"/>
+                    <filter string="Indentor" name="group_indentor" icon="terp-folder-orange" context="{'group_by':'indentor_id','indentor_id_view':True}"/>
                     <filter string="Company" name="group_state" icon="terp-go-home" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
                     <filter string="Day" icon="terp-go-today" context="{'group_by':'day'}" help="Day Planned"/>
                     <filter string="Month" icon="terp-go-month" context="{'group_by':'date'}" help="Month Planned"/>

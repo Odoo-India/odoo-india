@@ -9,21 +9,21 @@
             <field name="model">indent.purchase.report</field>
             <field name="arch" type="xml">
                 <tree string="Indent Purchase Analysis" create="false" delete="false">
-                    <field name="name"/>
+                    <field name="name" invisible="context.get('indentor_id_view',False)"/>
                     <field name="date"/>
-                    <field name="indentor_id"/>
-                    <field name="purchase_id"/>
+                    <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
+                    <field name="purchase_id" invisible="context.get('purchase_id_view',False)"/>
                     <field name="indent_id" invisible="1"/>
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>
                     <field name="month" invisible="1"/>
-                    <field name="department_id"/>
-                    <field name="requirement"/>
-                    <field name="type"/>
-                    <field name="item_for"/>
+                    <field name="department_id" invisible="context.get('department_id_view',False)"/>
+                    <field name="requirement" invisible="context.get('requirement_view',False)"/>
+                    <field name="type" invisible="context.get('type_view',False)"/>
+                    <field name="item_for" invisible="context.get('item_for_view',False)"/>
                     <field name="nbr" sum="# of Lines"/>
-                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
-                    <field name="state"/>
+                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting" invisible="context.get('analytic_account_id_view',False)"/>
+                    <field name="state" invisible="context.get('state_view',False)"/>
                 </tree>
             </field>
         </record>
@@ -51,12 +51,12 @@
                         <filter string="Indent" name="Indent" context="{'group_by':'indent_id'}"/>
                         <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id','indentor_id_view': True}"/>
                         <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id','purchase_id_view': True}"/>
-                        <filter string="Department" context="{'group_by':'department_id','po_supplier_id_view': True}"/>
-                        <filter string="Requirement" context="{'group_by':'requirement','po_supplier_id_view': True}"/>
-                        <filter string="Type" context="{'group_by':'type','po_supplier_id_view': True}"/>
-                        <filter string="Item For" context="{'group_by':'item_for','po_supplier_id_view': True}"/>
-                        <filter string="Project" context="{'group_by':'analytic_account_id','po_supplier_id_view': True}" groups="analytic.group_analytic_accounting"/>
-                        <filter string="Status" context="{'group_by':'state','po_supplier_id_view': True}"/>
+                        <filter string="Department" context="{'group_by':'department_id','department_id_view': True}"/>
+                        <filter string="Requirement" context="{'group_by':'requirement','requirement_view': True}"/>
+                        <filter string="Type" context="{'group_by':'type','type_view': True}"/>
+                        <filter string="Item For" context="{'group_by':'item_for','item_for_view': True}"/>
+                        <filter string="Project" context="{'group_by':'analytic_account_id','analytic_account_id_view': True}" groups="analytic.group_analytic_accounting"/>
+                        <filter string="Status" context="{'group_by':'state','state_view': True}"/>
                         <filter string="Day" context="{'group_by':'day'}"/>
                         <filter string="Month" name="order_month" context="{'group_by':'month'}"/>
                         <filter string="Year" context="{'group_by':'year'}"/>

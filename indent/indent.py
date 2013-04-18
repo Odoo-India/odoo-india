@@ -674,7 +674,6 @@ class stock_picking(osv.Model):
         'lab_no':fields.integer("Lab No"),
         'gp_no': fields.integer("Gate Pass No"),
         'gp_year': fields.char("GP Year",size=64),
-        'series_id': fields.many2one("product.order.series",'Series'),
         'remark1': fields.char("Remark1",size=256),
         'remark2': fields.char("remark2",size=256),
         'case_code': fields.boolean("Cash Code"),

@@ -226,7 +226,7 @@ class purchase_order(osv.Model):
             for line in order.order_line:
                 val1 += line.price_subtotal
                 amount_untaxed = val1
-                for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_subtotal, line.product_qty, line.product_id, order.partner_id)['taxes']:
+                for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
             other_charge = order.package_and_forwording  - (order.commission + order.other_discount)
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)

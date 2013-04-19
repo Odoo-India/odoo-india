@@ -43,6 +43,7 @@ This module inherits the base product module which maintains some product histor
         'wizard/import_reciept_data.xml',
         'wizard/import_reciept_line_data.xml',
         'wizard/import_issue_data.xml',
+        'wizard/import_issue_line_data.xml',
         #'wizard/import_inward_data.xml',
         #'wizard/import_inward_line_data.xml',
         'maize_purchase_view.xml',

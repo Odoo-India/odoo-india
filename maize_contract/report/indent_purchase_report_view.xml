@@ -74,7 +74,7 @@
                         <filter name="group_department" string="Department" icon="terp-stock_symbol-selection" context="{'department_id': False}"/>
                         <filter name="group_analytic_accounting" string="Project" context="{'analytic_account_id': False}" groups="analytic.group_analytic_accounting"/>
                         <filter name="group_state" string="Status" icon="terp-stock_symbol-selection" context="{'state': False}"/>
-                        <filter name="group_series" string="PO Series" icon="terp-stock_symbol-selection" context="{'po_series_id': False}"/>
+                        <filter name="group_series" string="Series" icon="terp-stock_symbol-selection" context="{'po_series_id': False}"/>
                         <filter name="group_date" string="Date of Indent" icon="terp-stock_symbol-selection" context="{'date': False}"/>
                         <filter name="group_purchase_maize_id" string="Purchase Order (maize)" icon="terp-stock_symbol-selection" context="{'purchase_maize_id': False}"/>
                         <filter name="group_indent_maize_id" string="Maize Indent" icon="terp-stock_symbol-selection" context="{'indent_maize_id': False}"/>
@@ -87,7 +87,7 @@
                         <filter string="Department" context="{'group_by':'department_id','department_id_view': True}"/>
                         <filter string="Unit" context="{'group_by':'product_uom','product_uom_view': True}"/>
                         <filter string="Supplier" context="{'group_by':'partner_id','partner_id_view': True}"/>
-                        <filter string="PO Series" context="{'group_by':'po_series_id','po_series_id_view': True}"/>
+                        <filter string="Series" context="{'group_by':'po_series_id','po_series_id_view': True}"/>
                         <filter string="Project" context="{'group_by':'analytic_account_id','analytic_account_id_view': True}" groups="analytic.group_analytic_accounting"/>
                         <filter string="Date of Indent" icon="terp-stock_symbol-selection" context="{'group_by':'date'}"/>
                         <filter string="Maize PO" icon="terp-stock_symbol-selection" context="{'group_by':'purchase_maize_id'}"/>

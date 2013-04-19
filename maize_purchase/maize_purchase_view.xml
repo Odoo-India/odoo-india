@@ -615,18 +615,7 @@
                     <field name="indent_id"/>
                     <field name="product_id"/>
                     <field name="create_uid"/>
-                    <group expand="0" string="Group By...">
-                        <filter string="Supplier" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
-                        <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'po_series_id'}"/>
-                        <filter string="Source" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'origin'}"/>
-                        <filter string="Order Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_order'}"/>
-                        <filter string="Expected Date" icon="terp-go-month" domain="[]" context="{'group_by':'minimum_planned_date'}"/>
-                        <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
-                    </group>
                 </field>
-               <filter string="Supplier" position="after">
-                    <filter string="Series" icon="terp-partner" domain="[]" context="{'group_by':'po_series_id'}"/>
-                </filter>
             </field>
         </record>
         <!--  Advance Note Report -->

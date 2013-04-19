@@ -175,6 +175,17 @@ class purchase_requisition(osv.osv):
     }
 purchase_requisition()
 
+class purchase_dispatch(osv.Model):
+    _name = 'purchase.dispatch'
+    _description = 'Purchase Dispatch'
+
+    _columns = {
+        'name': fields.char('Name', size=64, required=True, translate=True),
+        'code': fields.char('Code', size=32, required=True),
+    }
+
+purchase_dispatch()
+
 class purchase_requisition_partner(osv.osv_memory):
     _inherit = "purchase.requisition.partner"
     _columns = {
@@ -307,6 +318,7 @@ class purchase_order(osv.Model):
         'contract_id': fields.related('indent_id', 'contract_series_id', relation="contract.series", type="many2one", help="Contract Series",store=True),
         'supplier_code': fields.related('partner_id', 'supp_code', type='char', string='Supplier Code', store=True, readonly=True),
         'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor Code', store=True, readonly=True),
+        'dispatch_id': fields.many2one('purchase.dispatch', 'Dispatch')
     }
 
     _defaults = {

@@ -53,6 +53,7 @@
                             <field name="payment_term_id"/>
                             <field name="delivey"/>
                             <field name="voucher_id" invisible="1"/>
+                            <field name="dispatch_id"/>
                         </group>
                         <group>
                             <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>

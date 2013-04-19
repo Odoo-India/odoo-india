@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Dispatch Data -->
+        <record id="purchase_dispatch_1" model="purchase.dispatch">
+            <field name="name">One</field>
+            <field name="code">one</field>
+        </record>
+
+        <record id="purchase_dispatch_2" model="purchase.dispatch">
+            <field name="name">Two</field>
+            <field name="code">two</field>
+        </record>
+
+        <record id="purchase_dispatch_3" model="purchase.dispatch">
+            <field name="name">Three</field>
+            <field name="code">three</field>
+        </record>
+
+    </data>
+</openerp>

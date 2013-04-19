@@ -5,68 +5,84 @@
         <record id="product_ch" model="product.order.series">
             <field name="code">CH</field>
             <field name="name">Chemical</field>
+            <field name="type">purchase</field>
         </record>
 
         <record id="product_pk" model="product.order.series">
             <field name="code">PK</field>
             <field name="name">Packing</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_st" model="product.order.series">
             <field name="code">ST</field>
             <field name="name">Store</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_cp" model="product.order.series">
             <field name="code">CP</field>
             <field name="name">Capital</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_co" model="product.order.series">
             <field name="code">CO</field>
             <field name="name">Contract</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_lb" model="product.order.series">
             <field name="code">LB</field>
             <field name="name">Laboratory</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_rp" model="product.order.series">
             <field name="code">RP</field>
             <field name="name">Repair</field>
+            <field name="type">purchase</field>
         </record>
 
         <record id="product_ms" model="product.order.series">
             <field name="code">MS</field>
             <field name="name">Miscelaneous</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_fa" model="product.order.series">
             <field name="code">FA</field>
             <field name="name">Fly Ash Bricks</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_fc" model="product.order.series">
             <field name="code">FC</field>
             <field name="name">Filter Cloth</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_ft" model="product.order.series">
             <field name="code">FT</field>
             <field name="name">Free Trial</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_im" model="product.order.series">
             <field name="code">IM</field>
             <field name="name">Imported</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_wo" model="product.order.series">
             <field name="code">WO</field>
             <field name="name">Work Order</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_sp" model="product.order.series">
             <field name="code">SP</field>
             <field name="name">Special Purchase</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_og" model="product.order.series">
             <field name="code">OG</field>
             <field name="name">Oil / Grease</field>
+            <field name="type">purchase</field>
         </record>
         <record id="product_mm" model="product.order.series">
             <field name="code">MM</field>
             <field name="name">Mininmum / Maximum</field>
+            <field name="type">purchase</field>
         </record>
 
 

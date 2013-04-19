@@ -60,11 +60,13 @@ class product_order_series(osv.Model):
     _name = 'product.order.series'
     _description = ' Add Purchase Order series'
     _rec_name = 'code'
-    
+
     _columns = {
-        'code': fields.char('Series', size=15),
-        'name': fields.char('Description', size=50),
+        'name': fields.char('Name', size=64, required=True, translate=True),
+        'code': fields.char('Code', size=32, required=True),
+        'type': fields.selection([('indent', 'Indent'), ('purchase','Purchase')], 'Type', required=True),
         }
+
 product_order_series()
 
 class product_major_group(osv.Model):

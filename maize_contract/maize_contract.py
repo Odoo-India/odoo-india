@@ -45,52 +45,17 @@ class indent_indent(osv.Model):
         nodes = doc.xpath("//div[@name='buttons']/button[@string='Enquiry']")
         if context.get('search_default_contract_contract'):
             if 'product_lines' in res['fields'].keys() and 'product_id' in res['fields']['product_lines']['views']['form']['fields'].keys():
-               domain = [('type','=', 'service')]
-               res['fields']['product_lines']['views']['form']['fields']['product_id']['domain'] = domain
+                domain = [('type','=', 'service')]
+                res['fields']['product_lines']['views']['form']['fields']['product_id']['domain'] = domain
             for node in nodes:
                 node.set('modifiers','{"invisible":true}')
         res['arch'] = etree.tostring(doc)
         return res
 
-#    def indent_confirm(self, cr, uid, ids, context=None):
-#        for record in self.browse(cr,uid,ids,context):
-#            if record.contract:
-#                sequence = '/'
-#                if record.contract_series_id.code == 'MS':
-#                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.ms')
-#                elif record.contract_series_id.code == 'PR':
-#                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.pr')
-#                elif record.contract_series_id.code == 'OM':
-#                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.om')
-#                elif record.contract_series_id.code == 'TM':
-#                    sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.tm')
-#                self.write(cr,uid,record.id,{'name':sequence})
-#            else:
-#                sequence = self.pool.get('ir.sequence').get(cr, uid, 'indent.indent') or '/'
-#                self.write(cr,uid,record.id,{'name':sequence})
-#        return super(indent_indent, self).indent_confirm(cr, uid, ids, context)
-    
-    def create(self, cr, uid, vals, context=None):
-        co_series = self.pool.get('contract.series')
-        if vals.get('contract'):
-            co = co_series.browse(cr,uid,vals['contract_series_id']).code
-            if co == 'MS':
-                sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.ms')
-            elif co == 'PR':
-                sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.pr')
-            elif co == 'OM':
-                sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.om')
-            elif co == 'TM':
-                sequence = self.pool.get('ir.sequence').get(cr, uid, 'contract.tm')
-        else:
-            sequence = self.pool.get('ir.sequence').get(cr, uid, 'indent.indent')
-        vals['name']=sequence
-        result = super(indent_indent, self).create(cr, uid, vals, context=context)
-        return result
     _defaults = {
         'contract': False
         }
-    
+
 indent_indent()
 
 class contract_series(osv.Model):

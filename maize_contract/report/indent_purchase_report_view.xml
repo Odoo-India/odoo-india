@@ -38,6 +38,19 @@
             </field>
         </record>
 
+		<!--  Indent Purchase Report Graph View -->
+        <record id="view_maize_purchase_report_graph" model="ir.ui.view">
+             <field name="name">indent.purchase.report.graph</field>
+             <field name="model">indent.purchase.report</field>
+             <field name="arch" type="xml">
+                 <graph string="Maize Purchase Analysis" type="bar">
+                     <field name="product_id"/>
+                     <field name="price_unit"/>
+                     <field name="state" group="True"/>
+                 </graph>
+             </field>
+        </record>
+		
         <!-- Indent Purchase Report Search View -->
         <record id="view_indent_purchase_report_search" model="ir.ui.view">
             <field name="name">indent.purchase.report.search</field>
@@ -93,7 +106,7 @@
             <field name="name">Maize Purchase Analysis</field>
             <field name="res_model">indent.purchase.report</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,graph</field>
             <field name="search_view_id" ref="view_indent_purchase_report_search"/>
             <field name="view_id" ref="view_indent_purchase_report_tree"/>
             <field name="context">{'search_default_Indent':1, 'group_by_no_leaf':0, 'group_by':[]}</field>

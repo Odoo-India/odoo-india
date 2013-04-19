@@ -56,19 +56,6 @@ class account_analytic_account(osv.Model):
         return res   
 account_analytic_account()
 
-class product_order_series(osv.Model):
-    _name = 'product.order.series'
-    _description = ' Add Purchase Order series'
-    _rec_name = 'code'
-
-    _columns = {
-        'name': fields.char('Name', size=64, required=True, translate=True),
-        'code': fields.char('Code', size=32, required=True),
-        'type': fields.selection([('indent', 'Indent'), ('purchase','Purchase')], 'Type', required=True),
-        }
-
-product_order_series()
-
 class product_major_group(osv.Model):
     _name = 'product.major.group'
     _description = ' Add Product major Code'

@@ -10,16 +10,6 @@
                 <xpath expr="//field[@name='name']" position='after'>
                     <field name="contract" invisible="1"/>
                 </xpath>
-                <xpath expr="//field[@name='required_date']" position='before'>
-                    <field name="contract_series_id" attrs="{'invisible': [('contract', '=', False)],'required': [('contract', '=', True)]}"/>
-                </xpath>
-                <xpath expr="//label[@for='name']" position='replace'>
-                    <!-- <label string="Contract" attrs="{'invisible': [('contract', '=', False)]}" class="oe_edit_only"/> -->
-                    <!-- <label string="Indent" attrs="{'invisible': [('contract', '=', True)]}" class="oe_edit_only"/> -->
-                </xpath>
-                <xpath expr="//field[@name='required_date']" position='replace'>
-                    <field name="required_date" attrs="{'invisible': [('contract', '=', True)]}"/>
-                </xpath>
                 <xpath expr="//div[@name='buttons']/button[@string='Inward']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('purchase_count', '=', False)]}</attribute>
                 </xpath>

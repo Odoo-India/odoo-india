@@ -2,24 +2,28 @@
 <openerp>
     <data noupdate="1">
 
-        <record id="contract_ms" model="contract.series">
+        <record id="product_order_series_1" model="product.order.series">
             <field name="code">MS</field>
             <field name="name">MISC.SALARY</field>
+            <field name="type">indent</field>
         </record>
 
-        <record id="product_pr" model="contract.series">
+        <record id="product_order_series_2" model="product.order.series">
             <field name="code">PR</field>
             <field name="name">Project</field>
+            <field name="type">indent</field>
         </record>
         
-        <record id="product_om" model="contract.series">
+        <record id="product_order_series_3" model="product.order.series">
             <field name="code">OM</field>
             <field name="name">OPERATION MAINTENANC</field>
+            <field name="type">indent</field>
         </record>
         
-        <record id="product_tm" model="contract.series">
+        <record id="product_order_series_4" model="product.order.series">
             <field name="code">TM</field>
             <field name="name">TEMPORARY MAINTENAN</field>
+            <field name="type">indent</field>
         </record>
         
     </data>

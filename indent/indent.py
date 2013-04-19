@@ -1007,4 +1007,17 @@ class hr_employee(osv.Model):
 
 hr_employee()
 
+class product_order_series(osv.Model):
+    _name = 'product.order.series'
+    _description = ' Add Purchase Order series'
+    _rec_name = 'code'
+
+    _columns = {
+        'name': fields.char('Name', size=64, required=True, translate=True),
+        'code': fields.char('Code', size=32, required=True),
+        'type': fields.selection([('indent', 'Indent'), ('purchase','Purchase')], 'Type', required=True),
+        }
+
+product_order_series()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

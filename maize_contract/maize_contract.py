@@ -32,7 +32,6 @@ class indent_indent(osv.Model):
     _inherit = 'indent.indent'
     _columns = {
         'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent"),
-        'contract_series_id': fields.many2one('contract.series','Contract Series', help="contract_series", readonly=True, states={'draft': [('readonly', False)]}),
         'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
         'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
         }
@@ -57,26 +56,6 @@ class indent_indent(osv.Model):
         }
 
 indent_indent()
-
-class contract_series(osv.Model):
-    _name = 'contract.series'
-    _rec_name = 'code'
-    
-    def name_get(self, cr, uid, ids, context=None):
-        if not len(ids):
-            return []
-        res = []
-        for pckg in self.browse(cr, uid, ids, context=context):
-            p_name = pckg.code and '[' + pckg.code + '] ' or ''
-            p_name += pckg.name
-            res.append((pckg.id,p_name))
-        return res 
-    
-    _columns = {
-        'name': fields.char('Name',size=256),
-        'code': fields.char('Code', size=64)
-        }
-contract_series()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'

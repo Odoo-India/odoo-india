@@ -123,29 +123,6 @@ class purchase_order(osv.Model):
             result['value']['no_of_days2'] = 0
 
         return result
-    
-    def create(self,cr,uid,vals,context):
-        if not vals.get('indent_id') and vals.get('po_series_id'):
-            series = self.pool.get('product.order.series').browse(cr,uid,vals.get('po_series_id'))
-            c_data = {'company_id':1,'po_series_id':series.id}
-            if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series.code)]):
-                seqq = self.pool.get('indent.indent').create_series_sequence(cr,uid,c_data,context)
-            po_seq = self.pool.get('ir.sequence').get(cr, uid, series.code) or '/'
-            vals['name'] = po_seq
-        return super(purchase_order, self).create(cr, uid, vals,context=context)
-
-    def write(self, cr, uid, ids, vals, context=None):
-        if ids:
-            record = self.browse(cr,uid,ids)[0]
-            if (vals.get('po_series_id') and record.indent_id.contract) or not record.indent_id:
-                series = self.pool.get('product.order.series').browse(cr,uid,vals.get('po_series_id'))
-                if series:
-                    c_data = {'company_id':1,'po_series_id':series.id}
-                    if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series.code)]):
-                        seqq = self.pool.get('indent.indent').create_series_sequence(cr,uid,c_data,context)
-                    po_seq = self.pool.get('ir.sequence').get(cr, uid, series.code) or '/'
-                    vals['name'] = po_seq
-        return super(purchase_order, self).write(cr, uid, ids, vals, context=context)
 
     def onchange_compute_days3(self, cr, uid, ids, date_from, date_to,d1=0,d2=0):
         """

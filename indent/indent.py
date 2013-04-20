@@ -1016,7 +1016,25 @@ class product_order_series(osv.Model):
         'name': fields.char('Name', size=64, required=True, translate=True),
         'code': fields.char('Code', size=32, required=True),
         'type': fields.selection([('indent', 'Indent'), ('purchase','Purchase')], 'Type', required=True),
+        'seq_id': fields.many2one('ir.sequence', 'Sequence'),
         }
+
+    def create(self, cr, uid, vals, context=None):
+        name = vals['name']
+        code = vals['code']
+        self.pool.get('ir.sequence.type').create(cr, uid, {'name': name, 'code': code}, context=context)
+        seq = {
+            'name': name,
+            'implementation':'standard',
+            'prefix': code + "/",
+            'padding': 4,
+            'number_increment': 1,
+            'code': code
+        }
+        if 'company_id' in vals:
+            seq['company_id'] = vals['company_id']
+        vals['seq_id'] = self.pool.get('ir.sequence').create(cr, uid, seq, context=context)
+        return super(product_order_series, self).create(cr, uid, vals, context=context)
 
 product_order_series()
 

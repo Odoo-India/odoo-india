@@ -324,26 +324,8 @@ class purchase_order(osv.Model):
         else:
             self._order = 'name DESC'
         return super(purchase_order, self).search(cr, user, args, offset, limit, order, context, count)
-    
-#    def create(self, cr, uid, vals, context=None):
-#        series_obj = self.pool.get('product.order.series')
-#        if vals.get('name','/')=='/':
-#            if vals.get('po_series_id'):
-#                series_code =  series_obj.browse(cr,uid,vals['po_series_id']).code
-#                if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
-#                    seqq = self.create_series_sequence(cr,uid,vals,context)
-#                vals['name'] = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
-#        order =  super(purchase_order, self).create(cr, uid, vals, context=context)
-#        return order
-    
+
     def write(self, cr, uid, ids, vals, context=None):
-#        series_obj = self.pool.get('product.order.series')
-#        if vals.get('po_series_id'):
-#            series_code =  series_obj.browse(cr,uid,vals['po_series_id']).code
-#            if not self.pool.get('ir.sequence').search(cr,uid,[('name','=',series_code)]):
-#                seqq = self.create_series_sequence(cr,uid,vals,context)
-#            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, series_code) or '/'
-        
         line_obj = self.pool.get('purchase.order.line')
         if isinstance(ids, (int, long)):
             ids = [ids]

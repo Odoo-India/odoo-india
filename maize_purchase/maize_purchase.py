@@ -81,7 +81,11 @@ class purchase_order_line(osv.Model):
         child = []
         res = dict([(id, {'price_subtotal': 0.0, 'po_excise':0.0,'po_st':0.0,'po_cess':0.0,'line_advance':0.0}) for id in ids])
         for line in self.browse(cr, uid, ids, context=context):
-            taxes = tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, line.product_id, line.order_id.partner_id)
+            price_discount = line.price_unit
+            if line.discount != 0:
+                price_discount = (line.price_unit * (1 - (line.discount / 100)))
+            
+            taxes = tax_obj.compute_all(cr, uid, line.taxes_id, price_discount, line.product_qty, line.product_id, line.order_id.partner_id)
             cur = line.order_id.pricelist_id.currency_id
             res[line.id]['price_subtotal'] = cur_obj.round(cr, uid, cur, taxes['total'])
             res[line.id]['line_advance']= (res[line.id]['price_subtotal'] * line.advance_percentage) / 100
@@ -161,8 +165,9 @@ class purchase_order_line(osv.Model):
         'received_amount': fields.function(_received_amount, multi="amount", string="Received", digits_compute= dp.get_precision('Account'),store=True),
         'pending_amount': fields.function(_received_amount, multi="amount", string="Pending", digits_compute= dp.get_precision('Account'),store=True),
         'last_month_consumption': fields.function(_last_consumption, string="Last Month Consumption", digits_compute= dp.get_precision('Account'),store=True),
-          }
+      }
 purchase_order_line()
+
 class purchase_requisition(osv.osv):
     _inherit = "purchase.requisition"
     _order = "name desc"
@@ -200,23 +205,6 @@ purchase_requisition_partner()
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
 
-#    def create_series_sequence(self, cr, uid, vals, context=None):
-#        series_obj = self.pool.get('product.order.series')
-#        type_name= series_obj.browse(cr,uid,vals['po_series_id']).code
-#        type = self.pool.get('ir.sequence.type').create(cr,uid,{'name':'maize'+type_name,'code':type_name})
-#        code = self.pool.get('ir.sequence.type').browse(cr,uid,type).code
-#        seq = {
-#            'name': series_obj.browse(cr,uid,vals['po_series_id']).code,
-#            'implementation':'standard',
-#            'prefix': series_obj.browse(cr,uid,vals['po_series_id']).code+"/",
-#            'padding': 4,
-#            'number_increment': 1,
-#            'code':code
-#        }
-#        if 'company_id' in vals:
-#            seq['company_id'] = vals['company_id']
-#        return self.pool.get('ir.sequence').create(cr, uid, seq)
-
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         amount_untaxed = 0
@@ -226,22 +214,17 @@ class purchase_order(osv.Model):
                 'amount_untaxed': 0.0,
                 'amount_tax': 0.0,
                 'amount_total': 0.0,
-                'discount_amount':0.0,
-                'discount_percentage':0.0,
                 'other_charges': 0.0,
             }
-            val = val1 = discount_amount = discount_percentage = 0.0
+            val = val1 = 0.0
             cur = order.pricelist_id.currency_id
             for line in order.order_line:
                 val1 += line.price_subtotal
                 amount_untaxed = val1
                 for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
-                discount_percentage = line.discount
-            discount_amount = (val1 * (discount_percentage)/100)
-            res[order.id]['discount_amount'] = discount_amount
-            res[order.id]['discount_percentage'] = discount_percentage
-            other_charge = order.package_and_forwording  - (order.commission + order.other_discount + discount_amount)
+
+            other_charge = order.package_and_forwording  - order.commission
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
@@ -273,7 +256,12 @@ class purchase_order(osv.Model):
                     if order.insurance != 0:
                         amount_untaxed += (amount_untaxed * order.insurance) / 100
                     amount_untaxed += order.freight
-            res[order.id]['amount_total']= amount_untaxed + res[order.id]['amount_tax'] + res[order.id]['other_charges']
+            
+            total_discount = order.other_discount
+            if order.discount_percentage != 0:
+                total_discount += ((amount_untaxed + res[order.id]['amount_tax']) * (order.discount_percentage/100))
+                
+            res[order.id]['amount_total'] = amount_untaxed + res[order.id]['amount_tax'] + res[order.id]['other_charges'] - total_discount
         return res
 
     def _get_order(self, cr, uid, ids, context=None):
@@ -286,27 +274,26 @@ class purchase_order(osv.Model):
         'package_and_forwording': fields.float('Packing & Forwarding', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'insurance': fields.float('Insurance',  states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'commission': fields.float('Commission', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
-        'other_discount': fields.float('Other Discount', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'po_series_id': fields.many2one('product.order.series', 'Series', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The amount without tax", track_visibility='always'),
         'amount_tax': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Taxes',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The tax amount"),
         'amount_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Total',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total amount"),
         'other_charges': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Other Charges',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="Other Charges(computed as Packing & Forwarding - (Commission + Other Discount))"),
         'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
@@ -321,17 +308,9 @@ class purchase_order(osv.Model):
         'supplier_code': fields.related('partner_id', 'supp_code', type='char', string='Supplier Code', store=True, readonly=True),
         'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor Code', store=True, readonly=True),
         'dispatch_id': fields.many2one('purchase.dispatch', 'Dispatch'),
-        'discount_amount': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Discount (Amount)',
-            store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
-                'purchase.order.line': (_get_order, None, 10),
-            }, multi="sums", help="The amount without tax", track_visibility='always'),
-        'discount_percentage': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Discount (%)',
-            store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
-                'purchase.order.line': (_get_order, None, 10),
-            }, multi="sums", help="The amount without tax", track_visibility='always'),
-        
+        'other_discount': fields.float('Discount / Round Off', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in fix amount", track_visibility='always'),
+        'discount_percentage':  fields.float('Discount (%)', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in %", track_visibility='always'),
+        'discount_amount':  fields.float('Discount (%)', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in %", track_visibility='always') 
     }
 
     _defaults = {

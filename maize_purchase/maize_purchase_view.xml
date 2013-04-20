@@ -48,10 +48,7 @@
                     <group>
                         <group>
                             <field name="package_and_forwording"/>
-                            <field name="commission"/>
-                            <field name="other_discount"/>
-                            <field name="discount_amount"/>
-                            <field name="discount_percentage" invisible="1"/>
+                            <field name="commission"/>                            
                             <field name="payment_term_id"/>
                             <field name="delivey"/>
                             <field name="voucher_id" invisible="1"/>
@@ -78,6 +75,8 @@
                                 <label string="₹" attrs="{'invisible':[('freight_type','=','percentage')]}"/>                                
                             </div>
                             <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="other_discount"/>
+                            <field name="discount_percentage"/>
                            	<label for="amount_total"/>
                             <field name="amount_total" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <group colspan="4">

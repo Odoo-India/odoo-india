@@ -1017,12 +1017,13 @@ class product_order_series(osv.Model):
         'code': fields.char('Code', size=32, required=True),
         'type': fields.selection([('indent', 'Indent'), ('purchase','Purchase')], 'Type', required=True),
         'seq_id': fields.many2one('ir.sequence', 'Sequence'),
+        'seq_type_id': fields.many2one('ir.sequence.type', 'Sequence Type'),
         }
 
     def create(self, cr, uid, vals, context=None):
         name = vals['name']
         code = vals['code']
-        self.pool.get('ir.sequence.type').create(cr, uid, {'name': name, 'code': code}, context=context)
+        vals['seq_type_id'] = self.pool.get('ir.sequence.type').create(cr, uid, {'name': name, 'code': code}, context=context)
         seq = {
             'name': name,
             'implementation':'standard',
@@ -1035,6 +1036,17 @@ class product_order_series(osv.Model):
             seq['company_id'] = vals['company_id']
         vals['seq_id'] = self.pool.get('ir.sequence').create(cr, uid, seq, context=context)
         return super(product_order_series, self).create(cr, uid, vals, context=context)
+
+    def write(self, cr, uid, ids, vals, context=None):
+        seq_obj = self.pool.get('ir.sequence')
+        seq_type_obj = self.pool.get('ir.sequence.type')
+        if vals.get('code'):
+            if isinstance(ids, (int, long)):
+                ids = [ids]
+            for series in self.browse(cr, uid, ids, context=context):
+                seq_type_obj.write(cr, uid, [series.seq_type_id.id], {'code': vals.get('code')}, context=context)
+                seq_obj.write(cr, uid, [series.seq_id.id], {'code': vals.get('code'), 'prefix': vals.get('code') + "/"}, context=context)
+        return super(product_order_series, self).write(cr, uid, ids, vals, context=context)
 
 product_order_series()
 

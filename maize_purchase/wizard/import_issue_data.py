@@ -45,7 +45,7 @@ class import_issue_data(osv.osv_memory):
 
     #TODO:FIX ME TO FIND INDENT
     def import_isuue_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ron/Desktop/MAIZE/ISSUEHEADER_T.csv"
+        file_path = "/home/ashvin/Desktop/script/ISSUEHEADER.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

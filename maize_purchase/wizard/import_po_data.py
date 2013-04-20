@@ -100,7 +100,35 @@ class import_po_data(osv.osv_memory):
                     elif data["EXCISE"] == 2:
                         excies = self.pool.get("account.tax").search(cr,uid,[('name','like','Excise 12%')])
                     elif data["EXCISE"] == 3:
-                        excies = self.pool.get("account.tax").search(cr,uid,[('name','like','Exise Rate per unit')])
+                        excies = self.pool.get("account.tax").search(cr,uid,[('name','=',data["EXCISEPER"]+' per unit (Edu.cess 2% + H.Edu cess 1%)')])
+                        if not excies:
+                            excies = [self.pool.get("account.tax").create(cr,uid,
+                                                                          {'name':data["EXCISEPER"]+' per unit (Edu.cess 2% + H.Edu cess 1%)',
+                                                                           'tax_type':'excise',
+                                                                           'sequence':1,
+                                                                           'type':'fixed',
+                                                                           'amount':data["EXCISEPER"]})]
+                            self.pool.get("account.tax").create(cr,uid,
+                                                                          {'name':'Edu.cess 2% on '+data["EXCISEPER"],
+                                                                           'tax_type':'excise',
+                                                                           'sequence':10,
+                                                                           'type':'percent',
+                                                                           'amount':0.02,
+                                                                           'parent_id':excies[0]})
+                            self.pool.get("account.tax").create(cr,uid,
+                                                                          {'name':'Edu.cess 1% on '+data["EXCISEPER"],
+                                                                           'tax_type':'excise',
+                                                                           'sequence':15,
+                                                                           'type':'percent',
+                                                                           'amount':0.01,
+                                                                           'parent_id':excies[0]})
+                            
+#                            child_2per = self.pool.get("account.tax").create(cr,uid,{'name':'Edu Cess 2%',
+#                                                                                     'tax_type':'excise',
+#                                                                                     'sequence':10,
+#                                                                                     'type':'percent',
+#                                                                                     'amount':0.02,
+#                                                                                     'parent_id':excies[0]})
                     excies_ids = [(6,0,excies)]
 
                 if data["SALETAX"]:
@@ -139,56 +167,59 @@ class import_po_data(osv.osv_memory):
                         'vat_ids':vat_ids,
                         'notes':note,
                                                    }
-                data['po'] = po_pool.create(cr, uid, vals, context)
-            
+                po = po_pool.create(cr, uid, vals, context)
+                
             except:
-                rejected.append(data['PONO'])
-                _logger.warning("Skipping Record with Indent code '%s'."%(data['PONO']), exc_info=True)
+                rejected.append(data['SUPPCODE'])
+                _logger.warning("Skipping Record with Indent code '%s'."%(data['SUPPCODE']), exc_info=True)
                 continue
+        aaa = self.pool.get('purchase.order').search(cr,uid,[])
+        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
+        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
         print "rejectedrejectedrejected", rejected
         _logger.info("Successfully completed import journal process.")
         return True
     
-    def po_line_create(self,cr,uid,ids):
-        file_path = "/home/ashvin/Desktop/script/POTRANS.csv"
-        fields = data_lines = False
-        try:
-            fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
-        except:
-            _logger.warning("Can not read source file(csv) '%s', Invalid file path or File not reachable on file system."%(file_path))
-            return True            
-
-        _logger.info("Starting Import PO LINE Process from file '%s'."%(file_path))
-        pol_pool =self.pool.get('purchase.order.line')
-        indent = []
-        rejected =[]
-        for data in data_lines:
-            try:
-                if data["PONO"] and data['POSERIES']:
-                    po = self.pool.get('purchase.order').search(cr,uid,[('name','=',data['POSERIES']+'0'+data["PONO"])])
-
-                if data["ITEMCODE"]:
-                    product = self.pool.get('product.product').search(cr,uid,[('code','=',data["ITEMCODE"])])[0]
-                    
-                if data["PORATE"]:
-                    rate = data["PORATE"]
-                    
-                if data["DISCPER"]:
-                    discount = data["DISCPER"]
-
-
-                vals = {'order_id':po,
-                        'product_id':product,
-                        'rate':rate,
-                        'discount': discount,
-                        'name':'test',
-                        'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                        'date_planned':'03/29/2013'
-                       }
-                data['po'] = po_pool.create(cr, uid, vals, context)
-            
-            except:
-                rejected.append(data['PONO'])
-                _logger.warning("Skipping Record with Indent code '%s'."%(data['PONO']), exc_info=True)
-                continue
+#    def po_line_create(self,cr,uid,ids):
+#        file_path = "/home/ashvin/Desktop/script/POTRANS.csv"
+#        fields = data_lines = False
+#        try:
+#            fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
+#        except:
+#            _logger.warning("Can not read source file(csv) '%s', Invalid file path or File not reachable on file system."%(file_path))
+#            return True            
+#
+#        _logger.info("Starting Import PO LINE Process from file '%s'."%(file_path))
+#        pol_pool =self.pool.get('purchase.order.line')
+#        indent = []
+#        rejected =[]
+#        for data in data_lines:
+#            try:
+#                if data["PONO"] and data['POSERIES']:
+#                    po = self.pool.get('purchase.order').search(cr,uid,[('name','=',data['POSERIES']+'0'+data["PONO"])])
+#
+#                if data["ITEMCODE"]:
+#                    product = self.pool.get('product.product').search(cr,uid,[('code','=',data["ITEMCODE"])])[0]
+#                    
+#                if data["PORATE"]:
+#                    rate = data["PORATE"]
+#                    
+#                if data["DISCPER"]:
+#                    discount = data["DISCPER"]
+#
+#
+#                vals = {'order_id':po,
+#                        'product_id':product,
+#                        'rate':rate,
+#                        'discount': discount,
+#                        'name':'test',
+#                        'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
+#                        'date_planned':'03/29/2013'
+#                       }
+#                data['po'] = po_pool.create(cr, uid, vals, context)
+#            
+#            except:
+#                rejected.append(data['PONO'])
+#                _logger.warning("Skipping Record with Indent code '%s'."%(data['PONO']), exc_info=True)
+#                continue
 import_po_data()

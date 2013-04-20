@@ -45,7 +45,7 @@ class import_issue_line_data(osv.osv_memory):
 
     #TODO: FIX ME FOR LOCATION and DESTINATION LOCATION
     def import_issue_line_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ron/Desktop/MAIZE/ISSUETRANS.csv"
+        file_path = "/home/ashvin/Desktop/script/ISSUETRANS.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

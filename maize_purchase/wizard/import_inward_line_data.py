@@ -45,7 +45,7 @@ class import_inward_line_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ron/Desktop/MAIZE/INWARDTRANS.csv"
+        file_path = "/home/ashvin/Desktop/script/INWARDTRANS.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

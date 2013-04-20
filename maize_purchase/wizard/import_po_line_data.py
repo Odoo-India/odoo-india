@@ -66,6 +66,10 @@ class import_po_line_data(osv.osv_memory):
                         po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
                     if data["ITEMCODE"]:
                         product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+                        prod_name1 = self.pool.get('product.product').read(cr, uid, product,['name'])['name']
+                        prod_name2 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
+                        prod_name3 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
+                        prod_name4 = self.pool.get('product.product').read(cr, uid, product,['desc3'])['desc3']
                     if data["PORATE"]:
                         rate = data["PORATE"]
                         
@@ -78,26 +82,35 @@ class import_po_line_data(osv.osv_memory):
                     if ind:
                         ind_name = self.pool.get('indent.indent').read(cr, uid, ind[0],['name'])['name']
                         self.pool.get('purchase.order').write(cr,uid,po[0],{'origin':ind_name})
-
+                    if data["SQTY"]:
+                        qty = data["SQTY"]
+                        
                     vals = {'order_id':po[0],
                             'product_id':product,
                             'price_unit':rate,
                             'discount': discount,
-                            'name':'test',
+                            'name':prod_name1+'\n'+prod_name2+'\n'+prod_name3+'\n'+prod_name4,
+                            'product_qty':qty,
                             'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
                             'date_planned':'03/29/2013'
                            }
                     exist_line.append(maize_name)
-                    data['po'] = pol_pool.create(cr, uid, vals, context)
+                    po = pol_pool.create(cr, uid, vals, context)
+                    self.pool.get('purchase.order').write(cr,uid,po,{'commission':0.01})
+                    self.pool.get('purchase.order').write(cr,uid,po,{'commission':0.00})
                 else:
                     if data["PONO"] and data['POSERIES']:
                         po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
-    
                     if data["ITEMCODE"]:
                         product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
-                        
+                        prod_name1 = self.pool.get('product.product').read(cr, uid, product,['name'])['name']
+                        prod_name2 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
+                        prod_name3 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
+                        prod_name4 = self.pool.get('product.product').read(cr, uid, product,['desc3'])['desc3']                        
                     if data["PORATE"]:
                         rate = data["PORATE"]
+                    if data["SQTY"]:
+                        qty = data["SQTY"]
                         
                     if data["DISCPER"]:
                         discount = data["DISCPER"]
@@ -107,9 +120,10 @@ class import_po_line_data(osv.osv_memory):
                             'product_id':product,
                             'price_unit':float(rate),
                             'discount': discount,
-                            'name':'test',
+                            'product_qty':qty,
+                            'name':prod_name1+'\n'+prod_name2+'\n'+prod_name3+'\n'+prod_name4,
                             'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                            'date_planned':'03/29/2013'
+                            'date_planned':'03/29/2013',
                            }
                     ind_name = ''
                     ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
@@ -134,11 +148,15 @@ class import_po_line_data(osv.osv_memory):
                                 'excies_ids':[(6,0,[i.id for i in pp.excies_ids])],
                                 'vat_ids':[(6,0,[v.id for v in pp.vat_ids])],
                                 'order_line':[(0,0,vals_line)],
-                                'notes':pp.notes
+                                'notes':pp.notes,
                                 }
-                        po_order.create(cr, uid, po_vals, context)
+                        pop = po_order.create(cr, uid, po_vals, context)
+
             except:
                 rejected.append(data['PONO'])
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['PONO']), exc_info=True)
                 continue
+        aaa = self.pool.get('purchase.order').search(cr,uid,[])
+        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
+        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
 import_po_line_data()

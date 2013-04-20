@@ -44,7 +44,7 @@ class import_receipt_line_data(osv.osv_memory):
         return fields,data_lines
 
     def import_receipt_line_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ron/Desktop/MAIZE/RECEIPTTRANS.csv"
+        file_path = "/home/ashvin/Desktop/script/RECEIPTTRANS.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

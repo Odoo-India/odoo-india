@@ -184,6 +184,9 @@ class import_po_contract_data(osv.osv_memory):
                 rejected.append(data['JOBNO'])
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['JOBNO']), exc_info=True)
                 continue
+        aaa = self.pool.get('purchase.order').search(cr,uid,[])
+        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
+        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
         print "rejectedrejectedrejected", rejected
         _logger.info("Successfully completed import journal process.")
         return True

@@ -238,7 +238,7 @@ class purchase_order(osv.Model):
                 for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
                 discount_percentage = line.discount
-            discount_amount = (val1 * (line.discount)/100)
+            discount_amount = (val1 * (discount_percentage)/100)
             res[order.id]['discount_amount'] = discount_amount
             res[order.id]['discount_percentage'] = discount_percentage
             other_charge = order.package_and_forwording  - (order.commission + order.other_discount + discount_amount)

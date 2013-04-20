@@ -20,7 +20,16 @@
             <field name="model">account.tax</field>
             <field name="inherit_id" ref="account.view_tax_tree" />
             <field name="arch" type="xml">
-                <xpath expr="//tree/field[@name='description']" position='after'>
+                <xpath expr="//tree/field[@name='description']" position='attributes'>
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//tree/field[@name='name']" position='replace'>
+                    <field name="description"/>
+                    <field name="name"/>
+                    <field name="type"/>
+                    <field name="amount"/>
+                </xpath>
+                <xpath expr="//tree/field[@name='price_include']" position='after'>
                     <field name="tax_type"/>
                 </xpath>
             </field>

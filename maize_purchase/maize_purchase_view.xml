@@ -50,6 +50,8 @@
                             <field name="package_and_forwording"/>
                             <field name="commission"/>
                             <field name="other_discount"/>
+                            <field name="discount_amount"/>
+                            <field name="discount_percentage" invisible="1"/>
                             <field name="payment_term_id"/>
                             <field name="delivey"/>
                             <field name="voucher_id" invisible="1"/>
@@ -88,7 +90,7 @@
                     <field name="discount"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_ref']" position='after'>
-                    <field name='po_series_id' string="PO Series" attrs="{'invisible': [('contract', '=', True)]}" domain="[('type', '=', 'purchase')]"/>
+                    <field name='po_series_id' string="PO Series" domain="[('type', '=', 'purchase')]"/>
                     <field name='contract_id' string="Contract Series" attrs="{'invisible': [('contract', '=', False)]}" domain="[('type', '=', 'indent')]"/>
                 </xpath>
             </field>

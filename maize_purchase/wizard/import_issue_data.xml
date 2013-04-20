@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      <record id="view_import_issue_data_form" model="ir.ui.view">
+        <field name="name">import_issue_data_form</field>
+        <field name="model">import.issue.data</field>
+        <field name="arch" type="xml">
+            <form string="Import Issue" version="7.0">
+               <group>
+                    <separator string="Import Issue Data"/>
+               </group>
+               <footer>
+                    <button name="import_isuue_data" string="Import" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+               </footer>
+           </form>
+        </field>
+    </record>
+
+    <act_window 
+        name="Import Issue"
+        res_model="import.issue.data"
+        src_model="stock.picking"
+        view_mode="form"
+        target="new"
+        key2="client_action_multi"
+        id="action_import_issue_data_form" />
+
+    </data>
+</openerp>

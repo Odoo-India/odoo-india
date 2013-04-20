@@ -4,3 +4,7 @@ import import_po_line_data
 import import_inward_data
 import import_inward_line_data
 import import_po_contract_data
+import import_reciept_data
+import import_reciept_line_data
+import import_issue_data
+import import_issue_line_data

@@ -3,3 +3,6 @@ access_stock_picking_receipt,stock.picking.receipt,model_stock_picking_receipt,s
 access_ac_code,ac.code,model_ac_code,stock.group_stock_user,1,1,1,1
 access_tr_code,tr.code,model_tr_code,stock.group_stock_user,1,1,1,1
 access_purchase_dispatch,purchase.dispatch,model_purchase_dispatch,stock.group_stock_user,1,1,1,1
+access_indent_report,indent.report,model_indent_report,stock.group_stock_user,1,1,1,1
+access_indent_purchase_report,indent.purchase.report,model_indent_purchase_report,stock.group_stock_user,1,1,1,1
+access_indentor_wise_indent_report,indentor.wise.indent.report,model_indentor_wise_indent_report,stock.group_stock_user,1,1,1,1

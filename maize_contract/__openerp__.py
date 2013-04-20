@@ -35,12 +35,8 @@ The user will create an contract
     'data' : [
         'security/ir.model.access.csv',
         'contract_data.xml',
-        'maize_contract_sequence.xml',
         'contract_report.xml',
         'maize_contract_view.xml',
-        'report/indent_report_view.xml',
-        'report/indent_purchase_report_view.xml',
-        'report/indentor_wise_indent_report_view.xml',
     ],
     'update_xml' : [],
 

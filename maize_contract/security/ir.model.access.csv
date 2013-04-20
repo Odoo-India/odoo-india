@@ -1,7 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_contract_series,contract.series,model_contract_series,stock.group_stock_user,1,1,1,1
 access_indent_section,indent.section,model_indent_section,stock.group_stock_user,1,1,1,1
 access_indent_equipment,indent.equipment,model_indent_equipment,stock.group_stock_user,1,1,1,1
-access_indent_report,indent.report,model_indent_report,stock.group_stock_user,1,1,1,1
-access_indent_purchase_report,indent.purchase.report,model_indent_purchase_report,stock.group_stock_user,1,1,1,1
-access_indentor_wise_indent_report,indentor.wise.indent.report,model_indentor_wise_indent_report,stock.group_stock_user,1,1,1,1

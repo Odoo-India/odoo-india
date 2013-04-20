@@ -3,7 +3,7 @@
     <data noupdate="1">
 
         <record id="product_order_series_1" model="product.order.series">
-            <field name="code">MS</field>
+            <field name="code">MSS</field>
             <field name="name">MISC.SALARY</field>
             <field name="type">indent</field>
         </record>

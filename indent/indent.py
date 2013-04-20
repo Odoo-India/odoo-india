@@ -823,7 +823,30 @@ class purchase_order(osv.Model):
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
         'maize': fields.char('Maize PO Number', size=256),
+        'contract_name': fields.char('Contract Name', size=256, readonly=True),
     }
+
+    def create(self, cr, uid, vals, context=None):
+        series_obj = self.pool.get('product.order.series')
+        seq_obj = self.pool.get('ir.sequence')
+        if vals.get('po_series_id'):
+            seq = series_obj.browse(cr, uid, vals.get('po_series_id'), context=context).seq_id.code
+            vals['name'] = seq_obj.get(cr, uid, seq)
+        if vals.get('contract_id'):
+            seq = series_obj.browse(cr, uid, vals.get('contract_id'), context=context).seq_id.code
+            vals['contract_name'] = seq_obj.get(cr, uid, seq)
+        return super(purchase_order, self).create(cr, uid, vals, context=context)
+
+    def write(self, cr, uid, ids, vals, context=None):
+        series_obj = self.pool.get('product.order.series')
+        seq_obj = self.pool.get('ir.sequence')
+        if vals.get('po_series_id'):
+            seq = series_obj.browse(cr, uid, vals.get('po_series_id'), context=context).seq_id.code
+            vals['name'] = seq_obj.get(cr, uid, seq)
+        if vals.get('contract_id'):
+            seq = series_obj.browse(cr, uid, vals.get('contract_id'), context=context).seq_id.code
+            vals['contract_name'] = seq_obj.get(cr, uid, seq)
+        return super(purchase_order, self).write(cr, uid, ids, vals, context=context)
 
 purchase_order()
 

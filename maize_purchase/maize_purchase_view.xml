@@ -89,8 +89,8 @@
                     <field name="discount"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_ref']" position='after'>
-                    <field name='po_series_id' string="PO Series" domain="[('type', '=', 'purchase')]"/>
-                    <field name='contract_id' string="Contract Series" attrs="{'invisible': [('contract', '=', False)]}" domain="[('type', '=', 'indent')]"/>
+                    <field name='po_series_id' string="PO Series" domain="[('type', '=', 'purchase')]" widget="selection"/>
+                    <field name='contract_id' string="Contract Series" attrs="{'invisible': [('contract', '=', False)]}" domain="[('type', '=', 'indent')]" widget="selection"/>
                 </xpath>
             </field>
         </record>

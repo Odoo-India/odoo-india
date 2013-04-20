@@ -81,10 +81,6 @@ class purchase_order_line(osv.Model):
         child = []
         res = dict([(id, {'price_subtotal': 0.0, 'po_excise':0.0,'po_st':0.0,'po_cess':0.0,'line_advance':0.0}) for id in ids])
         for line in self.browse(cr, uid, ids, context=context):
-            if line.discount != 0.0:
-                line.price_unit -= (line.price_unit * line.discount) / 100
-            else:
-                line.price_unit
             taxes = tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, line.product_id, line.order_id.partner_id)
             cur = line.order_id.pricelist_id.currency_id
             res[line.id]['price_subtotal'] = cur_obj.round(cr, uid, cur, taxes['total'])
@@ -142,7 +138,7 @@ class purchase_order_line(osv.Model):
         return res
     
     _columns = {
-        'discount': fields.float('Discount'),
+        'discount': fields.float('Discount (%)'),
         'price_subtotal': fields.function(_amount_line, multi="tax", string='Subtotal', digits_compute= dp.get_precision('Account'),store=True),
         'person': fields.integer('Person',help="Number of Person work for this task"),
         'contract': fields.related('order_id', 'contract', type='boolean', relation='purchase.order', string='Contract', store=True, readonly=True),
@@ -230,16 +226,22 @@ class purchase_order(osv.Model):
                 'amount_untaxed': 0.0,
                 'amount_tax': 0.0,
                 'amount_total': 0.0,
+                'discount_amount':0.0,
+                'discount_percentage':0.0,
                 'other_charges': 0.0,
             }
-            val = val1 = 0.0
+            val = val1 = discount_amount = discount_percentage = 0.0
             cur = order.pricelist_id.currency_id
             for line in order.order_line:
                 val1 += line.price_subtotal
                 amount_untaxed = val1
                 for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
-            other_charge = order.package_and_forwording  - (order.commission + order.other_discount)
+                discount_percentage = line.discount
+            discount_amount = (val1 * (line.discount)/100)
+            res[order.id]['discount_amount'] = discount_amount
+            res[order.id]['discount_percentage'] = discount_percentage
+            other_charge = order.package_and_forwording  - (order.commission + order.other_discount + discount_amount)
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
@@ -318,7 +320,18 @@ class purchase_order(osv.Model):
         'contract_id': fields.many2one('product.order.series', 'Contract Series'),
         'supplier_code': fields.related('partner_id', 'supp_code', type='char', string='Supplier Code', store=True, readonly=True),
         'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor Code', store=True, readonly=True),
-        'dispatch_id': fields.many2one('purchase.dispatch', 'Dispatch')
+        'dispatch_id': fields.many2one('purchase.dispatch', 'Dispatch'),
+        'discount_amount': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Discount (Amount)',
+            store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums", help="The amount without tax", track_visibility='always'),
+        'discount_percentage': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Discount (%)',
+            store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount'], 10),
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums", help="The amount without tax", track_visibility='always'),
+        
     }
 
     _defaults = {
@@ -747,7 +760,10 @@ class stock_move(osv.osv):
         tax_data = tax_obj.browse(cr, uid, tax, context=context)
         val = 0.0
         first = True
-        line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])[0]
+        line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])
+        line_id = line_id and line_id[0] or False
+        if not line_id:
+            raise osv.except_osv(_('Configuration Error!'), _('Puchase Order don\'t  have line'))
         line = purchase_line_obj.browse(cr, uid, line_id, context=context)
         if line.order_id.excies_ids and tax_cal == 0:
             for c in tax_obj.compute_all(cr, uid, line.order_id.excies_ids, line.price_subtotal, line.product_qty, line.product_id, line.order_id.partner_id)['taxes']:

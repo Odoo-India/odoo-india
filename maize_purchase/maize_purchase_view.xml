@@ -50,6 +50,8 @@
                             <field name="package_and_forwording"/>
                             <field name="commission"/>
                             <field name="other_discount"/>
+                            <field name="discount_amount"/>
+                            <field name="discount_percentage" invisible="1"/>
                             <field name="payment_term_id"/>
                             <field name="delivey"/>
                             <field name="voucher_id" invisible="1"/>

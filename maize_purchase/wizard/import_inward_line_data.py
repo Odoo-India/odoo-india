@@ -56,6 +56,9 @@ class import_inward_line_data(osv.osv_memory):
         _logger.info("Starting Import PO Process from file '%s'."%(file_path))
         move_pool =self.pool.get('stock.move')
         picking_pool =self.pool.get('stock.picking.in')
+        supplier_location = self.pool.get('stock.location').search(cr, uid, [('name','ilike','Suppliers')])
+        if not supplier_location:
+            raise osv.except_osv(_('Warning!'), _('Please define Supplier location in the database')) 
         indent = []
         rejected =[]
         exist_po = []
@@ -99,7 +102,7 @@ class import_inward_line_data(osv.osv_memory):
                             'product_qty': rqty,
                             'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
                             'date': '03/29/2013',
-                            'location_id': 12,
+                            'location_id': supplier_location[0],
                             'location_dest_id': 12,
                             'state': 'draft',
                             'price_unit':float(rate),
@@ -161,7 +164,7 @@ class import_inward_line_data(osv.osv_memory):
                             'product_qty': rqty,
                             'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
                             'date': '03/29/2013',
-                            'location_id': 12,
+                            'location_id': supplier_location[0],
                             'location_dest_id': 12,
                             'state': 'draft',
                             'price_unit':float(rate),

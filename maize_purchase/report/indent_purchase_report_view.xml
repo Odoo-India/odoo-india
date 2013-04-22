@@ -14,15 +14,18 @@
                     <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
                     <field name="id" string="Indent No" invisible="context.get('indentor_id_view',False)"/>
                     <field name="indent_maize_id" invisible="context.get('indent_maize_id',True)"/>
+                    <field name="po_series_id" invisible="context.get('po_series_id',True)"/>
+                    <field name="contract_id" invisible="context.get('contract_id_view',True)"/>
                     <field name="date" invisible="context.get('date',True)"/>
                     <field name="partner_id" invisible="context.get('partner_id_view',False)"/>
+                    <field name="payment_term_id" invisible="context.get('payment_term_id_view',False)"/>
                     <field name="product_id"/>
                     <field name="product_uom_qty" sum="Total Quntity"/>
                     <field name="product_uom" invisible="context.get('product_uom_view',False)"/>
                     <field name="price_unit"/>
                     <field name="price_total"  sum="Total Untax"/>
                     <field name="puchase_total" sum="Total"/>
-                    <field name="po_series_id" invisible="context.get('po_series_id',True)"/>
+                    
                     <field name="indent_id" invisible="1"/>
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>
@@ -75,10 +78,13 @@
                         <filter name="group_analytic_accounting" string="Project" context="{'analytic_account_id': False}" groups="analytic.group_analytic_accounting"/>
                         <filter name="group_state" string="Status" icon="terp-stock_symbol-selection" context="{'state': False}"/>
                         <filter name="group_series" string="Series" icon="terp-stock_symbol-selection" context="{'po_series_id': False}"/>
+                        <filter name="group_contract_id" string="Contract Series" icon="terp-stock_symbol-selection" context="{'contract_id_view': False}"/>
                         <filter name="group_date" string="Date of Indent" icon="terp-stock_symbol-selection" context="{'date': False}"/>
                         <filter name="group_purchase_maize_id" string="Purchase Order (maize)" icon="terp-stock_symbol-selection" context="{'purchase_maize_id': False}"/>
                         <filter name="group_indent_maize_id" string="Maize Indent" icon="terp-stock_symbol-selection" context="{'indent_maize_id': False}"/>
+                        <filter name="group_payment_term_id" string="Payment Term" icon="terp-stock_symbol-selection" context="{'payment_term_id_view': False}"/>
                     </group>
+                    
                     <group expand="1" string="Group By...">
                         <filter string="Indent" name="Indent" context="{'group_by':'indent_id', 'indent_id_view':True}"/>
                         <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id','indentor_id_view': True}"/>
@@ -87,7 +93,9 @@
                         <filter string="Department" context="{'group_by':'department_id','department_id_view': True}"/>
                         <filter string="Unit" context="{'group_by':'product_uom','product_uom_view': True}"/>
                         <filter string="Supplier" context="{'group_by':'partner_id','partner_id_view': True}"/>
+                        <filter string="Payment Term" context="{'group_by':'payment_term_id','payment_term_id_view': True}"/>
                         <filter string="Series" context="{'group_by':'po_series_id','po_series_id_view': True}"/>
+                        <filter string="Contract Series" context="{'group_by':'contract_id','contract_id_view': True}"/>
                         <filter string="Project" context="{'group_by':'analytic_account_id','analytic_account_id_view': True}" groups="analytic.group_analytic_accounting"/>
                         <filter string="Date of Indent" icon="terp-stock_symbol-selection" context="{'group_by':'date'}"/>
                         <filter string="Maize PO" icon="terp-stock_symbol-selection" context="{'group_by':'purchase_maize_id'}"/>

@@ -28,6 +28,7 @@ class indent_purchase_report(osv.osv):
     _auto = False
 
     _columns = {
+        'contract_id': fields.many2one('product.order.series', 'Contract Series'),
         'purchase_maize_id': fields.char('Maize PO Number', size=256, readonly=True),
         'indent_maize_id': fields.char('Maize Indent No', size=256, readonly=True),
         'date': fields.date('Date of Indent', readonly=True),
@@ -62,6 +63,7 @@ class indent_purchase_report(osv.osv):
         'puchase_total': fields.float('Total', readonly=True),
         'product_uom': fields.many2one('product.uom', 'Unit'),
         'partner_id':fields.many2one('res.partner', 'Supplier', readonly=True),
+        'payment_term_id':fields.many2one('account.payment.term', 'Payment Term')
     }
     _order = 'date desc'
 
@@ -95,7 +97,9 @@ class indent_purchase_report(osv.osv):
                     i.indentor_id as indentor_id,
                     ps.name as po_series_id,
                     i.state,
-                    i.analytic_account_id as analytic_account_id
+                    i.analytic_account_id as analytic_account_id,
+                    po.contract_id as contract_id,
+                    po.payment_term_id as payment_term_id
                 from
                     indent_indent i
                     left join purchase_order po on (i.id=po.indent_id)
@@ -127,7 +131,9 @@ class indent_purchase_report(osv.osv):
                     l.price_unit,
                     l.product_uom,
                     po.partner_id,
-                    i.analytic_account_id
+                    i.analytic_account_id,
+                    po.contract_id,
+                    payment_term_id
             )
         """)
 indent_purchase_report()

@@ -622,7 +622,7 @@ class stock_picking_receipt(osv.Model):
         'purchase_id': fields.many2one('purchase.order', 'Purchase Order',ondelete='set null', select=True),
         'inward_id': fields.many2one('stock.picking.in', 'Inward',ondelete='set null'),
         'inward_date': fields.date('Inward Date'),
-        'challan_no': fields.integer('Challan Number'),
+        'challan_no': fields.char("Challan Number",size=256),
         'tr_code': fields.integer('TR Code'),
         'excisable_item': fields.boolean('Excisable Item'),
         'gp_received': fields.boolean('GP Received'),

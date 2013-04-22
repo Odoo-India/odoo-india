@@ -52,7 +52,7 @@ class import_receipt_data(osv.osv_memory):
             _logger.warning("Can not read source file(csv) '%s', Invalid file path or File not reachable on file system."%(file_path))
             return True
 
-        _logger.info("Starting Import PO Process from file '%s'."%(file_path))
+        _logger.info("Starting Import Receipt Process from file '%s'."%(file_path))
         reciept_pool =self.pool.get('stock.picking.receipt')
         indent = []
         rejected =[]
@@ -70,6 +70,7 @@ class import_receipt_data(osv.osv_memory):
                     inword_data = self.pool.get('stock.picking').browse(cr, uid, Inword_ids[0], context)
                     purchase_id = inword_data.purchase_id and inword_data.purchase_id.id or False
                     origin = inword_data.purchase_id and inword_data.purchase_id.name or ''
+                print ">>>>>>>>", data["RECPTNO"]
                 if data["RECPTNO"]: reciept_number = data["RECPTNO"]
                 if data["TRCODE"]: trcode = data["TRCODE"]
                 #For activation just change first field in picking as a character instead of integer
@@ -79,8 +80,15 @@ class import_receipt_data(osv.osv_memory):
                     excisable = True
                 if data.get("GPRECEIVED") and data["GPRECEIVED"] == "Y":
                     recieved = True
+                    
                 if data["SUPPCODE"]:
                     partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])
+                    un_define = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])
+                    if partner:
+                        partner = partner[0]
+                    else:
+                        partner = un_define[0]
+                        
                 if data["RCVDATE"]:
                     if data["RCVDATE"] == 'NULL' or data["RCVDATE"] == '' or data["RCVDATE"] == '00:00.0' or data["RCVDATE"] == '  ':
                         grn_r_date = ''
@@ -98,8 +106,8 @@ class import_receipt_data(osv.osv_memory):
                         gpdate=datetime.datetime.strptime(data["GPDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
 
                 vals = {
-                        'maize_receipt':reciept_number,
-                        'partner_id': partner and partner[0] or False,
+                        'maize_receipt':str(reciept_number),
+                        'partner_id': partner or False,
                         'purchase_id':purchase_id,
                         'origin':origin,
                         'date':gpdate,

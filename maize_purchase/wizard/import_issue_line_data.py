@@ -53,7 +53,7 @@ class import_issue_line_data(osv.osv_memory):
             _logger.warning("Can not read source file(csv) '%s', Invalid file path or File not reachable on file system."%(file_path))
             return True
 
-        _logger.info("Starting Import PO Process from file '%s'."%(file_path))
+        _logger.info("Starting Import Issue Line Process from file '%s'."%(file_path))
         issue_pool =self.pool.get('stock.picking')
         move_pool = self.pool.get('stock.move')
         indent = []

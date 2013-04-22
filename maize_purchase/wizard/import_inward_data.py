@@ -83,7 +83,12 @@ class import_inward_data(osv.osv_memory):
                     challan = data["CHALLAN"] 
                     
                 if data["SUPPCODE"]:
-                    partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])[0]
+                    partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])
+                    un_define = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])
+                    if partner:
+                        partner = partner[0]
+                    else:
+                        partner = un_define[0]
 
                 if data["LRNO"]:
                     lrno = data["LRNO"]

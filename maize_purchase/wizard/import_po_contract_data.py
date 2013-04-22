@@ -68,7 +68,8 @@ class import_po_contract_data(osv.osv_memory):
                         old_id = data["JOBSERIES"] + '/' +data["JOBNO"]
     
                     if data["JOBSERIES"]:
-                        po_series = self.pool.get('product.order.series').search(cr,uid,[('code','=','CO')])[0]
+                        po_series = self.pool.get('product.order.series').search(cr,uid,[('code','=',data["JOBSERIES"]),('type','=','indent')])[0]
+                        co_series = self.pool.get('product.order.series').search(cr,uid,[('code','=','CO')])[0]
                         
                     if data["JOBDATE"]:
                         if data["JOBDATE"] == 'NULL' or data["JOBDATE"] == '' or data["JOBDATE"] == '00:00.0' or data["JOBDATE"] == '  ':
@@ -92,7 +93,12 @@ class import_po_contract_data(osv.osv_memory):
                         tdate = value
                         
                     if data["SUPPCODE"]:
-                        partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])[0]
+                        partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])
+                        un_define = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])
+                        if partner:
+                            partner = partner[0]
+                        else:
+                            partner = un_define[0]
                     delivey = ''
                         
                     if data["DAYS"]:
@@ -105,7 +111,7 @@ class import_po_contract_data(osv.osv_memory):
     
                     ins = 0.0
                     ins_type = 'fix'
-                        
+                    note = ''
                     if data["REMARK"]:
                         note= data["REMARK"]
                         
@@ -134,7 +140,8 @@ class import_po_contract_data(osv.osv_memory):
                     vals = {'name':name,
                             'maize':old_id,
                             'origin':ind_name,
-                            'po_series_id':po_series,
+                            'po_series_id':co_series,
+                            'contract_id':po_series,
                             'date_order':podate,
                             'date_from':fdate,
                             'date_to':tdate,
@@ -149,6 +156,7 @@ class import_po_contract_data(osv.osv_memory):
                             'retention':ret,
                             'order_line':[(0,0,vals_line)],
                             'notes':note,
+                            'contract':True
                            }
                     data['po'] = po_pool.create(cr, uid, vals, context)
                 else:
@@ -184,9 +192,9 @@ class import_po_contract_data(osv.osv_memory):
                 rejected.append(data['JOBNO'])
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['JOBNO']), exc_info=True)
                 continue
-        aaa = self.pool.get('purchase.order').search(cr,uid,[])
-        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
-        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
+#        aaa = self.pool.get('purchase.order').search(cr,uid,[])
+#        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
+#        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
         print "rejectedrejectedrejected", rejected
         _logger.info("Successfully completed import journal process.")
         return True

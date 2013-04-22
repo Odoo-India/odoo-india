@@ -138,7 +138,7 @@ class import_inward_data(osv.osv_memory):
                         'partner_id': partner,
                         'gp_year':gpyr,
                         'gp_no':gpsno,
-#                        'challan_no':challan,
+                        'challan_no':challan,
                         'lr_no':lrno,
                         'lr_date':lrdate,
                         'dest_from':frdesti,

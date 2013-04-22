@@ -79,7 +79,7 @@ class import_issue_line_data(osv.osv_memory):
                         'product_qty': rec_qty,
                         'product_uom': product_data.uom_id.id,
                         'location_id': 12,
-                        'location_dest_id': 12,
+                        'location_dest_id': 12,# Temporarly purpose
                         'state': 'draft',
                         'price_unit':float(price_unit),
                         'company_id':1,
@@ -87,6 +87,12 @@ class import_issue_line_data(osv.osv_memory):
                 #First time go into the not exist loop because of Header already Imported ;)
                 if not maze_name in exist_picking:
                     issue_id = issue_pool.search(cr,1,[('maize','=',maze_name)])[0]
+                    isuue_rec = issue_pool.browse(cr, uid, issue_id,context)
+                    dep_code = isuue_rec.remark1
+                    if dep_code:
+                        search_ids = self.pool.get('stock.location').search(cr, uid, [('code','=',dep_code)])
+                        if search_ids:
+                            vals.update({'location_dest_id': search_ids[0]})
                     vals.update({'picking_id':issue_id})
                     move_pool.create(cr, uid, vals, context)
                     issue_pool.write(cr, uid, issue_id, {'ac_code_id':act_c and act_c[0] or False,'cylinder':cylinder_number})
@@ -106,6 +112,9 @@ class import_issue_line_data(osv.osv_memory):
                             'cylinder':cylinder_number
                         }
                     new_issue = issue_pool.create(cr, uid, pick_vals, context)
+                    search_ids = self.pool.get('stock.location').search(cr, uid, [('code','=',picking_data.remark1)])
+                    if search_ids:
+                        vals.update({'location_dest_id': search_ids[0]})
                     vals.update({'picking_id':new_issue})
                     move_pool.create(cr, uid, vals, context)
             except:

@@ -61,7 +61,7 @@ class import_issue_data(osv.osv_memory):
             try:
                 maize = data["ISSUENO"]
                 tr_code = data["TRCODE"]
-                department_code = data["DEPTCODE"]
+                department_code = data["DEPTCODE"] or ''
                 create_date = data["ISUDATE"]
                 indentor = data["INDENTOR"]
                 partner_id = False
@@ -86,6 +86,7 @@ class import_issue_data(osv.osv_memory):
                         'maize':maize,
                         'date':create_date,
                         'company_id':1,
+                        'remark1':department_code,
                         }
                 issue_pool.create(cr, uid, vals, context)
             except:

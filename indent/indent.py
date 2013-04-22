@@ -1043,12 +1043,13 @@ class product_order_series(osv.Model):
 
     def create(self, cr, uid, vals, context=None):
         name = vals['name']
-        code = vals['code']
+        prefix = vals['code']
+        code = vals['type'] + vals['code']
         vals['seq_type_id'] = self.pool.get('ir.sequence.type').create(cr, uid, {'name': name, 'code': code}, context=context)
         seq = {
             'name': name,
             'implementation':'standard',
-            'prefix': code + "/",
+            'prefix': prefix + "/",
             'padding': 4,
             'number_increment': 1,
             'code': code
@@ -1065,8 +1066,8 @@ class product_order_series(osv.Model):
             if isinstance(ids, (int, long)):
                 ids = [ids]
             for series in self.browse(cr, uid, ids, context=context):
-                seq_type_obj.write(cr, uid, [series.seq_type_id.id], {'code': vals.get('code')}, context=context)
-                seq_obj.write(cr, uid, [series.seq_id.id], {'code': vals.get('code'), 'prefix': vals.get('code') + "/"}, context=context)
+                seq_type_obj.write(cr, uid, [series.seq_type_id.id], {'code': series.code + vals.get('code')}, context=context)
+                seq_obj.write(cr, uid, [series.seq_id.id], {'code': series.code + vals.get('code'), 'prefix': vals.get('code') + "/"}, context=context)
         return super(product_order_series, self).write(cr, uid, ids, vals, context=context)
 
 product_order_series()

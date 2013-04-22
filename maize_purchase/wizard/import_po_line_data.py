@@ -75,6 +75,7 @@ class import_po_line_data(osv.osv_memory):
                         
                     if data["DISCPER"]:
                         discount = data["DISCPER"]
+                        self.pool.get('purchase.order').write(cr,uid,po[0],{'discount_percentage':discount})
 
                     ind_name = ''
                     ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
@@ -85,19 +86,24 @@ class import_po_line_data(osv.osv_memory):
                     if data["SQTY"]:
                         qty = data["SQTY"]
                         
+                    if data["DLVDATE"]:
+                        if data["DLVDATE"] == 'NULL' or data["DLVDATE"] == '' or data["DLVDATE"] == '00:00.0' or data["DLVDATE"] == '  ':
+                            dlv_date = ''
+                        else:
+                            dlv_date=datetime.datetime.strptime(data["DLVDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
+                            
                     vals = {'order_id':po[0],
                             'product_id':product,
                             'price_unit':rate,
-                            'discount': discount,
-                            'name':prod_name1+'\n'+prod_name2+'\n'+prod_name3+'\n'+prod_name4,
+                            #'discount': discount,
+                            'name':prod_name1 or ''+'\n'+prod_name2 or ''+'\n'+prod_name3 or ''+'\n'+prod_name4 or '',
                             'product_qty':qty,
                             'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                            'date_planned':'03/29/2013'
+                            'date_planned':dlv_date,
+                            'freight':freight_rs,
                            }
                     exist_line.append(maize_name)
                     po = pol_pool.create(cr, uid, vals, context)
-                    self.pool.get('purchase.order').write(cr,uid,po,{'commission':0.01})
-                    self.pool.get('purchase.order').write(cr,uid,po,{'commission':0.00})
                 else:
                     if data["PONO"] and data['POSERIES']:
                         po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
@@ -114,16 +120,21 @@ class import_po_line_data(osv.osv_memory):
                         
                     if data["DISCPER"]:
                         discount = data["DISCPER"]
-    
-    
+                        
+                    if data["DLVDATE"]:
+                        if data["DLVDATE"] == 'NULL' or data["DLVDATE"] == '' or data["DLVDATE"] == '00:00.0' or data["DLVDATE"] == '  ':
+                            dlv_date = ''
+                        else:
+                            dlv_date=datetime.datetime.strptime(data["DLVDATE"], '%d-%m-%y').strftime("%Y-%m-%d")    
+        
                     vals_line = {
                             'product_id':product,
                             'price_unit':float(rate),
-                            'discount': discount,
+                            #'discount': discount,
                             'product_qty':qty,
-                            'name':prod_name1+'\n'+prod_name2+'\n'+prod_name3+'\n'+prod_name4,
+                            'name':prod_name1 or ''+'\n'+prod_name2 or ''+'\n'+prod_name3 or ''+'\n'+prod_name4 or '',
                             'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                            'date_planned':'03/29/2013',
+                            'date_planned':dlv_date,
                            }
                     ind_name = ''
                     ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
@@ -135,6 +146,7 @@ class import_po_line_data(osv.osv_memory):
                         po = po_order.search(cr,uid,[('maize','=',maize_name)])
                         pp = po_order.browse(cr, uid, po[0])
                         po_vals = {
+                                'discount_percentage':discount,
                                 'maize':pp.maize,
                                 'po_series_id':pp.po_series_id.id,
                                 'date_order':pp.date_order,
@@ -149,6 +161,8 @@ class import_po_line_data(osv.osv_memory):
                                 'vat_ids':[(6,0,[v.id for v in pp.vat_ids])],
                                 'order_line':[(0,0,vals_line)],
                                 'notes':pp.notes,
+                                'payment_term_id':pp.payment_term_id.id,
+                                'freight':pp.freight
                                 }
                         pop = po_order.create(cr, uid, po_vals, context)
 
@@ -159,4 +173,5 @@ class import_po_line_data(osv.osv_memory):
         aaa = self.pool.get('purchase.order').search(cr,uid,[])
         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
+        return True
 import_po_line_data()

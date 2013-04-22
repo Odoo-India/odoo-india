@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <report
+            auto="False"
+            id="mro_report"
+            model="fleet.vehicle.log.services"
+            name="mro"
+            rml="fleet_mro/report/report_mro.rml"
+            string="Job Cards" />
+
+    </data>
+</openerp>

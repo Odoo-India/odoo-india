@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <!-- Stock Location Form View -->
+        <record id="view_stock_location_form" model="ir.ui.view">
+            <field name="name">stock.location.inherited.form</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <field name="active" position="after">
+                    <field name="workshop"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Stock Warehouse Form View -->
+        <record id="view_stock_warehouse_form" model="ir.ui.view">
+            <field name="name">stock.warehouse.inherited.form</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse"/>
+            <field name="arch" type="xml">
+                <field name="lot_output_id" position="after">
+                    <field name="lot_workshop_id"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Stock Picking Internal Form View -->
+        <record id="view_stock_picking_inherited_form" model="ir.ui.view">
+            <field name="name">stock.picking.inherited.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="auto_picking" position="after">
+                    <field name="workshop_id"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Stock Picking In Form View -->
+        <record id="view_stock_picking_in_inherited_form" model="ir.ui.view">
+            <field name="name">stock.picking.in.inherited.form</field>
+            <field name="model">stock.picking.in</field>
+            <field name="inherit_id" ref="stock.view_picking_in_form"/>
+            <field name="arch" type="xml">
+                <field name="auto_picking" position="after">
+                    <field name="workshop_id"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Stock Picking Out Form View -->
+        <record id="view_stock_picking_out_inherited_form" model="ir.ui.view">
+            <field name="name">stock.picking.out.inherited.form</field>
+            <field name="model">stock.picking.out</field>
+            <field name="inherit_id" ref="stock.view_picking_out_form"/>
+            <field name="arch" type="xml">
+                <field name="auto_picking" position="after">
+                    <field name="workshop_id"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</openerp>

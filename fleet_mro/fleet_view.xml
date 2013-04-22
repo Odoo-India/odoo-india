@@ -1,0 +1,1297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <!-- MRO Menu -->
+        <menuitem name="WAO" id="fleet.menu_root" sequence="110"/>
+        <delete model="ir.ui.menu" search="[('name', '=', 'Vehicles Contracts')]"/>
+        <delete model="ir.ui.menu" search="[('name','=','Vehicles Odometer')]"/>
+        <delete model="ir.ui.menu" search="[('name','=','Vehicles Fuel Logs')]"/>
+        <delete model="ir.ui.menu" search="[('name','=','Vehicle Costs')]"/>
+
+        <menuitem name="Brands" action="fleet.fleet_vehicle_model_brand_act" parent="fleet.fleet_configuration" id="fleet.fleet_vehicle_model_brand_menu" sequence="1"/>
+        <menuitem name="Models" action="fleet.fleet_vehicle_model_act" parent="fleet.fleet_configuration" id="fleet.fleet_vehicle_model_menu" sequence="2"/>
+        <delete model="ir.ui.menu" search="[('name','=','Vehicle Status')]"/>
+        <menuitem name="Defects" action="fleet.fleet_vehicle_service_types_act" parent="fleet.fleet_configuration" id="fleet.fleet_vehicle_service_types_menu" groups="base.group_no_one" sequence="5"/>
+
+        <!-- Vehicle Job Cards Form View -->
+        <record id='fleet.fleet_vehicle_log_services_form' model='ir.ui.view'>
+            <field name="name">fleet.vehicle.log.services.form</field>
+            <field name="model">fleet.vehicle.log.services</field>
+            <field name="arch" type="xml">
+                <form string="Job Cards" version="7.0">
+                    <header>
+                        <button name="job_observation" string="Observation" states="draft" class="oe_highlight"/>
+                        <button name="job_inprogress" string="Get Spare Parts" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('product_lines', '=', []), ('state', '!=', 'observation')]}"/>
+                        <button name="repair" string="Start Repair" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('product_lines', '!=', []), ('state', '!=', 'observation')]}"/>
+                        <button name="job_cancel" string="Cancel" states="observation"/>
+                        <button name="action_receive_products" string="Receive Product(s)" type="object" class="oe_highlight"
+                            attrs="{'invisible': ['|', ('picking_id', '=', False), ('state', '!=', 'inprogress')]}"/>
+                        <button name="job_done" string="Done" states="repair" class="oe_highlight"/>
+                        <button name="job_inspection" string="Inspection" states="done" class="oe_highlight"/>
+                        <button name="job_delivered" string="Delivered" states="inspection" class="oe_highlight"/>
+                        <button name="job_delivered" string="Delivered" states="cancel" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,observation,repair,done,inspection,delivered" statusbar_colors='{"cancel":"red", "repair":"blue"}'/>
+                    </header>
+                    <sheet>
+                        <field name="image" widget='image' class="oe_left oe_avatar"/>
+                        <div class="oe_title">
+                            <label for="vehicle_id" string="Vehicle" class="oe_edit_only"/> 
+                            <h1>
+                                <field name="vehicle_id" on_change="on_change_vehicle(vehicle_id)" domain="[('type', '=', 'vehicle')]" context="{'default_type': 'vehicle'}"/>
+                            </h1>
+                            <field name="present_eqpt_status"/>
+                            <field name="type" invisible="1"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="job_no"/>
+                                <field name="time_in"/>
+                                <field name="eqpt_vintage"/>
+                                <field name="exploitation_type"/>
+                                <field name="maint_type" on_change="onchange_maint_type(maint_type, work_date)"/>
+                                <field name="in_inspector_id"/>
+                                <field name="out_inspector_id" attrs="{'invisible': [('state', 'not in', ('inspection', 'delivered'))]}"/>
+                                <field name="unit_id"/>
+                                <field name="company_id" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="fuel_in_tank"/>
+                                <field name="odometer" string="In KM"/>
+                                <field name="out_km" attrs="{'invisible': [('state', 'not in', ('inspection', 'delivered'))]}"/>
+                                <field name="work_no"/>
+                                <field name="work_date"/>
+                                <field name="dues"/>
+                                <field name="in_inspection_time" widget="float_time"/>
+                                <field name="out_inspection_time" widget="float_time" attrs="{'invisible': [('state', 'not in', ('inspection', 'delivered'))]}"/>
+                                <field name="location_id" context="{'default_workshop': True}" domain="[('workshop', '=', True)]"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="job_remarks"/>
+                        </group>
+                        <!--<notebook>
+                            <page string="Job Summary">
+                                <group>
+                                    <group string="Repair Progress">
+                                        <field name="expected_date"/>
+                                        <field name="technician_id"/>
+                                        <field name="pss_date"/>
+                                    </group>
+                                    <group string="Job Summary">
+                                        <field name="repair_time" widget="float_time"/>
+                                        <field name="total_inspection_time" widget="float_time" string="Time for Inspection"/>
+                                        <field name="total_time" widget="float_time"/>
+                                        <field name="work_value" widget="float_time"/>
+                                    </group>
+                                    <group string="Delay Time">
+                                    <label for="tech_delay" string="Technician"/>
+                                    <div>
+                                        <field name="tech_delay" class="oe_inline"/>(In Days)
+                                    </div>
+                                    <label for="tools_delay" string="Tools / SMT"/>
+                                    <div>
+                                        <field name="tools_delay" class="oe_inline"/>(In Days)
+                                    </div>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Defects">
+                                <group>
+                                    <group>
+                                        <field name="defect_ids" nolabel="1">
+                                            <form string="Defects" version="7.0">
+                                                <group>
+                                                    <group>
+                                                        <field name="fault_id" string="Fault Type" widget="selection" domain="[('category', 'in', ('contract', 'service', 'both'))]"/>
+                                                        <field name="repair_date"/>
+                                                    </group>
+                                                    <group>
+                                                        <field name="trade_id" string="T-Code" widget="selection" domain="[('category', '=', 't_code')]"/>
+                                                        <field name="repair_time"/>
+                                                        <field name="trademen"/>
+                                                    </group>
+                                                </group>
+                                                <label for="work_done"/>
+                                                <field name="work_done"/>
+                                            </form>
+                                            <tree string="Defects">
+                                                <field name="trade_id" string="Trade Name" domain="[('category', '=', 't_code')]"/>
+                                                <field name="fault_id" domain="[('category', 'in', ('contract', 'service', 'both'))]"/>
+                                                <field name="work_done"/>
+                                                <field name="repair_date"/>
+                                                <field name="repair_time" string="Time(MM)"/>
+                                                <field name="trademen" string="Trademen"/>
+                                                <field name="entry_clerk"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Previous Jobs">
+                                <group>
+                                    <group>
+                                        <field name="previous_job_ids" nolabel="1">
+                                            <tree string="Previous Jobs">
+                                                <field name="job_no"/>
+                                                <field name="time_in"/>
+                                                <field name="job_remarks"/>
+                                                <field name="exploitation_type"/>
+                                                <field name="maint_type"/>
+                                                <field name="in_inspector_id"/>
+                                                <field name="in_inspection_time"/>
+                                                <field name="out_inspector_id"/>
+                                                <field name="out_inspection_time"/>
+                                                <field name="technician_id"/>
+                                                <field name="present_eqpt_status"/>
+                                                <field name="state"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Products to Consume">
+                                <field name="picking_id" invisible="1"/>
+                                <field name="product_lines">
+                                    <form string="Products to Consume" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field name="product_id"
+                                                    groups="base.group_user"
+                                                    on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field
+                                                        name="product_uom_qty" class="oe_inline"
+                                                        on_change="product_id_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.work_date)"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
+                                                        on_change="product_uom_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.work_date)"/>
+                                                </div>
+                                                <label for="product_uos_qty" groups="product.group_uos"/>
+                                                <div groups="product.group_uos">
+                                                    <field name="product_uos_qty" class="oe_inline"/>
+                                                    <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="type"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                    </form>
+                                    <tree string="Products to Consume">
+                                        <field name="product_id"
+                                            groups="base.group_user" 
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                        <field name="product_uom"
+                                            on_change="product_uom_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"
+                                            groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="product_uos_qty" groups="product.group_uos" invisible="1"/>
+                                        <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>-->
+                        
+                        <!--Temp view for reporting perpose -->
+                                <group name="defects" string="Defects">
+                                    <group>
+                                        <field name="defect_ids" nolabel="1">
+                                            <form string="Defects" version="7.0">
+                                                <group>
+                                                    <group>
+                                                        <field name="fault_id" string="Fault Type" widget="selection" domain="[('category', 'in', ('contract', 'service', 'both'))]"/>
+                                                        <field name="repair_date"/>
+                                                    </group>
+                                                    <group>
+                                                        <field name="trade_id" string="T-Code" widget="selection" domain="[('category', '=', 't_code')]"/>
+                                                        <field name="repair_time"/>
+                                                        <field name="trademen"/>
+                                                    </group>
+                                                </group>
+                                                <label for="work_done"/>
+                                                <field name="work_done"/>
+                                            </form>
+                                            <tree string="Defects">
+                                                <field name="trade_id" string="Trade Name" domain="[('category', '=', 't_code')]"/>
+                                                <field name="fault_id" domain="[('category', 'in', ('contract', 'service', 'both'))]"/>
+                                                <field name="work_done"/>
+                                                <field name="repair_date"/>
+                                                <field name="repair_time" string="Time(MM)"/>
+                                                <field name="trademen" string="Trademen"/>
+                                                <field name="entry_clerk"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </group>
+                                <group string="Products to Consume">
+                                <field name="picking_id" invisible="1"/>
+                                <field name="product_lines" nolabel="1">
+                                    <form string="Products to Consume" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field name="product_id"
+                                                    groups="base.group_user"
+                                                    on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field
+                                                        name="product_uom_qty" class="oe_inline"
+                                                        on_change="product_id_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.work_date)"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
+                                                        on_change="product_uom_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.work_date)"/>
+                                                </div>
+                                                <label for="product_uos_qty" groups="product.group_uos"/>
+                                                <div groups="product.group_uos">
+                                                    <field name="product_uos_qty" class="oe_inline"/>
+                                                    <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="type"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                    </form>
+                                    <tree string="Products to Consume">
+                                        <field name="product_id"
+                                            groups="base.group_user" 
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                        <field name="product_uom"
+                                            on_change="product_uom_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"
+                                            groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="product_uos_qty" groups="product.group_uos" invisible="1"/>
+                                        <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
+                                    </tree>
+                                </field>
+                                </group>
+                                <group string="Previous Jobs">
+                                    <group>
+                                        <field name="previous_job_ids" nolabel="1">
+                                            <tree string="Previous Jobs">
+                                                <field name="job_no"/>
+                                                <field name="time_in"/>
+                                                <field name="job_remarks"/>
+                                                <field name="exploitation_type"/>
+                                                <field name="maint_type"/>
+                                                <field name="in_inspector_id"/>
+                                                <field name="in_inspection_time"/>
+                                                <field name="out_inspector_id"/>
+                                                <field name="out_inspection_time"/>
+                                                <field name="technician_id"/>
+                                                <field name="present_eqpt_status"/>
+                                                <field name="state"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="Repair Progress">
+                                        <field name="expected_date"/>
+                                        <field name="technician_id"/>
+                                        <field name="pss_date"/>
+                                    </group>
+                                    <group string="Job Summary">
+                                        <field name="repair_time" widget="float_time"/>
+                                        <field name="total_inspection_time" widget="float_time" string="Time for Inspection"/>
+                                        <field name="total_time" widget="float_time"/>
+                                        <field name="work_value" widget="float_time"/>
+                                    </group>
+                                    <group string="Delay Time">
+                                    <label for="tech_delay" string="Technician"/>
+                                    <div>
+                                        <field name="tech_delay" class="oe_inline"/>(In Days)
+                                    </div>
+                                    <label for="tools_delay" string="Tools / SMT"/>
+                                    <div>
+                                        <field name="tools_delay" class="oe_inline"/>(In Days)
+                                    </div>
+                                    </group>
+                                </group>
+                                <!--Above block should remove in future-->
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vehicle Job Cards Tree View -->
+        <record id='view_fleet_vehicle_log_services_tree' model='ir.ui.view'>
+            <field name="name">fleet.vehicle.log.services.tree</field>
+            <field name="model">fleet.vehicle.log.services</field>
+            <field name="arch" type="xml">
+                <tree string="Job Cards" colors="blue: state=='draft'; red: state=='inprogress'; black: state=='repair'; grey: state in ('delivered','cancel');">
+                    <field name="job_no"/>
+                    <field name="vehicle_id"/>
+                    <field name="exploitation_type"/>
+                    <field name="maint_type"/>
+                    <field name="in_inspector_id"/>
+                    <field name="out_inspector_id" attrs="{'invisible': [('state', 'not in', ('inspection', 'delivered'))]}"/>
+                    <field name="technician_id"/>
+                    <field name="unit_id"/>
+                    <field name="location_id"/>
+                    <field name="present_eqpt_status"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vehicle Job Cards Search View -->
+        <record id="view_fleet_vehicle_log_services_search" model="ir.ui.view">
+            <field name="name">fleet.vehicle.log.services.search</field>
+            <field name="model">fleet.vehicle.log.services</field>
+            <field name="arch" type="xml">
+                <search string="Search Job Cards">
+                    <field name="name" filter_domain="['|', '|', '|', '|', ('name','ilike',self), ('job_no','ilike',self), ('technician_id','ilike',self), ('in_inspector_id','ilike',self), ('out_inspector_id','ilike',self)]" string="Job Name"/>
+                    <field name="time_in"/>
+                    <field name="work_date"/>
+                    <filter string="New" name="state_new" domain="[('state','=','new')]"/>
+                    <filter string="Observation" name="state_observation" domain="[('state','=','observation')]"/>
+                    <filter string="Waiting Component" name="state_waiting" domain="[('state','=','waiting')]"/>
+                    <filter string="Inprogress" name="state_inprogress" domain="[('state','=','inprogress')]"/>
+                    <filter string="Done" name="state_done" domain="[('state','=','done')]"/>
+                    <filter string="Inspection" name="state_inspection" domain="[('state','=','inspection')]"/>
+                    <filter string="Delivered" name="state_delivered" domain="[('state','=','delivered')]"/>
+                    <field name="vehicle_id"/>
+                    <field name="present_eqpt_status"/>
+                    <field name="unit_id"/>
+                    <field name="location_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Vehicle" context="{'group_by': 'vehicle_id'}"/>
+                        <filter string="Exploitation Type" context="{'group_by': 'exploitation_type'}"/>
+                        <filter string="Maint Type" context="{'group_by': 'maint_type'}"/>
+                        <filter string="Unit" context="{'group_by': 'unit_id'}"/>
+                        <filter string="Location" context="{'group_by': 'location_id'}"/>
+                        <!--
+                        <filter string="Equipment Status" context="{'group_by': 'present_eqpt_status'}"/>
+                        -->
+                        <filter string="Status" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Vehicle Job Cards Action -->
+        <record id='fleet.fleet_vehicle_log_services_act' model='ir.actions.act_window'>
+            <field name="name">Vehicle Job Cards</field>
+            <field name="res_model">fleet.vehicle.log.services</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="domain">[('type', '=', 'vehicle')]</field>
+            <field name="context">{'default_type': 'vehicle'}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new service entry. 
+                </p><p>
+                    OpenERP helps you keeping track of all the services done
+                    on your vehicle. Services can be of many type: occasional
+                    repair, fixed maintenance, etc.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_fleet_vehicle_log_services_tree" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_fleet_vehicle_log_services_tree"/>
+            <field name="act_window_id" ref="fleet.fleet_vehicle_log_services_act"/>
+        </record>
+
+        <!-- Vehicle Job Cards Menu -->
+        <menuitem name="Job Cards" action="fleet.fleet_vehicle_log_services_act" parent="fleet.fleet_vehicles" id="fleet.fleet_vehicle_log_services_menu"/>
+
+        <!-- Equipment Job Cards Form View -->
+        <record id='fleet_equipment_log_services_form' model='ir.ui.view'>
+            <field name="name">fleet.equipment.log.services.form</field>
+            <field name="model">fleet.vehicle.log.services</field>
+            <field name="arch" type="xml">
+                <form string="Job Cards" version="7.0">
+                    <header>
+                        <button name="job_observation" string="Observation" states="draft" class="oe_highlight"/>
+                        <button name="job_inprogress" string="Get Spare Parts" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('product_lines', '=', []), ('state', '!=', 'observation')]}"/>
+                        <button name="repair" string="Start Repair" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('product_lines', '!=', []), ('state', '!=', 'observation')]}"/>
+                        <button name="job_cancel" string="Cancel" states="observation"/>
+                        <button name="action_receive_products" string="Receive Product(s)" type="object" class="oe_highlight"
+                            attrs="{'invisible': ['|', ('picking_id', '=', False), ('state', '!=', 'inprogress')]}"/>
+                        <button name="job_done" string="Done" states="repair" class="oe_highlight"/>
+                        <button name="job_inspection" string="Inspection" states="done" class="oe_highlight"/>
+                        <button name="job_delivered" string="Delivered" states="inspection" class="oe_highlight"/>
+                        <button name="job_delivered" string="Delivered" states="cancel" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,observation,repair,done,inspection,delivered" statusbar_colors='{"cancel":"red", "repair":"blue"}'/>
+                    </header>
+                    <sheet>
+                        <field name="image" widget='image' class="oe_left oe_avatar"/>
+                        <div class="oe_title">
+                            <label for="vehicle_id" string="Equipment" class="oe_edit_only"/> 
+                            <h1>
+                                <field name="vehicle_id" on_change="on_change_vehicle(vehicle_id)" domain="[('type', '=', 'equipment')]" context="{'default_type': 'equipment'}"/>
+                            </h1>
+                            <field name="present_eqpt_status"/>
+                            <field name="type" invisible="1"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="job_no"/>
+                                <field name="time_in"/>
+                                <field name="eqpt_vintage"/>
+                                <field name="exploitation_type"/>
+                                <field name="maint_type" on_change="onchange_maint_type(maint_type, work_date)"/>
+                                <field name="in_inspector_id"/>
+                                <field name="out_inspector_id" attrs="{'invisible': [('state', 'not in', ('inspection', 'delivered'))]}"/>
+                                <field name="company_id" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="work_no"/>
+                                <field name="work_date"/>
+                                <field name="dues"/>
+                                <field name="in_inspection_time" widget="float_time"/>
+                                <field name="out_inspection_time" widget="float_time" attrs="{'invisible': [('state', 'not in', ('inspection', 'delivered'))]}"/>
+                                <field name="unit_id"/>
+                                <field name="location_id" context="{'default_workshop': True}" domain="[('workshop', '=', True)]"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="job_remarks"/>
+                        </group>
+                        <!--<notebook>
+                            <page string="Job Summary">
+                                <group>
+                                    <group string="Repair Progress">
+                                        <field name="expected_date"/>
+                                        <field name="technician_id"/>
+                                        <field name="pss_date"/>
+                                    </group>
+                                    <group string="Job Summary">
+                                        <field name="repair_time" widget="float_time"/>
+                                        <field name="total_inspection_time" widget="float_time" string="Time for Inspection"/>
+                                        <field name="total_time" widget="float_time"/>
+                                        <field name="work_value" widget="float_time"/>
+                                    </group>
+                                    <group string="Delay Time">
+                                    <label for="tech_delay" string="Technician"/>
+                                    <div>
+                                        <field name="tech_delay" class="oe_inline"/>(In Days)
+                                    </div>
+                                    <label for="tools_delay" string="Tools / SMT"/>
+                                    <div>
+                                        <field name="tools_delay" class="oe_inline"/>(In Days)
+                                    </div>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Defects">
+                                <group>
+                                    <group>
+                                        <field name="defect_ids" nolabel="1">
+                                            <form string="Defects" version="7.0">
+                                                <group>
+                                                    <group>
+                                                        <field name="fault_id" string="Fault Type" widget="selection" domain="[('category', 'in', ('contract', 'service', 'both'))]"/>
+                                                        <field name="repair_date"/>
+                                                    </group>
+                                                    <group>
+                                                        <field name="trade_id" string="T-Code" widget="selection" domain="[('category', '=', 't_code')]"/>
+                                                        <field name="repair_time"/>
+                                                        <field name="trademen"/>
+                                                    </group>
+                                                </group>
+                                                <label for="work_done"/>
+                                                <field name="work_done"/>
+                                            </form>
+                                            <tree string="Defects">
+                                                <field name="trade_id" string="Trade Name" domain="[('category', '=', 't_code')]"/>
+                                                <field name="fault_id" domain="[('category', 'in', ('contract', 'service', 'both'))]"/>
+                                                <field name="work_done"/>
+                                                <field name="repair_date"/>
+                                                <field name="repair_time" string="Time(MM)"/>
+                                                <field name="trademen" string="Trademen"/>
+                                                <field name="entry_clerk"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Previous Jobs">
+                                <group>
+                                    <group>
+                                        <field name="previous_job_ids" nolabel="1">
+                                            <tree string="Previous Jobs">
+                                                <field name="job_no"/>
+                                                <field name="time_in"/>
+                                                <field name="job_remarks"/>
+                                                <field name="exploitation_type"/>
+                                                <field name="maint_type"/>
+                                                <field name="in_inspector_id"/>
+                                                <field name="in_inspection_time"/>
+                                                <field name="out_inspector_id"/>
+                                                <field name="out_inspection_time"/>
+                                                <field name="technician_id"/>
+                                                <field name="present_eqpt_status"/>
+                                                <field name="state"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Products to Consume">
+                                <field name="picking_id" invisible="1"/>
+                                <field name="product_lines">
+                                    <form string="Products to Consume" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field name="product_id"
+                                                    groups="base.group_user"
+                                                    on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field
+                                                        name="product_uom_qty" class="oe_inline"
+                                                        on_change="product_id_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.work_date)"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
+                                                        on_change="product_uom_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.work_date)"/>
+                                                </div>
+                                                <label for="product_uos_qty" groups="product.group_uos"/>
+                                                <div groups="product.group_uos">
+                                                    <field name="product_uos_qty" class="oe_inline"/>
+                                                    <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="type"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                    </form>
+                                    <tree string="Products to Consume">
+                                        <field name="product_id"
+                                            groups="base.group_user" 
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                        <field name="product_uom"
+                                            on_change="product_uom_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"
+                                            groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="product_uos_qty" groups="product.group_uos" invisible="1"/>
+                                        <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>-->
+                        <!--Temp view for reporting perpose -->
+                                <group string="Defects">
+                                    <group>
+                                        <field name="defect_ids" nolabel="1">
+                                            <form string="Defects" version="7.0">
+                                                <group>
+                                                    <group>
+                                                        <field name="fault_id" string="Fault Type" widget="selection" domain="[('category', 'in', ('contract', 'service', 'both'))]"/>
+                                                        <field name="repair_date"/>
+                                                    </group>
+                                                    <group>
+                                                        <field name="trade_id" string="T-Code" widget="selection" domain="[('category', '=', 't_code')]"/>
+                                                        <field name="repair_time"/>
+                                                        <field name="trademen"/>
+                                                    </group>
+                                                </group>
+                                                <label for="work_done"/>
+                                                <field name="work_done"/>
+                                            </form>
+                                            <tree string="Defects">
+                                                <field name="trade_id" string="Trade Name" domain="[('category', '=', 't_code')]"/>
+                                                <field name="fault_id" domain="[('category', 'in', ('contract', 'service', 'both'))]"/>
+                                                <field name="work_done"/>
+                                                <field name="repair_date"/>
+                                                <field name="repair_time" string="Time(MM)"/>
+                                                <field name="trademen" string="Trademen"/>
+                                                <field name="entry_clerk"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </group>
+
+                            <group string="Products to Consume">
+                                <field name="picking_id" invisible="1"/>
+                                <field name="product_lines" nolabel="1">
+                                    <form string="Products to Consume" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field name="product_id"
+                                                    groups="base.group_user"
+                                                    on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field
+                                                        name="product_uom_qty" class="oe_inline"
+                                                        on_change="product_id_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.work_date)"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
+                                                        on_change="product_uom_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.work_date)"/>
+                                                </div>
+                                                <label for="product_uos_qty" groups="product.group_uos"/>
+                                                <div groups="product.group_uos">
+                                                    <field name="product_uos_qty" class="oe_inline"/>
+                                                    <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="type"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                    </form>
+                                    <tree string="Products to Consume">
+                                        <field name="product_id"
+                                            groups="base.group_user" 
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"
+                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"/>
+                                        <field name="product_uom"
+                                            on_change="product_uom_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.work_date)"
+                                            groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="product_uos_qty" groups="product.group_uos" invisible="1"/>
+                                        <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+
+                            <group string="Previous Jobs">
+                                <field name="previous_job_ids" nolabel="1">
+                                    <tree string="Previous Jobs">
+                                        <field name="job_no"/>
+                                        <field name="time_in"/>
+                                        <field name="job_remarks"/>
+                                        <field name="exploitation_type"/>
+                                        <field name="maint_type"/>
+                                        <field name="in_inspector_id"/>
+                                        <field name="in_inspection_time"/>
+                                        <field name="out_inspector_id"/>
+                                        <field name="out_inspection_time"/>
+                                        <field name="technician_id"/>
+                                        <field name="present_eqpt_status"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </group>
+
+                            <group>
+                                <group string="Repair Progress">
+                                    <field name="expected_date"/>
+                                    <field name="technician_id"/>
+                                    <field name="pss_date"/>
+                                </group>
+                                <group string="Job Summary">
+                                    <field name="repair_time" widget="float_time"/>
+                                    <field name="total_inspection_time" widget="float_time" string="Time for Inspection"/>
+                                    <field name="total_time" widget="float_time"/>
+                                    <field name="work_value" widget="float_time"/>
+                                </group>
+                                <group string="Delay Time">
+                                <label for="tech_delay" string="Technician"/>
+                                <div>
+                                    <field name="tech_delay" class="oe_inline"/>(In Days)
+                                </div>
+                                <label for="tools_delay" string="Tools / SMT"/>
+                                <div>
+                                    <field name="tools_delay" class="oe_inline"/>(In Days)
+                                </div>
+                                </group>
+                            </group>
+
+                        <!--Above block will remove in future-->
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Equipment Job Cards Tree View -->
+        <record id='view_fleet_equipment_log_services_tree' model='ir.ui.view'>
+            <field name="name">fleet.equipment.log.services.tree</field>
+            <field name="model">fleet.vehicle.log.services</field>
+            <field name="arch" type="xml">
+                <tree string="Job Cards" colors="blue: state=='draft'; red: state=='inprogress'; black: state=='repair'; grey: state in ('delivered','cancel');">
+                    <field name="job_no"/>
+                    <field name="vehicle_id" string="Equipment"/>
+                    <field name="exploitation_type"/>
+                    <field name="maint_type"/>
+                    <field name="in_inspector_id"/>
+                    <field name="out_inspector_id" attrs="{'invisible': [('state', 'not in', ('inspection', 'delivered'))]}"/>
+                    <field name="technician_id"/>
+                    <field name="unit_id"/>
+                    <field name="location_id"/>
+                    <field name="present_eqpt_status"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Equipment Job Cards Search View -->
+        <record id="view_fleet_equipment_log_services_search" model="ir.ui.view">
+            <field name="name">fleet.equipment.log.services.search</field>
+            <field name="model">fleet.vehicle.log.services</field>
+            <field name="arch" type="xml">
+                <search string="Search Job Cards">
+                    <field name="name" filter_domain="['|', '|', '|', '|', ('name','ilike',self), ('job_no','ilike',self), ('technician_id','ilike',self), ('in_inspector_id','ilike',self), ('out_inspector_id','ilike',self)]" string="Job Name"/>
+                    <field name="time_in"/>
+                    <field name="work_date"/>
+                    <filter string="New" name="state_new" domain="[('state','=','new')]"/>
+                    <filter string="Observation" name="state_observation" domain="[('state','=','observation')]"/>
+                    <filter string="Waiting Component" name="state_waiting" domain="[('state','=','waiting')]"/>
+                    <filter string="Inprogress" name="state_inprogress" domain="[('state','=','inprogress')]"/>
+                    <filter string="Done" name="state_done" domain="[('state','=','done')]"/>
+                    <filter string="Inspection" name="state_inspection" domain="[('state','=','inspection')]"/>
+                    <filter string="Delivered" name="state_delivered" domain="[('state','=','delivered')]"/>
+                    <field name="vehicle_id" string="Equipment"/>
+                    <field name="present_eqpt_status"/>
+                    <field name="unit_id"/>
+                    <field name="location_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Equipment" context="{'group_by': 'vehicle_id'}"/>
+                        <filter string="Exploitation Type" context="{'group_by': 'exploitation_type'}"/>
+                        <filter string="Maint Type" context="{'group_by': 'maint_type'}"/>
+                        <filter string="Unit" context="{'group_by': 'unit_id'}"/>
+                        <filter string="Location" context="{'group_by': 'location_id'}"/>
+                        <!--
+                        <filter string="Equipment Status" context="{'group_by': 'present_eqpt_status'}"/>
+                        -->
+                        <filter string="Status" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Equipment Job Cards Action -->
+        <record id='action_fleet_equipment_log_services' model='ir.actions.act_window'>
+            <field name="name">Equipment Job Cards</field>
+            <field name="res_model">fleet.vehicle.log.services</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="search_view_id" ref="view_fleet_equipment_log_services_search"/>
+            <field name="domain">[('type','=','equipment')]</field>
+            <field name="context">{'default_type': 'equipment'}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new service entry. 
+                </p><p>
+                    OpenERP helps you keeping track of all the services done
+                    on your equipment. Services can be of many type: occasional
+                    repair, fixed maintenance, etc.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_fleet_equipment_log_services_tree" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_fleet_equipment_log_services_tree"/>
+            <field name="act_window_id" ref="action_fleet_equipment_log_services"/>
+        </record>
+
+        <record id="action_fleet_equipment_log_services_form" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="fleet_equipment_log_services_form"/>
+            <field name="act_window_id" ref="action_fleet_equipment_log_services"/>
+        </record>
+
+        <!-- Equipment Job Cards Menu -->
+        <menuitem name="Equipments" parent="fleet.menu_root" id="menu_fleet_equipment_main" sequence="2"/>
+        <menuitem name="Job Cards" action="action_fleet_equipment_log_services" parent="menu_fleet_equipment_main" id="menu_fleet_equipment_log_services" sequence="2"/>
+
+        <!-- Fleet Vehicle Fault Form View -->
+        <record id="view_fleet_vehicle_fault_form" model="ir.ui.view">
+            <field name="name">fleet.vehicle.fault.form</field>
+            <field name="model">fleet.vehicle.fault</field>
+            <field name="arch" type="xml">
+                <form string="Fleet Vehicle Fault" version="7.0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="fault_id"/>
+                                <field name="trade_id"/>
+                            </group>
+                            <group>
+                                <field name="repair_time" widget="float_time"/>
+                                <field name="trademen"/>
+                                <field name="repair_date"/>
+                            </group>
+                        </group>
+                        <label for="work_done"/>
+                        <field name="work_done"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Fault Tree View -->
+        <record id='view_fleet_vehicle_fault_tree' model='ir.ui.view'>
+            <field name="name">fleet.vehicle.fault.tree</field>
+            <field name="model">fleet.vehicle.fault</field>
+            <field name="arch" type="xml">
+                <tree string="Fleet Vehicle Fault" create="false" delete="false">
+                    <field name="fault_id"/>
+                    <field name="trade_id"/>
+                    <field name="job_id" invisible="1"/>
+                    <field name="repair_time"/>
+                    <field name="trademen"/>
+                    <field name="repair_date"/>
+                    <field name="work_done"/>
+                    <field name="entry_clerk"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Fault Search View -->
+        <record id="view_fleet_vehicle_fault_search" model="ir.ui.view">
+            <field name="name">fleet.vehicle.fault.search</field>
+            <field name="model">fleet.vehicle.fault</field>
+            <field name="arch" type="xml">
+                <search string="Search Vehicle Faults">
+                    <field name="repair_date"/>
+                    <field name="fault_id"/>
+                    <field name="trade_id"/>
+                    <field name="job_id"/>
+                    <field name="entry_clerk"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Fault" context="{'group_by': 'fault_id'}"/>
+                        <filter string="Trade Code" context="{'group_by': 'trade_id'}"/>
+                        <filter string="Job" context="{'group_by': 'job_id'}"/>
+                        <filter string="Entry Clerk" context="{'group_by': 'entry_clerk'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Fault Action -->
+        <record id='action_fleet_vehicle_fault' model='ir.actions.act_window'>
+            <field name="name">Vehicle Fault</field>
+            <field name="res_model">fleet.vehicle.fault</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new vehicle fault.
+                </p>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Fault Menu -->
+        <menuitem name="Reports" parent="fleet.menu_root" id="menu_reports" sequence="3"/>
+        <menuitem name="Fault Analysis" action="action_fleet_vehicle_fault" parent="menu_reports" id="menu_fleet_vehicle_fault"/>
+        <menuitem name="Configuration" parent="fleet.menu_root" id="fleet.fleet_configuration" sequence="4"/>
+
+        <!-- Fleet Equipment Status Tree View -->
+        <record id='view_fleet_equipment_status_tree' model='ir.ui.view'>
+            <field name="name">fleet.equipment.status.tree</field>
+            <field name="model">fleet.equipment.status</field>
+            <field name="arch" type="xml">
+                <tree string="Equipment Status" editable="bottom">
+                    <field name="name"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Fleet Equipment Status Action -->
+        <record id='action_fleet_equipment_status' model='ir.actions.act_window'>
+            <field name="name">Equipment Status</field>
+            <field name="res_model">fleet.equipment.status</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new equipment status.
+                </p>
+            </field>
+        </record>
+
+        <!-- Fleet Equipment Status Menu -->
+        <menuitem name="Status" action="action_fleet_equipment_status" parent="fleet.fleet_configuration" id="menu_fleet_equipment_status" groups="base.group_no_one" sequence="3"/>
+
+        <!-- Fleet Vehicle Kanban View -->
+        <record id='fleet.fleet_vehicle_kanban' model='ir.ui.view'>
+            <field name="name">fleet.vehicle.kanban</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="license_plate"/>
+                    <field name="erid"/>
+                    <field name="model_id"/>
+                    <field name="driver_id"/>
+                    <field name="unit_id"/>
+                    <field name="location"/>
+                    <field name="state_id"/>
+                    <field name="image"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_vignette oe_semantic_html_override">
+                                <a type="open" href="#" class="oe_kanban_action oe_kanban_action_a">
+                                    <img t-att-src="kanban_image('fleet.vehicle', 'image_small', record.id.value)"/>
+                                </a>
+                                <div class="oe_kanban_details">
+                                    <h4 class="oe_partner_heading">
+                                        <a type="open">
+                                            <t t-if="record.license_plate.raw_value"><field name="license_plate"/></t>
+                                            <t t-if="record.erid.raw_value"><field name="erid"/></t>
+                                            <br/>
+                                            <field name="model_id"/>
+                                        </a>
+                                    </h4>
+                                    <ul>
+                                        <li>
+                                            <t t-if="record.driver_id.raw_value"><field name="driver_id"/></t>
+                                        </li>
+                                        <li>
+                                            <t t-if="record.location.raw_value"><field name="location"/></t>
+                                        </li>
+                                    </ul>
+                                    <field name="unit_id"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Form View -->
+        <record id='fleet.fleet_vehicle_form' model='ir.ui.view'>
+            <field name="name">fleet.vehicle.form</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="arch" type="xml">
+                <form string="Vehicle" version="7.0">
+                    <header>
+                        <field name="state_id"  widget="statusbar" clickable="True" />
+                    </header>
+                    <sheet> 
+                        <field name="image_medium" widget='image' class="oe_left oe_avatar"/> 
+                        <div class="oe_title">
+                            <label for="model_id" class="oe_edit_only"/>
+                            <h1>
+                                <field name="model_id" class="oe_inline" on_change="on_change_model(model_id)"/>
+                            </h1>
+                            <label for="license_plate" class="oe_edit_only" string="BA Number"/>
+                            <h2>
+                                <field name="license_plate" class="oe_inline" required="1"/>
+                            </h2>
+                            <label for="tag_ids" class="oe_edit_only"/>
+                            <field name="tag_ids" widget="many2many_tags" domain="[('parent_id', '!=', False)]"/>
+                            <field name="type" invisible="1"/>
+                        </div>
+                        <div class="oe_right oe_button_box">
+                            <button name="return_action_to_open" type="object" context="{'xml_id':'fleet_vehicle_log_services_act'}" string="Job Cards" help="show the job cards for this vehicle"/>
+                            <button name="return_action_to_open" type="object" context="{'xml_id':'fleet_vehicle_odometer_act'}" string="Odometer Logs" help="show the odometer logs for this vehicle"/>
+                        </div> 
+                        <group col="2" string="General Properties">
+                            <group >
+                                <field name="driver_id"/>
+                                <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                                <field name="present_eqpt_status"/>
+                                <field name="location"/>
+                            </group>
+                            <group >
+                                <label for="odometer" />
+                                <div>
+                                    <field name="odometer" class="oe_inline"/>
+                                    <field name="odometer_unit" class="oe_inline"/>
+                                </div>
+                                <field name="unit_id"/>
+                                <field name="issue_date"/>
+                            </group>
+                        </group>
+                        <group col="2">
+                            <group string="Additional Properties">
+                                <field name="seats" />
+                                <field name="doors" />
+                                <field name="color" />
+                            </group>
+                            <group string="Engine Options">
+                                <field name="transmission" />
+                                <field name="fuel_type" />
+                                <field name="co2" />
+                                <field name="horsepower" />
+                                <field name="horsepower_tax" />
+                                <field name="power" />
+                            </group>  
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_ids" widget="mail_thread" options='{"thread_level": 1}'/>
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Tree View -->
+        <record id='fleet.fleet_vehicle_tree' model='ir.ui.view'>
+            <field name="name">fleet.vehicle.tree</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="arch" type="xml">
+                <tree string="Vehicle" version="7.0">
+                    <field name="license_plate" string="BA Number"/>
+                    <field name="model_id"/>
+                    <field name="driver_id"/>
+                    <field name="vin_sn"/>
+                    <field name="odometer"/>
+                    <field name="odometer_unit"/>
+                    <field name="unit_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Search View -->
+        <record id="fleet.fleet_vehicle_search" model="ir.ui.view">
+            <field name="name">fleet.vehicle.search</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="arch" type="xml">
+                <search string="All vehicles">
+                    <field name="name" filter_domain="['|', ('name','ilike',self), ('license_plate','ilike',self)]" string="Vehicle"/>
+                    <field name="issue_date"/>
+                    <field name="driver_id"/>
+                    <field name="tag_ids"/>
+                    <field name="location"/>
+                    <field name="unit_id"/>
+                    <field name="state_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Unit" name="unit" context="{'group_by': 'unit_id'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Action -->
+        <record id='fleet.fleet_vehicle_act' model='ir.actions.act_window'>
+            <field name="name">Vehicles</field>
+            <field name="res_model">fleet.vehicle</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="fleet.fleet_vehicle_search"/>
+            <field name="domain">[('type', '=', 'vehicle')]</field>
+            <field name="context">{'default_type': 'vehicle', 'search_default_unit': 1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new vehicle. 
+                </p>
+            </field>
+        </record>
+
+        <record id="action_fleet_vehicle_kanban" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="fleet.fleet_vehicle_kanban"/>
+            <field name="act_window_id" ref="fleet.fleet_vehicle_act"/>
+        </record>
+
+        <record id="action_fleet_vehicle_tree" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="fleet.fleet_vehicle_tree"/>
+            <field name="act_window_id" ref="fleet.fleet_vehicle_act"/>
+        </record>
+
+        <record id="action_fleet_vehicle_form" model="ir.actions.act_window.view">
+            <field name="sequence" eval="3"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="fleet.fleet_vehicle_form"/>
+            <field name="act_window_id" ref="fleet.fleet_vehicle_act"/>
+        </record>
+
+        <!-- Fleet Equipment Form View -->
+        <record id='fleet_equipment_form' model='ir.ui.view'>
+            <field name="name">fleet.equipment.form</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="arch" type="xml">
+                <form string="Equipment" version="7.0">
+                    <header>
+                        <field name="state_id"  widget="statusbar" clickable="True" />
+                    </header>
+                    <sheet> 
+                        <field name="image_medium" widget='image' class="oe_left oe_avatar"/> 
+                        <div class="oe_title">
+                            <label for="model_id" class="oe_edit_only"/>
+                            <h1>
+                                <field name="model_id" class="oe_inline" on_change="on_change_model(model_id)"/>
+                            </h1>
+                            <label for="license_plate" class="oe_edit_only" string="BA Number" invisible="1"/>
+                            <h2>
+                                <field name="license_plate" class="oe_inline" invisible="1"/>
+                            </h2>
+                            <label for="tag_ids" class="oe_edit_only"/>
+                            <field name="tag_ids" widget="many2many_tags" domain="[('parent_id', '!=', False)]"/>
+                            <field name="type" invisible="1"/>
+                        </div>
+                        <div class="oe_right oe_button_box">
+                            <button name="open_equipment_job_cards" type="object" context="{'xml_id':'action_fleet_equipment_log_services'}" string="Job Cards" help="show the job cards for this vehicle"/>
+                        </div> 
+                        <group col="2" string="General Properties">
+                            <group >
+                                <field name="erid" required="1"/>
+                                <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                                <field name="present_eqpt_status"/>
+                                <field name="location" help='Location of the equipment (garage, ...)'/>
+                            </group>
+                            <group >
+                                <field name="unit_id"/>
+                                <field name="issue_date"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_ids" widget="mail_thread" options='{"thread_level": 1}'/>
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Fleet Equipment Tree View -->
+        <record id='view_fleet_equipment_tree' model='ir.ui.view'>
+            <field name="name">fleet.equipment.tree</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="arch" type="xml">
+                <tree string="Equipment" version="7.0">
+                    <field name="erid"/>
+                    <field name="model_id"/>
+                    <field name="unit_id"/>
+                    <field name="issue_date"/>
+                    <field name="location"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Fleet Equipment Search View -->
+        <record id="view_fleet_equipment_search" model="ir.ui.view">
+            <field name="name">fleet.equipment.search</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="arch" type="xml">
+                <search string="All equipments">
+                    <field name="name" filter_domain="['|', ('name','ilike',self), ('erid','ilike',self)]" string="Equipment"/>
+                    <field name="issue_date"/>
+                    <field name="tag_ids"/>
+                    <field name="location"/>
+                    <field name="unit_id"/>
+                    <field name="state_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Unit" name="unit" context="{'group_by': 'unit_id'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+
+        <!-- Fleet Equipment Action -->
+        <record id='action_fleet_equipment' model='ir.actions.act_window'>
+            <field name="name">Equipments</field>
+            <field name="res_model">fleet.vehicle</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="view_fleet_equipment_search"/>
+            <field name="domain">[('type', '=', 'equipment')]</field>
+            <field name="context">{'default_type': 'equipment', 'search_default_unit': 1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new equipment. 
+                </p>
+            </field>
+        </record>
+
+        <record id="action_fleet_equipment_kanban" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="fleet.fleet_vehicle_kanban"/>
+            <field name="act_window_id" ref="action_fleet_equipment"/>
+        </record>
+
+        <record id="action_fleet_equipment_tree" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_fleet_equipment_tree"/>
+            <field name="act_window_id" ref="action_fleet_equipment"/>
+        </record>
+
+        <record id="action_fleet_equipment_form" model="ir.actions.act_window.view">
+            <field name="sequence" eval="3"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="fleet_equipment_form"/>
+            <field name="act_window_id" ref="action_fleet_equipment"/>
+        </record>
+
+        <!-- Fleet Equipment Menu -->
+        <menuitem action="action_fleet_equipment" parent="menu_fleet_equipment_main" id="menu_fleet_equipment" sequence="1"/>
+
+        <!-- Fleet Vehicle Tag(Category) Form View -->
+        <record id="view_fleet_vehicle_tag_form" model="ir.ui.view">
+            <field name="name">fleet.vehicle.tag.form</field>
+            <field name="model">fleet.vehicle.tag</field>
+            <field name="arch" type="xml">
+                <form string="Fleet Vehicle Tag" version="7.0">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="parent_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Tag Tree View -->
+        <record id='view_fleet_vehicle_tag_tree' model='ir.ui.view'>
+            <field name="name">fleet.vehicle.tag.tree</field>
+            <field name="model">fleet.vehicle.tag</field>
+            <field name="arch" type="xml">
+                <tree string="Vehicle Tag">
+                    <field name="name"/>
+                    <field name="parent_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Fleet Vehicle Tag Action -->
+        <record id='action_fleet_vehicle_tag' model='ir.actions.act_window'>
+            <field name="name">Vehicle Tag</field>
+            <field name="res_model">fleet.vehicle.tag</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new vehicle tag.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_fleet_vehicle_tag_tree" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_fleet_vehicle_tag_tree"/>
+            <field name="act_window_id" ref="action_fleet_vehicle_tag"/>
+        </record>
+
+        <!-- Fleet Vehicle Tag Menu -->
+        <menuitem name="Categories / Classes" action="action_fleet_vehicle_tag" parent="fleet.fleet_configuration" id="menu_fleet_fleet_vehicle_tag" groups="base.group_no_one" sequence="4"/>
+
+        <!-- User Form View -->
+        <record id="view_res_users_inherited_form" model="ir.ui.view">
+            <field name="name">res.users.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="after">
+                    <field name="warehouse_id"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</openerp>

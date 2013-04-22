@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Stock Warehouse -->
+        <record id="stock.stock_warehouse_shop0" model="stock.warehouse">
+            <field name="lot_workshop_id" ref="stock.location_inventory"/>
+        </record>
+
+        <record id="stock.stock_warehouse_shop1" model="stock.warehouse">
+            <field name="lot_workshop_id" ref="stock.location_inventory"/>
+        </record>
+
+    </data>
+</openerp>
+

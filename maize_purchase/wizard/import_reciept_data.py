@@ -73,7 +73,7 @@ class import_receipt_data(osv.osv_memory):
                 if data["RECPTNO"]: reciept_number = data["RECPTNO"]
                 if data["TRCODE"]: trcode = data["TRCODE"]
                 #For activation just change first field in picking as a character instead of integer
-                if data["CHALLAN"]: challan_number = data["CHALLAN"]
+                if data["CHALLAN"]: challan = data["CHALLAN"]
 
                 if data.get("EXCISABLE") and data["EXCISABLE"] == "Y":
                     excisable = True
@@ -108,7 +108,8 @@ class import_receipt_data(osv.osv_memory):
                         'gp_date': grn_r_date,
                         'inward_id': Inword_ids and Inword_ids[0] or False,
                         'inward_date':inword_date,
-                        'tr_code': trcode
+                        'tr_code': trcode,
+                        'challan_no':challan
                 }
                 ok = reciept_pool.create(cr, uid, vals, context)
             except:

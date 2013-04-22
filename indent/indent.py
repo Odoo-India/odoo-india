@@ -1066,8 +1066,8 @@ class product_order_series(osv.Model):
             if isinstance(ids, (int, long)):
                 ids = [ids]
             for series in self.browse(cr, uid, ids, context=context):
-                seq_type_obj.write(cr, uid, [series.seq_type_id.id], {'code': series.code + vals.get('code')}, context=context)
-                seq_obj.write(cr, uid, [series.seq_id.id], {'code': series.code + vals.get('code'), 'prefix': vals.get('code') + "/"}, context=context)
+                seq_type_obj.write(cr, uid, [series.seq_type_id.id], {'code': series.type + vals.get('code')}, context=context)
+                seq_obj.write(cr, uid, [series.seq_id.id], {'code': series.type + vals.get('code'), 'prefix': vals.get('code') + "/"}, context=context)
         return super(product_order_series, self).write(cr, uid, ids, vals, context=context)
 
 product_order_series()

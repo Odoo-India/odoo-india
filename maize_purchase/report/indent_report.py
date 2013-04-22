@@ -71,7 +71,7 @@ class indent_report(osv.osv):
                 select
                     min(l.id) as id,
                     i.id as indent_id,
-                    i.id as name,
+                    i.name as name,
                     i.maize as indent_maize_id,
                     i.contract as contract,
                     i.department_id as department_id,

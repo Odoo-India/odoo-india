@@ -117,9 +117,15 @@ class indent_indent(osv.Model):
         stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_stock')
         return stock_location.id
 
+    def create(self, cr, uid, vals, context=None):
+        if vals.get('name','/')=='/':
+            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'indent.indent') or '/'
+        indent =  super(indent_indent, self).create(cr, uid, vals, context=context)
+        return indent
+
     _defaults = {
         'state': 'draft',
-        'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
+        #'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
         'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'indentor_id': lambda self, cr, uid, context: uid,

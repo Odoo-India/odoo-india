@@ -1037,7 +1037,6 @@ hr_employee()
 class product_order_series(osv.Model):
     _name = 'product.order.series'
     _description = ' Add Purchase Order series'
-    _rec_name = 'code'
 
     _columns = {
         'name': fields.char('Name', size=64, required=True, translate=True),

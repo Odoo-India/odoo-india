@@ -397,5 +397,18 @@
             </field>
         </record>
 
+        <!-- Partner Search View -->
+        <record id="view_res_partner_inherited_search" model="ir.ui.view">
+            <field name="name">res.partner.inherited.search</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+               <field name="name" position="replace">
+                    <field name="name"
+                       filter_domain="['|', '|', '|', ('name', 'ilike', self), ('parent_id', 'ilike', self), ('ref', '=', self), ('supp_code', '=', self)]"/>
+                </field>
+            </field>
+        </record>
+
     </data>
 </openerp>

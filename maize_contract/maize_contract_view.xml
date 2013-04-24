@@ -61,7 +61,7 @@
         <record id='action_contract_view' model='ir.actions.act_window'>
             <field name="name">Contracts</field>
             <field name="domain">[('contract', '=', True)]</field>
-            <field name="context">{'default_contract': True}</field>
+            <field name="context">{'default_contract': True, 'search_default_waiting': 1}</field>
             <field name="res_model">indent.indent</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -93,7 +93,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('contract', '=', False)]</field>
-            <field name="context">{'default_contract': False}</field>
+            <field name="context">{'default_contract': False, 'search_default_waiting': 1}</field>
             <field name="view_id" ref="indent.view_indent_indent_tree"/>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">

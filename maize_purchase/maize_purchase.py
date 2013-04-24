@@ -28,6 +28,7 @@ import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.osv.orm import browse_record, browse_null
 from lxml import etree
+from openerp.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 
 class stock_picking_in(osv.osv):
     _inherit = "stock.picking.in"
@@ -798,3 +799,28 @@ class tr_code(osv.Model):
         'code': fields.char('Code', size=64)
         }
 tr_code()
+
+class stock_partial_picking(osv.osv_memory):
+    _name = "stock.partial.picking"
+    _inherit = "stock.partial.picking"
+    
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None: context = {}
+        res = {}
+        picking_ids = context.get('active_ids', [])
+        active_model = context.get('active_model')
+
+        if not picking_ids or len(picking_ids) != 1:
+            # Partial Picking Processing may only be done for one picking at a time
+            return res
+        assert active_model in ('stock.picking', 'stock.picking.in', 'stock.picking.out','stock.picking.receipt'), 'Bad context propagation'
+        picking_id, = picking_ids
+        if 'picking_id' in fields:
+            res.update(picking_id=picking_id)
+        if 'move_ids' in fields:
+            picking = self.pool.get('stock.picking').browse(cr, uid, picking_id, context=context)
+            moves = [self._partial_move_for(cr, uid, m) for m in picking.move_lines if m.state not in ('done','cancel')]
+            res.update(move_ids=moves)
+        if 'date' in fields:
+            res.update(date=time.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
+        return res

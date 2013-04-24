@@ -329,26 +329,27 @@
         </td>
       </tr>
     </blockTable>
-     <blockTable colWidths="480.0,10.0,80.0" style="Tableau2">
+     <blockTable colWidths="120.0,350.0,100.0" style="Tableau2">
       <tr>
         <td>
-        <blockTable colWidhts="480.0" style="Standard_Outline">
-            <tr>
-                <td>
-                    <para style="terp_default_9"> Service <font color="white"> ....</font>:  [[ tax(order).get('service',False) or '']]</para>
-                    <para style="terp_default_9"> Excise <font color="white"> ......</font>: [[ get_value().get('excise') or '']]</para>
-                    <para style="terp_default_9"> VAT <font color="white"> ..........</font>: [[ get_value().get('vat') or '']]</para>
-                    <para style="terp_default_9"> Freight <font color="white"> .....</font>:  [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
-                    <para style="terp_default_9"> Delivery <font color="white"> ...</font>: MILL-DELIVERY</para>
-                    <para style="terp_default_9"> Despatch <font color="white"> .</font>: [[ (order.delivey ) or '']]</para>
-                </td>
-            </tr>
-        </blockTable>
+            <para style="terp_default_9"> Service </para>
+            <para style="terp_default_9"> Excise </para>
+            <para style="terp_default_9"> VAT </para>
+            <para style="terp_default_9"> Freight </para>
+            <para style="terp_default_9"> Discount (%)</para>
+            <para style="terp_default_9"> Discount / Round Off </para>
+            <para style="terp_default_9"> Delivery </para>
+            <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
+            <para style="terp_default_9">: [[ tax(order).get('service',False) or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('excise') or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('vat') or '']]</para>
+            <para style="terp_default_9">: [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
+            <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
+            <para style="terp_default_9">: [[ order.other_discount or '']]</para>
+            <para style="terp_default_9">: MILL-DELIVERY</para>
+            <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
         </td>
         <td>
           <para style="terp_default_8">
@@ -602,26 +603,27 @@
         </td>
       </tr>
     </blockTable>
-     <blockTable colWidths="480.0,10.0,80.0" style="Tableau2">
+     <blockTable colWidths="120.0,350.0,100.0" style="Tableau2">
       <tr>
         <td>
-        <blockTable colWidhts="480.0" style="Standard_Outline">
-            <tr>
-                <td>
-                    <para style="terp_default_9"> Service <font color="white"> ....</font>:  [[ tax(order).get('service',False) or '']]</para>
-                    <para style="terp_default_9"> Excise <font color="white"> ......</font>: [[ get_value().get('excise') or '']]</para>
-                    <para style="terp_default_9"> VAT <font color="white"> ..........</font>: [[ get_value().get('vat') or '']]</para>
-                    <para style="terp_default_9"> Freight <font color="white"> .....</font>:  [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
-                    <para style="terp_default_9"> Delivery <font color="white"> ...</font>: MILL-DELIVERY</para>
-                    <para style="terp_default_9"> Despatch <font color="white"> .</font>: [[ (order.delivey ) or '']]</para>
-                </td>
-            </tr>
-        </blockTable>
+            <para style="terp_default_9"> Service </para>
+            <para style="terp_default_9"> Excise </para>
+            <para style="terp_default_9"> VAT </para>
+            <para style="terp_default_9"> Freight </para>
+            <para style="terp_default_9"> Discount (%)</para>
+            <para style="terp_default_9"> Discount / Round Off </para>
+            <para style="terp_default_9"> Delivery </para>
+            <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
+            <para style="terp_default_9">: [[ tax(order).get('service',False) or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('excise') or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('vat') or '']]</para>
+            <para style="terp_default_9">: [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
+            <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
+            <para style="terp_default_9">: [[ order.other_discount or '']]</para>
+            <para style="terp_default_9">: MILL-DELIVERY</para>
+            <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
         </td>
         <td>
           <para style="terp_default_8">
@@ -875,26 +877,27 @@
         </td>
       </tr>
     </blockTable>
-     <blockTable colWidths="480.0,10.0,80.0" style="Tableau2">
+     <blockTable colWidths="120.0,350.0,100.0" style="Tableau2">
       <tr>
         <td>
-        <blockTable colWidhts="480.0" style="Standard_Outline">
-            <tr>
-                <td>
-                    <para style="terp_default_9"> Service <font color="white"> ....</font>:  [[ tax(order).get('service',False) or '']]</para>
-                    <para style="terp_default_9"> Excise <font color="white"> ......</font>: [[ get_value().get('excise') or '']]</para>
-                    <para style="terp_default_9"> VAT <font color="white"> ..........</font>: [[ get_value().get('vat') or '']]</para>
-                    <para style="terp_default_9"> Freight <font color="white"> .....</font>:  [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
-                    <para style="terp_default_9"> Delivery <font color="white"> ...</font>: MILL-DELIVERY</para>
-                    <para style="terp_default_9"> Despatch <font color="white"> .</font>: [[ (order.delivey ) or '']]</para>
-                </td>
-            </tr>
-        </blockTable>
+            <para style="terp_default_9"> Service </para>
+            <para style="terp_default_9"> Excise </para>
+            <para style="terp_default_9"> VAT </para>
+            <para style="terp_default_9"> Freight </para>
+            <para style="terp_default_9"> Discount (%)</para>
+            <para style="terp_default_9"> Discount / Round Off </para>
+            <para style="terp_default_9"> Delivery </para>
+            <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
+            <para style="terp_default_9">: [[ tax(order).get('service',False) or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('excise') or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('vat') or '']]</para>
+            <para style="terp_default_9">: [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
+            <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
+            <para style="terp_default_9">: [[ order.other_discount or '']]</para>
+            <para style="terp_default_9">: MILL-DELIVERY</para>
+            <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
         </td>
         <td>
           <para style="terp_default_8">

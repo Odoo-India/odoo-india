@@ -206,7 +206,7 @@
             <para style="terp_default_8"> [[ (product_line.price_unit) or '0.00']]</para>
         </td>
         <td>
-            <para style="terp_default_8"> [[ data['form']['discount'] == True and (product_line.discount or '0.00') or removeParentNode('td')]]</para>
+            <para style="terp_default_8"> [[ data['form']['discount'] == True and (po_line.discount_percentage or '0.00') or removeParentNode('td')]]</para>
         </td>
         <td>
             <para style="terp_default_8"> [[ data['form']['package_and_forwording'] == True and (po_line.package_and_forwording or '0.00') or removeParentNode('td')]]</para>

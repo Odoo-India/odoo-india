@@ -58,7 +58,7 @@ class report_stock_move(osv.osv):
         'challan_no': fields.char("Challan No",size=256),
         'product_uom': fields.many2one('product.uom', 'UOM'),
         'purchase_id': fields.many2one('purchase.order', 'Purchase Order No'),
-        'po_series_id': fields.many2one('product.order.series', 'Purchase Series'),
+        'po_series_id': fields.char('Purchase Series'),
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'inward_year': fields.char('Inward Year', size=10, readonly=True),
         'puchase_year': fields.char('Purchase Year', size=10, readonly=True),
@@ -196,10 +196,10 @@ class report_stock_move(osv.osv):
                         sm.location_dest_id as location_dest_id,
                         sum(sm.product_qty) as product_qty,
                         pt.categ_id as categ_id ,
-                        sm.partner_id as partner_id,
+                        sm.supplier_id as partner_id,
                         sm.product_id as product_id,
                         sm.picking_id as picking_id,
-                        sm.po_series_id as po_series_id,
+                        ps.name as po_series_id,
                         sm.indent_id as indent_id,
                         sm.inward_year as inward_year,
                         sm.puchase_year as puchase_year,
@@ -243,13 +243,15 @@ class report_stock_move(osv.osv):
                         LEFT JOIN stock_picking sp ON (sm.picking_id=sp.id)
                         LEFT JOIN product_product pp ON (sm.product_id=pp.id)
                         LEFT JOIN product_uom pu ON (sm.product_uom=pu.id)
-                          LEFT JOIN product_uom pu2 ON (sm.product_uom=pu2.id)
+                        LEFT JOIN product_uom pu2 ON (sm.product_uom=pu2.id)
                         LEFT JOIN product_template pt ON (pp.product_tmpl_id=pt.id)
+                        LEFT JOIN purchase_order po on (sp.purchase_id=po.id)
+                        LEFT JOIN product_order_series ps on (po.po_series_id = ps.id)
                     GROUP BY
-                        sm.id,sp.type, sm.date,sm.partner_id,
+                        sm.id,sp.type, sm.date,sm.supplier_id,
                         sm.product_id,sm.state,sm.product_uom,sm.date_expected,
                         sm.product_id,pt.standard_price, sm.picking_id, sm.product_qty,
-                        sm.company_id,sm.product_qty, sm.location_id,sm.location_dest_id,pu.factor,pt.categ_id, sp.stock_journal_id,sp.gate_pass_id,sp.gp_date,sp.challan_no, sp.case_code,sp.purchase_id,sp.tr_code,sp.lr_no,sp.lr_date,sp.department_id,sm.po_series_id,sm.indent_id,sm.inward_year,sm.puchase_year,sm.indent_year,sm.indentor_id,sm.diff,sm.excies,sm.rate,sm.bill_no,sm.bill_date,sm.cess,sm.high_cess,sm.import_duty,sm.cenvat,sm.payment_id,sp.despatch_mode,sp.tr_code_id,sp.ac_code_id,sp.cylinder)
+                        sm.company_id,sm.product_qty, sm.location_id,sm.location_dest_id,pu.factor,pt.categ_id, sp.stock_journal_id,sp.gate_pass_id,sp.gp_date,sp.challan_no, sp.case_code,sp.purchase_id,sp.tr_code,sp.lr_no,sp.lr_date,sp.department_id,ps.name,sm.indent_id,sm.inward_year,sm.puchase_year,sm.indent_year,sm.indentor_id,sm.diff,sm.excies,sm.rate,sm.bill_no,sm.bill_date,sm.cess,sm.high_cess,sm.import_duty,sm.cenvat,sm.payment_id,sp.despatch_mode,sp.tr_code_id,sp.ac_code_id,sp.cylinder)
                     AS al
                     GROUP BY
                         al.out_qty,al.in_qty,al.curr_year,al.curr_month,

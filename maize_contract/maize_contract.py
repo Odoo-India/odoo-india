@@ -154,9 +154,9 @@ class purchase_order(osv.Model):
     _columns = {
         'contract': fields.related('indent_id', 'contract', type='boolean', relation='indent.indent', string='Contract', store=True, readonly=True),
         'no_of_days1': fields.integer("No of Days1", help="Calculate number of days for contracts"),
-        'no_of_days2': fields.integer("No of Days2", help="Calculate number of days for contracts"),
-        'no_of_days3': fields.integer("No of Days3", help="Calculate number of days for contracts"),
-        'total_days': fields.integer("Total Days", help="Calculate number of days for contracts"),
+        'no_of_days2': fields.integer("No of Days2", help="Calculate Extended number of days 1st time for contracts"),
+        'no_of_days3': fields.integer("No of Days3", help="Calculate Extended number of days 2nd time for contracts"),
+        'total_days': fields.integer("Total Days", help="Calculate Total number of days for contracts"),
         'date_from': fields.date('From Date', required=True),
         'date_to': fields.date('To Date'),
         'extended_date_from1': fields.date('Extended From'),

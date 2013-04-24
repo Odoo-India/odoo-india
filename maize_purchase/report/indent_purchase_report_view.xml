@@ -25,7 +25,6 @@
                     <field name="price_unit"/>
                     <field name="price_total"  sum="Total Untax"/>
                     <field name="puchase_total" sum="Total"/>
-                    
                     <field name="indent_id" invisible="1"/>
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>

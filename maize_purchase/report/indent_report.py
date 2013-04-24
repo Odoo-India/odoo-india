@@ -61,6 +61,10 @@ class indent_report(osv.osv):
             ('reject','Rejected')
             ], 'State', readonly=True),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', readonly=True),
+        'days': fields.integer("Days", help="Calculate number of days for contracts"),
+        'extend_days1': fields.integer("Extend Days1", help="Calculate Extended number of days 1st time for contracts"),
+        'extend_days2': fields.integer("Extend Days2", help="Calculate Extended number of days 2nd time for contracts"),
+        'total_days': fields.integer("Total Days", help="Calculate number of days for contracts"),
     }
     _order = 'date desc'
 
@@ -93,7 +97,11 @@ class indent_report(osv.osv):
                     to_char(i.indent_date, 'YYYY-MM-DD') as day,
                     i.indentor_id as indentor_id,
                     i.state,
-                    i.analytic_account_id as analytic_account_id
+                    i.analytic_account_id as analytic_account_id,
+                    po.no_of_days1 as days,
+                    po.total_days as total_days,
+                    po.no_of_days2 as extend_days1,
+                    po.no_of_days3 as extend_days2
                 from
                     indent_indent i
                     left join indent_product_lines l on (i.id=l.indent_id)
@@ -102,6 +110,7 @@ class indent_report(osv.osv):
                     left join product_uom u on (u.id=l.product_uom)
                     left join product_uom u2 on (u2.id=t.uom_id)
                     left join stock_location sl on (sl.id=i.department_id)
+                    left join purchase_order po on (po.indent_id = i.id)
                 where l.product_id is not null
                 group by
                     i.id,
@@ -123,7 +132,11 @@ class indent_report(osv.osv):
                     i.indentor_id,
                     i.state,
                     i.analytic_account_id,
-                    i.maize
+                    i.maize,
+                    po.no_of_days1,
+                    po.no_of_days2,
+                    po.no_of_days3,
+                    po.total_days
             )
         """)
 indent_report()

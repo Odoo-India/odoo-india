@@ -40,8 +40,8 @@
                 <field name="product_qty_in" sum="Total incoming quantity" invisible="context.get('inward_view',True)"/>
                 <field name="product_qty_out" sum="Total outgoing quantity" invisible="1"/>
                 <field name="product_uom" invisible="context.get('product_uom_view',False)"/>
-                <field name="rate" invisible="context.get('issue_view',True)"/>
-                <field name="value"  sum="Total value" invisible="context.get('issue_view',True)"/>
+                <field name="rate"/>
+                <field name="value" sum="Total value"/>
                 <field name="excies" invisible="context.get('receipt_view',True)"/>
                 <field name="tr_code" invisible="1"/>
                 <field name="department_id" invisible="context.get('issue_view',True)"/>
@@ -87,8 +87,8 @@
                 <filter string="Done" name="done" icon="terp-dialog-close" domain="[('state','=','done')]" help = "Completed Stock-Moves"/>
                 <filter string="Todo" icon="terp-gtk-go-back-rtl" domain="[('state','in',('assigned','waiting','confirmed'))]" help = "Future Stock-Moves"/>
                 <separator/>
-                <filter icon="terp-go-home" name="in" string="Incoming" domain="[('type','=','in')]" context="{'inward_view': False}"/>
-                <filter icon="terp-go-home" name="internal" string="Internal" domain="[('type','=','internal')]" context="{'issue_view':False,'issue_new':True}"/>
+                <filter icon="terp-go-home" name="in" string="Inward" domain="[('type','=','in')]" context="{'inward_view': False}"/>
+                <filter icon="terp-go-home" name="internal" string="Issue" domain="[('type','=','internal')]" context="{'issue_view':False,'issue_new':True}"/>
                 <filter icon="terp-go-home" name="out" string="Outgoing" domain="[('type','=','out')]"/>
                 <filter icon="terp-go-home" name="receipt" string="Receipt" domain="[('type','=','receipt')]" context="{'receipt_view': False}"/>
                 <filter icon="terp-go-home" name="Cash Code" string="Cash Only" domain="[('case_code','=', True)]"/>
@@ -122,7 +122,7 @@
                     <filter name="group_partner" string="Supplier" icon="terp-partner" context="{'group_by':'partner_id','partner_id_view':True}"/>
                     <filter name="group_categ_id" string="Product Category" icon="terp-stock_symbol-selection" context="{'group_by':'categ_id'}"/>
                     <filter name="group_product" string="Product" icon="terp-accessories-archiver" context="{'group_by':'product_id','product_id_view': True}"/>
-                    <filter name="group_picking" string="Shipment" icon="terp-accessories-archiver" context="{'group_by':'picking_id','picking_id_view':True}"/>
+                    <filter name="group_picking" string="No" icon="terp-accessories-archiver" context="{'group_by':'picking_id','issue_new':True}"/>
                     <filter string="Source Location" name="src_location" icon="terp-gtk-jump-to-rtl" context="{'group_by':'location_id','location_id_view':True}"/>
                     <filter string="Dest. Location" name="dest_location" icon="terp-gtk-jump-to-ltr"  context="{'group_by':'location_dest_id','location_dest_id_view':True}"/>
                     <filter string="Type" name="group_type" icon="terp-stock_symbol-selection" context="{'group_by':'type'}" help="Shipping type specify, goods coming in or going out"/>

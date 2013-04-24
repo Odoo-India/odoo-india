@@ -830,28 +830,6 @@ class purchase_order(osv.Model):
         'contract_name': fields.char('Contract Name', size=256, readonly=True),
     }
 
-    def create(self, cr, uid, vals, context=None):
-        series_obj = self.pool.get('product.order.series')
-        seq_obj = self.pool.get('ir.sequence')
-        if vals.get('po_series_id'):
-            seq = series_obj.browse(cr, uid, vals.get('po_series_id'), context=context).seq_id.code
-            vals['name'] = seq_obj.get(cr, uid, seq)
-        if vals.get('contract_id'):
-            seq = series_obj.browse(cr, uid, vals.get('contract_id'), context=context).seq_id.code
-            vals['contract_name'] = seq_obj.get(cr, uid, seq)
-        return super(purchase_order, self).create(cr, uid, vals, context=context)
-
-    def write(self, cr, uid, ids, vals, context=None):
-        series_obj = self.pool.get('product.order.series')
-        seq_obj = self.pool.get('ir.sequence')
-        if vals.get('po_series_id'):
-            seq = series_obj.browse(cr, uid, vals.get('po_series_id'), context=context).seq_id.code
-            vals['name'] = seq_obj.get(cr, uid, seq)
-        if vals.get('contract_id'):
-            seq = series_obj.browse(cr, uid, vals.get('contract_id'), context=context).seq_id.code
-            vals['contract_name'] = seq_obj.get(cr, uid, seq)
-        return super(purchase_order, self).write(cr, uid, ids, vals, context=context)
-
 purchase_order()
 
 class purchase_requisition(osv.Model):

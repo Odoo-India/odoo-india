@@ -369,9 +369,17 @@ class purchase_order(osv.Model):
         proc_obj = self.pool.get('procurement.order')
         payment_term_obj = self.pool.get('account.payment.term')
         voucher_obj = self.pool.get('account.voucher')
+        series_obj = self.pool.get('product.order.series')
+        seq_obj = self.pool.get('ir.sequence')
         for po in self.browse(cr, uid, ids, context=context):
             if not po.po_series_id:
                 raise osv.except_osv(_("Warning !"),_('You cannot confirm a purchase order without any purchase order series.'))
+            seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
+            contract_name = False
+            if po.contract_id:
+                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
+                contract_name = seq_obj.get(cr, uid, contract_seq)
+            self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
             if po.requisition_id and (po.requisition_id.exclusive=='exclusive'):
                 for order in po.requisition_id.purchase_ids:
                     if order.id != po.id:

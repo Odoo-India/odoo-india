@@ -563,29 +563,31 @@ class stock_picking(osv.Model):
         receipt_obj = self.pool.get('stock.picking.receipt')
         stock_move = self.pool.get('stock.move')
         res = super(stock_picking,self).do_partial(cr, uid, ids, partial_datas, context=context)
+        vals = {}
         if context.get('default_type') == 'in':
             move_line = []
             for pick in self.browse(cr, uid, ids, context=context):
                 if not pick.purchase_id:
                     raise osv.except_osv(_('Configuration Error!'), _('Inward Not create without any Puchase Order'))
-                if pick.backorder_id:
-                    for move in pick.backorder_id.move_lines:
-                        dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0,0, context)
-                        move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
-                else:
+                if pick.state == 'done':
                     for move in pick.move_lines:
-                        dict = stock_move.onchange_amount(cr, uid, move.id, pick.purchase_id.id, move.product_id.id,0,0,0, context)
+                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
-                vals = {'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
+                    vals= {'inward_id': pick.id or False}
+                else:
+                    for move in pick.backorder_id.move_lines:
+                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
+                        move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                    vals= {'inward_id': pick.backorder_id and pick.backorder_id.id or False}
+                vals.update({'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                         'partner_id': pick.partner_id.id,
                         'stock_journal_id': pick.stock_journal_id or False,
                         'origin': pick.origin or False,
                         'type': 'receipt',
-                        'inward_id': pick.id or False,
                         'inward_date': datetime.today().strftime('%m-%d-%Y'),
                         'purchase_id': pick.purchase_id.id or False,
                         'move_lines': [(6,0, move_line)]
-                        }
+                        })
             receipt_id = receipt_obj.create(cr, uid, vals, context=context)
         return res
 stock_picking()
@@ -740,28 +742,30 @@ class stock_move(osv.osv):
         if not line_id:
             raise osv.except_osv(_('Configuration Error!'), _('Puchase Order don\'t  have line'))
         line = purchase_line_obj.browse(cr, uid, line_id, context=context)
-        if line.order_id.excies_ids and tax_cal == 0:
-            for c in tax_obj.compute_all(cr, uid, line.order_id.excies_ids, line.price_subtotal, line.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
-                val += c.get('amount', 0.0)
-                if c.get('parent_tax') and first:
-                    res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
-                    first = False
-                elif c.get('parent_tax'):
-                    res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
-                else:
-                    res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
-            res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': line.price_subtotal+val})
-        else:
-            for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, line.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
-                val += c.get('amount', 0.0)
-                if c.get('parent_tax') and first:
-                    res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
-                    first = False
-                elif c.get('parent_tax'):
-                    res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
-                else:
-                    res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
-            res.update({'rate': line.price_unit,'diff': diff or 0.0, 'import_duty': import_duty or 0.0, 'amount': tax_cal+val})
+        for move in self.browse(cr, uid, ids, context=context):
+            if line.order_id.excies_ids and tax_cal == 0:
+                for c in tax_obj.compute_all(cr, uid, line.order_id.excies_ids, line.price_unit, move.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
+                    val += c.get('amount', 0.0)
+                    if c.get('parent_tax') and first:
+                        res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
+                        first = False
+                    elif c.get('parent_tax'):
+                        res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
+                    else:
+                        res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
+                res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': (line.price_unit * move.product_qty)+val})
+            else:
+                for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, move.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
+                    val += c.get('amount', 0.0)
+                    if c.get('parent_tax') and first:
+                        res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
+                        first = False
+                    elif c.get('parent_tax'):
+                        res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
+                    else:
+                        res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
+                res.update({'rate': line.price_unit,'diff': diff or 0.0, 'import_duty': import_duty or 0.0})
+        print "\n-==- create receipt =-=-", res, tax_cal
         return {'value': res}
 stock_move()
 

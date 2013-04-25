@@ -9,11 +9,11 @@
                 <field name="id" invisible="1"/>
                 <field name="fault_id" invisible="context.get('fault_id_view')"/>
                 <field name="trade_id" invisible="context.get('trade_id_view')"/>
-				<field name="job_no" invisible="context.get('job_no_view', True)"/>
+                <field name="job_no" invisible="context.get('job_no_view', True)"/>
                 <field name="job_id" invisible="context.get('job_id_view')"/>
                 <field name="repair_date" invisible="context.get('repair_date_view')"/>
-				<field name="defect_repair_time" invisible="context.get('defect_repair_time_view')"/>
-				<field name="job_repair_time" invisible="context.get('job_repair_time_view', True)"/>
+                <field name="defect_repair_time" invisible="context.get('defect_repair_time_view')"/>
+                <field name="job_repair_time" invisible="context.get('job_repair_time_view', True)"/>
                 <field name="trademen" invisible="context.get('trademen_view')"/>
                 <field name="work_done" invisible="context.get('work_done_view')"/>
                 <field name="entry_clerk" invisible="context.get('entry_clerk_view', True)"/>
@@ -66,12 +66,12 @@
                 <filter string="Delivered" domain="[('state','=','delivered')]"/>
                 <group string="Display">
                     <filter name="group_job_no" string="Job No" context="{'job_no_view': False}"/>
-					<filter name="group_job_repair_time" string="Job Repair time" context="{'job_repair_time_view': False}"/>
+                    <filter name="group_job_repair_time" string="Job Repair time" context="{'job_repair_time_view': False}"/>
                     <filter name="group_in_inspector" string="In Inspector"  context="{'in_inspector_view':False}"/>
                     <filter name="group_out_inspector" string="Out Inspector"  context="{'out_inspector_view':False}"/>
                     <filter name="group_entry_clerk" string="Entry Clerk"  context="{'entry_clerk_view':False}"/>
                 </group>
-				<group expand="1" string="Group By...">
+                <group expand="1" string="Group By...">
                     <filter string="Fault" context="{'group_by':'fault_id','fault_id_view':True}"/>
                     <filter string="Trade"  context="{'group_by':'trade_id','trade_id_view':True}"/>
                     <filter string="Job"   context="{'group_by':'job_id','job_id_view':True}"/>

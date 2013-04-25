@@ -335,16 +335,16 @@
             <field name="arch" type="xml">
                 <tree string="Job Cards" colors="blue: state=='draft'; red: state=='inprogress'; black: state=='repair'; grey: state in ('delivered','cancel');">
                     <field name="job_no"/>
-                    <field name="vehicle_id"/>
-                    <field name="exploitation_type"/>
-                    <field name="maint_type"/>
+                    <field name="vehicle_id" invisible="context.get('vehicle_id_view')"/>
+                    <field name="exploitation_type" invisible="context.get('exploitation_type_view')"/>
+                    <field name="maint_type" invisible="context.get('maint_type_view')"/>
                     <field name="in_inspector_id"/>
                     <field name="out_inspector_id" attrs="{'invisible': [('state', 'not in', ('inspection', 'delivered'))]}"/>
                     <field name="technician_id"/>
-                    <field name="unit_id"/>
-                    <field name="location_id"/>
+                    <field name="unit_id" invisible="context.get('unit_id_view')"/>
+                    <field name="location_id" invisible="context.get('location_id_view')"/>
                     <field name="present_eqpt_status"/>
-                    <field name="state"/>
+                    <field name="state" invisible="context.get('state_view')"/>
                 </tree>
             </field>
         </record>
@@ -370,15 +370,15 @@
                     <field name="unit_id"/>
                     <field name="location_id"/>
                     <group expand="0" string="Group By...">
-                        <filter string="Vehicle" context="{'group_by': 'vehicle_id'}"/>
-                        <filter string="Exploitation Type" context="{'group_by': 'exploitation_type'}"/>
-                        <filter string="Maint Type" context="{'group_by': 'maint_type'}"/>
-                        <filter string="Unit" context="{'group_by': 'unit_id'}"/>
-                        <filter string="Location" context="{'group_by': 'location_id'}"/>
+                        <filter string="Vehicle" context="{'group_by': 'vehicle_id', 'vehicle_id_view': True}"/>
+                        <filter string="Exploitation Type" context="{'group_by': 'exploitation_type', 'exploitation_type_view': True}"/>
+                        <filter string="Maint Type" context="{'group_by': 'maint_type', 'maint_type_view': True}"/>
+                        <filter string="Unit" context="{'group_by': 'unit_id', 'unit_id_view': True}"/>
+                        <filter string="Workshop" context="{'group_by': 'location_id', 'location_id_view': True}"/>
                         <!--
                         <filter string="Equipment Status" context="{'group_by': 'present_eqpt_status'}"/>
                         -->
-                        <filter string="Status" context="{'group_by': 'state'}"/>
+                        <filter string="Status" context="{'group_by': 'state', 'state_view': True}"/>
                     </group>
                 </search>
             </field>
@@ -730,16 +730,16 @@
             <field name="arch" type="xml">
                 <tree string="Job Cards" colors="blue: state=='draft'; red: state=='inprogress'; black: state=='repair'; grey: state in ('delivered','cancel');">
                     <field name="job_no"/>
-                    <field name="vehicle_id" string="Equipment"/>
-                    <field name="exploitation_type"/>
-                    <field name="maint_type"/>
+                    <field name="vehicle_id" string="Equipment" invisible="context.get('vehicle_id_view')"/>
+                    <field name="exploitation_type" invisible="context.get('exploitation_type_view')"/>
+                    <field name="maint_type" invisible="context.get('maint_type_view')"/>
                     <field name="in_inspector_id"/>
                     <field name="out_inspector_id" attrs="{'invisible': [('state', 'not in', ('inspection', 'delivered'))]}"/>
                     <field name="technician_id"/>
-                    <field name="unit_id"/>
-                    <field name="location_id"/>
+                    <field name="unit_id" invisible="context.get('unit_id_view')"/>
+                    <field name="location_id" invisible="context.get('location_id_view')"/>
                     <field name="present_eqpt_status"/>
-                    <field name="state"/>
+                    <field name="state" invisible="context.get('state_view')"/>
                 </tree>
             </field>
         </record>
@@ -765,15 +765,15 @@
                     <field name="unit_id"/>
                     <field name="location_id"/>
                     <group expand="0" string="Group By...">
-                        <filter string="Equipment" context="{'group_by': 'vehicle_id'}"/>
-                        <filter string="Exploitation Type" context="{'group_by': 'exploitation_type'}"/>
-                        <filter string="Maint Type" context="{'group_by': 'maint_type'}"/>
-                        <filter string="Unit" context="{'group_by': 'unit_id'}"/>
-                        <filter string="Location" context="{'group_by': 'location_id'}"/>
+                        <filter string="Equipment" context="{'group_by': 'vehicle_id', 'vehicle_id_view': True}"/>
+                        <filter string="Exploitation Type" context="{'group_by': 'exploitation_type', 'exploitation_type_view': True}"/>
+                        <filter string="Maint Type" context="{'group_by': 'maint_type', 'maint_type_view': True}"/>
+                        <filter string="Unit" context="{'group_by': 'unit_id', 'unit_id_view': True}"/>
+                        <filter string="Workshop" context="{'group_by': 'location_id', 'location_id_view': True}"/>
                         <!--
                         <filter string="Equipment Status" context="{'group_by': 'present_eqpt_status'}"/>
                         -->
-                        <filter string="Status" context="{'group_by': 'state'}"/>
+                        <filter string="Status" context="{'group_by': 'state', 'state_view': True}"/>
                     </group>
                 </search>
             </field>
@@ -1049,12 +1049,15 @@
             <field name="arch" type="xml">
                 <tree string="Vehicle" version="7.0">
                     <field name="license_plate" string="BA Number"/>
-                    <field name="model_id"/>
+                    <field name="model_id" invisible="context.get('model_id_view')"/>
                     <field name="driver_id"/>
                     <field name="vin_sn"/>
                     <field name="odometer"/>
                     <field name="odometer_unit"/>
-                    <field name="unit_id"/>
+                    <field name="unit_id" invisible="context.get('unit_id_view')"/>
+                    <field name="transmission" invisible="context.get('transmission_view')"/>
+                    <field name="fuel_type" invisible="context.get('fuel_type_view')"/>
+                    <field name="present_eqpt_status" string="Vehicle Status" invisible="context.get('present_eqpt_status_view')"/>
                 </tree>
             </field>
         </record>
@@ -1073,7 +1076,11 @@
                     <field name="unit_id"/>
                     <field name="state_id"/>
                     <group expand="0" string="Group By...">
-                        <filter string="Unit" name="unit" context="{'group_by': 'unit_id'}"/>
+                        <filter string="Unit" name="unit" context="{'group_by': 'unit_id', 'unit_id_view': True}"/>
+                        <filter string="Model" context="{'group_by': 'model_id', 'model_id_view':True}"/>
+                        <filter string="Transmition" context="{'group_by': 'transmission', 'transmission_view': True}"/>
+                        <filter string="Fuel Type" context="{'group_by': 'fuel_type', 'fuel_type_view': True}"/>
+                        <filter string="Status" context="{'group_by': 'present_eqpt_status', 'present_eqpt_status_view': True}"/>
                     </group>
                </search>
             </field>
@@ -1171,10 +1178,11 @@
             <field name="arch" type="xml">
                 <tree string="Equipment" version="7.0">
                     <field name="erid"/>
-                    <field name="model_id"/>
+                    <field name="model_id" invisible="context.get('model_id_view')"/>
                     <field name="unit_id"/>
                     <field name="issue_date"/>
                     <field name="location"/>
+                    <field name="present_eqpt_status" string="Equipment Status" invisible="context.get('present_eqpt_status_view')"/>
                 </tree>
             </field>
         </record>
@@ -1192,7 +1200,9 @@
                     <field name="unit_id"/>
                     <field name="state_id"/>
                     <group expand="0" string="Group By...">
-                        <filter string="Unit" name="unit" context="{'group_by': 'unit_id'}"/>
+                        <filter string="Unit" name="unit" context="{'group_by': 'unit_id', 'unit_id_view':True}"/>
+                        <filter string="Model" context="{'group_by': 'model_id', 'model_id_view':True}"/>
+                        <filter string="Status" context="{'group_by': 'present_eqpt_status', 'present_eqpt_status_view': True}"/>
                     </group>
                </search>
             </field>

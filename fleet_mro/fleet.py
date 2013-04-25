@@ -162,7 +162,7 @@ fleet_vehicle()
 
 class fleet_vehicle_log_services(osv.Model):
     _name = 'fleet.vehicle.log.services'
-    _inherit = 'fleet.vehicle.log.services'
+    _inherit = ['fleet.vehicle.log.services', 'mail.thread'] 
 
     def on_change_vehicle(self, cr, uid, ids, vehicle_id, context=None):
         vals = {}

@@ -51,6 +51,7 @@ Main Features
         'job_sequence.xml',
         'work_sequence.xml',
         'report/fleet_fault_analysis_view.xml',
+        'report/fleet_product_analysis_view.xml',
     ],
     'update_xml' : ['security/ir.model.access.csv', 'security/fleet_mro_security.xml'],
 

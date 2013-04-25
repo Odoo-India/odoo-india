@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    <record id="view_fault_analysis_report_tree" model="ir.ui.view">
-        <field name="name">fault.analysis.report.tree</field>
-        <field name="model">fault.analysis.report</field>
+    <record id="view_fleet_material_defect_report_tree" model="ir.ui.view">
+        <field name="name">fleet.material.defect.report.tree</field>
+        <field name="model">fleet.material.defect.report</field>
         <field name="arch" type="xml">
             <tree create="false" string="Defect Analysis">
                 <field name="id" invisible="1"/>
-                <field name="fault_id" invisible="context.get('fault_id_view')"/>
-                <field name="trade_id" invisible="context.get('trade_id_view')"/>
+                <field name="product_id" invisible="context.get('product_id_view')"/>
                 <field name="job_no" invisible="context.get('job_no_view', True)"/>
                 <field name="job_id" invisible="context.get('job_id_view')"/>
-                <field name="repair_date" invisible="context.get('repair_date_view')"/>
-                <field name="defect_repair_time" invisible="context.get('defect_repair_time_view')"/>
+                <field name="type" invisible="context.get('type_view', True)"/>
+                <!--field name="defect_repair_time" invisible="context.get('defect_repair_time_view')"/-->
+				<field name="work_date" string="Repair Date" invisible="context.get('repair_date_view', True)"/>
                 <field name="job_repair_time" invisible="context.get('job_repair_time_view', True)"/>
-                <field name="trademen" invisible="context.get('trademen_view')"/>
-                <field name="work_done" invisible="context.get('work_done_view')"/>
-                <field name="entry_clerk" invisible="context.get('entry_clerk_view', True)"/>
+                <field name="product_uom_qty" invisible="context.get('product_uom_qty_view')"/>
+                <field name="product_uom" invisible="context.get('product_uom_view')"/>
+
+                <!--field name="entry_clerk" invisible="context.get('entry_clerk_view', True)"/-->
                 <field name="in_inspector" invisible="context.get('in_inspector_view', True)"/>
                 <field name="out_inspector" invisible="context.get('out_inspector_view', True)"/>
                 <field name="technician" invisible="context.get('technician_view')"/>
@@ -26,34 +27,10 @@
            </tree>
         </field>
     </record>
-    <!--record id="view_fault_analysis_report_graph" model="ir.ui.view">
-         <field name="name">fault.analysis.report.graph</field>
-         <field name="model">fault.analysis.reportt</field>
-         <field name="arch" type="xml">
-             <graph string="Entries Analysis" type="bar">
-                <field name="partner_id"/>
-                <field name="debit" operator="+"/>
-                <field name="credit" operator="+"/>
-                <field name="balance" operator="+"/>
-             </graph>
-         </field>
-    </record>
-    <record id="view_company_analysis_tree" model="ir.ui.view">
-         <field name="name">account.company.analysis.tree</field>
-         <field name="model">account.entries.report</field>
-         <field name="arch" type="xml">
-             <tree string="Company Analysis" >
-                <field name="user_type"/>
-                <field name="debit" />
-                <field name="credit" />
-                <field name="balance" />
-             </tree>
-         </field>
-    </record-->
 
-    <record id="view_fault_analysis_report_search" model="ir.ui.view">
-        <field name="name">fault.analysis.report.search</field>
-        <field name="model">fault.analysis.report</field>
+    <record id="view_fleet_material_defect_reportt_search" model="ir.ui.view">
+        <field name="name">fleet.material.defect.report.search</field>
+        <field name="model">fleet.material.defect.report</field>
         <field name="arch" type="xml">
             <search string="Defects Analysis">
                 <filter string="Draft" domain="[('state','=','draft')]"/>
@@ -69,35 +46,38 @@
                     <filter name="group_job_repair_time" string="Job Repair time" context="{'job_repair_time_view': False}"/>
                     <filter name="group_in_inspector" string="In Inspector"  context="{'in_inspector_view':False}"/>
                     <filter name="group_out_inspector" string="Out Inspector"  context="{'out_inspector_view':False}"/>
-                    <filter name="group_entry_clerk" string="Entry Clerk"  context="{'entry_clerk_view':False}"/>
+                    <filter string="Type" context="{'type_view':False}"/>
+                    <filter string="Repair Date" context="{'repair_date_view':False}"/>
+					<!--filter name="group_entry_clerk" string="Entry Clerk"  context="{'entry_clerk_view':False}"/-->
                 </group>
                 <group expand="1" string="Group By...">
-                    <filter string="Fault" context="{'group_by':'fault_id','fault_id_view':True}"/>
-                    <filter string="Trade"  context="{'group_by':'trade_id','trade_id_view':True}"/>
+                    <filter string="Product"  context="{'group_by':'product_id','product_id_view':True}"/>
                     <filter string="Job"   context="{'group_by':'job_id','job_id_view':True}"/>
                     <filter name="group_in_inspector" string="In Inspector"  context="{'group_by':'in_inspector', 'in_inspector_view':True}"/>
                     <filter name="group_out_inspector" string="Out Inspector"  context="{'group_by':'out_inspector', 'out_inspector_view':True}"/>
-                    <filter name="group_entry_clerk" string="Entry Clerk"  context="{'group_by':'entry_clerk', 'entry_clerk_view':True}"/>
+                    <!--filter name="group_entry_clerk" string="Entry Clerk"  context="{'group_by':'entry_clerk', 'entry_clerk_view':True}"/-->
                     <filter string="Technician"  context="{'group_by':'technician','technician_view':True}" />
                     <!--filter string="Unit"  context="{'group_by':'unit_id'}"/-->
                     <filter string="Workshop" context="{'group_by':'workshop_id','workshop_id_view':True}"/>
+                    <filter string="Procurment Method" context="{'group_by':'type','type_view':True}"/>
                     <filter string="State" context="{'group_by':'state','state_view':True}"/>
+					<filter string="Repair Date" context="{'group_by':'work_date','repair_date_view':True}"/>
                  </group>
             </search>
         </field>
     </record>
-    <record id="action_fault_analysis_report_all" model="ir.actions.act_window">
-        <field name="name">Defect Analysis</field>
-        <field name="res_model">fault.analysis.report</field>
+    <record id="action_fleet_material_defect_report_all" model="ir.actions.act_window">
+        <field name="name">Material Analysis</field>
+        <field name="res_model">fleet.material.defect.report</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree</field>
-        <field name="search_view_id" ref="view_fault_analysis_report_search"/>
-        <field name="view_id" ref="view_fault_analysis_report_tree"/>
+        <field name="search_view_id" ref="view_fleet_material_defect_reportt_search"/>
+        <field name="view_id" ref="view_fleet_material_defect_report_tree"/>
         <field name="context">{}</field>
-        <field name="help">From this view, have an analysis of your equipment or vehicle defects.</field>
+        <field name="help">From this view, have an analysis of your material required to fix equipment or vehicle defects.</field>
     </record>
-    <menuitem action="action_fault_analysis_report_all" id="menu_action_fault_analysis_report_all"
+    <menuitem action="action_fleet_material_defect_report_all" id="menu_action_fleet_material_defect_report_all"
         parent="menu_reports"
-        sequence="2"/>
+        sequence="5"/>
 </data>
 </openerp>

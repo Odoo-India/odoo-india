@@ -188,7 +188,6 @@
                			<group colspan="4">
                				<field name="case_code"/>
                 			<field name="challan_no"/>
-                			<field name="despatch_mode"/>
                 			<field name="dest_to"/>
                				<field name="other_dispatch" attrs="{'invisible': [('despatch_mode','=','others')]}"/>
                			</group>

@@ -103,7 +103,7 @@ class indent_indent(osv.Model):
         'active': fields.boolean('Active'),
         'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item For'),
         'amount_total': fields.function(_total_amount, type="float", string='Total', store=True),
-        'maize': fields.char('Maize', size=256, readonly=True, states={'draft': [('readonly', False)]}),
+        'maize': fields.char('Maize', size=256, readonly=True),
         'state':fields.selection([('draft','Draft'), ('confirm','Confirm'), ('waiting_approval','Waiting For Approval'), ('inprogress','Inprogress'), ('received','Received'), ('reject','Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 
@@ -665,10 +665,10 @@ class stock_picking(osv.Model):
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
         'picking_authority_ids': fields.one2many('picking.authority', 'picking_id', 'Authority'),
-        'maize': fields.char('Maize', size=256),
-        'maize_in': fields.char('Maize', size=256),
-        'maize_out': fields.char('Maize', size=256),
-        'maize_receipt': fields.char('Maize', size=256),
+        'maize': fields.char('Maize', size=256, readonly=True),
+        'maize_in': fields.char('Maize', size=256, readonly=True),
+        'maize_out': fields.char('Maize', size=256, readonly=True),
+        'maize_receipt': fields.char('Maize', size=256, readonly=True),
         'lr_no': fields.char("LR No",size=64),
         'lr_date': fields.date("LR Date"),
         'transporter':fields.char("Transporter",size=256),
@@ -826,7 +826,7 @@ class purchase_order(osv.Model):
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
-        'maize': fields.char('Maize PO Number', size=256),
+        'maize': fields.char('Maize PO Number', size=256, readonly=True),
         'contract_name': fields.char('Contract Name', size=256, readonly=True),
     }
 
@@ -850,7 +850,7 @@ class purchase_requisition(osv.Model):
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
-        'maize': fields.char('Maize', size=256),
+        'maize': fields.char('Maize', size=256, readonly=True),
     }
 
     def make_purchase_order(self, cr, uid, ids, partner_id, context=None):

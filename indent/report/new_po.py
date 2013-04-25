@@ -38,7 +38,8 @@ class new_po(report_sxw.rml_parse):
                                   'tax': self._tax,
                                   'get_value': self._get_value,
                                   'sequence': self._serial_no,
-                                  'change_date': self._change_date,})
+                                  'change_date': self._change_date,
+                                  'reset_no': self._reset_serial_no,})
         
         self.context = context
     
@@ -51,6 +52,10 @@ class new_po(report_sxw.rml_parse):
     
     def _serial_no(self, line):
         self.sr_no += 1
+        return self.sr_no
+    
+    def _reset_serial_no(self, line):
+        self.sr_no = 0
         return self.sr_no
     
     def _tax(self,order):

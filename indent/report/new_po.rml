@@ -299,7 +299,7 @@
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="400.0,100.0,70.0" style="Tableau2">
+    <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -335,6 +335,7 @@
             <para style="terp_default_9"> Service </para>
             <para style="terp_default_9"> Excise </para>
             <para style="terp_default_9"> VAT </para>
+            <para style="terp_default_9"> Insurance </para>
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
             <para style="terp_default_9"> Discount / Round Off </para>
@@ -345,7 +346,8 @@
             <para style="terp_default_9">: [[ tax(order).get('service',False) or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('excise') or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('vat') or '']]</para>
-            <para style="terp_default_9">: [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
+            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and 'Rs') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
+            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and 'Rs') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: MILL-DELIVERY</para>
@@ -436,6 +438,7 @@
   <story>
     <para style="terp_tblheader_General_Right"> 2nd copy </para>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
+  	<para style="terp_tblheader_General_Right"> [[ reset_no(order)  ]] </para>
     <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
     <para style="terp_default_9">
       <font color="white"> </font>
@@ -573,7 +576,7 @@
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="400.0,100.0,70.0" style="Tableau2">
+    <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -609,6 +612,7 @@
             <para style="terp_default_9"> Service </para>
             <para style="terp_default_9"> Excise </para>
             <para style="terp_default_9"> VAT </para>
+            <para style="terp_default_9"> Insurance </para>
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
             <para style="terp_default_9"> Discount / Round Off </para>
@@ -619,7 +623,8 @@
             <para style="terp_default_9">: [[ tax(order).get('service',False) or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('excise') or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('vat') or '']]</para>
-            <para style="terp_default_9">: [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
+            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and 'Rs') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
+            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and 'Rs') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: MILL-DELIVERY</para>
@@ -710,6 +715,7 @@
   <story>
     <para style="terp_tblheader_General_Right"> 3rd copy </para>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
+  	<para style="terp_tblheader_General_Right"> [[ reset_no(order)  ]] </para>
     <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
     <para style="terp_default_9">
       <font color="white"> </font>
@@ -847,7 +853,7 @@
             </td>
         </tr>
     </blockTable>
-    <blockTable colWidths="400.0,100.0,70.0" style="Tableau2">
+    <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">
@@ -883,6 +889,7 @@
             <para style="terp_default_9"> Service </para>
             <para style="terp_default_9"> Excise </para>
             <para style="terp_default_9"> VAT </para>
+            <para style="terp_default_9"> Insurance </para>
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
             <para style="terp_default_9"> Discount / Round Off </para>
@@ -893,7 +900,8 @@
             <para style="terp_default_9">: [[ tax(order).get('service',False) or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('excise') or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('vat') or '']]</para>
-            <para style="terp_default_9">: [[ ((order.freight_type == 'fix' and order.freight) or (formatLang(order.freight) + '%')) ]] </para>
+            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and 'Rs') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
+            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and 'Rs') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: MILL-DELIVERY</para>

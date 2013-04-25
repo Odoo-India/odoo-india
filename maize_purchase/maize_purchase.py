@@ -657,7 +657,7 @@ class stock_picking_receipt(osv.Model):
         'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff(computed as (Diff + Import Duty))", store=True),
         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
         'department_id': fields.related('purchase_id', 'indent_id', 'department_id', type="many2one", relation="stock.location", store=True),
-        'maize_receipt': fields.char('Maize', size=256, readonly=True, readonly=True),
+        'maize_receipt': fields.char('Maize', size=256, readonly=True),
     }
     _defaults = {
         'type': 'receipt',

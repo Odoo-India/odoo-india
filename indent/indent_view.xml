@@ -318,6 +318,9 @@
                     <field name="maize" groups="indent.group_maize_data"/>
                 </field>
                 <xpath expr="//button[@name='draft_validate']" position="replace"/>
+                <button name="force_assign" position="attributes">
+                    <attribute name="string">Approve</attribute>
+                </button>
                 <xpath expr="//notebook/page[@string='Additional Info']" position="after">
                     <page string="Status">
                         <field name="picking_authority_ids" readonly="1">

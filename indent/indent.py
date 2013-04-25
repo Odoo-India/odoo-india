@@ -745,37 +745,6 @@ class stock_picking(osv.Model):
                         return False
         return True
 
-    def check_reject(self, cr, uid, ids):
-        picking_authority_obj = self.pool.get('picking.authority')
-        for picking in self.browse(cr, uid, ids):
-            if picking.type == 'internal':
-                authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in picking.picking_authority_ids]
-                sort_authorities = sorted(authorities, key=lambda element: (element[2]))
-                count = 0
-                for authority in sort_authorities:
-                    count += 1
-                    if authority[1] == uid:
-                        write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
-                        picking_authority_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
-                        for write_id in write_ids:
-                            desc = picking_authority_obj.browse(cr, uid, write_id[0]).description
-                            description = 'Rejected by higher authority - %s' %(authority[4],)
-                            if desc:
-                                description = 'Rejected by higher authority - %s' %(authority[4],) + '\n' + desc
-                            picking_authority_obj.write(cr, uid, [write_id[0]], {'description': description})
-                        break
-
-        for picking in self.browse(cr, uid, ids):
-            if picking.type == 'internal':
-                authorities = [(authority.id, authority.priority, authority.state) for authority in picking.picking_authority_ids]
-                sort_authorities = sorted(authorities, key=lambda element: (element[1]))
-                for authority in sort_authorities:
-                    if authority[2] == 'approve' or authority[2] == 'pending':
-                        return False
-                    elif authority[2] == 'reject':
-                        return True
-        return True
-
 stock_picking()
 
 class picking_authority(osv.Model):

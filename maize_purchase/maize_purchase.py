@@ -765,7 +765,6 @@ class stock_move(osv.osv):
                     else:
                         res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
                 res.update({'rate': line.price_unit,'diff': diff or 0.0, 'import_duty': import_duty or 0.0})
-        print "\n-==- create receipt =-=-", res, tax_cal
         return {'value': res}
 stock_move()
 

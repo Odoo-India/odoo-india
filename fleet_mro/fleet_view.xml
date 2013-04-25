@@ -21,18 +21,18 @@
             <field name="arch" type="xml">
                 <form string="Job Cards" version="7.0">
                     <header>
-                        <button name="job_observation" string="Observation" states="draft" class="oe_highlight"/>
-                        <button name="job_inprogress" string="Get Spare Parts" class="oe_highlight"
+                        <button name="job_observation" string="Start Observation" states="draft" class="oe_highlight"/>
+                        <button name="job_inprogress" string="Reqest for Material" class="oe_highlight"
                         attrs="{'invisible': ['|', ('product_lines', '=', []), ('state', '!=', 'observation')]}"/>
                         <button name="repair" string="Start Repair" class="oe_highlight"
                         attrs="{'invisible': ['|', ('product_lines', '!=', []), ('state', '!=', 'observation')]}"/>
                         <button name="job_cancel" string="Cancel" states="observation"/>
                         <button name="action_receive_products" string="Receive Product(s)" type="object" class="oe_highlight"
                             attrs="{'invisible': ['|', ('picking_id', '=', False), ('state', '!=', 'inprogress')]}"/>
-                        <button name="job_done" string="Done" states="repair" class="oe_highlight"/>
-                        <button name="job_inspection" string="Inspection" states="done" class="oe_highlight"/>
-                        <button name="job_delivered" string="Delivered" states="inspection" class="oe_highlight"/>
-                        <button name="job_delivered" string="Delivered" states="cancel" class="oe_highlight"/>
+                        <button name="job_done" string="Finish Repair" states="repair" class="oe_highlight"/>
+                        <button name="job_inspection" string="Start Inspection" states="done" class="oe_highlight"/>
+                        <button name="job_delivered" string="Deliver" states="inspection" class="oe_highlight"/>
+                        <button name="job_delivered" string="Deliver" states="cancel" class="oe_highlight"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,observation,repair,done,inspection,delivered" statusbar_colors='{"cancel":"red", "repair":"blue"}'/>
                     </header>
                     <sheet>
@@ -415,18 +415,18 @@
             <field name="arch" type="xml">
                 <form string="Job Cards" version="7.0">
                     <header>
-                        <button name="job_observation" string="Observation" states="draft" class="oe_highlight"/>
-                        <button name="job_inprogress" string="Get Spare Parts" class="oe_highlight"
+                        <button name="job_observation" string="Start Observation" states="draft" class="oe_highlight"/>
+                        <button name="job_inprogress" string="Reqest for Material" class="oe_highlight"
                         attrs="{'invisible': ['|', ('product_lines', '=', []), ('state', '!=', 'observation')]}"/>
                         <button name="repair" string="Start Repair" class="oe_highlight"
                         attrs="{'invisible': ['|', ('product_lines', '!=', []), ('state', '!=', 'observation')]}"/>
                         <button name="job_cancel" string="Cancel" states="observation"/>
                         <button name="action_receive_products" string="Receive Product(s)" type="object" class="oe_highlight"
                             attrs="{'invisible': ['|', ('picking_id', '=', False), ('state', '!=', 'inprogress')]}"/>
-                        <button name="job_done" string="Done" states="repair" class="oe_highlight"/>
-                        <button name="job_inspection" string="Inspection" states="done" class="oe_highlight"/>
-                        <button name="job_delivered" string="Delivered" states="inspection" class="oe_highlight"/>
-                        <button name="job_delivered" string="Delivered" states="cancel" class="oe_highlight"/>
+                        <button name="job_done" string="Finish Repair" states="repair" class="oe_highlight"/>
+                        <button name="job_inspection" string="Start Inspection" states="done" class="oe_highlight"/>
+                        <button name="job_delivered" string="Deliver" states="inspection" class="oe_highlight"/>
+                        <button name="job_delivered" string="Deliver" states="cancel" class="oe_highlight"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,observation,repair,done,inspection,delivered" statusbar_colors='{"cancel":"red", "repair":"blue"}'/>
                     </header>
                     <sheet>

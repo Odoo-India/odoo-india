@@ -115,7 +115,7 @@ class stock_picking_out(osv.Model):
         'gate_pass_type':fields.selection(GATE_PASS_TYPE, 'Type'),
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
         'indent_id': fields.many2one('indent.indent', 'Indent'),
-        'maize_out': fields.char('Maize', size=256),
+        'maize_out': fields.char('Maize', size=256, readonly=True),
     }
 
     def open_gate_pass(self, cr, uid, ids, context=None):

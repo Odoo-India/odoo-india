@@ -387,7 +387,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,graph</field>
             <field name="domain">[('type', '=', 'vehicle')]</field>
-            <field name="context">{'default_type': 'vehicle'}</field>
+            <field name="context">{'default_type': 'vehicle', 'unit_view': 1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     Click to create a new service entry. 
@@ -780,7 +780,7 @@
             <field name="view_mode">tree,form,graph</field>
             <field name="search_view_id" ref="view_fleet_equipment_log_services_search"/>
             <field name="domain">[('type','=','equipment')]</field>
-            <field name="context">{'default_type': 'equipment'}</field>
+            <field name="context">{'default_type': 'equipment', 'unit_view': 1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     Click to create a new service entry. 
@@ -889,7 +889,7 @@
 
         <!-- Fleet Vehicle Fault Menu -->
         <menuitem name="Reports" parent="fleet.menu_root" id="menu_reports" sequence="3"/>
-        <menuitem name="Fault Analysis" action="action_fleet_vehicle_fault" parent="menu_reports" id="menu_fleet_vehicle_fault"/>
+        <!--menuitem name="Fault Analysis" action="action_fleet_vehicle_fault" parent="menu_reports" id="menu_fleet_vehicle_fault"/-->
         <menuitem name="Configuration" parent="fleet.menu_root" id="fleet.fleet_configuration" sequence="4"/>
 
         <!-- Fleet Equipment Status Tree View -->
@@ -1080,7 +1080,7 @@
             <field name="view_mode">kanban,tree,form</field>
             <field name="search_view_id" ref="fleet.fleet_vehicle_search"/>
             <field name="domain">[('type', '=', 'vehicle')]</field>
-            <field name="context">{'default_type': 'vehicle', 'search_default_unit': 1}</field>
+            <field name="context">{'default_type': 'vehicle', 'search_default_unit': 1, 'unit_view': 1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     Click to create a new vehicle. 
@@ -1199,7 +1199,7 @@
             <field name="view_mode">kanban,tree,form</field>
             <field name="search_view_id" ref="view_fleet_equipment_search"/>
             <field name="domain">[('type', '=', 'equipment')]</field>
-            <field name="context">{'default_type': 'equipment', 'search_default_unit': 1}</field>
+            <field name="context">{'default_type': 'equipment', 'search_default_unit': 1, 'unit_view': 1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     Click to create a new equipment. 

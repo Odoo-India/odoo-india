@@ -28,6 +28,14 @@ class stock_location(osv.Model):
         'workshop': fields.boolean('Workshop'),
     }
 
+    def name_get(self, cr, uid, ids, context=None):
+        if not ids:
+            return []
+        if context is None: context = {}
+        if context.get('unit_view', False):
+            return [(line.id, line.name) for line in self.browse(cr, uid, ids, context=context)]
+        return super(stock_location, self).name_get(cr, uid, ids, context=context)
+
 stock_location()
 
 class stock_warehouse(osv.Model):

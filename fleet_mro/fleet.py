@@ -246,7 +246,7 @@ class fleet_vehicle_log_services(osv.Model):
         'expected_date': fields.date('Tentative Date of Repair'),
         'pss_date': fields.date('PSS Date'),
         'technician_id': fields.char('Contact Technician', size=64),
-        'repair_time': fields.function(_get_repair_time, type='float', string='Repair Time'),
+        'repair_time': fields.function(_get_repair_time, type='float', string='Repair Time', store=True),
         'total_inspection_time': fields.function(_get_total_insp_time, type='float', string='Time for Inspection'),
         'total_time': fields.function(_get_total_time, type='float', string='Total Time'),
         'work_value': fields.float('Work Value'),

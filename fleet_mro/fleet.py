@@ -259,7 +259,7 @@ class fleet_vehicle_log_services(osv.Model):
         'unit_id': fields.related('vehicle_id', 'unit_id', type='many2one', relation='stock.location', string='Unit', readonly=True, store=True),
         'location_id': fields.many2one('stock.location', 'Workshop', required=True),
         'company_id': fields.related('vehicle_id', 'company_id', type='many2one', relation='res.company', string="Company"),
-        'state':fields.selection([('draft','Draft'), ('observation','Observation'), ('inprogress','Waiting for Material'), ('repair','Repair In Progress'), ('done','Done'), ('inspection','Inspection'), ('cancel','Cancel'), ('delivered','Delivered')],'State',readonly=True)
+        'state':fields.selection([('draft','Draft'), ('observation','Observation'), ('inprogress','Waiting for Material'), ('repair','Repair In Progress'), ('done','Repairing Done'), ('inspection','Inspection'), ('cancel','Cancel'), ('delivered','Delivered')],'State',readonly=True)
     }
 
     def _default_stock_location(self, cr, uid, context=None):

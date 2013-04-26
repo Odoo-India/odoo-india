@@ -12,6 +12,7 @@
             <field name="code">stock.picking.receipt</field>
             <field name="prefix">RCPT/</field>
             <field name="padding">5</field>
+            <field name="implementation">no_gap</field>
             <field name="company_id" eval="False"/>
         </record>
 
@@ -93,7 +94,7 @@
             <field name="tax_type">vat</field>
             <field name="amount">0.04</field>
             <field name="sequence">15</field>
-            <field name="include_base_amount">True</field>
+            <field name="include_base_amount">False</field>
         </record>
         
         <record id="maize_vat_child_12" model="account.tax">
@@ -108,7 +109,7 @@
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.12</field>
-            <field name="include_base_amount">True</field>
+            <field name="include_base_amount">False</field>
         </record>
         
         <record id="maize_vat_child_15" model="account.tax">
@@ -123,14 +124,14 @@
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.15</field>
-            <field name="include_base_amount">True</field>
+            <field name="include_base_amount">False</field>
         </record>
         <record id="maize_vat_12_5" model="account.tax">
             <field name="name"> VAT @ 12.5%</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.125</field>
-            <field name="include_base_amount">True</field>
+            <field name="include_base_amount">False</field>
         </record>
     </data>
 </openerp>

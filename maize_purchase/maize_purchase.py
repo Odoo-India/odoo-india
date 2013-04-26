@@ -736,6 +736,7 @@ class stock_move(osv.osv):
         tax = tax_obj.search(cr, uid, [('amount', '=', '0.12'), ('tax_type','=', 'excise')])
         tax_data = tax_obj.browse(cr, uid, tax, context=context)
         val = 0.0
+        new_val = 0.0
         first = True
         line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])
         line_id = line_id and line_id[0] or False
@@ -753,7 +754,13 @@ class stock_move(osv.osv):
                         res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
                     else:
                         res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
-                res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': (line.price_unit * move.product_qty)+val})
+                for new_tax in tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, move.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
+                    new_val += new_tax.get('amount',0.0)
+                po_amount = purchase_obj._amount_all(cr, uid, [purchase_id],'','')[purchase_id]
+                new_other = ((po_amount['amount_total'] - (po_amount['amount_tax'] + po_amount['other_charges']+ po_amount['amount_untaxed']))/ line.product_qty) * move.product_qty
+                new_other_charge = (po_amount['other_charges']/ line.product_qty) * move.product_qty
+                new_val += new_other+ new_other_charge
+                res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': (line.price_unit * move.product_qty)+new_val})
             else:
                 for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, move.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
                     val += c.get('amount', 0.0)

@@ -993,6 +993,10 @@ class product_order_series(osv.Model):
         'seq_type_id': fields.many2one('ir.sequence.type', 'Sequence Type'),
         }
 
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the product order series must be unique!')
+    ]
+
     def create(self, cr, uid, vals, context=None):
         name = vals['name']
         prefix = vals['code']

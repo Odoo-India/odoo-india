@@ -306,6 +306,27 @@
         <menuitem action="maize_action_product_report"
             id="menu_action_maize_product_report"
             parent="stock.next_id_61" sequence="5"/>
-        
+
+        <!-- Account Analytic Account Form View -->
+        <record id="view_account_analytic_account_form_inherited" model="ir.ui.view">
+            <field name="name">analytic.analytic.account.form.inherited</field>
+            <field name="model">account.analytic.account</field>
+            <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+            <field name="arch" type="xml">
+                <field name="code" position="replace">
+                </field>
+                <xpath expr="//sheet/div[@class='oe_title']" position="replace">
+                    <div class="oe_title">
+                    <label for="name" class="oe_edit_only" string="Project Name and Code"/>
+                        <h1>
+                            <field name="name" class="oe_inline" placeholder="Project name"  style="width: 6em"/> -
+                            <field name="code" class="oe_inline" placeholder="Project code"/>
+                        </h1>
+                        <div name="project"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </openerp>

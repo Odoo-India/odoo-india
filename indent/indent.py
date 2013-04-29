@@ -125,7 +125,6 @@ class indent_indent(osv.Model):
 
     _defaults = {
         'state': 'draft',
-        #'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
         'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'indentor_id': lambda self, cr, uid, context: uid,
@@ -345,8 +344,6 @@ class indent_indent(osv.Model):
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
         return res
-
-
 
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
         location_id = self._default_stock_location(cr, uid, context=context)
@@ -1017,9 +1014,9 @@ class product_order_series(osv.Model):
     def write(self, cr, uid, ids, vals, context=None):
         seq_obj = self.pool.get('ir.sequence')
         seq_type_obj = self.pool.get('ir.sequence.type')
+        if isinstance(ids, (int, long)):
+            ids = [ids]
         if vals.get('code'):
-            if isinstance(ids, (int, long)):
-                ids = [ids]
             for series in self.browse(cr, uid, ids, context=context):
                 seq_type_obj.write(cr, uid, [series.seq_type_id.id], {'code': series.type + vals.get('code')}, context=context)
                 seq_obj.write(cr, uid, [series.seq_id.id], {'code': series.type + vals.get('code'), 'prefix': vals.get('code') + "/"}, context=context)

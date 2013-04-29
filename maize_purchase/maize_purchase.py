@@ -190,6 +190,27 @@ purchase_dispatch()
 
 class purchase_requisition_partner(osv.osv_memory):
     _inherit = "purchase.requisition.partner"
+
+    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+        """
+        @ Set domain into partner_id
+        """
+        context = context or {}
+        res = super(purchase_requisition_partner, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
+        doc = etree.XML(res['arch'])
+        if context.get('active_id'):
+            cr.execute(""" SELECT psinfo.name FROM purchase_requisition_line prl,purchase_requisition pr,product_supplierinfo psinfo  
+                            WHERE pr.id = %s
+                            AND pr.id = prl.requisition_id
+                            AND psinfo.product_id = prl.product_id """, (context['active_id'],))
+
+            domain = "[('id', 'in', "+str([x[0] for x in cr.fetchall()])+")]"
+            nodes = doc.xpath("//field[@name='partner_id']")
+            for node in nodes:
+                node.set('domain', domain)
+        res['arch'] = etree.tostring(doc)
+        return res
+
     _columns = {
         'po_series_id': fields.many2one('product.order.series', 'PO Series'),
     }

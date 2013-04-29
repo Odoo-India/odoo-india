@@ -13,6 +13,7 @@
             <field name="code">indent.indent</field>
             <field name="prefix"></field>
             <field name="padding">3</field>
+            <field name="implementation">no_gap</field>
         </record>
 
     </data>

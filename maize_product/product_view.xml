@@ -328,5 +328,17 @@
             </field>
         </record>
 
+        <!-- Account Analytic Account Tree View -->
+        <record id="view_account_analytic_account_tree_inherited" model="ir.ui.view">
+            <field name="name">analytic.analytic.account.tree.inherited</field>
+            <field name="model">account.analytic.account</field>
+            <field name="inherit_id" ref="account.view_account_analytic_account_tree"/>
+            <field name="arch" type="xml">
+                <field name="code" position="attributes">
+                    <attribute name="string">Code</attribute>
+                </field>
+            </field>
+        </record>
+
     </data>
 </openerp>

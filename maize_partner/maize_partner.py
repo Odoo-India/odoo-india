@@ -31,6 +31,11 @@ class supplier_series(osv.Model):
         'code': fields.char('Series', size=15),
         'name': fields.char('Description', size=50),
         }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the supplier series must be unique!')
+    ]
+
 supplier_series()
 
 class res_partner(osv.Model):
@@ -66,6 +71,10 @@ class res_partner(osv.Model):
         'cst_no': fields.char('CSTNO', size=256)
         }
 
+    _sql_constraints = [
+        ('code_uniq', 'unique (supp_code)', 'The code of the supplier must be unique!')
+    ]
+
 res_partner()
 
 class row_code(osv.Model):
@@ -75,6 +84,11 @@ class row_code(osv.Model):
         'code': fields.char('Code', size=256),
         'name': fields.char('Name', size=256),
         }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the row code must be unique!')
+    ]
+
 row_code()
 class tax_code(osv.Model):
     _name = "tax.code"
@@ -83,6 +97,11 @@ class tax_code(osv.Model):
         'code': fields.char('STCODE', size=256),
         'name': fields.char('STDESC', size=256),
         }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the tax code must be unique!')
+    ]
+
 tax_code()
 
 class account_journal(osv.Model):
@@ -131,6 +150,11 @@ class res_users(osv.Model):
     _columns = {
             'user_code': fields.char('Code', size=50),
                 }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (user_code)', 'The code of an user must be unique!')
+    ]
+
 res_users()
 
 class res_company(osv.osv):

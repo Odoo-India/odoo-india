@@ -186,6 +186,10 @@ class purchase_dispatch(osv.Model):
         'code': fields.char('Code', size=32, required=True),
     }
 
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the dispatch must be unique!')
+    ]
+
 purchase_dispatch()
 
 class purchase_requisition_partner(osv.osv_memory):
@@ -700,6 +704,11 @@ class stock_location(osv.osv):
     _columns = {
             'chained_picking_type': fields.selection([('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'Receipt')], 'Shipping Type', help="Shipping Type of the Picking List that will contain the chained move (leave empty to automatically detect the type based on the source and destination locations)."),
                 }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the stock location must be unique!')
+    ]
+
 stock_location()
 
 class stock_move(osv.osv):
@@ -814,6 +823,11 @@ class ac_code(osv.Model):
         'name': fields.char('Name',size=256),
         'code': fields.char('Code', size=64)
         }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code must be unique!')
+    ]
+
 ac_code()
 
 class tr_code(osv.Model):
@@ -834,6 +848,11 @@ class tr_code(osv.Model):
         'name': fields.char('Name',size=256),
         'code': fields.char('Code', size=64)
         }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code must be unique!')
+    ]
+
 tr_code()
 
 class stock_partial_picking(osv.osv_memory):

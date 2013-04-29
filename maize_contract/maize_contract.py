@@ -207,4 +207,9 @@ class indent_equipment(osv.Model):
         'name': fields.char('Name',size=256),
         'code': fields.char('Code', size=64)
         }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of an equipment must be unique!')
+    ]
+
 indent_equipment()

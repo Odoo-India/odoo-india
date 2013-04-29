@@ -53,7 +53,12 @@ class account_analytic_account(osv.Model):
             p_name = pckg.code and '[' + pckg.code + '] ' or ''
             p_name += pckg.name
             res.append((pckg.id,p_name))
-        return res   
+        return res
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of an project must be unique!')
+    ]
+
 account_analytic_account()
 
 class product_major_group(osv.Model):
@@ -64,7 +69,11 @@ class product_major_group(osv.Model):
         'code': fields.char('Code', size=15),
         'name': fields.char('Description', size=50),
         }
-    
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the product major group must be unique!')
+    ]
+
     def name_get(self, cr, uid, ids, context=None):
         if not len(ids):
             return []
@@ -85,7 +94,11 @@ class product_sub_group(osv.Model):
         'name': fields.char('Description', size=50),
         'major_group_id':fields.many2one('product.major.group', 'Major Group'),
         }
-    
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the product sub group must be unique!')
+    ]
+
     def name_get(self, cr, uid, ids, context=None):
         if not len(ids):
             return []

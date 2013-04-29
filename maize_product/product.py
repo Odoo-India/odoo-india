@@ -187,7 +187,7 @@ class product_product(osv.Model):
         'ex_chapter_desc': fields.text('EXCHAPTERDESCR',translate=True),
         'variance': fields.integer('Variance', help='Percentage that shows the actual difference between the ordered quantity and received one'),
         'status': fields.integer('Status', help='There is a report that is generated from this status for store people monthly'),
-        'item_type': fields.selection([('gp', 'GP'), ('im' , 'IM')], 'Item Type'),
+        'item_type': fields.selection([('gp', 'GP')], 'Item Type'),
         'description': fields.char('Description', size=256),
         'desc2': fields.char('Description2', size=256),
         'desc3': fields.char('Description3', size=256),

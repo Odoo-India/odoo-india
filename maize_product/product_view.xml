@@ -8,18 +8,6 @@
             <field name="inherit_id" ref="product.product_normal_form_view" />
             <field name="priority">20</field>
             <field name="arch" type="xml">
-               	<xpath expr="//field[@name='state']" position='replace'>
-            	</xpath>
-            	<xpath expr="//sheet" position='before'>
-					<header>
-                        <button string="Confirm" name="set_to_confirm" states="draft" type="object" class="oe_highlight" groups="base.group_user"/>
-                        <button string="Approve" name="set_to_approve" states="confirm" type="object" class="oe_highlight" groups="purchase.group_purchase_manager"/>
-                        <button string="Set To Draft" name="set_to_draft" states="cancel,done" type="object" groups="base.group_user"/>
-                        <button string="Reject" name="set_to_reject" states="confirm" type="object" groups="base.group_user"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done"/>	                    
-	                    
-	                </header>
-            	</xpath>
             	<xpath expr="//label[@for='name']" position='replace'>
             	</xpath>
             	<xpath expr="//field[@name='default_code']" position='replace'>

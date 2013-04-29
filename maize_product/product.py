@@ -198,13 +198,6 @@ class product_product(osv.Model):
         'sub_group_id': fields.many2one('product.sub.group', 'Sub Group'),
         'location': fields.char('Location', size=256),
         #'state': fields.char('Location', size=256),
-        'state': fields.selection([
-            ('draft', 'Unconfirmed'),
-            ('cancel', 'Cancelled'),
-            ('confirm', 'Confirmed'),
-            ('done', 'Approve')],
-            'Status', readonly=True, required=True,
-            track_visibility='onchange'),
         'min_qty': fields.related('orderpoint_ids', 'product_min_qty', type="float", relation="stock.warehouse.orderpoint", help="Minimum Qantity for this Product"),
         'max_qty': fields.related('orderpoint_ids', 'product_max_qty', type="float", relation="stock.warehouse.orderpoint", help="Maximum Qantity for this Product"),
         }
@@ -212,46 +205,8 @@ class product_product(osv.Model):
                 'sale_ok':False,
                 'type':'product',
                 'purchase_requisition':True,
-                'state':'draft',
                 }
-    
-    def set_to_confirm(self, cr, uid, ids, context=None):
-        return self.write(cr, uid, ids, {'state': 'confirm'}, context=context)    
-    
-    def set_to_draft(self, cr, uid, ids, context=None):
-        return self.write(cr, uid, ids, {'state': 'draft'}, context=context)
-    
-    def set_to_approve(self, cr, uid, ids, context=None):
-        obj_prod_categ=self.pool.get('product.category')
-        obj_major_grp = self.pool.get('product.major.group')
-        obj_sub_grp = self.pool.get('product.sub.group')
-        default_code = '/'
-        for record in self.browse(cr,uid,ids,context=context):
-            categ_name = obj_prod_categ.browse(cr,uid,record.categ_id.id).name
-            if categ_name == 'Local':
-                categ_code ='01'
-            else:
-                 categ_code ='02'
-            major_group_code = obj_major_grp.browse(cr,uid,record.major_group_id.id).code or ''
-            sub_group_code = obj_sub_grp.browse(cr,uid,record.sub_group_id.id).code or ''
-            
-            major_id = obj_major_grp.search(cr,uid,[('code','=',major_group_code)])
-            sub_id = obj_sub_grp.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('code','=',sub_group_code)])
-            seq_id = self.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('sub_group_id','=',sub_id and sub_id[0] or False)])
-            seq_id.sort()
-            product_code=1
-            if record.type=='product' or record.type == 'service':
-                if len(seq_id)>=2:
-                    last_rec=self.browse(cr,uid,seq_id[-2])
-                    product_code = int(last_rec.default_code[6:9])+1
-                    default_code = categ_code+major_group_code+sub_group_code+"%03d"%(product_code)
-                else:
-                    default_code = categ_code+major_group_code+sub_group_code+"001"
-        return self.write(cr, uid, ids, {'state': 'done','default_code':default_code}, context=context)    
-    
-    def set_to_reject(self, cr, uid, ids, context=None):
-        return self.write(cr, uid, ids, {'state': 'cancel','active':False}, context=context)
-        
+
 product_product()
 
 class stock_move(osv.Model):

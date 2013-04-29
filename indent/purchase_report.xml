@@ -9,6 +9,7 @@
                 usage="default" string="Maize Purchase Enquiry"/>
         <report auto="False" id="report_indent" model="indent.indent"
                 name="indent.indent" rml="indent/report/indent.rml"
-                usage="default" string="Indent Report"/>
+                usage="default" string="Indent Report"
+                attachment="((object.name or '').replace('/','')+'.pdf')"/>
     </data>
 </openerp>

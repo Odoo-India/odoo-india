@@ -30,6 +30,11 @@ from openerp.osv.orm import browse_record, browse_null
 from lxml import etree
 from openerp.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 
+SERIES = [
+    ('repair', 'Repair'),
+    ('purchase', 'Purchase'),
+    ('store', 'Store')
+]
 class stock_picking_in(osv.osv):
     _inherit = "stock.picking.in"
     _columns = {
@@ -42,7 +47,7 @@ class stock_picking_in(osv.osv):
         'lab_no':fields.integer("Lab No"),
         'gp_no': fields.integer("Gate Pass No"),
         'gp_year': fields.char("GP Year",size=64),
-        'series_id': fields.many2one("product.order.series",'Series'),
+        'series_id':fields.selection(SERIES, 'Series'),
         'remark1': fields.char("Remark1",size=256),
         'remark2': fields.char("remark2",size=256),
         'case_code': fields.boolean("Cash Code"),

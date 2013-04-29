@@ -29,6 +29,17 @@ from openerp import tools
 from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
+class ir_attachment(osv.Model):
+    _inherit = 'ir.attachment'
+
+    def create(self, cr, uid, values, context=None):
+        res_id = super(ir_attachment, self).create(cr, uid, values, context)
+        if values.get('res_model') == 'indent.indent' and values.get('res_id'):
+            self.pool.get('indent.indent').write(cr, uid, values['res_id'], {'attachment_id': res_id},context)
+        return res_id
+
+ir_attachment()
+
 class indent_indent(osv.Model):
     _name = 'indent.indent'
     _description = 'Indent'
@@ -85,6 +96,8 @@ class indent_indent(osv.Model):
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always',),
         'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'attachment_id': fields.many2one('ir.attachment', 'Attachemt'),
+        'print_report': fields.related('attachment_id', 'datas',type='binary', string='Indent Report'),
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
         'employee_id': fields.many2one('hr.employee', 'Employee'),
         'employee_department_id': fields.related('employee_id', 'department_id',readonly=True, type='many2one', relation='hr.department', string='Employee Department', store=True, states={'draft': [('readonly', False)]}),

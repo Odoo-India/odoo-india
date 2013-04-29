@@ -25,13 +25,27 @@ from dateutil.relativedelta import relativedelta
 from openerp.report import report_sxw
 from openerp.osv import osv
 from openerp import pooler
+from openerp.tools.translate import _
 
 class indent(report_sxw.rml_parse):
+
+    def already_print_report(self, cr , uid, context):
+        context = context or {}
+        self.pool = pooler.get_pool(cr.dbname)
+        active_id = context.get('active_id',False)
+        active_model = context.get('active_model','')
+        if active_id and active_model:
+            already_exist = self.pool.get('ir.attachment').search(cr, uid, [('res_model','=',active_model),('res_id','=',active_id)], context=context)
+            if already_exist:
+                raise osv.except_osv(_('Warning!'),_('Already print this report, For more information please contact your Manager'))
+        return True
+
     def __init__(self, cr, uid, name, context):
         self.sr_no = 0
         self.cr = cr
         self.uid = uid
         self.get_value ={}
+        self.already_print_report(cr, uid, context)
         super(indent, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({
               'time': time, 

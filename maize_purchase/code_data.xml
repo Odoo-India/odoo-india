@@ -68,7 +68,7 @@
         </record>
         
         <record id="ac_A23" model="ac.code">
-            <field name="code">A14</field>
+            <field name="code">A23</field>
             <field name="name">BUILDING REPAIRS (CAPITAL)</field>
         </record>
         

@@ -1000,7 +1000,7 @@ class product_order_series(osv.Model):
         vals['seq_type_id'] = self.pool.get('ir.sequence.type').create(cr, uid, {'name': name, 'code': code}, context=context)
         seq = {
             'name': name,
-            'implementation':'standard',
+            'implementation':'no_gap',
             'prefix': prefix + "/",
             'padding': 4,
             'number_increment': 1,

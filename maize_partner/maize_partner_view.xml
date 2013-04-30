@@ -51,7 +51,7 @@
 		       		<group>
 		            	<group>H
 		            		<field name="stno_1"/>
-		            		<field name="stno_2"/>
+		            		<field name="stno_2" string="Tin No"/>
 		            		<field name="cst_no"/>
 		            	</group>
 		            	<group>

@@ -86,7 +86,7 @@
                         </group>
                         <group string="Details">
                             <group>
-                                <field name="indentor_id"/>
+                                <field name="indentor_id" readonly="1"/>
                                 <field name="employee_id" invisible="1"/>
                                 <field name="employee_department_id" invisible="1"/>
                                 <field name="department_id"/>

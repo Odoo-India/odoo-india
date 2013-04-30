@@ -138,6 +138,10 @@
             id="menu_maize_po_series"
             parent="menu_maize_config" sequence="2"/>
 
+        <menuitem action="account.action_account_analytic_account_form" id="maize_account_analytic_account"
+            parent="menu_maize_config"
+            groups="analytic.group_analytic_accounting"/>
+
 <!-- product major group code -->
 
         <record id="product_major_group_form_view" model="ir.ui.view">

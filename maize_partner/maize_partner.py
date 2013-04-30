@@ -71,6 +71,23 @@ class res_partner(osv.Model):
         'cst_no': fields.char('CSTNO', size=256)
         }
 
+    def _check_pan_no(self, cr, uid, ids, context=None):
+        for partner in self.browse(cr, uid, ids, context=context):
+            if partner.pan_no and len(partner.pan_no) != 10:
+                return False
+        return True
+
+    def _check_stno_2(self, cr, uid, ids,context=None):
+        for partner in self.browse(cr, uid, ids, context=context):
+            if partner.stno_2 and len(partner.stno_2) != 11:
+                return False
+        return True
+
+    _constraints = [
+        (_check_pan_no, 'Error ! Pan number must be of 10 digit.', ['pan_no']),
+        (_check_stno_2, 'Error ! Tin number must be of 11 digit.', ['stno_2'])
+    ]
+
     _sql_constraints = [
         ('code_uniq', 'unique (supp_code)', 'The code of the supplier must be unique!')
     ]

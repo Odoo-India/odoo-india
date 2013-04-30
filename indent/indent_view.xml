@@ -89,7 +89,7 @@
                                 <field name="indentor_id" readonly="1"/>
                                 <field name="employee_id" invisible="1"/>
                                 <field name="employee_department_id" invisible="1"/>
-                                <field name="department_id"/>
+                                <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view')]"/>
                                 <field name="analytic_account_id"/>
                             </group>
                             <group>

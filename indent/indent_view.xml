@@ -107,26 +107,20 @@
                                             <group>
                                                 <field name="product_id"
                                                     groups="base.group_user"
-                                                    on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"/>
+                                                    on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
                                                 <label for="product_uom_qty"/>
                                                 <div>
                                                     <field
-                                                        name="product_uom_qty" class="oe_inline"
-                                                        on_change="product_id_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.indent_date)"/>
+                                                        name="product_uom_qty" class="oe_inline"/>
                                                     <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
-                                                        on_change="product_uom_change(product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name, parent.indent_date)"/>
+                                                        on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
                                                 </div>
-                                                <label for="product_uos_qty" groups="product.group_uos"/>
-                                                <div groups="product.group_uos">
-                                                    <field name="product_uos_qty" class="oe_inline"/>
-                                                    <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
-                                                </div>
-                                                 <field name="price_unit"/>
+                                                 <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
                                             </group>
                                             <group>
                                                 <field name="type"/>
-                                                <field name="qty_available"/>
-                                                <field name="virtual_available"/>
+                                                <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
+                                                <field name="virtual_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
                                             </group>
                                         </group>
                                         <label for="name"/>
@@ -137,18 +131,15 @@
                                     <tree string="Products">
                                         <field name="product_id"
                                             groups="base.group_user"
-                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"/>
+                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
                                         <field name="product_uom" string="Unit"
-                                            on_change="product_uom_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"
+                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"
                                             groups="product.group_uom" options='{"no_open": True}'/>
-                                        <field name="qty_available"/>
-                                        <field name="product_uom_qty"
-                                            on_change="product_id_change(product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.indent_date)"/>
-                                        <field name="product_uos_qty" groups="product.group_uos" invisible="1"/>
-                                        <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
+                                        <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
+                                        <field name="product_uom_qty"/>
                                         <field name="name"/>
                                         <field name="specification"/>
-                                        <field name="price_unit"/>
+                                        <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
                                         <field name="price_subtotal"/>
                                     </tree>
                                 </field>

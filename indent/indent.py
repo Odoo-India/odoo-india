@@ -517,84 +517,25 @@ class indent_product_lines(osv.Model):
         return result and result[1] or False
 
     _defaults = {
-        'product_uom' : _get_uom_id,
+#        'product_uom' : _get_uom_id,
         'product_uom_qty': 1,
         'product_uos_qty': 1,
         'type': 'make_to_order',
     }
 
-    def product_id_change(self, cr, uid, ids, product, qty=0, uom=False, qty_uos=0, uos=False, name='', date_order=False):
-        warning = {}
-        product_uom_obj = self.pool.get('product.uom')
-        product_obj = self.pool.get('product.product')
-
-        if not product:
-            return {'value': {'product_uos_qty': qty}, 'domain': {'product_uom': [], 'product_uos': []}}
-        if not date_order:
-            date_order = time.strftime(DEFAULT_SERVER_DATE_FORMAT)
-
+    def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', context=None):
         result = {}
-        warning_msgs = {}
-        product_obj = product_obj.browse(cr, uid, product)
-
-        uom2 = False
-        if uom:
-            uom2 = product_uom_obj.browse(cr, uid, uom)
-            if product_obj.uom_id.category_id.id != uom2.category_id.id:
-                uom = False
-        if uos:
-            if product_obj.uos_id:
-                uos2 = product_uom_obj.browse(cr, uid, uos)
-                if product_obj.uos_id.category_id.id != uos2.category_id.id:
-                    uos = False
-            else:
-                uos = False
-
-        result['name'] = self.pool.get('product.product').name_get(cr, uid, [product_obj.id])[0][1]
-        domain = {}
-        if (not uom) and (not uos):
-            result['product_uom'] = product_obj.uom_id.id
-            if product_obj.uos_id:
-                result['product_uos'] = product_obj.uos_id.id
-                result['product_uos_qty'] = qty * product_obj.uos_coeff
-                uos_category_id = product_obj.uos_id.category_id.id
-            else:
-                result['product_uos'] = False
-                result['product_uos_qty'] = qty
-                uos_category_id = False
-            domain = {'product_uom':
-                        [('category_id', '=', product_obj.uom_id.category_id.id)],
-                        'product_uos':
-                        [('category_id', '=', uos_category_id)]}
-        elif uos and not uom: # only happens if uom is False
-            result['product_uom'] = product_obj.uom_id and product_obj.uom_id.id
-            result['product_uom_qty'] = qty_uos / product_obj.uos_coeff
-        elif uom: # whether uos is set or not
-            default_uom = product_obj.uom_id and product_obj.uom_id.id
-            q = product_uom_obj._compute_qty(cr, uid, uom, qty, default_uom)
-            if product_obj.uos_id:
-                result['product_uos'] = product_obj.uos_id.id
-                result['product_uos_qty'] = qty * product_obj.uos_coeff
-            else:
-                result['product_uos'] = False
-                result['product_uos_qty'] = qty
-
-        if not uom2:
-            uom2 = product_obj.uom_id
-
-        result['qty_available'] = product_obj.qty_available
-        result['virtual_available'] = product_obj.virtual_available
-        result['price_unit'] = product_obj.list_price
-        if warning_msgs:
-            warning = {
-                       'title': _('Configuration Error!'), 'message' : warning_msgs
-                    }
-        return {'value': result, 'domain': domain, 'warning': warning}
-
-    def product_uom_change(self, cr, uid, ids, product, qty=0, uom=False, qty_uos=0, uos=False, name='', date_order=False):
-        if not uom:
-            return {'value': {'product_uom' : uom or False}}
-        return self.product_id_change(cr, uid, ids, product, qty=qty, uom=uom, qty_uos=qty_uos, uos=uos, name=name, date_order=date_order)
+        product_obj = self.pool.get('product.product')
+        if not product_id:
+            return {'value': {'product_uom_qty': 1.0, 'product_uom': False, 'price_unit': 0.0, 'qty_available': 0.0, 'virtual_available': 0.0, 'name': ''}}
+        if product_id:
+            product = product_obj.browse(cr, uid, product_id, context=context)
+            result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
+            result['product_uom'] = product.uom_id.id
+            result['price_unit'] = product.list_price
+            result['qty_available'] = product.qty_available
+            result['virtual_available'] = product.virtual_available
+        return {'value': result}
 
 indent_product_lines()
 

@@ -83,9 +83,16 @@ class res_partner(osv.Model):
                 return False
         return True
 
+    def _check_supp_code(self, cr, uid, ids,context=None):
+        for partner in self.browse(cr, uid, ids, context=context):
+            if partner.supp_code and (len(partner.supp_code) != 7 or  partner.supp_code[0] != '3'):
+                return False
+        return True
+
     _constraints = [
         (_check_pan_no, 'Error ! Pan number must be of 10 digit.', ['pan_no']),
-        (_check_stno_2, 'Error ! Tin number must be of 11 digit.', ['stno_2'])
+        (_check_stno_2, 'Error ! Tin number must be of 11 digit.', ['stno_2']),
+        (_check_supp_code, 'Error ! Supplier code must be of 7 digit and should start with a 3.', ['supp_code']),
     ]
 
     _sql_constraints = [

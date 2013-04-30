@@ -142,6 +142,9 @@
             parent="menu_maize_config"
             groups="analytic.group_analytic_accounting"/>
 
+        <menuitem action="stock.action_location_form" id="menu_maize_action_location_form" groups="stock.group_locations"
+            parent="menu_maize_config"/>
+
 <!-- product major group code -->
 
         <record id="product_major_group_form_view" model="ir.ui.view">

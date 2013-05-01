@@ -84,19 +84,19 @@
                                 <field name="print_report" readonly="1" attrs="{'invisible': [('print_report', '=', False)]}"/>
                             </group>
                         </group>
-                        <group string="Details">
-                            <group>
-                                <field name="indentor_id" readonly="1"/>
-                                <field name="employee_id" invisible="1"/>
-                                <field name="employee_department_id" invisible="1"/>
-                                <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view')]"/>
+                        <group>
+                            <group string="Details">
                                 <field name="item_for"/>
                                 <field name="analytic_account_id" attrs="{'invisible': [('item_for', '!=', 'capital')], 'required': [('item_for', '=', 'capital')]}"/>
-                            </group>
-                            <group>
                                 <field name="requirement"/>
                                 <field name="type"/>
                                 <field name="company_id" invisible="1"/>
+                            </group>
+                            <group string="Indentor">
+                                <field name="indentor_id" readonly="1"/>
+                                <field name="employee_id" groups="indent.group_maize_data"/>
+                                <field name="employee_department_id" groups="indent.group_maize_data"/>
+                                <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view')]"/>
                             </group>
                         </group>
                         <notebook>

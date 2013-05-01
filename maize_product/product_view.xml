@@ -80,7 +80,6 @@
                             <field name="variance" class="oe_inline"/>
                             <label string="%%"/>
                         </div>
-                    <field name='status'/>last_po_series
                     <field name='item_type'/>
                 </xpath>
                 <xpath expr="//label[@for='purchase_ok']" position='after'>

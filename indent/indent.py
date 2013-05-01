@@ -669,8 +669,6 @@ class stock_picking(osv.Model):
         picking_authority_obj = self.pool.get('picking.authority')
         for picking in self.browse(cr, uid, ids):
             if picking.type == 'internal':
-                if not (picking.indent_id and picking.indent_id.requisition_done):
-                    raise osv.except_osv(_("Warning !"),_('You cannot approve an issue without its related receipt is done.'))
                 authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in picking.picking_authority_ids]
                 sort_authorities = sorted(authorities, key=lambda element: (element[2]))
                 count = 0

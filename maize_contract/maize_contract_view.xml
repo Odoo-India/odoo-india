@@ -16,11 +16,9 @@
                 <xpath expr="//div[@name='buttons']/button[@string='Issue Reciept(s)']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('purchase_count', '=', False)]}</attribute>
                 </xpath>
-                <xpath expr="//field[@name='analytic_account_id']" position='after'>
-                    <field name="indent_section_id"/>
-                </xpath>
                 <xpath expr="//field[@name='company_id']" position='after'>
                     <field name="indent_equipment_id"/>
+                    <field name="indent_section_id"/>
                 </xpath>
             </field>
         </record>

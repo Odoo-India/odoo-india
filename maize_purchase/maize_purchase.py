@@ -121,12 +121,16 @@ class purchase_order_line(osv.Model):
     def _last_consumption(self, cr, uid, ids, prop, arg, context=None):
         last_month = str(datetime.now() - relativedelta(months=1)).split('-')[1]
         current_year = str(datetime.now()).split('-')[0]
+        def last_day_of_month(any_day):
+            next_month = any_day.replace(day=28) + relativedelta(days=4)  # this will never fail
+            return next_month - relativedelta(days=next_month.day)
+        last_day = str(last_day_of_month(datetime.today()- relativedelta(months=1))).split(' ')[0]
         res = {}
         consume_amount = 0.0
         list = []
         stock_obj = self.pool.get('stock.move')
         for line in self.browse(cr, uid, ids, context=context):
-            stock_id = stock_obj.search(cr, uid, [('product_id', '=', line.product_id.id), ('type', '=', 'internal'),('state', '=', 'done'), ('create_date', '<=', last_month+'-31-'+current_year),('create_date', '>=', last_month+'-1-'+current_year)])
+            stock_id = stock_obj.search(cr, uid, [('product_id', '=', line.product_id.id), ('type', '=', 'internal'),('state', '=', 'done'), ('create_date', '<=', last_day),('create_date', '>=', last_month+'-1-'+current_year)])
             if stock_id:
                 for id in stock_id:
                     if id not in list:

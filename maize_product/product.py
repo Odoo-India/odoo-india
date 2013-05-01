@@ -96,7 +96,7 @@ class product_sub_group(osv.Model):
         }
 
     _sql_constraints = [
-        ('code_uniq', 'unique (code)', 'The code of the product sub group must be unique!')
+        ('code_uniq', 'unique (code,major_group_id)', 'The code of the product sub group must be unique!')
     ]
 
     def name_get(self, cr, uid, ids, context=None):

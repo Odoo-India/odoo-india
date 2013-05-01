@@ -90,7 +90,7 @@
                                 <field name="employee_id" invisible="1"/>
                                 <field name="employee_department_id" invisible="1"/>
                                 <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view')]"/>
-                                <field name="analytic_account_id"/>
+                                <field name="analytic_account_id" attrs="{'invisible': [('item_for', '!=', 'capital')], 'required': [('item_for', '=', 'capital')]}"/>
                             </group>
                             <group>
                                 <field name="requirement"/>

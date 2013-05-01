@@ -948,7 +948,7 @@ class product_order_series(osv.Model):
         }
 
     _sql_constraints = [
-        ('code_uniq', 'unique (code)', 'The code of the product order series must be unique!')
+        ('code_uniq', 'unique (code,type)', 'The code of the product order series must be unique!')
     ]
 
     def create(self, cr, uid, vals, context=None):

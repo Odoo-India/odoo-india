@@ -50,6 +50,7 @@ class stock_picking(osv.Model):
         'series':fields.selection(SERIES, 'Series'),
         'gate_pass_type':fields.selection(GATE_PASS_TYPE, 'Type'),
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
+        'indent': fields.many2one('indent.indent', 'Indent'),
     }
 
     def create_gate_pass(self, cr, uid, ids, context=None):
@@ -115,7 +116,7 @@ class stock_picking_out(osv.Model):
         'series':fields.selection(SERIES, 'Series'),
         'gate_pass_type':fields.selection(GATE_PASS_TYPE, 'Type'),
         'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass'),
-        'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'indent': fields.many2one('indent.indent', 'Indent'),
         'maize_out': fields.char('Maize', size=256, readonly=True),
     }
 

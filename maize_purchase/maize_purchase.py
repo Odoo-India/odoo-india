@@ -181,6 +181,9 @@ purchase_order_line()
 class purchase_requisition(osv.osv):
     _inherit = "purchase.requisition"
     _order = "name desc"
+    _columns = {
+        'purchase_ids' : fields.one2many('purchase.order','requisition_id','Purchase Orders',states={'done': [('readonly', True)]}),
+        }
     _defaults = {
                  'exclusive': 'exclusive',
     }
@@ -239,7 +242,23 @@ purchase_requisition_partner()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
+    def action_cancel(self, cr, uid, ids, context=None):
+        wf_service = netsvc.LocalService("workflow")
+        for purchase in self.browse(cr, uid, ids, context=context):
+            for pick in purchase.picking_ids:
+                wf_service.trg_validate(uid, 'stock.picking', pick.id, 'button_cancel', cr)
+            for inv in purchase.invoice_ids:
+                if inv and inv.state not in ('cancel','draft'):
+                    raise osv.except_osv(
+                        _('Unable to cancel this purchase order.'),
+                        _('You must first cancel all receptions related to this purchase order.'))
+                if inv:
+                    wf_service.trg_validate(uid, 'account.invoice', inv.id, 'invoice_cancel', cr)
+        self.write(cr,uid,ids,{'state':'cancel'})
 
+        for (id, name) in self.name_get(cr, uid, ids):
+            wf_service.trg_validate(uid, 'purchase.order', id, 'purchase_cancel', cr)
+        return True
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         amount_untaxed = 0
@@ -345,7 +364,8 @@ class purchase_order(osv.Model):
         'dispatch_id': fields.many2one('purchase.dispatch', 'Dispatch'),
         'other_discount': fields.float('Discount / Round Off', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in fix amount", track_visibility='always'),
         'discount_percentage':  fields.float('Discount (%)', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in %", track_visibility='always'),
-        'discount_amount':  fields.float('Discount (%)', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in %", track_visibility='always') 
+        'discount_amount':  fields.float('Discount (%)', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in %", track_visibility='always'),
+        'requisition_ids' : fields.many2many('purchase.requisition','purchase_requisition_rel11','purchase_id','requisition_id','Latest Requisition') 
     }
 
     _defaults = {
@@ -411,58 +431,60 @@ class purchase_order(osv.Model):
                 raise osv.except_osv(_("Warning !"),_('You cannot confirm a purchase order without any purchase order series.'))
             seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
             contract_name = False
-            if po.contract_id:
-                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
-                contract_name = seq_obj.get(cr, uid, contract_seq)
-            self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
-            if po.requisition_id and (po.requisition_id.exclusive=='exclusive'):
-                for order in po.requisition_id.purchase_ids:
-                    if order.id != po.id:
-                        proc_ids = proc_obj.search(cr, uid, [('purchase_id', '=', order.id)])
-                        if proc_ids and po.state=='confirmed':
-                            proc_obj.write(cr, uid, proc_ids, {'purchase_id': po.id})
-                        wf_service = netsvc.LocalService("workflow")
-                        wf_service.trg_validate(uid, 'purchase.order', order.id, 'purchase_cancel', cr)
-                    
-                    for line in order.order_line:
-                        today = order.date_order
-                        year = datetime.today().year
-                        month = datetime.today().month
-                        if month<4:
-                            po_year=str(datetime.today().year-1)+'-'+str(datetime.today().year)
-                        else:
-                            po_year=str(datetime.today().year)+'-'+str(datetime.today().year+1)
-                        self.pool.get('product.product').write(cr,uid,line.product_id.id,{
-                                                                                              'last_supplier_rate': line.price_unit,
-                                                                                              'last_po_no':order.id,
-                                                                                              'last_po_series':order.po_series_id.id,
-                                                                                              'last_supplier_code':order.partner_id.id,
-                                                                                              'last_po_date':order.date_order,
-                                                                                              'last_po_year':po_year
-                                                                                          },context=context)
-                po.requisition_id.tender_done(context=context)
-            totlines = []
-            total_amt = 0.0
-            flag = False
-            if po.payment_term_id:
-                totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_total, po.date_order or False, context=context)
-            journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
-            journal_id = journal_ids and journal_ids[0] or False
-            if not journal_id:
-                raise osv.except_osv(_("Warning !"),_('You must define a journal related to an advance payment.'))
-            journal = self.pool.get('account.journal').browse(cr, uid, journal_id, context=context)
-            account_id = journal.default_credit_account_id or journal.default_debit_account_id or False
-            if not account_id:
-                raise osv.except_osv(_("Warning !"),_('You must define a default debit and credit account for a journal.'))
-            for line in totlines:
-                today = fields.date.context_today(self, cr, uid, context=context)
-                if line[0] == today:
-                    total_amt += line[1]
-                    flag = True
-            if flag:
-                note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, po.name or '', po.indent_id.name or '',)
-                voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
-                self.write(cr, uid, [po.id], {'voucher_id': voucher_id}, context=context)
+#            if po.contract_id:
+#                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
+#                contract_name = seq_obj.get(cr, uid, contract_seq)
+            #self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
+            for pp in po.requisition_ids:
+                if pp.exclusive=='exclusive':
+                    for order in pp.purchase_ids:
+                        print "order.id != po.id", order.id, po.id
+                        if order.id != po.id:
+                            proc_ids = proc_obj.search(cr, uid, [('purchase_id', '=', order.id)])
+                            if proc_ids and po.state=='confirmed':
+                                proc_obj.write(cr, uid, proc_ids, {'purchase_id': po.id})
+                            wf_service = netsvc.LocalService("workflow")
+                            wf_service.trg_validate(uid, 'purchase.order', order.id, 'purchase_cancel', cr)
+                        
+#                    for line in order.order_line:
+#                        today = order.date_order
+#                        year = datetime.today().year
+#                        month = datetime.today().month
+#                        if month<4:
+#                            po_year=str(datetime.today().year-1)+'-'+str(datetime.today().year)
+#                        else:
+#                            po_year=str(datetime.today().year)+'-'+str(datetime.today().year+1)
+#                        self.pool.get('product.product').write(cr,uid,line.product_id.id,{
+#                                                                                              'last_supplier_rate': line.price_unit,
+#                                                                                              'last_po_no':order.id,
+#                                                                                              'last_po_series':order.po_series_id.id,
+#                                                                                              'last_supplier_code':order.partner_id.id,
+#                                                                                              'last_po_date':order.date_order,
+#                                                                                              'last_po_year':po_year
+#                                                                                          },context=context)
+                pp.tender_done(context=context)
+#            totlines = []
+#            total_amt = 0.0
+#            flag = False
+#            if po.payment_term_id:
+#                totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_total, po.date_order or False, context=context)
+#            journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
+#            journal_id = journal_ids and journal_ids[0] or False
+#            if not journal_id:
+#                raise osv.except_osv(_("Warning !"),_('You must define a journal related to an advance payment.'))
+#            journal = self.pool.get('account.journal').browse(cr, uid, journal_id, context=context)
+#            account_id = journal.default_credit_account_id or journal.default_debit_account_id or False
+#            if not account_id:
+#                raise osv.except_osv(_("Warning !"),_('You must define a default debit and credit account for a journal.'))
+#            for line in totlines:
+#                today = fields.date.context_today(self, cr, uid, context=context)
+#                if line[0] == today:
+#                    total_amt += line[1]
+#                    flag = True
+#            if flag:
+#                note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, po.name or '', po.indent_id.name or '',)
+#                voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
+#                self.write(cr, uid, [po.id], {'voucher_id': voucher_id}, context=context)
         return res
 
     def open_advance_payment(self, cr, uid, ids, context=None):
@@ -516,28 +538,31 @@ class purchase_order(osv.Model):
             new_order = new_orders.setdefault(order_key, ({}, []))
             new_order[1].append(porder.id)
             order_infos = new_order[0]
+            print "porder.origin", porder.origin
             if not order_infos:
                 order_infos.update({
                     'origin': porder.origin,
-                    'po_series_id': porder.po_series_id.id,
+                    'po_series_id': porder.po_series_id and porder.po_series_id.id or False,
+                    'payment_term_id':porder.payment_term_id and porder.payment_term_id.id or False,
                     'date_order': porder.date_order,
-                    'partner_id': porder.partner_id.id,
-                    'dest_address_id': porder.dest_address_id.id,
-                    'warehouse_id': porder.warehouse_id.id,
-                    'location_id': porder.location_id.id,
-                    'pricelist_id': porder.pricelist_id.id,
+                    'partner_id': porder.partner_id and porder.partner_id.id or False,
+                    'dest_address_id': porder.dest_address_id and porder.dest_address_id.id or False,
+                    'warehouse_id': porder.warehouse_id and porder.warehouse_id.id or False,
+                    'location_id': porder.location_id and porder.location_id.id or False,
+                    'pricelist_id': porder.pricelist_id and porder.pricelist_id.id or False,
                     'state': 'draft',
                     'order_line': {},
                     'notes': '%s' % (porder.notes or '',),
                     'fiscal_position': porder.fiscal_position and porder.fiscal_position.id or False,
                 })
+                print "order_infos", order_infos
             else:
                 if porder.date_order < order_infos['date_order']:
                     order_infos['date_order'] = porder.date_order
                 if porder.notes:
                     order_infos['notes'] = (order_infos['notes'] or '') + ('\n%s' % (porder.notes,))
                 if porder.origin:
-                    order_infos['origin'] = (order_infos['origin'] or '') + ' ' + porder.origin
+                    order_infos['origin'] = (order_infos['origin'] or '')# + ' ' + porder.origin
 
             for order_line in porder.order_line:
                 line_key = make_key(order_line, ('name', 'date_planned', 'taxes_id', 'price_unit', 'product_id', 'move_dest_id', 'account_analytic_id'))
@@ -621,6 +646,7 @@ class stock_picking(osv.Model):
                         'inward_date': datetime.today().strftime('%m-%d-%Y'),
                         'purchase_id': pick.purchase_id.id or False,
                         'move_lines': [(6,0, move_line)]
+
                         })
             receipt_id = receipt_obj.create(cr, uid, vals, context=context)
         return res

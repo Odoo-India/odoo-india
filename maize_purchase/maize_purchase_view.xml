@@ -92,6 +92,11 @@
                     <field name='po_series_id' string="PO Series" domain="[('type', '=', 'purchase')]" widget="selection"/>
                     <field name='contract_id' string="Contract Series" attrs="{'invisible': [('contract', '=', False)]}" domain="[('type', '=', 'indent')]" widget="selection"/>
                 </xpath>
+                <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']" position='after'>
+                	<page string="Tenders">
+                		<field name="requisition_ids" widget="one2many_list"/>
+               		</page>
+                </xpath>
             </field>
         </record>
 
@@ -114,7 +119,7 @@
             <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form" />
             <field name="arch" type="xml">
                 <xpath expr="//notebook/page/field[@name='purchase_ids']" position="replace">
-                    <field name="purchase_ids">
+                    <field name="purchase_ids" widget="one2many_list">
                         <tree string="Purchase Order">
                             <field name="name" string="Reference"/>
                             <field name="date_order" string="Order Date"/>

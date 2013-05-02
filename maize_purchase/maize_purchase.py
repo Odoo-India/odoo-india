@@ -827,7 +827,7 @@ class stock_move(osv.osv):
                 new_val += new_other+ new_other_charge
                 res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': (line.price_unit * move.product_qty)+new_val})
             else:
-                for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, move.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
+                for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, 1, line.product_id, line.order_id.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
                     if c.get('parent_tax') and first:
                         res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})

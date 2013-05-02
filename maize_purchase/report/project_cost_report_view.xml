@@ -9,10 +9,11 @@
             <field name="model">project.cost.report</field>
             <field name="arch" type="xml">
                 <tree string="Project Cost Analysis" create="false" delete="false">
+                    <field name="project_code"/>
+                    <field name="project_name"/>
                     <field name="puchase_total" sum="PO Total"/>
                     <field name="receipt_total" sum="Receipt Total"/>
                     <field name="difference"/>
-                    <field name="indent_id" invisible="1"/>
                     <field name="nbr" sum="# of Lines" invisible="1"/>
                     <field name="analytic_account_id" groups="analytic.group_analytic_accounting" invisible="context.get('analytic_account_id',True)"/>
                     <field name="state" invisible="1"/>
@@ -61,7 +62,7 @@
             <field name="view_mode">tree,graph</field>
             <field name="search_view_id" ref="view_project_cost_report_search"/>
             <field name="view_id" ref="view_project_cost_report_tree"/>
-            <field name="context">{'group_by_no_leaf':1, 'group_by':['analytic_account_id']}</field>
+            <field name="context">{'group_by_no_leaf':0, 'group_by':[]}</field>
             <field name="help">This report performs analysis on your project cost.</field>
         </record>
 

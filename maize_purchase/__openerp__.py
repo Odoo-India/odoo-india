@@ -53,6 +53,7 @@ This module inherits the base product module which maintains some product histor
         'report/indent_report_view.xml',
         'report/indent_purchase_report_view.xml',
         'report/indentor_wise_indent_report_view.xml',
+        'report/project_cost_report_view.xml'
     ],
     'update_xml' : [],
 

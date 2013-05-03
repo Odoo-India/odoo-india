@@ -650,7 +650,7 @@ class indent_product_lines(osv.Model):
         'name': fields.text('Description', required=True),
         'product_id': fields.many2one('product.product', 'Product', required=True),
         'original_product_id': fields.many2one('product.product', 'Original Product'),
-        'type': fields.selection([('make_to_stock', 'from stock'), ('make_to_order', 'on order')], 'Procurement Method', required=True,
+        'type': fields.selection([('make_to_stock', 'Assign from stock'), ('make_to_order', 'Make new purchase order')], 'Procurement Method', required=True,
          help="From stock: When needed, the product is taken from the stock or we wait for replenishment.\nOn order: When needed, the product is purchased or produced."),
         'product_uom_qty': fields.float('Quantity', digits_compute= dp.get_precision('Product UoS'), required=True),
         'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),

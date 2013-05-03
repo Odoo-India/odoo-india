@@ -59,7 +59,9 @@
                     <sheet>
                     	<div class="oe_title">
 	                        <h1>
-	                            <field name="name"/>
+	                            <label string="Draft Indent" attrs="{'invisible': [('state','&lt;&gt;','draft')]}"/>
+                                <label string="Indent" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+	                            <field name="name" class="oe_inline"/>
 	                        </h1>
                         </div>
                                 <field name="requisition_done" invisible="1"/>

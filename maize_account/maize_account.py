@@ -30,7 +30,8 @@ class account_tax(osv.Model):
     _columns = {
         'tax_type': fields.selection(
         [('excise', 'Excise'),
-         ('cess', 'Cess'),
+         ('cess', 'Education Cess'),
+         ('hedu_cess', 'Higher Education Cess'),
          ('vat', 'VAT'),
          ('cst', 'CST'),
          ('service', 'Service'),

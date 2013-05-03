@@ -792,52 +792,58 @@ class stock_move(osv.osv):
             #'gate_pass_id': fields.related('picking_id', 'gp_no', type="many2one", relation='gate.pass', string="Gate Pass No", store=True),
             #'despatch_mode': fields.related('picking_id', 'despatch_mode', type="selection", relation='stock.picking', string="Mode of Despatch", store=True),
                 }
-        
+
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
         res = {}
+        if not context:
+            context = {}
+
+        if tax_cal <=0:
+            return {'value': {}}
+
         purchase_obj = self.pool.get('purchase.order')
-        purchase_line_obj = self.pool.get('purchase.order.line')
         tax_obj = self.pool.get('account.tax')
-        tax = tax_obj.search(cr, uid, [('amount', '=', '0.12'), ('tax_type','=', 'excise')])
-        tax_data = tax_obj.browse(cr, uid, tax, context=context)
-        val = 0.0
-        new_val = 0.0
-        first = True
-        line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])
-        line_id = line_id and line_id[0] or False
-        if not line_id:
-            raise osv.except_osv(_('Configuration Error!'), _('Puchase Order don\'t  have line'))
-        line = purchase_line_obj.browse(cr, uid, line_id, context=context)
-        for move in self.browse(cr, uid, ids, context=context):
-            if line.order_id.excies_ids and tax_cal == 0:
-                for c in tax_obj.compute_all(cr, uid, line.order_id.excies_ids, line.price_unit, move.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
-                    val += c.get('amount', 0.0)
-                    if c.get('parent_tax') and first:
-                        res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
-                        first = False
-                    elif c.get('parent_tax'):
-                        res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
-                    else:
-                        res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
-                for new_tax in tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, move.product_qty, line.product_id, line.order_id.partner_id)['taxes']:
-                    new_val += new_tax.get('amount',0.0)
-                po_amount = purchase_obj._amount_all(cr, uid, [purchase_id],'','')[purchase_id]
-                new_other = ((po_amount['amount_total'] - (po_amount['amount_tax'] + po_amount['other_charges']+ po_amount['amount_untaxed']))/ line.product_qty) * move.product_qty
-                new_other_charge = (po_amount['other_charges']/ line.product_qty) * move.product_qty
-                new_val += new_other+ new_other_charge
-                res.update({'rate': line.price_unit, 'diff': diff or 0.0, 'import_duty': import_duty or 0.0,'amount': (line.price_unit * move.product_qty)+new_val})
-            else:
-                for c in tax_obj.compute_all(cr, uid, tax_data, tax_cal, 1, line.product_id, line.order_id.partner_id)['taxes']:
-                    val += c.get('amount', 0.0)
-                    if c.get('parent_tax') and first:
-                        res.update({'cess': c.get('amount',0.0), 'c_cess': c.get('amount',0.0)})
-                        first = False
-                    elif c.get('parent_tax'):
-                        res.update({'high_cess': c.get('amount',0.0), 'c_high_cess': c.get('amount',0.0)})
-                    else:
-                        res.update({'excies': c.get('amount',0.0), 'cenvat': c.get('amount',0.0)})
-                res.update({'rate': line.price_unit,'diff': diff or 0.0, 'import_duty': import_duty or 0.0})
-        return {'value': res}
+
+        order = purchase_obj.browse(cr, uid, purchase_id, context)
+        if order.excies_ids:
+            tax = order.excies_ids[0]
+#        else:
+#            tax = tax_obj.search(cr, uid, [('amount', '=', '0.12'), ('tax_type','=', 'excise')])
+#            if not tax:
+#                raise osv.except_osv(_('Configuration Error!'), _('Please define Excise @ 12.36% (Edu Cess 2% + H. Edu Cess 1%) tax properly !'))
+#                tax = tax[0]
+#           tax = tax_obj.browse(cr, uid, tax, context=context)
+
+        if not tax:
+            raise osv.except_osv(_('Configuration Error!'), _('You can not claim Excise !'))
+
+        base_tax = tax.amount
+        total_tax = base_tax
+        for ctax in tax.child_ids:
+            total_tax = total_tax + (base_tax * ctax.amount)
+
+        new_tax = { 
+            'excies':0.0,
+            'cess': 0.0, 
+            'high_cess': 0.0, 
+            'cenvat':0.0,
+            'c_cess': 0.0,
+            'c_high_cess': 0.0,
+        }
+
+        tax_main = (tax_cal * base_tax ) / total_tax
+        new_tax.update({'excies':tax_main, 'cenvat':tax_main})
+
+        for ctax in tax.child_ids:
+            cess = tax_main * ctax.amount
+
+            if ctax.tax_type == 'cess':
+                new_tax.update({'cess':cess, 'c_cess':cess})
+            if ctax.tax_type == 'hedu_cess':
+                new_tax.update({'high_cess':cess, 'c_high_cess':cess})
+
+        return {'value': new_tax}
+
 stock_move()
 
 class ac_code(osv.Model):

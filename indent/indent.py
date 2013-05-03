@@ -29,6 +29,11 @@ from openerp import tools
 from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
+SERIES = [
+    ('repair', 'Repair'),
+    ('purchase', 'Purchase'),
+    ('store', 'Store')
+]
 class ir_attachment(osv.Model):
     _inherit = 'ir.attachment'
 
@@ -799,7 +804,7 @@ class stock_picking(osv.Model):
                                            ('camel_cart','By Camel Cart'),
                                            ('others','Others'),],"Despatch Mode"),
         'other_dispatch': fields.char("Other Dispatch",size=256),
-        'series_id': fields.many2one("product.order.series",'Series'),
+        'series_id':fields.selection(SERIES, 'Series'),
     }
 
     def action_confirm(self, cr, uid, ids, context=None):

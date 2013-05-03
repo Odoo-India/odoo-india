@@ -30,12 +30,12 @@
         </record>
         <record id="maize_child_tax2" model="account.tax">
             <field name="name"> Excise 2%</field>
-            <field name="tax_type">other</field>
+            <field name="tax_type">cess</field>
             <field name="amount">0.02</field>
         </record>
         <record id="maize_child_tax1" model="account.tax">
             <field name="name"> Excise 1%</field>
-            <field name="tax_type">other</field>
+            <field name="tax_type">hedu_cess</field>
             <field name="amount">0.01</field>
         </record>
         <record id="maize_excise_12" model="account.tax">

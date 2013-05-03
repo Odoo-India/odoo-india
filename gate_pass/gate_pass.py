@@ -140,6 +140,22 @@ class stock_picking_out(osv.Model):
         }
         return result
 
+    def onchange_indent(self, cr, uid, ids, indent=False, context=None):
+        result = {}
+        indent_obj = self.pool.get('indent.indent')
+        move_obj = self.pool.get('stock.move')
+        if not indent:
+            return {'value': result}
+        move_ids = []
+        products = indent_obj.browse(cr, uid, indent, context=context).product_lines
+        for product in products:
+            location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_stock')
+            location = location_id and location_id[1] or False
+            vals = dict(product_id = product.product_id.id, product_qty = product.product_uom_qty, product_uom = product.product_uom.id, name = product.product_id.name, location_id = location, location_dest_id = location)
+            move_ids.append(move_obj.create(cr, uid, vals, context=context))
+        result['move_lines'] = move_ids
+        return {'value': result}
+
 stock_picking_out()
 
 class gate_pass(osv.Model):

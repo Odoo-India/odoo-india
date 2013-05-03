@@ -179,7 +179,7 @@
                         </group>
                         <group>
                             <field name="gate_pass_type"/>
-                            <field name="indent" attrs="{'invisible': [('gate_pass_type', '!=', 'chargeable')], 'required': [('gate_pass_type', '=', 'chargeable')]}" domain="[('contract', '=', False), ('type', '=', 'existing')]"/>
+                            <field name="indent" attrs="{'invisible': [('gate_pass_type', '!=', 'chargeable')], 'required': [('gate_pass_type', '=', 'chargeable')]}" domain="[('contract', '=', False), ('type', '=', 'existing'), ('state', '=', 'inprogress')]"/>
                         </group>
                     </group>
                 </xpath>

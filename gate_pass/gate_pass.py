@@ -156,7 +156,7 @@ class stock_picking_out(osv.Model):
         location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_stock')
         location = location_id and location_id[1] or False
         for product in products:
-            vals = dict(product_id = product.product_id.id, product_qty = product.product_uom_qty, product_uom = product.product_uom.id, name = product.product_id.name, location_id = location, location_dest_id = location)
+            vals = dict(product_id = product.original_product_id.id or product.product_id.id or False, product_qty = product.product_uom_qty, product_uom = product.product_uom.id, name = product.product_id.name, location_id = location, location_dest_id = location)
             move_ids.append(move_obj.create(cr, uid, vals))
         result['move_lines'] = move_ids
         return {'value': result}

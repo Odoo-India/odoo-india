@@ -35,7 +35,8 @@
         'po_series_data.xml',
         'maize_partner_data.xml',
         'maize_partner_view.xml',
-        'maize_company_data.xml'
+        'maize_company_data.xml',
+        'wizard/import_customer_data.xml'
     ],
     'update_xml' : [],
 

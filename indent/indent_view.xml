@@ -118,6 +118,7 @@
                                                  <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
                                             </group>
                                             <group>
+                                                <field name="original_product_id"/>
                                                 <field name="type"/>
                                                 <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
                                                 <field name="virtual_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>

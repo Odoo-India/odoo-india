@@ -180,21 +180,21 @@
                 			<field name="lr_date"/>
                 			<field name="hpressure"/>
                 			<field name="transporter"/>
-                			<field name="series_id"/>
-                			<field name="maize_in" groups="indent.group_maize_data"/>
+                            <field name="gp_year"/>
                			</group>
                			<group colspan="4">
                				<field name="lab_no"/>
-               				<field name="gp_no"/>
-               				<field name="gp_year"/>
 							<field name="dest_from"/>
 							<field name="despatch_mode"/>
+                            <field name="maize_in" groups="indent.group_maize_data"/>
+                            <field name="series_id"/>
                			</group>
                			<group colspan="4">
                				<field name="case_code"/>
                 			<field name="challan_no"/>
                 			<field name="dest_to"/>
                				<field name="other_dispatch" attrs="{'invisible': [('despatch_mode','=','others')]}"/>
+                            <field name="gp_no"/>
                			</group>
                 	</group>
                 </xpath>
@@ -266,6 +266,7 @@
 	                    <tree editable="top">
 	                        <field name="product_id"/>
 	                        <field name="rate"/>
+	                        <field name="product_qty"/>
 	                        <field name="diff" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
 	                        <field name="amount"/>
 	                        <field name="bill_no"/>

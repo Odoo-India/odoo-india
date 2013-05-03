@@ -141,9 +141,14 @@ class stock_picking_out(osv.Model):
         return result
 
     def onchange_indent(self, cr, uid, ids, indent=False, context=None):
-        result = {}
+        result = {'move_lines': []}
         indent_obj = self.pool.get('indent.indent')
         move_obj = self.pool.get('stock.move')
+
+        if ids:
+            for order in self.browse(cr, uid, ids, context=context):
+                move_ids = [move.id for move in order.move_lines]
+                move_obj.unlink(cr, uid, move_ids, context=context)
         if not indent:
             return {'value': result}
         move_ids = []

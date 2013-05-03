@@ -61,7 +61,7 @@ class stock_picking(osv.Model):
                 gate_pass_id = gate_pass_obj.create(cr, uid, {'partner_id': picking.partner_id.id, 'picking_id': picking.id}, context=context)
                 self.write(cr, uid, [picking.id], {'gate_pass_id': gate_pass_id}, context=context)
                 for move in picking.move_lines:
-                    vals = dict(product_id = move.product_id.id, product_uom_qty = move.product_qty, pen_qty = move.product_id.qty_available, gps_qty=move.product_qty, app_rate = move.product_id.standard_price, product_uom = move.product_uom.id, name = move.product_id.name, gate_pass_id = gate_pass_id)
+                    vals = dict(product_id = move.product_id.id, product_uom_qty = move.product_qty, pen_qty = move.product_id.qty_available, gps_qty=move.product_qty, app_rate = move.product_id.standard_price, product_uom = move.product_uom.id, name = move.product_id.name, gate_pass_id = gate_pass_id, number = move.prodlot_id.name)
                     gate_pass_line_obj.create(cr, uid, vals, context=context)
         return True
 
@@ -239,6 +239,7 @@ class gate_pass_lines(osv.Model):
     _columns = {
          'gate_pass_id': fields.many2one('gate.pass', 'Gate Pass', required=True, ondelete='cascade'),
          'name': fields.text('Name', required=True),
+         'number': fields.char('Number', size=256),
          'product_id': fields.many2one('product.product', 'Product', required=True),
          'product_uom_qty': fields.float('Quantity', digits_compute= dp.get_precision('Product UoS'), required=True),
          'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),

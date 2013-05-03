@@ -37,6 +37,7 @@ This module inherits the base product module which maintains some product histor
         'product_sequence.xml',
         'product_series_data.xml',
         'product_view.xml',
+        'wizard/import_product_data.xml',
     ],
     'update_xml' : [],
 

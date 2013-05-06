@@ -299,7 +299,8 @@
                                     <field name="amount"/>
                                     <field name="bill_no"/>
                                     <field name="bill_date"/>
-                                    <field name="tax_cal" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+                                    <field name="excisable_item" invisible="1"/>
+                                    <field name="tax_cal" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)" attrs="{'readonly': [('excisable_item', '=', False)]}"/>
                                </group>
                                <group>
                                     <field name="excies"/>

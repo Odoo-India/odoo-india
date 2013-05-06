@@ -616,6 +616,7 @@ class stock_picking(osv.Model):
             'mc_code_id': fields.related('indent_id','analytic_account_id', relation='account.analytic.account', type='many2one', string="Project"),
             'tr_code_id': fields.many2one('tr.code', 'TR Code', help="TR Code"),
             'cylinder': fields.char('Cylinder Number', size=50),
+            'excisable_item': fields.boolean('Excisable Item'),
                 }
     
     def do_partial(self, cr, uid, ids, partial_datas, context=None):
@@ -633,11 +634,15 @@ class stock_picking(osv.Model):
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                     vals= {'inward_id': pick.id or False}
+                    if move.product_id and move.product_id.ex_chapter:
+                        vals.update({'excisable_item': True})
                 else:
                     for move in pick.backorder_id.move_lines:
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                     vals= {'inward_id': pick.backorder_id and pick.backorder_id.id or False}
+                    if move.product_id and move.product_id.ex_chapter:
+                        vals.update({'excisable_item': True})
                 vals.update({'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                         'partner_id': pick.partner_id.id,
                         'stock_journal_id': pick.stock_journal_id or False,
@@ -789,12 +794,14 @@ class stock_move(osv.osv):
             'inward_year':fields.function(_get_year, multi="year", string="Inward Year",store=True),
             'puchase_year':fields.function(_get_year, multi="year", string="Puchase Year", store=True),
             'indent_year':fields.function(_get_year, multi="year", string="Puchase Year", store=True),
+            'excisable_item': fields.related('picking_id', 'excisable_item', type="boolean", relation='stock.picking', string="Excisable Item", store=True),
             #'gate_pass_id': fields.related('picking_id', 'gp_no', type="many2one", relation='gate.pass', string="Gate Pass No", store=True),
             #'despatch_mode': fields.related('picking_id', 'despatch_mode', type="selection", relation='stock.picking', string="Mode of Despatch", store=True),
                 }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
         res = {}
+        tax = ''
         if not context:
             context = {}
 

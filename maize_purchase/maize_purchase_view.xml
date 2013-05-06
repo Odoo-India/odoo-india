@@ -263,25 +263,57 @@
                 </xpath>
                 <xpath expr="//notebook/page[@string='Products']/field[@name='move_lines']" position="replace">
                     <field name="move_lines" context="{'address_in_id': partner_id, 'form_view_ref':'view_move_picking_form', 'tree_view_ref':'view_move_picking_tree', 'picking_type': 'internal'}">
-	                    <tree editable="top">
-	                        <field name="product_id"/>
-	                        <field name="rate"/>
-	                        <field name="product_qty"/>
-	                        <field name="diff" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
-	                        <field name="amount"/>
-	                        <field name="bill_no"/>
-	                        <field name="bill_date"/>
-	                        <field name="tax_cal" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
-	                        <field name="excies"/>
-	                        <field name="cess"/>
-	                        <field name="high_cess"/>
-	                        <field name="import_duty" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
-	                        <field name="cenvat"/>
-	                        <field name="c_cess"/>
-	                        <field name="c_high_cess"/>
-	                        <field name="state"/>
-	                    </tree>
-	                </field>
+                        <tree string="Receipt">
+                            <field name="product_id"/>
+                            <field name="rate"/>
+                            <field name="product_qty"/>
+                            <field name="diff" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+                            <field name="amount"/>
+                            <field name="bill_no"/>
+                            <field name="bill_date"/>
+                            <field name="tax_cal" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+                            <field name="excies"/>
+                            <field name="cess"/>
+                            <field name="high_cess"/>
+                            <field name="import_duty" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+                            <field name="cenvat"/>
+                            <field name="c_cess"/>
+                            <field name="c_high_cess"/>
+                            <field name="state"/>
+                        </tree>
+                        <form string="Receipt" version="7.0">
+                            <header>
+                                <button name="action_confirm" states="draft" string="Process Later" type="object" class="oe_highlight"/>
+                                <button name="%(stock.action_partial_move_server)d" string="Process Partially" type="action" states="assigned" class="oe_highlight"/>
+                                <button name="action_done" states="draft,assigned,confirmed" string="Process Entirely" type="object" class="oe_highlight"/>
+                                <button name="force_assign" states="confirmed" string="Set Available" type="object" class="oe_highlight"/>
+                                <button name="action_cancel" states="assigned,confirmed" string="Cancel Move" type="object"/>
+                                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,assigned,done" statusbar_colors='{"waiting":"blue","confirmed":"blue"}'/>  
+                            </header>
+                            <group>
+                               <group>
+                                    <field name="product_id"/>
+                                    <field name="rate"/>
+                                    <field name="product_qty"/>
+                                    <field name="diff" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+                                    <field name="amount"/>
+                                    <field name="bill_no"/>
+                                    <field name="bill_date"/>
+                                    <field name="tax_cal" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+                               </group>
+                               <group>
+                                    <field name="excies"/>
+                                    <field name="cess"/>
+                                    <field name="high_cess"/>
+                                    <field name="import_duty" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+                                    <field name="cenvat"/>
+                                    <field name="c_cess"/>
+                                    <field name="c_high_cess"/>
+                                    <field name="state" invisible="1"/>
+                               </group>
+                            </group>
+                        </form>
+                    </field>
                 </xpath>
                 <xpath expr="//field[@name='note']" position="before">
                 <group class="oe_subtotal_footer oe_right">

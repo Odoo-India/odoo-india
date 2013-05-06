@@ -802,13 +802,18 @@ class stock_move(osv.osv):
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
         res = {}
         tax = ''
+        child_tax = 0
         if not context:
             context = {}
 
-        if tax_cal <=0:
-            return {'value': {}}
-
         purchase_obj = self.pool.get('purchase.order')
+        purchase_line_obj = self.pool.get('purchase.order.line')
+        line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])
+        line_id = line_id and line_id[0] or False
+        if not line_id:
+            raise osv.except_osv(_('Configuration Error!'), _('Puchase Order don\'t  have line'))
+        line = purchase_line_obj.browse(cr, uid, line_id, context=context)
+        move = [move for move in self.browse(cr, uid, ids,context=context) if move.id][0]
         tax_obj = self.pool.get('account.tax')
 
         order = purchase_obj.browse(cr, uid, purchase_id, context)
@@ -838,17 +843,20 @@ class stock_move(osv.osv):
             'c_high_cess': 0.0,
         }
 
-        tax_main = (tax_cal * base_tax ) / total_tax
+        if tax_cal == 0:
+            tax_main = (line.price_unit* move.product_qty) * base_tax
+        else:
+            tax_main = (tax_cal * base_tax ) / total_tax
         new_tax.update({'excies':tax_main, 'cenvat':tax_main})
 
         for ctax in tax.child_ids:
             cess = tax_main * ctax.amount
-
+            child_tax += cess
             if ctax.tax_type == 'cess':
                 new_tax.update({'cess':cess, 'c_cess':cess})
             if ctax.tax_type == 'hedu_cess':
                 new_tax.update({'high_cess':cess, 'c_high_cess':cess})
-
+        new_tax.update({'amount': (line.price_unit* move.product_qty) + tax_main+child_tax,'rate': line.price_unit})
         return {'value': new_tax}
 
 stock_move()

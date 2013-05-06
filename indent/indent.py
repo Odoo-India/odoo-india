@@ -149,6 +149,22 @@ class indent_indent(osv.Model):
         'active': True,
     }
 
+    def create(self, cr, uid, vals, context=None):
+        if vals.get('department_id'):
+            location = self.pool.get('stock.location').browse(cr, uid, vals.get('department_id'), context=context).location_id
+            if location and location.seq_id:
+                seq = location.seq_id.code
+                vals['name'] = self.pool.get('ir.sequence').get(cr, uid, seq)
+        return super(indent_indent, self).create(cr, uid, vals, context=context)
+
+    def write(self, cr, uid, ids, vals, context=None):
+        if vals.get('department_id'):
+            location = self.pool.get('stock.location').browse(cr, uid, vals.get('department_id'), context=context).location_id
+            if location and location.seq_id:
+                seq = location.seq_id.code
+                vals['name'] = self.pool.get('ir.sequence').get(cr, uid, seq)
+        return super(indent_indent, self).write(cr, uid, ids, vals, context=context)
+
     def _needaction_domain_get(self, cr, uid, context=None):
         return [('state', '=', 'waiting_approval')]
 
@@ -1127,5 +1143,70 @@ class product_order_series(osv.Model):
         return super(product_order_series, self).write(cr, uid, ids, vals, context=context)
 
 product_order_series()
+
+class stock_location(osv.Model):
+    _inherit = 'stock.location'
+
+    _columns = {
+        'seq_id': fields.many2one('ir.sequence', 'Sequence'),
+        'seq_type_id': fields.many2one('ir.sequence.type', 'Sequence Type'),
+    }
+
+    def create(self, cr, uid, vals, context=None):
+        if not vals.get('location_id', False) and vals.get('code', False):
+            name = vals['name']
+            code = vals['code']
+            if vals.get('code') == '0**':
+                prefix = '5'
+                padding = 3
+            else:
+                prefix = vals.get('code')[0]
+                padding = 4
+            vals['seq_type_id'] = self.pool.get('ir.sequence.type').create(cr, uid, {'name': name, 'code': code}, context=context)
+            seq = {
+                'name': name,
+                'implementation':'no_gap',
+                'prefix': prefix,
+                'padding': padding,
+                'number_increment': 1,
+                'code': code
+            }
+            if 'company_id' in vals:
+                seq['company_id'] = vals['company_id']
+            vals['seq_id'] = self.pool.get('ir.sequence').create(cr, uid, seq, context=context)
+        return super(stock_location, self).create(cr, uid, vals, context=context)
+
+    def write(self, cr, uid, ids, vals, context=None):
+        seq_obj = self.pool.get('ir.sequence')
+        seq_type_obj = self.pool.get('ir.sequence.type')
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        if vals.get('code'):
+            if vals.get('code') == '0**':
+                prefix = '5'
+                padding = 3
+            else:
+                prefix = vals.get('code')[0]
+                padding = 4
+            for location in self.browse(cr, uid, ids, context=context):
+                seq_type_obj.write(cr, uid, [location.seq_type_id.id], {'code': vals.get('code')}, context=context)
+                seq_obj.write(cr, uid, [location.seq_id.id], {'code': vals.get('code'), 'prefix': prefix, 'padding': padding}, context=context)
+        return super(stock_location, self).write(cr, uid, ids, vals, context=context)
+
+    def unlink(self, cr, uid, ids, context=None):
+        seq_obj = self.pool.get('ir.sequence')
+        seq_type_obj = self.pool.get('ir.sequence.type')
+        seq_ids = []
+        seq_type_ids = []
+        for location in self.browse(cr, uid, ids, context=context):
+            if location.seq_id:
+                seq_ids.append(location.seq_id.id)
+            if location.seq_type_id:
+                seq_type_ids.append(location.seq_type_id.id)
+        seq_obj.unlink(cr, uid, seq_ids, context=context)
+        seq_type_obj.unlink(cr, uid, seq_type_ids, context=context)
+        return super(stock_location, self).unlink(cr, uid, ids, context=context)
+
+stock_location()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

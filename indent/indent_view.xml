@@ -109,21 +109,21 @@
                                             <group>
                                                 <field name="product_id"
                                                     groups="base.group_user"
-                                                    on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
+                                                    on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id)"/>
                                                 <label for="product_uom_qty"/>
                                                 <div>
                                                     <field
                                                         name="product_uom_qty" class="oe_inline"/>
                                                     <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
-                                                        on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
+                                                        on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id)"/>
                                                 </div>
-                                                 <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
+                                                 <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id)"/>
                                             </group>
                                             <group>
                                                 <field name="original_product_id"/>
                                                 <field name="type"/>
-                                                <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
-                                                <field name="virtual_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
+                                                <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id)"/>
+                                                <field name="virtual_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id)"/>
                                             </group>
                                         </group>
                                         <label for="name"/>
@@ -134,15 +134,15 @@
                                     <tree string="Products">
                                         <field name="product_id"
                                             groups="base.group_user"
-                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
+                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id)"/>
                                         <field name="product_uom" string="Unit"
-                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"
+                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id)"
                                             groups="product.group_uom" options='{"no_open": True}'/>
-                                        <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
+                                        <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id)"/>
                                         <field name="product_uom_qty"/>
                                         <field name="name"/>
                                         <field name="specification"/>
-                                        <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name)"/>
+                                        <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id)"/>
                                         <field name="price_subtotal"/>
                                     </tree>
                                 </field>

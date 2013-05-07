@@ -142,7 +142,6 @@ class stock_picking_out(osv.Model):
 
     def onchange_indent(self, cr, uid, ids, indent=False, *args, **kw):
         result = {'move_lines': []}
-        indent_obj = self.pool.get('indent.indent')
         move_obj = self.pool.get('stock.move')
         stock_moves = []
 
@@ -152,13 +151,12 @@ class stock_picking_out(osv.Model):
                 move_obj.unlink(cr, uid, move_ids)
         if not indent:
             return {'value': result}
-        move_ids = []
-        products = indent_obj.browse(cr, uid, indent).product_lines
+        products = self.pool.get('indent.indent').browse(cr, uid, indent).product_lines
         location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_stock')
         location = location_id and location_id[1] or False
         company_id = self.pool.get('res.company')._company_default_get(cr, uid, 'stock.move')
         for product in products:
-            vals = dict(product_id = product.original_product_id.id or product.product_id.id or False, product_qty = product.product_uom_qty, product_uom = product.product_uom.id, name = product.product_id.name, location_id = location, location_dest_id = location, type = 'out', company_id = company_id, state = 'draft')
+            vals = dict(product_id = product.original_product_id.id or product.product_id.id or False, product_qty = product.product_uom_qty, product_uom = product.product_uom.id, name = product.product_id.name, location_id = location, location_dest_id = location, type = 'out', company_id = company_id, date_expected = time.strftime('%Y-%m-%d %H:%M:%S'), date = time.strftime('%Y-%m-%d %H:%M:%S'), state = 'draft')
             stock_moves.append(vals)
         result['move_lines'] = stock_moves
         return {'value': result}

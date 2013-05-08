@@ -34,6 +34,7 @@ SERIES = [
     ('purchase', 'Purchase'),
     ('store', 'Store')
 ]
+
 class ir_attachment(osv.Model):
     _inherit = 'ir.attachment'
 
@@ -74,7 +75,7 @@ class indent_indent(osv.Model):
             else:
                 res[record] = False
         return res
-    
+
     def _check_shipment_done(self, cr, uid, ids, field_name, arg=False, context=None):
         res = {}
         purchase_obj = self.pool.get('purchase.order')
@@ -240,14 +241,14 @@ class indent_indent(osv.Model):
             picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
         self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress'}, context=context)
         wf_service = netsvc.LocalService("workflow")
-        
+
         move_ids = move_obj.search(cr,uid,[('picking_id','=',picking_id)])
         pro_ids = proc_obj.search(cr,uid,[('move_id','in',move_ids)])
-        
+
         if indent.contract:
             self.write(cr,uid,ids[0],{'purchase_count':True})
             pro_ids  = proc_obj.search(cr,uid,[('origin','=',indent.name)])
-            
+
         for pro in pro_ids:
             wf_service.trg_validate(uid, 'procurement.order', pro, 'button_check', cr)
         return picking_id
@@ -278,7 +279,6 @@ class indent_indent(osv.Model):
         for indent in self.browse(cr, uid, ids):
             authorities = [(authority.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
             sort_authorities = sorted(authorities, key=lambda element: (element[1]))
-            wf_service = netsvc.LocalService("workflow")
             for authority in sort_authorities:
                 if authority[2] == 'approve':
                     return True
@@ -344,10 +344,7 @@ class indent_indent(osv.Model):
         This function returns an action that display internal move of given indent ids.
         '''
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
-        picking_id = self.browse(cr, uid, ids[0], context=context).picking_id.id
-        incoming_ship_id = self.pool.get('stock.picking').search(cr,uid,[('indent_id.id','=',ids[0])])
         domain = [('indent_id.id','=',ids[0]),('type','=','internal')]
-        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'action_picking_tree6')
         result = {
             'name': _('Issue Receipt'),
             'view_type': 'form',
@@ -356,7 +353,7 @@ class indent_indent(osv.Model):
             'domain': domain,
             'type': 'ir.actions.act_window',
         }
-        return result    
+        return result
 
     def _prepare_indent_line_move(self, cr, uid, indent, line, picking_id, date_planned, context=None):
         location_id = self._default_stock_location(cr, uid, context=context)
@@ -458,7 +455,7 @@ class indent_indent(osv.Model):
         if 'company_id' in vals:
             seq['company_id'] = vals['company_id']
         return self.pool.get('ir.sequence').create(cr, uid, seq)
-    
+
     def process_purchase_order(self,cr,uid,ids,context):
         obj_purchase_order = self.pool.get('purchase.order')
         wf_service = netsvc.LocalService("workflow")
@@ -468,7 +465,6 @@ class indent_indent(osv.Model):
         voucher_obj = self.pool.get('account.voucher')
         for indent in self.browse(cr,uid,ids,context):
             all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')])
-            r = {}
             l={}
             result_dict = {}
             for p in obj_purchase_order.browse(cr,uid,all_po,context=context):
@@ -487,7 +483,6 @@ class indent_indent(osv.Model):
                                 'freight_type':p.freight_type,
                                 'other_discount': p.other_discount,
                                 'discount_percentage':p.discount_percentage,
-                                
                                 }})
             for k, v in l.iteritems():
                 str_age=str(v)
@@ -508,12 +503,10 @@ class indent_indent(osv.Model):
                     for p_order in obj_purchase_order.browse(cr,uid,nv):
                         for x in  p_order.requisition_ids:
                             order.append(x.id)
-                            
-                            
+
                     obj_purchase_order.write(cr,uid,po_merged_id,{'name':po_seq,'requisition_ids':[(6,0, order)]})
                     order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
                     today = order.date_order
-                    year = datetime.datetime.today().year
                     month = datetime.datetime.today().month
                     if month < 4:
                         po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
@@ -531,7 +524,6 @@ class indent_indent(osv.Model):
                     obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
                     wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
                     wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
-                        
 
                     totlines = []
                     total_amt = 0.0
@@ -556,7 +548,7 @@ class indent_indent(osv.Model):
                         note =''
                         voucher_id = voucher_obj.create(cr, uid, {'partner_id': order.partner_id.id, 'date': today, 'amount': total_amt, 'reference': order.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
                         obj_purchase_order.write(cr, uid, order.id, {'voucher_id': voucher_id}, context=context)
-                        
+
                 else:
                     if nv:
                         po_w = obj_purchase_order.browse(cr,uid,nv[0],context=context)
@@ -565,9 +557,8 @@ class indent_indent(osv.Model):
                         order_w = []
                         for p_order in obj_purchase_order.browse(cr,uid,nv):
                             for x in  p_order.requisition_ids:
-                                order_w.append(x.id)                         
+                                order_w.append(x.id)
                         obj_purchase_order.write(cr,uid,nv,{'name':po_seq, 'requisition_ids':[(6,0, order_w)]})
-                        
 
                         totlines = []
                         total_amt = 0.0
@@ -592,10 +583,7 @@ class indent_indent(osv.Model):
                             note =''
                             voucher_id = voucher_obj.create(cr, uid, {'partner_id': po_w.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po_w.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
                             obj_purchase_order.write(cr, uid, po_w.id, {'voucher_id': voucher_id}, context=context)
-                            
-                    
-                        
-                        
+
 #            for po_grp_ser in po_grp_series:
 #                for po_grp_partner in po_grp_partners:
 #                    if po_grp_partner['partner_id_count'] > 1 and po_grp_ser['po_series_id_count'] > 1:
@@ -647,7 +635,7 @@ class indent_indent(osv.Model):
 #                            obj_purchase_order.write(cr,uid,po_without_merge,{'name':po_seq, 'requisition_ids':[(6,0, order_w)]})
             self.write(cr, uid, indent.id, {'purchase_count': True}, context=context)
         return True
-    
+
 indent_indent()
 
 class indent_product_lines(osv.Model):
@@ -721,7 +709,7 @@ class document_authority(osv.Model):
         # name_get may receive int id instead of an id list
         if isinstance(ids, (int, long)):
             ids = [ids]
-        
+
         return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
 
     _columns = {

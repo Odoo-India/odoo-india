@@ -11,11 +11,11 @@
             <tree string="Product Major Analysis" create="false">
                 <field name="major_name"/>
                 <field name="categ_name"/>
-                <field name="opening_balance"/>
-                <field name="receipt"/>
-                <field name="consumption"/>
-                <field name="closing_balance"/>
-                <field name="variance"/>
+                <field name="opening_balance" sum="Total Op_Balance"/>
+                <field name="receipt" sum="Total Receipt"/>
+                <field name="consumption" sum="Total Consumption"/>
+                <field name="closing_balance" sum="Total Cl_Balance"/>
+                <field name="variance" sum="Total Variance"/>
                 <field name="state" invisible="1"/>
            </tree>
         </field>

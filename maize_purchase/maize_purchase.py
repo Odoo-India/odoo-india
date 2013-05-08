@@ -827,7 +827,7 @@ class stock_move(osv.osv):
 #           tax = tax_obj.browse(cr, uid, tax, context=context)
 
         if not tax:
-            raise osv.except_osv(_('Configuration Error!'), _('You can not claim Excise !'))
+            return {'value': {'amount': (line.price_unit* move.product_qty),'rate': line.price_unit}}
 
         base_tax = tax.amount
         total_tax = base_tax

@@ -141,7 +141,6 @@ class indent_indent(osv.Model):
         'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'indentor_id': lambda self, cr, uid, context: uid,
         'employee_id': _default_employee_id,
-        'department_id': _default_stock_location,
         'requirement': 'ordinary',
         'type': 'new',
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c),

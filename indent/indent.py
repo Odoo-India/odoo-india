@@ -1154,6 +1154,7 @@ class stock_location(osv.Model):
     _columns = {
         'seq_id': fields.many2one('ir.sequence', 'Sequence'),
         'seq_type_id': fields.many2one('ir.sequence.type', 'Sequence Type'),
+        'maize_location': fields.boolean('Maize Location'),
     }
 
     def create(self, cr, uid, vals, context=None):

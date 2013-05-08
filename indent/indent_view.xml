@@ -421,5 +421,21 @@
             </field>
         </record>
 
+        <!-- Stock Location Form View -->
+        <record id="view_maize_stock_location_form" model="ir.ui.view">
+            <field name="name">maize.stock.location.form</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@string='Localization']" position="after">
+                    <group string="Maize">
+                        <field name="seq_id" readonly="1"/>
+                        <field name="seq_type_id" readonly="1"/>
+                        <field name="maize_location"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>s
+
     </data>
 </openerp>

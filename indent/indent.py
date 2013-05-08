@@ -181,6 +181,13 @@ class indent_indent(osv.Model):
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
 
+    def onchange_item(self, cr, uid, ids, item_for=False, analytic_account_id=False, context=None):
+        result = {'analytic_account_id': False}
+        if not item_for or item_for == 'store':
+            return {'value': result}
+        result['analytic_account_id'] = analytic_account_id
+        return {'value': result}
+
     def indent_confirm(self, cr, uid, ids, context=None):
         def _create_parent_category_list(id, lst):
             if not id:

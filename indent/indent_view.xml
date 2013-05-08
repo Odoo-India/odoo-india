@@ -88,7 +88,7 @@
                         </group>
                         <group>
                             <group string="Details">
-                                <field name="item_for"/>
+                                <field name="item_for" on_change="onchange_item(item_for, analytic_account_id)"/>
                                 <field name="analytic_account_id" attrs="{'invisible': [('item_for', '!=', 'capital')], 'required': [('item_for', '=', 'capital')]}"/>
                                 <field name="requirement"/>
                                 <field name="type"/>

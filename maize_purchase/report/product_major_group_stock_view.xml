@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+
+<!-- Inventory Control -->
+    <record id="view_product_major_inventory_tree" model="ir.ui.view">
+        <field name="name">report.product.major.inventory.tree</field>
+        <field name="model">report.product.major.inventory</field>
+        <field name="arch" type="xml">
+            <tree string="Product Major Analysis" create="false">
+                <field name="major_name"/>
+                <field name="categ_name"/>
+                <field name="opening_balance"/>
+                <field name="receipt"/>
+                <field name="consumption"/>
+                <field name="closing_balance"/>
+                <field name="variance"/>
+                <field name="state" invisible="1"/>
+           </tree>
+        </field>
+    </record>
+
+    <record id="view_product_major_inventory_search" model="ir.ui.view">
+        <field name="name">report.product.major.inventory.search</field>
+        <field name="model">report.product.major.inventory</field>
+        <field name="arch" type="xml">
+            <search string="Product Major Analysis">
+                <filter string="Real" name="real" icon="terp-check" domain="[('state','=','done')]"
+                    help="Analysis of current inventory (only moves that have already been processed)"/>
+                <filter string="Future" icon="terp-stock" domain="[('state','in',('assigned','done','waiting','confirmed'))]"
+                    help = "Analysis including future moves (similar to virtual stock)"/>
+                <separator/>
+                <field name="major_name"/>
+                <field name="categ_name"/>
+                <group expand="1" string="Group By..." >
+                    <filter name="group_major" string="Major Group" icon="terp-accessories-archiver" context="{'group_by':'major_name'}"/>
+                    <filter name="group_categ" string="Category" icon="terp-accessories-archiver" context="{'group_by':'categ_name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_product_major_inventory_report" model="ir.actions.act_window">
+        <field name="name">Product Major Analysis</field>
+        <field name="res_model">report.product.major.inventory</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{'group_by_no_leaf':0, 'search_default_group_major':1, 'search_default_real':1}</field>
+        <field name="help">Product Major Analysis allows you to easily check and analyse your company stock levels. Sort and group by selection criteria in order to better analyse and manage your company  activities.</field>
+    </record>
+    <menuitem action="action_product_major_inventory_report"
+        id="menu_action_product_major_inventory_report"
+        parent="stock.next_id_61" sequence="10"/>
+        
+    </data>
+</openerp>

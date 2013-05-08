@@ -6,3 +6,4 @@ access_purchase_dispatch,purchase.dispatch,model_purchase_dispatch,stock.group_s
 access_indent_report,indent.report,model_indent_report,stock.group_stock_user,1,1,1,1
 access_indent_purchase_report,indent.purchase.report,model_indent_purchase_report,stock.group_stock_user,1,1,1,1
 access_indentor_wise_indent_report,indentor.wise.indent.report,model_indentor_wise_indent_report,stock.group_stock_user,1,1,1,1
+access_report_product_major_inventory,report.product.major.inventory,model_report_product_major_inventory,stock.group_stock_user,1,1,1,1

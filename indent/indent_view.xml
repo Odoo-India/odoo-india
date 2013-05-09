@@ -98,7 +98,7 @@
                                 <field name="indentor_id" readonly="1"/>
                                 <field name="employee_id" groups="indent.group_maize_data"/>
                                 <field name="employee_department_id" groups="indent.group_maize_data"/>
-                                <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view')]" context="{'default_maize_location': True}"/>
+                                <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view'), ('maize_location', '=', True)]" context="{'default_maize_location': True}"/>
                             </group>
                         </group>
                         <notebook>

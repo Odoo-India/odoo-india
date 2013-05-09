@@ -65,15 +65,21 @@ class indent_indent(osv.Model):
         requisition_obj = self.pool.get('purchase.requisition')
         for record in ids:
             res[record] = False
-            req_ids = requisition_obj.search(cr, uid, [('indent_id', '=', record)])
+            req_ids = requisition_obj.search(cr, uid, [('indent_id', '=', record),('state', '!=', 'cancel')])
             if req_ids:
                 for req_id in requisition_obj.browse(cr, uid, req_ids):
                     po_done = False
+                    if req_id.state == 'done':
+                        res[record] = True
+                        return res
                     if req_id.state == 'done':
                         po_done = True
                 res[record] = po_done
             else:
                 res[record] = False
+            for r in self.browse(cr,uid,ids):
+                if r.contract and r.state=='inprogress':
+                    res[record] = True
         return res
 
     def _check_shipment_done(self, cr, uid, ids, field_name, arg=False, context=None):
@@ -246,7 +252,7 @@ class indent_indent(osv.Model):
         pro_ids = proc_obj.search(cr,uid,[('move_id','in',move_ids)])
 
         if indent.contract:
-            self.write(cr,uid,ids[0],{'purchase_count':True})
+            #self.write(cr,uid,ids[0],{'purchase_count':True})
             pro_ids  = proc_obj.search(cr,uid,[('origin','=',indent.name)])
 
         for pro in pro_ids:
@@ -463,8 +469,13 @@ class indent_indent(osv.Model):
         series_obj = self.pool.get('product.order.series')
         payment_term_obj = self.pool.get('account.payment.term')
         voucher_obj = self.pool.get('account.voucher')
+        po_seq = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order') or '/'
         for indent in self.browse(cr,uid,ids,context):
-            all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')])
+            if indent.contract:
+                all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'draft')])
+            else:
+                all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')])
+            r = {}
             l={}
             result_dict = {}
             for p in obj_purchase_order.browse(cr,uid,all_po,context=context):
@@ -497,13 +508,14 @@ class indent_indent(osv.Model):
                         obj_purchase_order.action_cancel_draft(cr,uid,nv,context)
                     po_merged_id = obj_purchase_order.do_merge(cr,uid,nv,context).keys()[0]
                     po = obj_purchase_order.browse(cr,uid,po_merged_id,context=context)
-                    seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
-                    po_seq = seq_obj.get(cr, uid, seq)
+                    
+                    if not indent.contract:
+                        seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
+                        po_seq = seq_obj.get(cr, uid, seq)
                     order = []
                     for p_order in obj_purchase_order.browse(cr,uid,nv):
                         for x in  p_order.requisition_ids:
                             order.append(x.id)
-
                     obj_purchase_order.write(cr,uid,po_merged_id,{'name':po_seq,'requisition_ids':[(6,0, order)]})
                     order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
                     today = order.date_order
@@ -522,9 +534,9 @@ class indent_indent(osv.Model):
                                                                       'last_po_year':po_year
                                                                   },context=context)
                     obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
-                    wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
-                    wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
-
+                    if not indent.contract:
+                        wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
+                        wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
                     totlines = []
                     total_amt = 0.0
                     flag = False
@@ -551,14 +563,21 @@ class indent_indent(osv.Model):
 
                 else:
                     if nv:
-                        po_w = obj_purchase_order.browse(cr,uid,nv[0],context=context)
-                        seq = series_obj.browse(cr, uid, po_w.po_series_id.id, context=context).seq_id.code
-                        po_seq = seq_obj.get(cr, uid, seq)
                         order_w = []
+                        po_w = obj_purchase_order.browse(cr,uid,nv[0],context=context)
+                        if not indent.contract:
+                            seq = series_obj.browse(cr, uid, po_w.po_series_id.id, context=context).seq_id.code
+                            po_seq = seq_obj.get(cr, uid, seq)
+                        
                         for p_order in obj_purchase_order.browse(cr,uid,nv):
                             for x in  p_order.requisition_ids:
                                 order_w.append(x.id)
-                        obj_purchase_order.write(cr,uid,nv,{'name':po_seq, 'requisition_ids':[(6,0, order_w)]})
+                        if not indent.contract:
+                            obj_purchase_order.write(cr,uid,nv,{'name':po_seq, 'requisition_ids':[(6,0, order_w)]})
+                        else:
+                            obj_purchase_order.write(cr,uid,nv,{'requisition_ids':[(6,0, order_w)]})
+                        
+
 
                         totlines = []
                         total_amt = 0.0

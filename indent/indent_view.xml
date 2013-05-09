@@ -64,9 +64,9 @@
 	                            <field name="name" class="oe_inline"/>
 	                        </h1>
                         </div>
-                                <field name="requisition_done" invisible="1"/>
-                                <field name="purchase_count" invisible="1"/>
-                               	<field name="shipment_done" invisible="1"/>
+                                <field name="requisition_done"/>
+                                <field name="purchase_count" />
+                               	<field name="shipment_done" />
 	                    <div class="oe_right oe_inline" name="buttons">
 	  	                    <button name="%(action_purchase_requisition_indent_view)d" string="Enquiry" type="action" groups="purchase.group_purchase_user"/> 
                             <button name="process_purchase_order" string="Process Purchase Orders" type="object" groups="purchase.group_purchase_user" attrs="{'invisible': ['|',('purchase_count', '=', True),('requisition_done','=',False)]}"/>

@@ -44,7 +44,7 @@ class import_res_partner(osv.osv_memory):
         return fields,data_lines
     
     def do_import_partner_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ron/Desktop/MAIZE/script/SUPLMST_all.csv"
+        file_path = "/home/ashvin/Desktop/script/SUPLMST.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

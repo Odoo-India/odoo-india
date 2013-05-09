@@ -169,10 +169,8 @@ class import_product_data(osv.osv_memory):
                         'sub_group_id':sub_group_id
                         }
                 prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
-                print "exist product", default_code
                 if not prod:
                     p = product_pool.create(cr, uid, vals, context)
-                    print "created product>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", p
             except:
                 rejected.append(data['ITEMCODE'])
                 _logger.warning("Skipping Record with reciept code '%s'."%(data['ITEMCODE']), exc_info=True)

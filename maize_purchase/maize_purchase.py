@@ -521,6 +521,20 @@ class purchase_order(osv.Model):
                     'order_line': {},
                     'notes': '%s' % (porder.notes or '',),
                     'fiscal_position': porder.fiscal_position and porder.fiscal_position.id or False,
+                    
+                    
+                    'package_and_forwording':porder.package_and_forwording or 0.0,
+                    'commission':porder.commission or 0.0,
+                    'delivey':porder.delivey or '',
+                    'dispatch_id':porder.dispatch_id and porder.dispatch_id.id or False,
+                    'excies_ids':[(6,0, [excies.id for excies in porder.excies_ids])],
+                    'vat_ids':[(6,0, [vat.id for vat in porder.vat_ids])],
+                    'insurance':porder.insurance,
+                    'insurance_type':porder.insurance_type,
+                    'freight':porder.freight,
+                    'freight_type':porder.freight_type,
+                    'other_discount': porder.other_discount,
+                    'discount_percentage':porder.discount_percentage,                    
                 })
                 print "order_infos", order_infos
             else:

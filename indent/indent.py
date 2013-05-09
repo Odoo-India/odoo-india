@@ -69,9 +69,10 @@ class indent_indent(osv.Model):
             if req_ids:
                 for req_id in requisition_obj.browse(cr, uid, req_ids):
                     po_done = False
-                    if req_id.state == 'done':
-                        res[record] = True
-                        return res
+#                    if req_id.state == 'done':
+#                        res[record] = True
+#                        return res
+                        
                     if req_id.state == 'done':
                         po_done = True
                 res[record] = po_done
@@ -80,6 +81,7 @@ class indent_indent(osv.Model):
             for r in self.browse(cr,uid,ids):
                 if r.contract and r.state=='inprogress':
                     res[record] = True
+                
         return res
 
     def _check_shipment_done(self, cr, uid, ids, field_name, arg=False, context=None):

@@ -1158,6 +1158,18 @@ class product_order_series(osv.Model):
                 seq_obj.write(cr, uid, [series.seq_id.id], {'code': series.type + vals.get('code'), 'prefix': vals.get('code') + "/"}, context=context)
         return super(product_order_series, self).write(cr, uid, ids, vals, context=context)
 
+    def unlink(self, cr, uid, ids, context=None):
+        seq_ids = []
+        seq_type_ids = []
+        for series in self.browse(cr, uid, ids, context=context):
+            if series.seq_id:
+                seq_ids.append(series.seq_id.id)
+            if series.seq_type_id:
+                seq_type_ids.append(series.seq_type_id.id)
+        self.pool.get('ir.sequence').unlink(cr, uid, seq_ids, context=context)
+        self.pool.get('ir.sequence.type').unlink(cr, uid, seq_type_ids, context=context)
+        return super(product_order_series, self).unlink(cr, uid, ids, context=context)
+
 product_order_series()
 
 class stock_location(osv.Model):
@@ -1211,8 +1223,6 @@ class stock_location(osv.Model):
         return super(stock_location, self).write(cr, uid, ids, vals, context=context)
 
     def unlink(self, cr, uid, ids, context=None):
-        seq_obj = self.pool.get('ir.sequence')
-        seq_type_obj = self.pool.get('ir.sequence.type')
         seq_ids = []
         seq_type_ids = []
         for location in self.browse(cr, uid, ids, context=context):
@@ -1220,8 +1230,8 @@ class stock_location(osv.Model):
                 seq_ids.append(location.seq_id.id)
             if location.seq_type_id:
                 seq_type_ids.append(location.seq_type_id.id)
-        seq_obj.unlink(cr, uid, seq_ids, context=context)
-        seq_type_obj.unlink(cr, uid, seq_type_ids, context=context)
+        self.pool.get('ir.sequence').unlink(cr, uid, seq_ids, context=context)
+        self.pool.get('ir.sequence.type').unlink(cr, uid, seq_type_ids, context=context)
         return super(stock_location, self).unlink(cr, uid, ids, context=context)
 
 stock_location()

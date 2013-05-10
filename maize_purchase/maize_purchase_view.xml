@@ -141,6 +141,11 @@
 	           <xpath expr="/form/sheet/notebook/page/field[@name='purchase_ids']/tree/field[@name='origin']" position="replace">
 	               <field name="amount_total"/>
 	           </xpath>
+	           <xpath expr="//button[@string='Request a Quotation']" position="before">
+	               <button name="request_all_supplier" type="object"
+	                            string="Request To All Suppliers" icon="gtk-execute"
+	                            attrs="{'invisible': [('line_ids','=',False),('state', 'not in', ('in_progress'))]}"/>
+               </xpath>
             </field>
             
         </record>

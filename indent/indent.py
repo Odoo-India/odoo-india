@@ -127,7 +127,7 @@ class indent_indent(osv.Model):
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', readonly=True, states={'draft': [('readonly', False)]}),
         'requisition_done': fields.function(_check_po_done, type='boolean', string="Check Requisition Done"),
         'shipment_done': fields.function(_check_shipment_done, type="boolean", string="Shipment Done"),
-        'purchase_count': fields.boolean('Puchase Done', help="Check box True means the Purchase Order is done for this Indent"),
+        'purchase_count': fields.boolean('Purchase Done', help="Check box True means the Purchase Order is done for this Indent"),
         'active': fields.boolean('Active'),
         'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item For', readonly=True, states={'draft': [('readonly', False)]}),
         'amount_total': fields.function(_total_amount, type="float", string='Total', store=True),
@@ -189,6 +189,9 @@ class indent_indent(osv.Model):
             'required_date': time.strftime('%Y-%m-%d %H:%M:%S'),
             'picking_id': False,
             'indent_authority_ids': [],
+            'requisition_done': False,
+            'shipment_done': False,
+            'purchase_count': False,
             'state': 'draft',
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
@@ -343,7 +346,7 @@ class indent_indent(osv.Model):
             'view_type': 'form',
             'view_mode': 'form',
             'view_id': res and res[1] or False,
-            'res_model': 'stock.picking.in',
+            'res_model': 'stock.picking',
             'type': 'ir.actions.act_window',
             'nodestroy': True,
             'target': 'current',

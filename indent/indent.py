@@ -21,6 +21,7 @@
 
 import time
 import datetime
+from datetime import datetime, timedelta
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -144,10 +145,13 @@ class indent_indent(osv.Model):
         stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_stock')
         return stock_location.id
 
+    def _get_required_date(self, cr, uid, context=None):
+        return datetime.strftime(datetime.today() + timedelta(days=7), DEFAULT_SERVER_DATETIME_FORMAT)
+
     _defaults = {
         'state': 'draft',
         'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
-        'required_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
+        'required_date': _get_required_date,
         'indentor_id': lambda self, cr, uid, context: uid,
         'employee_id': _default_employee_id,
         'requirement': 'ordinary',

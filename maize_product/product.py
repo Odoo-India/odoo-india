@@ -38,6 +38,31 @@ class stock_location(osv.Model):
             p_name += pckg.name
             res.append((pckg.id,p_name))
         return res   
+
+    def name_search(self, cr, user, name, args=None, operator='ilike', context=None, limit=80):
+        """
+        Returns a list of tuples containing id, name, as internally it is called {def name_get}
+        result format: {[(id, name), (id, name), ...]}
+
+        @param cr: A database cursor
+        @param user: ID of the user currently logged in
+        @param name: name to search
+        @param args: other arguments
+        @param operator: default operator is 'ilike', it can be changed
+        @param context: context arguments, like lang, time zone
+        @param limit: Returns first 'n' ids of complete result, default is 80.
+
+        @return: Returns a list of tuples containing id and name
+        """
+        if args is None:
+            args = []
+        ids = []
+        if name:
+            ids = self.search(cr, user, [('code', 'ilike', name)] + args, limit=limit, context=context)
+        if not ids:
+            ids = self.search(cr, user, [('name', operator, name)] + args, limit=limit, context=context)
+        return self.name_get(cr, user, ids, context=context)
+
     _columns = {
         'code': fields.char('Code', size=15),
         }

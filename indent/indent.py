@@ -186,7 +186,7 @@ class indent_indent(osv.Model):
         default.update({
             'name': self.pool.get('ir.sequence').get(cr, uid, 'indent.indent'),
             'indent_date': time.strftime('%Y-%m-%d %H:%M:%S'),
-            'required_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'required_date': self._get_required_date(cr, uid, context=context),
             'picking_id': False,
             'indent_authority_ids': [],
             'requisition_done': False,

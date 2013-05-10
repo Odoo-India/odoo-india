@@ -221,8 +221,11 @@ class indent_indent(osv.Model):
             if not indent.product_lines:
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent which has no line.'))
 
+            authorities = []
             for authority in document_authority_obj.browse(cr, uid, document_authority_ids, context=context):
-                document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': 'indent', 'indent_id': indent.id, 'priority': authority.priority}, context=context)
+                if authority.name.id not in authorities:
+                    document_authority_instance_obj.create(cr, uid, {'name': authority.name.id, 'document': 'indent', 'indent_id': indent.id, 'priority': authority.priority}, context=context)
+                    authorities.append(authority.name.id)
 
             employee_parent_ids = obj_hr.search(cr, uid, [])
             employee_parents = obj_hr.read(cr, uid, employee_parent_ids, ['coach_id'])
@@ -235,8 +238,10 @@ class indent_indent(osv.Model):
             for auth in new_parent_employee_id:
                 emp = obj_hr.browse(cr,uid,auth,context=context)
                 if emp.user_id and not emp.absent:
-                    document_authority_instance_obj.create(cr, uid, {'name': emp.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
-                    priority=priority+1
+                    if emp.user_id.id not in authorities:
+                        document_authority_instance_obj.create(cr, uid, {'name': emp.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
+                        priority=priority+1
+                        authorities.append(emp.user_id.id)
 
             # Add all authorities of the indent as followers
             for authority in indent.indent_authority_ids:

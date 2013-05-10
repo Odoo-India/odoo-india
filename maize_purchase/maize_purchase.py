@@ -284,6 +284,7 @@ class purchase_order(osv.Model):
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
+            amount_untaxed = res[order.id]['amount_tax'] + res[order.id]['amount_untaxed']
             if order.insurance_type == order.freight_type:
                 if order.insurance_type == 'fix':
                     amount_untaxed += order.insurance
@@ -315,9 +316,8 @@ class purchase_order(osv.Model):
             
             total_discount = order.other_discount
             if order.discount_percentage != 0:
-                total_discount += ((amount_untaxed + res[order.id]['amount_tax']) * (order.discount_percentage/100))
-                
-            res[order.id]['amount_total'] = amount_untaxed + res[order.id]['amount_tax'] + res[order.id]['other_charges'] - total_discount
+                total_discount += ((amount_untaxed + res[order.id]['other_charges']) * order.discount_percentage)/ 100
+            res[order.id]['amount_total'] = amount_untaxed + res[order.id]['other_charges'] - total_discount
         return res
 
     def _get_order(self, cr, uid, ids, context=None):

@@ -496,8 +496,6 @@ class purchase_order(osv.Model):
     def wkf_confirm_order(self, cr, uid, ids, context=None):
         res = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)
         proc_obj = self.pool.get('procurement.order')
-        payment_term_obj = self.pool.get('account.payment.term')
-        voucher_obj = self.pool.get('account.voucher')
         series_obj = self.pool.get('product.order.series')
         seq_obj = self.pool.get('ir.sequence')
         for po in self.browse(cr, uid, ids, context=context):
@@ -508,10 +506,9 @@ class purchase_order(osv.Model):
             if po.indent_id.contract:
                 if not po.contract_id:
                     raise osv.except_osv(_("Warning !"),_('Please select contract series.'))
-                if po.contract_id:
-                    contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
-                    contract_name = seq_obj.get(cr, uid, contract_seq)
-                self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
+                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
+                contract_name = seq_obj.get(cr, uid, contract_seq)
+            self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
             for pp in po.requisition_ids:
                 if pp.exclusive=='exclusive':
                     for order in pp.purchase_ids:

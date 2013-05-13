@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_product_search" model="ir.ui.view">
+            <field name="name">Product Search</field>
+            <field name="model">product.search</field>
+            <field name="arch" type="xml">
+                <form string="Product Search..." version="7.0">
+                    <group>
+                        <h1>
+                            <field name="name" on_change="onchange_name(name)" placeholder="Search a product name here ..."/>
+                        </h1>
+                        <!-- button name="action_check_availability" string="_Search" type="object" class="oe_highlight"/ -->
+                    </group>
+                    <group string="Similar Products">
+                        <field name="product_ids" readonly="1" nolabel="1">
+                            <tree>
+                                <field name="default_code"/>
+                                <field name="name"/>
+                                <field name="desc2"/>
+                                <field name="desc3"/>
+                                <field name="desc4"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <footer>
+                        <button string="Ok" class="oe_highlight" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+	    <act_window 
+	        name="Check Product Availability"
+	        res_model="product.search"
+	        src_model="product.product"
+	        view_mode="form"
+	        target="new"
+	        key2="client_action_multi"
+	        id="action_product_search" />
+
+    </data>
+</openerp>
+

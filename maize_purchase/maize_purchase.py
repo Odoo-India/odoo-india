@@ -512,7 +512,6 @@ class purchase_order(osv.Model):
             for pp in po.requisition_ids:
                 if pp.exclusive=='exclusive':
                     for order in pp.purchase_ids:
-                        print "order.id != po.id", order.id, po.id
                         if order.id != po.id:
                             proc_ids = proc_obj.search(cr, uid, [('purchase_id', '=', order.id)])
                             if proc_ids and po.state=='confirmed':

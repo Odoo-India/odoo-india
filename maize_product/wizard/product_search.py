@@ -42,8 +42,8 @@ class product_search(osv.osv_memory):
         if product_name:
             product_name,merge_string, count = (product_name.strip()).split(), '', 0
             for str_list in product_name:
-                if count == 0: merge_string += '%'+str_list+'%'
-                else: merge_string += '|%'+str_list+'%'
+                if count == 0: merge_string += '%'+str_list.lower()+'%'
+                else: merge_string += '|%'+str_list.lower()+'%'
                 count += 1
             if merge_string.strip():
                 cr.execute(""" 

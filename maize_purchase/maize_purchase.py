@@ -909,7 +909,8 @@ class stock_move(osv.osv):
                 new_tax.update({'cess':cess, 'c_cess':cess})
             if ctax.tax_type == 'hedu_cess':
                 new_tax.update({'high_cess':cess, 'c_high_cess':cess})
-        new_tax.update({'amount': (line.price_unit* move.product_qty) + tax_main+child_tax,'rate': line.price_unit})
+        if tax_cal == 0:
+            new_tax.update({'amount': (line.price_unit* move.product_qty) + tax_main+child_tax,'rate': line.price_unit})
         return {'value': new_tax}
 
 stock_move()

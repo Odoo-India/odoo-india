@@ -447,12 +447,12 @@ class purchase_order(osv.Model):
         seq_obj = self.pool.get('ir.sequence')
         for po in self.browse(cr, uid, ids, context=context):
             if not po.po_series_id:
-                raise osv.except_osv(_("Warning !"),_('You cannot confirm a purchase order without any purchase order series.'))
+                raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
             seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
             contract_name = False
             if po.indent_id.contract:
                 if not po.contract_id:
-                    raise osv.except_osv(_("Warning !"),_('Please select contract series.'))
+                    raise osv.except_osv(_("Warning !"), _('Please select a contract series.'))
                 contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
                 contract_name = seq_obj.get(cr, uid, contract_seq)
             self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)

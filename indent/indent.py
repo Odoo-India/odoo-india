@@ -264,8 +264,7 @@ class indent_indent(osv.Model):
 
         move_ids = move_obj.search(cr,uid,[('picking_id','=',picking_id)])
         pro_ids = proc_obj.search(cr,uid,[('move_id','in',move_ids)])
-
-        if indent.contract:
+        if indent.contract or indent.type == 'existing':
             #self.write(cr,uid,ids[0],{'purchase_count':True})
             pro_ids  = proc_obj.search(cr,uid,[('origin','=',indent.name)])
 
@@ -485,7 +484,7 @@ class indent_indent(osv.Model):
         voucher_obj = self.pool.get('account.voucher')
         po_seq = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order') or '/'
         for indent in self.browse(cr,uid,ids,context):
-            if indent.contract:
+            if indent.contract or indent.type == 'existing':
                 all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'draft')])
             else:
                 all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')])

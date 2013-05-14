@@ -173,7 +173,7 @@ class import_product_data(osv.osv_memory):
                     p = product_pool.create(cr, uid, vals, context)
             except:
                 rejected.append(data['ITEMCODE'])
-                _logger.warning("Skipping Record with reciept code '%s'."%(data['ITEMCODE']), exc_info=True)
+                _logger.warning("Skipping Record with Itemcode code '%s'."%(data['ITEMCODE']), exc_info=True)
                 continue
         print "REJECTED Product", rejected
         _logger.info("Successfully completed import RECIEPT HEADER process.")

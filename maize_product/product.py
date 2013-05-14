@@ -269,8 +269,8 @@ class product_product(osv.Model):
                 categ_code ='01'
             else:
                 categ_code ='02'
-            major_group_code = obj_major_grp.browse(cr,uid,record.major_group_id.id).code or ''
-            sub_group_code = obj_sub_grp.browse(cr,uid,record.sub_group_id.id).code or ''
+            major_group_code = obj_major_grp.browse(cr,uid,record.major_group_id and record.major_group_id.id).code or ''
+            sub_group_code = obj_sub_grp.browse(cr,uid,record.sub_group_id and record.sub_group_id.id).code or ''
 
             major_id = obj_major_grp.search(cr,uid,[('code','=',major_group_code)])
             sub_id = obj_sub_grp.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('code','=',sub_group_code)])

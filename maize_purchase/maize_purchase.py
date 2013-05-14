@@ -190,76 +190,23 @@ class purchase_requisition(osv.osv):
                  'exclusive': 'exclusive',
     }
     
-    def _seller_detail(self, cr, uid, requisition_line, supplier, product_supplier, context=None):
-        product_uom = self.pool.get('product.uom')
-        pricelist = self.pool.get('product.pricelist')
-        supplier_info = self.pool.get("product.supplierinfo")
-        product = requisition_line.product_id
-        default_uom_po_id = product.uom_po_id.id
-        qty = product_uom._compute_qty(cr, uid, requisition_line.product_uom_id.id, requisition_line.product_qty, default_uom_po_id)
-        seller_delay = 0.0
-        seller_price = False
-        seller_qty = False
-        if supplier.id ==  product_supplier.name and qty >= product_supplier.qty:
-            seller_delay = product_supplier.delay
-            seller_qty = product_supplier.qty
-        supplier_pricelist = supplier.property_product_pricelist_purchase or False
-        seller_price = pricelist.price_get(cr, uid, [supplier_pricelist.id], product.id, qty, False, {'uom': default_uom_po_id})[supplier_pricelist.id]
-        if seller_qty:
-            qty = max(qty,seller_qty)
-        date_planned = self._planned_date(requisition_line.requisition_id, seller_delay)
-        return seller_price, qty, default_uom_po_id, date_planned
-    
     def request_all_supplier(self, cr, uid, ids, context=None):
         """
-       Create New RFQ for Supplier
+       Create New RFQ for List of Supplier in Product
         """
         if context is None:
             context = {}
-        purchase_order = self.pool.get('purchase.order')
-        purchase_order_line = self.pool.get('purchase.order.line')
-        res_partner = self.pool.get('res.partner')
-        fiscal_position = self.pool.get('account.fiscal.position')
-        purchase_list = []
         res = {}
         for requisition in self.browse(cr, uid, ids, context=context):
-            location_id = requisition.warehouse_id.lot_input_id.id
             for line in requisition.line_ids:
                 for product_supplier in line.product_id.seller_ids:
+                    purchase_id = False
                     assert product_supplier.name.id, 'Supplier should be specified'
                     if product_supplier.name.id in filter(lambda x: x, [rfq.state <> 'cancel' and rfq.partner_id.id or None for rfq in requisition.purchase_ids]):
-                         raise osv.except_osv(_('Warning!'), _('You have already one %s purchase order for this partner, you must cancel this purchase order to create a new quotation.') % rfq.state)
-                    supplier_pricelist = product_supplier.name.property_product_pricelist_purchase or False
-                    purchase_id = purchase_order.create(cr, uid, {
-                                'origin': requisition.name,
-                                'partner_id': product_supplier.name.id,
-                                'pricelist_id': supplier_pricelist.id,
-                                'location_id': location_id,
-                                'company_id': requisition.company_id.id,
-                                'fiscal_position': product_supplier.name.property_account_position and product_supplier.name.property_account_position.id or False,
-                                'requisition_id':requisition.id,
-                                'notes':requisition.description,
-                                'warehouse_id':requisition.warehouse_id.id ,
-                    })
-                    res[requisition.id] = purchase_id
-                    purchase_list.append(purchase_id)
-                    product = line.product_id
-                    seller_price, qty, default_uom_po_id, date_planned = self._seller_detail(cr, uid, line, product_supplier.name, product_supplier, context=context)
-                    taxes_ids = product.supplier_taxes_id
-                    taxes = fiscal_position.map_tax(cr, uid, product_supplier.name.property_account_position, taxes_ids)
-                    purchase_order_line.create(cr, uid, {
-                        'order_id': purchase_id,
-                        'name': product.partner_ref,
-                        'product_qty': qty,
-                        'product_id': product.id,
-                        'product_uom': default_uom_po_id,
-                        'price_unit': seller_price,
-                        'date_planned': date_planned,
-                        'taxes_id': [(6, 0, taxes)],
-                    }, context=context)
-        # Update the stored value (fields.function), so we write to trigger recompute
-        purchase_order.write(cr, uid, purchase_list, {}, context=context)
-        return self.write(cr, uid, [requisition.id], {'purchase_ids':[(6,0,purchase_list)]})
+                        purchase_id = sorted(filter(lambda x: x, [rfq.id or False for rfq in requisition.purchase_ids]),reverse=True)
+                    if not purchase_id:
+                        res = self.make_purchase_order(cr, uid, ids, product_supplier.name.id, context=context)
+        return res
 
 purchase_requisition()
 

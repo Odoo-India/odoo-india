@@ -48,10 +48,11 @@ class product_search(osv.osv_memory):
             if merge_string.strip():
                 cr.execute(""" 
                             SELECT id FROM product_product 
-                            WHERE lower(desc2) SIMILAR TO %s
+                            WHERE lower(name_template) SIMILAR TO %s
+                            OR lower(desc2) SIMILAR TO %s
                             OR lower(desc3) SIMILAR TO %s
                             OR lower(desc4) SIMILAR TO %s
-                        """,(merge_string,merge_string,merge_string))
+                        """,(merge_string,merge_string,merge_string,merge_string))
                 res['value'].update({'product_ids': [x[0] for x in cr.fetchall()]})
         return res
 

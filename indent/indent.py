@@ -710,7 +710,7 @@ class indent_product_lines(osv.Model):
         'type': 'make_to_order',
     }
 
-    def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', analytic_account_id=False, context=None):
+    def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', analytic_account_id=False, indent_type=False, context=None):
         result = {}
         product_obj = self.pool.get('product.product')
         if not product_id:
@@ -718,8 +718,11 @@ class indent_product_lines(osv.Model):
         if analytic_account_id:
             prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0152')], context=context)
             if product_id not in prod_ids:
-                raise osv.except_osv(_("Warning !"),_("You must select a product whose code start with '0152'."))
+                raise osv.except_osv(_("Warning !"), _("You must select a product whose code start with '0152'."))
         product = product_obj.browse(cr, uid, product_id, context=context)
+        if indent_type and indent_type == 'existing':
+            if product.type != 'service':
+                raise osv.except_osv(_("Warning !"), _("You must select a service type product."))
         result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
         result['product_uom'] = product.uom_id.id
         result['price_unit'] = product.list_price

@@ -453,9 +453,10 @@ class purchase_order(osv.Model):
             if po.indent_id.contract or po.indent_id.type == 'existing':
                 if not po.contract_id and po.indent_id.type != 'existing':
                     raise osv.except_osv(_("Warning !"),_('Please select a contract series.'))
-                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
-                contract_name = seq_obj.get(cr, uid, contract_seq)
-            self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
+                if po.indent_id.contract:
+                    contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
+                    contract_name = seq_obj.get(cr, uid, contract_seq)
+                self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
             for pp in po.requisition_ids:
                 if pp.exclusive=='exclusive':
                     for order in pp.purchase_ids:
@@ -600,7 +601,7 @@ class purchase_order(osv.Model):
                 wf_service.trg_redirect(uid, 'purchase.order', old_id, neworder_id, cr)
                 wf_service.trg_validate(uid, 'purchase.order', old_id, 'purchase_cancel', cr)
         return orders_info
-    
+
 purchase_order()
 
 class stock_picking(osv.Model):
@@ -612,11 +613,13 @@ class stock_picking(osv.Model):
             'tr_code_id': fields.many2one('tr.code', 'TR Code', help="TR Code"),
             'cylinder': fields.char('Cylinder Number', size=50),
             'excisable_item': fields.boolean('Excisable Item'),
+            'warehouse_id': fields.related('purchase_id', 'warehouse_id', type='many2one', relation='stock.warehouse', string='Destination Warehouse'),
                 }
     
     def do_partial(self, cr, uid, ids, partial_datas, context=None):
         receipt_obj = self.pool.get('stock.picking.receipt')
         stock_move = self.pool.get('stock.move')
+        warehouse_obj = self.pool.get('stock.warehouse')
         res = super(stock_picking,self).do_partial(cr, uid, ids, partial_datas, context=context)
         vals = {}
         if context.get('default_type') == 'in':
@@ -624,9 +627,11 @@ class stock_picking(osv.Model):
             for pick in self.browse(cr, uid, ids, context=context):
                 if not pick.purchase_id:
                     raise osv.except_osv(_('Configuration Error!'), _('Inward Not create without any Puchase Order'))
+                warehouse_dict = warehouse_obj.read(cr, uid, pick.warehouse_id.id, ['lot_input_id','lot_stock_id'], context=context)
                 if pick.state == 'done':
                     for move in pick.move_lines:
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
+                        dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                     vals= {'inward_id': pick.id or False}
                     if move.product_id and move.product_id.ex_chapter:
@@ -634,6 +639,7 @@ class stock_picking(osv.Model):
                 else:
                     for move in pick.backorder_id.move_lines:
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
+                        dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                     vals= {'inward_id': pick.backorder_id and pick.backorder_id.id or False}
                     if move.product_id and move.product_id.ex_chapter:

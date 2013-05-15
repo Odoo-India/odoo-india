@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="maize_hr_form_inherit" model="ir.ui.view">
+            <field name="name">maize.hr.form</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='notes']" position="before">
+                        <group>
+	                        <group string="Maize Field">
+	                            <field name="join_date"/>
+	                            <field name="resign_date"/>
+	                            <field name="confirm_date"/>
+                                <field name="marriage_date"/>
+	                            <field name="esi_no"/>
+	                            <field name="blood_group"/>
+	                        </group>
+	                        <group string="Maize Field">
+	                            <field name="pf_no"/>
+	                            <field name="qualification"/>
+	                            <field name="cost_id"/>
+	                            <field name="grade_id"/>
+	                            <field name="categ_id"/>
+	                        </group>
+                        </group>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+    </data>
+</openerp>

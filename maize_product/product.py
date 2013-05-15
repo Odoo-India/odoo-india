@@ -20,6 +20,7 @@
 ##############################################################################
 
 import time
+import re
 
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
@@ -203,8 +204,24 @@ class product_product(osv.Model):
             res[order.id] = ''
         return res
 
+    def _merge_name(self, cr, uid, ids, name, arg, context=None):
+        """
+        @ Complete_name  = name + desc2 + desc3 + desc4
+        """
+        res = {}
+        if context is None: context = {}
+        for product in self.browse(cr, uid, ids, context=context):
+            string = ''
+            if product.name: string += product.name+' '
+            if product.desc2: string += product.desc2+' '
+            if product.desc3: string += product.desc3+' '
+            if product.desc4: string += product.desc4+' '
+            res[product.id] = string.strip()
+        return res
+
     _columns = {
         'last_supplier_code': fields.many2one('res.partner', string='Last Supplier Code',readonly=True),
+        'complete_name': fields.function(_merge_name,type="text", string='Complete Name',store=True),
         'last_po_year': fields.char('Last PO Year',size=256,readonly=True),
         'last_po_no': fields.many2one('purchase.order', 'Last PO No',readonly=True),
         'last_supplier_rate': fields.float('Last Supplier Rate',readonly=True),

@@ -10,7 +10,6 @@
                         <h1>
                             <field name="name" on_change="onchange_name(name)" placeholder="Search a product name here ..."/>
                         </h1>
-                        <!-- button name="action_check_availability" string="_Search" type="object" class="oe_highlight"/ -->
                     </group>
                     <group string="Similar Products">
                         <field name="product_ids" readonly="1" nolabel="1">

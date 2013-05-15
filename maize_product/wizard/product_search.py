@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import re
 
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
@@ -42,41 +43,12 @@ class product_search(osv.osv_memory):
         if product_name:
             product_name,merge_string, count = (product_name.strip()).split(), '', 0
             for str_list in product_name:
-                if count == 0: merge_string += '%'+str_list.lower()+'%'
-                else: merge_string += '|%'+str_list.lower()+'%'
+                if count == 0: merge_string += "'%"+str_list.lower()+"%'"
+                else: merge_string += ",'%"+str_list.lower()+"%'"
                 count += 1
             if merge_string.strip():
-                cr.execute(""" 
-                            SELECT id FROM product_product 
-                            WHERE lower(name_template) SIMILAR TO %s
-                            OR lower(desc2) SIMILAR TO %s
-                            OR lower(desc3) SIMILAR TO %s
-                            OR lower(desc4) SIMILAR TO %s
-                        """,(merge_string,merge_string,merge_string,merge_string))
+                cr.execute(""" SELECT id FROM product_product WHERE lower(complete_name) ilike ALL(array[%s]) """%(merge_string))
                 res['value'].update({'product_ids': [x[0] for x in cr.fetchall()]})
         return res
-
-#    def action_check_availability(self, cr, uid, ids, context=None):
-#        """ 
-#            @ Check similar products on button click
-#         """
-#        product_name = self.browse(cr, uid, ids[0]).name
-#        avail_ids = []
-#        if product_name:
-#            product_name,merge_string, count = (product_name.strip()).split(), '', 0
-#            for str_list in product_name:
-#                if count == 0: merge_string += '%'+str_list+'%'
-#                else: merge_string += '|%'+str_list+'%'
-#                count += 1
-#            if merge_string.strip():
-#                cr.execute(""" 
-#                            SELECT id FROM product_product 
-#                            WHERE lower(desc2) SIMILAR TO %s
-#                            OR lower(desc3) SIMILAR TO %s
-#                            OR lower(desc4) SIMILAR TO %s
-#                        """,(merge_string,merge_string,merge_string))
-#                avail_ids = [x[0] for x in cr.fetchall()]
-#        if avail_ids: self.write(cr ,uid, ids[0],{'product_ids': avail_ids}, context)
-#        return True
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

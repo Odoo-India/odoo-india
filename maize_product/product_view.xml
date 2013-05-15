@@ -90,6 +90,8 @@
 		      			        <field name='desc2' placeholder="Description2"/>
 			                    <field name='desc3' placeholder="Description3"/>
 			                    <field name='desc4' placeholder="Description4"/>
+			                    <field name='complete_name' placeholder="Complete Name" invisible="1"/>
+			                    
 		                    </div>
 	                    </group>
                     </group>

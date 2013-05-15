@@ -715,17 +715,16 @@ class indent_product_lines(osv.Model):
         product_obj = self.pool.get('product.product')
         if not product_id:
             return {'value': {'product_uom_qty': 1.0, 'product_uom': False, 'price_unit': 0.0, 'qty_available': 0.0, 'virtual_available': 0.0, 'name': ''}}
-        if product_id:
-            if analytic_account_id:
-                prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0152')], context=context)
-                if product_id not in prod_ids:
-                    raise osv.except_osv(_("Warning !"),_("You must select a product whose code start with '0152'."))
-            product = product_obj.browse(cr, uid, product_id, context=context)
-            result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
-            result['product_uom'] = product.uom_id.id
-            result['price_unit'] = product.list_price
-            result['qty_available'] = product.qty_available
-            result['virtual_available'] = product.virtual_available
+        if analytic_account_id:
+            prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0152')], context=context)
+            if product_id not in prod_ids:
+                raise osv.except_osv(_("Warning !"),_("You must select a product whose code start with '0152'."))
+        product = product_obj.browse(cr, uid, product_id, context=context)
+        result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
+        result['product_uom'] = product.uom_id.id
+        result['price_unit'] = product.list_price
+        result['qty_available'] = product.qty_available
+        result['virtual_available'] = product.virtual_available
         return {'value': result}
 
 indent_product_lines()

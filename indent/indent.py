@@ -720,9 +720,8 @@ class indent_product_lines(osv.Model):
             if product_id not in prod_ids:
                 raise osv.except_osv(_("Warning !"), _("You must select a product whose code start with '0152'."))
         product = product_obj.browse(cr, uid, product_id, context=context)
-        if indent_type and indent_type == 'existing':
-            if product.type != 'service':
-                raise osv.except_osv(_("Warning !"), _("You must select a service type product."))
+        if indent_type and indent_type == 'existing' and product.type != 'service':
+            raise osv.except_osv(_("Warning !"), _("You must select a service type product."))
         result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
         result['product_uom'] = product.uom_id.id
         result['price_unit'] = product.list_price

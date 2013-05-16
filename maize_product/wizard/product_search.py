@@ -30,23 +30,45 @@ class product_search(osv.osv_memory):
     _columns = {
         'name' : fields.char('Product Name', size=256),
         'product_ids': fields.many2many('product.product', string='Products'),
+        'type_product': fields.boolean('Stockable Product'),
+        'type_consu': fields.boolean('Consumable'),
+        'type_service': fields.boolean('Service'),
     }
 
-    def onchange_name(self, cr, uid, ids, product_name, context=None):
+    _defaults = {
+        'type_product': True,
+        'type_consu': True,
+        'type_service': True,
+                 }
+
+    def onchange_name(self, cr, uid, ids, product_name, type_product, type_consu, type_service, context=None):
         """ 
             @ Check similar products on onchange event
          """
+        def concat_string(type_product, type_consu, type_service):
+            type_string = ''
+            if type_product: type_string += "'product'"
+            if type_consu: type_string += ' '+"'consu'"
+            if type_service: type_string += ' '+"'service'"
+            return (type_string.strip()).replace(' ',',')
+
         res = {'value':{'product_ids':[]}}
-        if isinstance(product_name, bool): return res
-        if not product_name.strip(): return res
+        if isinstance(product_name, bool) or (not product_name.strip()): return {}
         if product_name:
-            product_name,merge_string, count = (product_name.strip()).split(), '', 0
+            product_name,merge_string, type_query, count = (product_name.strip()).split(), '', '',0
             for str_list in product_name:
                 if count == 0: merge_string += "'%"+str_list.lower()+"%'"
                 else: merge_string += ",'%"+str_list.lower()+"%'"
                 count += 1
             if merge_string.strip():
-                cr.execute(""" SELECT id FROM product_product WHERE lower(complete_name) ilike ALL(array[%s]) """%(merge_string))
+                type_cnct_string = concat_string(type_product, type_consu, type_service)
+                if not type_cnct_string: return res
+                type_query = ' AND pt.type in ('+type_cnct_string+') '
+                cr.execute(''' 
+                            SELECT pp.id,pt.name FROM product_product pp, product_template pt
+                            WHERE pt.id = pp.product_tmpl_id 
+                            AND lower(complete_name) ilike ALL(array['''+merge_string+'''])''' +type_query
+                            )
                 res['value'].update({'product_ids': [x[0] for x in cr.fetchall()]})
         return res
 

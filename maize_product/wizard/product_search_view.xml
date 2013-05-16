@@ -7,9 +7,19 @@
             <field name="arch" type="xml">
                 <form string="Product Search..." version="7.0">
                     <group>
+                        <div>
                         <h1>
-                            <field name="name" on_change="onchange_name(name)" placeholder="Search a product name here ..."/>
+                            <field name="name" on_change="onchange_name(name, type_product, type_consu, type_service)" placeholder="Search a product name here ..."/>
                         </h1>
+                        <h3>
+                            <label for="type_product" />
+                            <field name="type_product" on_change="onchange_name(name, type_product, type_consu, type_service)"/>
+                            <label for="type_consu" />
+                            <field name="type_consu" on_change="onchange_name(name, type_product, type_consu, type_service)"/>
+                            <label for="type_service" />
+                            <field name="type_service" on_change="onchange_name(name, type_product, type_consu, type_service)"/>
+                        </h3>
+                        </div>
                     </group>
                     <group string="Similar Products">
                         <field name="product_ids" readonly="1" nolabel="1">

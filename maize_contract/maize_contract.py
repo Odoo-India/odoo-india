@@ -50,8 +50,6 @@ class indent_indent(osv.Model):
         else:
             if 'product_lines' in res['fields'].keys() and 'product_id' in res['fields']['product_lines']['views']['form']['fields'].keys():
                 res['fields']['product_lines']['views']['form']['fields']['product_id']['domain'] = domain
-        for node in nodes:
-            node.set('modifiers','{"invisible":true}')
         res['arch'] = etree.tostring(doc)
         return res
 

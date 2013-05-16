@@ -62,7 +62,7 @@
         <record id='action_contract_view' model='ir.actions.act_window'>
             <field name="name">Contracts</field>
             <field name="domain">[('contract', '=', True)]</field>
-            <field name="context">{'default_contract_contract': True, 'search_default_waiting': 1}</field>
+            <field name="context">{'default_contract_contract': True, 'search_default_waiting': 1, 'default_contract': True}</field>
             <field name="res_model">indent.indent</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>

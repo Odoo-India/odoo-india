@@ -484,6 +484,7 @@ class indent_indent(osv.Model):
         payment_term_obj = self.pool.get('account.payment.term')
         voucher_obj = self.pool.get('account.voucher')
         po_seq = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order') or '/'
+        requisition_obj = self.pool.get('purchase.requisition')
         for indent in self.browse(cr,uid,ids,context):
             if indent.contract or indent.type == 'existing':
                 all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'draft')])
@@ -666,7 +667,10 @@ class indent_indent(osv.Model):
 #                                for x in  p_order.requisition_ids:
 #                                    order_w.append(x.id)                         
 #                            obj_purchase_order.write(cr,uid,po_without_merge,{'name':po_seq, 'requisition_ids':[(6,0, order_w)]})
-            self.write(cr, uid, indent.id, {'purchase_count': True}, context=context)
+            req_ids = requisition_obj.search(cr, uid, [('indent_id', '=', indent.id),('state', '!=', 'cancel')])
+            req_done = requisition_obj.search(cr, uid, [('indent_id', '=', indent.id), ('state', '=', 'done')])
+            if len(req_done) == len(req_ids):
+                self.write(cr, uid, indent.id, {'purchase_count': True}, context=context)
         return True
 
 indent_indent()

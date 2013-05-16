@@ -72,7 +72,7 @@
                             <button name="process_purchase_order" string="Process Purchase Orders" type="object" groups="purchase.group_purchase_user" attrs="{'invisible': ['|',('purchase_count', '=', True),('requisition_done','=',False)]}"/>
 							<button name="action_receive_products" string="Inward" attrs="{'invisible': [('purchase_count', '=', False)]}" type="object"/>
                             <button name="action_issue_receipt" string="Issue Reciept(s)" attrs="{'invisible': [('shipment_done','=',False)]}" type="object" groups="purchase.group_purchase_user"/>  
-	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('purchase_count','=',False)]}"/>
+	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('requisition_done', '=', False)]}"/>
 	                        	
                         </div>
                         <group>

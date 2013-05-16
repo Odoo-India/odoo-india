@@ -11,13 +11,13 @@
                     <field name="contract" invisible="1"/>
                 </xpath>
                 <xpath expr="//div[@name='buttons']/button[@string='Inward']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('purchase_count', '=', False)]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|','|',('contract', '=', True),('purchase_count', '=', False),('type', '=', 'existing')]}</attribute>
                 </xpath>
                 <xpath expr="//div[@name='buttons']/button[@string='Enquiry']" position="attributes">
-                    <attribute name="attrs">{'invisible': [('contract', '=', True)]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('type', '=', 'existing')]}</attribute>
                 </xpath>
                 <xpath expr="//div[@name='buttons']/button[@string='Issue Reciept(s)']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('purchase_count', '=', False)]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|','|',('contract', '=', True),('purchase_count', '=', False),('type', '=', 'existing')]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='company_id']" position='after'>
                     <field name="indent_equipment_id"/>
@@ -62,7 +62,7 @@
         <record id='action_contract_view' model='ir.actions.act_window'>
             <field name="name">Contracts</field>
             <field name="domain">[('contract', '=', True)]</field>
-            <field name="context">{'default_contract': True, 'search_default_waiting': 1}</field>
+            <field name="context">{'default_contract_contract': True, 'search_default_waiting': 1}</field>
             <field name="res_model">indent.indent</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>

@@ -79,10 +79,11 @@ class indent_indent(osv.Model):
                 res[record] = po_done
             else:
                 res[record] = False
-            for r in self.browse(cr,uid,ids):
-                if r.contract and r.state=='inprogress':
-                    res[record] = True
-                
+        for r in self.browse(cr,uid,ids):
+            if r.contract and r.state=='inprogress':
+                res[r.id] = True
+            if r.type == 'existing' and r.state=='inprogress':
+                self.write(cr, uid, [r.id], {'purchase_count': True})
         return res
 
     def _check_shipment_done(self, cr, uid, ids, field_name, arg=False, context=None):

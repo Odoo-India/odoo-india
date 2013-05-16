@@ -41,13 +41,17 @@ class indent_indent(osv.Model):
             context = {}
         res = super(indent_indent, self).fields_view_get(cr, user, view_id, view_type, context, toolbar=toolbar, submenu=submenu)
         doc = etree.XML(res['arch'])
+        domain = [('state','=', 'done')]
         nodes = doc.xpath("//div[@name='buttons']/button[@string='Enquiry']")
-        if context.get('default_contract'):
+        if context.get('default_contract_contract'):
             if 'product_lines' in res['fields'].keys() and 'product_id' in res['fields']['product_lines']['views']['form']['fields'].keys():
-                domain = [('type','=', 'service')]
+                domain.append(('type','=', 'service'))
                 res['fields']['product_lines']['views']['form']['fields']['product_id']['domain'] = domain
-            for node in nodes:
-                node.set('modifiers','{"invisible":true}')
+        else:
+            if 'product_lines' in res['fields'].keys() and 'product_id' in res['fields']['product_lines']['views']['form']['fields'].keys():
+                res['fields']['product_lines']['views']['form']['fields']['product_id']['domain'] = domain
+        for node in nodes:
+            node.set('modifiers','{"invisible":true}')
         res['arch'] = etree.tostring(doc)
         return res
 

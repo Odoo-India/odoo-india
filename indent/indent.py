@@ -265,9 +265,7 @@ class indent_indent(osv.Model):
         move_ids = move_obj.search(cr,uid,[('picking_id','=',picking_id)])
         pro_ids = proc_obj.search(cr,uid,[('move_id','in',move_ids)])
         if indent.contract or indent.type == 'existing':
-            #self.write(cr,uid,ids[0],{'purchase_count':True})
             pro_ids  = proc_obj.search(cr,uid,[('origin','=',indent.name)])
-
         for pro in pro_ids:
             wf_service.trg_validate(uid, 'procurement.order', pro, 'button_check', cr)
         return picking_id
@@ -491,9 +489,9 @@ class indent_indent(osv.Model):
         requisition_obj = self.pool.get('purchase.requisition')
         for indent in self.browse(cr,uid,ids,context):
             if indent.contract or indent.type == 'existing':
-                all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'draft')])
+                all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'draft'),('processed_po', '!=', True)])
             else:
-                all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved')])
+                all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('processed_po', '!=', True)])
             r = {}
             l={}
             result_dict = {}
@@ -535,7 +533,7 @@ class indent_indent(osv.Model):
                     for p_order in obj_purchase_order.browse(cr,uid,nv):
                         for x in  p_order.requisition_ids:
                             order.append(x.id)
-                    obj_purchase_order.write(cr,uid,po_merged_id,{'name':po_seq,'requisition_ids':[(6,0, order)]})
+                    obj_purchase_order.write(cr,uid,po_merged_id,{'processed_po':True,'name':po_seq,'requisition_ids':[(6,0, order)]})
                     order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
                     today = order.date_order
                     month = datetime.datetime.today().month
@@ -578,8 +576,7 @@ class indent_indent(osv.Model):
                         note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, order.name or '', order.indent_id.name or '',)
                         note =''
                         voucher_id = voucher_obj.create(cr, uid, {'partner_id': order.partner_id.id, 'date': today, 'amount': total_amt, 'reference': order.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
-                        obj_purchase_order.write(cr, uid, order.id, {'voucher_id': voucher_id}, context=context)
-
+                        obj_purchase_order.write(cr, uid, order.id, {'voucher_id': voucher_id,'processed_po':True}, context=context)
                 else:
                     if nv:
                         order_w = []
@@ -592,12 +589,14 @@ class indent_indent(osv.Model):
                             for x in  p_order.requisition_ids:
                                 order_w.append(x.id)
                         if not indent.contract:
-                            obj_purchase_order.write(cr,uid,nv,{'name':po_seq, 'requisition_ids':[(6,0, order_w)]})
+                            po_vals = {'name':po_seq, 'requisition_ids':[(6,0, order_w)]}
                         else:
-                            obj_purchase_order.write(cr,uid,nv,{'requisition_ids':[(6,0, order_w)]})
+                            po_vals = {'requisition_ids':[(6,0, order_w)]}
                         
-
-
+                        vals.update({'processed_po':True})    
+                        obj_purchase_order.write(cr,uid,nv,vals)
+                            
+                        #advance payment
                         totlines = []
                         total_amt = 0.0
                         flag = False
@@ -950,6 +949,7 @@ class purchase_order(osv.Model):
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
         'maize': fields.char('Maize PO Number', size=256, readonly=True),
         'contract_name': fields.char('Contract Name', size=256, readonly=True),
+        'processed_po':fields.boolean('Process Purchase')
     }
 
 purchase_order()

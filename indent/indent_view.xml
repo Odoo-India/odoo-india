@@ -12,13 +12,14 @@
                 </filter>
                <field name="create_uid" position="after">
                     <field name="indent_id"/>
+                    <field name="processed_po" domain="[('processed_po','=', True)]"/>
                 </field>
             </field>
         </record>
 
         <!-- Purchase Order Link with Indent action -->
         <record model="ir.actions.act_window" id="action_purchase_order_indent_view">
-            <field name="context">{'search_default_indent_id': active_id}</field>
+            <field name="context">{'search_default_indent_id': active_id,'search_default_processed_po': True}</field>
             <field name="name">Purchase Order</field>
             <field name="res_model">purchase.order</field>
             <field name="search_view_id" ref="view_purchase_order_inherited_search"/>
@@ -72,7 +73,7 @@
                             <button name="process_purchase_order" string="Process Purchase Orders" type="object" groups="purchase.group_purchase_user" attrs="{'invisible': ['|',('purchase_count', '=', True),('requisition_done','=',False)]}"/>
 							<button name="action_receive_products" string="Inward" attrs="{'invisible': [('purchase_count', '=', False)]}" type="object"/>
                             <button name="action_issue_receipt" string="Issue Reciept(s)" attrs="{'invisible': [('shipment_done','=',False)]}" type="object" groups="purchase.group_purchase_user"/>  
-	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('requisition_done', '=', False)]}"/>
+	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('state', '!=', 'inprogress'),'|',('type', '!=', 'existing'),'|',('requisition_done', '=', False)]}"/>
 	                        	
                         </div>
                         <group>

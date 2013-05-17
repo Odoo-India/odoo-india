@@ -285,6 +285,8 @@ class indent_indent(osv.Model):
                         raise osv.except_osv(_("Warning !"),_('You have already approved an indent.'))
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
+                    msg = 'Indent is approved by <b>%s</b>.' % (authority[4])
+                    self.message_post(cr, uid, [indent.id], body=msg)
                     if count_auth == 1:
                         for write_id in write_ids:
                             desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
@@ -318,6 +320,8 @@ class indent_indent(osv.Model):
                         raise osv.except_osv(_("Warning !"),_('You have already rejected an indent.'))
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
+                    msg = 'Indent is rejected by <b>%s</b>.' % (authority[4])
+                    self.message_post(cr, uid, [indent.id], body=msg)
                     if count_auth == 1:
                         for write_id in write_ids:
                             desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description

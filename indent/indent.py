@@ -410,7 +410,12 @@ class indent_indent(osv.Model):
         return res
 
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
-        location_id = self._default_stock_location(cr, uid, context=context)
+        warehouse_obj = self.pool.get('stock.warehouse')
+        company_ids = self.pool.get('res.company').search(cr, uid, [('name', '=', 'MAIZE PRODUCTS')], context=context)
+        company_id = company_ids and company_ids[0] or False
+        warehouse_ids = warehouse_obj.search(cr, uid, [('company_id', '=', company_id)], context=context)
+        warehouse_id = warehouse_ids and warehouse_ids[0] or False
+        location_id = warehouse_obj.browse(cr, uid, warehouse_id, context=context).lot_input_id.id
         res = {
             'name': line.name,
             'origin': indent.name,

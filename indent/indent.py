@@ -1233,7 +1233,7 @@ class stock_location(osv.Model):
         seq_type_obj = self.pool.get('ir.sequence.type')
         if isinstance(ids, (int, long)):
             ids = [ids]
-        if vals.get('code'):
+        if not vals.get('location_id', False) and vals.get('code', False):
             if vals.get('code') == '0**':
                 prefix = '5'
                 padding = 3
@@ -1241,8 +1241,10 @@ class stock_location(osv.Model):
                 prefix = vals.get('code')[0]
                 padding = 4
             for location in self.browse(cr, uid, ids, context=context):
-                seq_type_obj.write(cr, uid, [location.seq_type_id.id], {'code': vals.get('code')}, context=context)
-                seq_obj.write(cr, uid, [location.seq_id.id], {'code': vals.get('code'), 'prefix': prefix, 'padding': padding}, context=context)
+                if location.seq_type_id:
+                    seq_type_obj.write(cr, uid, [location.seq_type_id.id], {'code': vals.get('code')}, context=context)
+                if location.seq_id:
+                    seq_obj.write(cr, uid, [location.seq_id.id], {'code': vals.get('code'), 'prefix': prefix, 'padding': padding}, context=context)
         return super(stock_location, self).write(cr, uid, ids, vals, context=context)
 
     def unlink(self, cr, uid, ids, context=None):

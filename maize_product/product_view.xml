@@ -262,7 +262,7 @@
             	</xpath>
             	<xpath expr="//h1" position='before'>
             		  <label for="code" class="oe_edit_only"/>
-                      <h1><field name="code"/></h1>
+                      <h1><field name="code" required="1"/></h1>
                       <label for="name" class="oe_edit_only"/>
             	</xpath>
            	</field>

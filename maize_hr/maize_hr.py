@@ -70,6 +70,8 @@ class hr_employee(osv.Model):
         'cost_id': fields.many2one('hr.cost.code', "Cost Code"),
         'grade_id': fields.many2one('hr.grade.code', "Grade Code"),
         'categ_id': fields.many2one('hr.category.code', "Category Code"),
+        'emp_code': fields.char('Code', size=64, required=False, readonly=False),
+        'emp_cost_code': fields.char('Cost Code', size=64, required=False, readonly=False),
     }
     
 hr_employee()

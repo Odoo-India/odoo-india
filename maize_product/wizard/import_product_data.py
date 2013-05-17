@@ -58,6 +58,7 @@ class import_product_data(osv.osv_memory):
         product_pool =self.pool.get('product.product')
         indent = []
         rejected =[]
+        i = 0
         for data in data_lines:
             try:
                 default_code = data["ITEMCODE"].strip()
@@ -100,6 +101,7 @@ class import_product_data(osv.osv_memory):
                 if item_type:
                     if item_type == '  ':
                         item_type = ''
+                    item_type = item_type.lower()
                 if last_po_date:
                     if last_po_date == 'NULL' or last_po_date == '' or last_po_date == '00:00.0' or last_po_date == '  ' or last_po_date == ' ':
                         last_po_date = False
@@ -141,6 +143,8 @@ class import_product_data(osv.osv_memory):
                     sub = self.pool.get("product.sub.group").search(cr,uid,[('major_group_id','=',default_code[2:4]),('code','=',default_code[4:6])])
                     #fields.append('sub_group_id/.id')
                     sub_group_id = sub[0]
+                if last_supplier_rate == 'NULL':
+                    last_supplier_rate=''
 
                 vals = {
                         'default_code':default_code,
@@ -166,16 +170,21 @@ class import_product_data(osv.osv_memory):
                         'purchase_requisition':purchase_requisition,
                         'categ_id':categ_id,
                         'major_group_id':major_group_id,
-                        'sub_group_id':sub_group_id
+                        'sub_group_id':sub_group_id,
+                        'state':'done',
                         }
                 prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
                 if not prod:
                     p = product_pool.create(cr, uid, vals, context)
+                    i = i+1
+                    print ">>>>>>>>>>>>>>",i
             except:
                 rejected.append(data['ITEMCODE'])
                 _logger.warning("Skipping Record with Itemcode code '%s'."%(data['ITEMCODE']), exc_info=True)
                 continue
         print "REJECTED Product", rejected
+#        ppr = self.pool.get('product.product').search(cr,uid,[])
+#        self.pool.get('product.product').write(cr,uid,ppr,{'state':'done'})
         _logger.info("Successfully completed import RECIEPT HEADER process.")
         return True
 

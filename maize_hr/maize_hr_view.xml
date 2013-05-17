@@ -16,6 +16,7 @@
                                 <field name="marriage_date"/>
 	                            <field name="esi_no"/>
 	                            <field name="blood_group"/>
+	                            <field name="emp_code"/>
 	                        </group>
 	                        <group string="Maize Field">
 	                            <field name="pf_no"/>
@@ -23,6 +24,7 @@
 	                            <field name="cost_id"/>
 	                            <field name="grade_id"/>
 	                            <field name="categ_id"/>
+	                            <field name="emp_cost_code"/>
 	                        </group>
                         </group>
                     </xpath>

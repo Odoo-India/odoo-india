@@ -34,6 +34,7 @@ This module inherits the base hr module which maintains some Human Resources dat
     'depends' : ['hr'],
     'data' : [
             'maize_hr_view.xml',
+            'wizard/import_hr_view.xml',
             'security/ir.model.access.csv'
     ],
     'update_xml' : [],

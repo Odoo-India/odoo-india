@@ -68,12 +68,11 @@ class indent_indent(osv.Model):
             res[record] = False
             req_ids = requisition_obj.search(cr, uid, [('indent_id', '=', record),('state', '!=', 'cancel')])
             if req_ids:
+                po_done = False
                 for req_id in requisition_obj.browse(cr, uid, req_ids):
-                    po_done = False
 #                    if req_id.state == 'done':
 #                        res[record] = True
 #                        return res
-                        
                     if req_id.state == 'done':
                         po_done = True
                 res[record] = po_done

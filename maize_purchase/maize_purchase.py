@@ -741,13 +741,24 @@ stock_picking_receipt()
 # Stock Location
 #----------------------------------------------------------
 class stock_location(osv.osv):
-    _inherit = "stock.location"
+    _inherit = 'stock.location'
+
     _columns = {
-            'chained_picking_type': fields.selection([('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'Receipt')], 'Shipping Type', help="Shipping Type of the Picking List that will contain the chained move (leave empty to automatically detect the type based on the source and destination locations)."),
-                }
+        'chained_picking_type': fields.selection([('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'), ('receipt', 'Receipt')], 'Shipping Type', help="Shipping Type of the Picking List that will contain the chained move (leave empty to automatically detect the type based on the source and destination locations)."),
+    }
+
+    def _check_code(self, cr, uid, ids, context=None):
+        for location in self.browse(cr, uid, ids, context=context):
+            if location.code and len(location.code) != 3:
+                return False
+        return True
 
     _sql_constraints = [
         ('code_uniq', 'unique (code)', 'The code of the stock location must be unique!')
+    ]
+
+    _constraints = [
+        (_check_code, 'Error ! Code must be of 3 digit.', ['code']),
     ]
 
 stock_location()

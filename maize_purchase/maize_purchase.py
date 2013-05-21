@@ -450,13 +450,12 @@ class purchase_order(osv.Model):
                 raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
             seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
             contract_name = False
-            if po.indent_id.contract or po.indent_id.type == 'existing':
-                if not po.contract_id and po.indent_id.type != 'existing':
+            if po.indent_id and po.indent_id.contract:
+                if not po.contract_id:
                     raise osv.except_osv(_("Warning !"),_('Please select a contract series.'))
-                if po.indent_id.contract:
-                    contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
-                    contract_name = seq_obj.get(cr, uid, contract_seq)
-                self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
+                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
+                contract_name = seq_obj.get(cr, uid, contract_seq)
+            self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
             for pp in po.requisition_ids:
                 if pp.exclusive=='exclusive':
                     for order in pp.purchase_ids:

@@ -334,6 +334,9 @@
                    </group>
                    <div class="oe_clear"/>
                 </xpath>
+                <xpath expr="//button[@name='draft_force_assign']"  position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
             </field>
         </record>
 

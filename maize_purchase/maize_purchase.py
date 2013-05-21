@@ -450,15 +450,16 @@ class purchase_order(osv.Model):
         for po in self.browse(cr, uid, ids, context=context):
             if not po.po_series_id:
                 raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
+            contract_name = False
             if po.indent_id and po.indent_id.contract:
                 if not po.contract_id:
                     raise osv.except_osv(_("Warning !"),_('Please select a contract series.'))
+                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
+                contract_name = seq_obj.get(cr, uid, contract_seq)
             voucher_id = False
             if po.indent_id and (po.indent_id.contract or po.indent_id.type == 'existing'):
                 seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
                 po_series = seq_obj.get(cr, uid, seq)
-                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
-                contract_name = seq_obj.get(cr, uid, contract_seq)
                 totlines = []
                 total_amt = 0.0
                 flag = False

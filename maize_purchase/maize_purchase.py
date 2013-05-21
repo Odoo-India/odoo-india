@@ -445,6 +445,8 @@ class purchase_order(osv.Model):
         proc_obj = self.pool.get('procurement.order')
         series_obj = self.pool.get('product.order.series')
         seq_obj = self.pool.get('ir.sequence')
+        payment_term_obj = self.pool.get('account.payment.term')
+        voucher_obj = self.pool.get('account.voucher')
         for po in self.browse(cr, uid, ids, context=context):
             if not po.po_series_id:
                 raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
@@ -456,6 +458,29 @@ class purchase_order(osv.Model):
                 contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
                 contract_name = seq_obj.get(cr, uid, contract_seq)
             self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
+            if po.indent_id and (po.indent_id.contract or po.indent_id.type == 'existing'):
+                totlines = []
+                total_amt = 0.0
+                flag = False
+                if po.payment_term_id:
+                    totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_total, po.date_order or False, context=context)
+                journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
+                journal_id = journal_ids and journal_ids[0] or False
+                if not journal_id:
+                    raise osv.except_osv(_("Warning !"),_('You must define a journal related to an advance payment.'))
+                journal = self.pool.get('account.journal').browse(cr, uid, journal_id, context=context)
+                account_id = journal.default_credit_account_id or journal.default_debit_account_id or False
+                if not account_id:
+                    raise osv.except_osv(_("Warning !"),_('You must define a default debit and credit account for a journal.'))
+                for line in totlines:
+                    today = fields.date.context_today(self, cr, uid, context=context)
+                    if line[0] == today:
+                        total_amt += line[1]
+                        flag = True
+                if flag:
+                    note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, po.name or '', po.indent_id.name or '',)
+                    voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
+                    self.write(cr, uid, po.id, {'voucher_id': voucher_id}, context=context)
             for pp in po.requisition_ids:
                 if pp.exclusive=='exclusive':
                     for order in pp.purchase_ids:

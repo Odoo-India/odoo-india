@@ -451,13 +451,14 @@ class purchase_order(osv.Model):
             if not po.po_series_id:
                 raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
             seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
+            po_series = seq_obj.get(cr, uid, seq)
             contract_name = False
             if po.indent_id and po.indent_id.contract:
                 if not po.contract_id:
                     raise osv.except_osv(_("Warning !"),_('Please select a contract series.'))
                 contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
                 contract_name = seq_obj.get(cr, uid, contract_seq)
-            self.write(cr, uid, [po.id], {'name': seq_obj.get(cr, uid, seq), 'contract_name': contract_name}, context=context)
+            self.write(cr, uid, [po.id], {'name': po_series, 'contract_name': contract_name}, context=context)
             if po.indent_id and (po.indent_id.contract or po.indent_id.type == 'existing'):
                 totlines = []
                 total_amt = 0.0
@@ -478,8 +479,8 @@ class purchase_order(osv.Model):
                         total_amt += line[1]
                         flag = True
                 if flag:
-                    note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, po.name or '', po.indent_id.name or '',)
-                    voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
+                    note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, po_series or '', po.indent_id.name or '',)
+                    voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po_series, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
                     self.write(cr, uid, po.id, {'voucher_id': voucher_id}, context=context)
             for pp in po.requisition_ids:
                 if pp.exclusive=='exclusive':

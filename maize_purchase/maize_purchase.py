@@ -107,7 +107,6 @@ class purchase_order_line(osv.Model):
     
     def _received_amount(self, cr, uid, ids, prop, arg, context=None):
         res = dict([(id, {'received_amount': 0.0, 'pending_amount':0.0}) for id in ids])
-        picking_in_obj = self.pool.get('stock.picking.in')
         move_obj = self.pool.get('stock.move')
         for po_line in self.browse(cr, uid, ids, context=context):
             move_id = move_obj.search(cr, uid, [('type', '=', 'in'), ('origin', '=', po_line.order_id.name), ('state', '=', 'done')])
@@ -679,7 +678,7 @@ class stock_picking(osv.Model):
                         'move_lines': [(6,0, move_line)]
 
                         })
-            receipt_id = receipt_obj.create(cr, uid, vals, context=context)
+            receipt_obj.create(cr, uid, vals, context=context)
         return res
 stock_picking()
 
@@ -837,7 +836,6 @@ class stock_move(osv.osv):
                 }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
-        res = {}
         tax = ''
         child_tax = 0
         if not context:
@@ -851,7 +849,6 @@ class stock_move(osv.osv):
             raise osv.except_osv(_('Configuration Error!'), _('Puchase Order don\'t  have line'))
         line = purchase_line_obj.browse(cr, uid, line_id, context=context)
         move = [move for move in self.browse(cr, uid, ids,context=context) if move.id][0]
-        tax_obj = self.pool.get('account.tax')
 
         order = purchase_obj.browse(cr, uid, purchase_id, context)
         if order.excies_ids:

@@ -121,7 +121,7 @@ class import_po_data(osv.osv_memory):
                                                                            'sequence':10,
                                                                            'type':'percent',
                                                                            'amount':0.02,
-                                                                           'include_base_amount':True,
+                                                                           'include_base_amount':False,
                                                                            'parent_id':excies[0]})
                             self.pool.get("account.tax").create(cr,uid,
                                                                           {'name':'Edu.cess 1% on '+data["EXCISEPER"],
@@ -129,7 +129,7 @@ class import_po_data(osv.osv_memory):
                                                                            'sequence':15,
                                                                            'type':'percent',
                                                                            'amount':0.01,
-                                                                           'include_base_amount':True,
+                                                                           'include_base_amount':False,
                                                                            'parent_id':excies[0]})
                             
 #                            child_2per = self.pool.get("account.tax").create(cr,uid,{'name':'Edu Cess 2%',

@@ -51,7 +51,7 @@ class indent_indent(osv.Model):
     _name = 'indent.indent'
     _description = 'Indent'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
-    _order = "name desc"
+    _order = "id desc"
     _track = {
         'state': {
             'indent.mt_indent_waiting_approval': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'waiting_approval',

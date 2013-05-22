@@ -9,6 +9,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='order_line']/tree" position="attributes">
                     <attribute name="editable">True</attribute>
+                    <attribute name="width">550</attribute>
+                    <attribute name="height">350</attribute>
+                    <attribute name="colspan">4</attribute>
                 </xpath>
             </field>
         </record>
@@ -220,6 +223,7 @@
                     <field name="name"/>
                     <field name="partner_id" string="Supplier"/>
                     <field name="backorder_id"/>
+                    <field name="inward_id"/>
                     <field name="origin"/>
                     <field name="date"/>
                     <field name="min_date"/>
@@ -360,6 +364,7 @@
                     <separator/>
                     <filter icon="terp-dolar" name="to_invoice" string="To Invoice" domain="[('invoice_state','=','2binvoiced')]" help="Delivery orders to invoice"/>
                     <field name="stock_journal_id"/>
+                    <field name="inward_id"/>
                     <field name="company_id" groups="base.group_multi_company"/>
                     <group expand="0" string="Group By...">
                         <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>

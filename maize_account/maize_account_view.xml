@@ -9,7 +9,7 @@
             <field name="inherit_id" ref="account.view_tax_form" />
             <field name="arch" type="xml">
                 <xpath expr="//form/group/group/field[@name='description']" position='after'>
-                    <field name="tax_type"/>
+                    <field name="tax_type" on_change="onchange_tax_type(name,tax_type)"/>
                 </xpath>
             </field>
         </record>

@@ -38,10 +38,34 @@ class account_tax(osv.Model):
          ('other', 'Other'),
         ], 'Tax Category', required=True)
     }
-    _defaults = {
-        'tax_type': 'other',
-    }
 
+    def onchange_tax_type(self, cr, uid, ids, name, tax_type=False, context=None):
+        record = self.browse(cr, uid, ids, context)
+        result = {}
+        vals = []
+        if tax_type == 'excise':
+            
+            vals = [{'name':'Edu.cess 2% on '+name,
+                    'tax_type':'excise',
+                    'sequence':1,
+                    'type':'percent',
+                    'amount':0.02,
+                    'include_base_amount':False,
+                    'tax_type':'cess',
+                    'type_tax_use':'all',
+                   },{'name':'Edu.cess 1% on '+name,
+                    'tax_type':'excise',
+                    'sequence':1,
+                    'type':'percent',
+                    'amount':0.01,
+                    'include_base_amount':False,
+                    'type_tax_use':'all',
+                    'tax_type':'cess',
+                    }]
+        result['child_ids'] = vals
+        result['include_base_amount'] = True
+        return {'value': result}
+    
     def _unit_compute(self, cr, uid, taxes, price_unit, product=None, partner=None, quantity=0):
         taxes = self._applicable(cr, uid, taxes, price_unit , product, partner)
         res = []

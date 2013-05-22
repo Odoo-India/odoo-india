@@ -496,7 +496,6 @@ class indent_indent(osv.Model):
                 all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'draft'),('processed_po', '!=', True)])
             else:
                 all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('processed_po', '!=', True)])
-            r = {}
             l={}
             result_dict = {}
             for p in obj_purchase_order.browse(cr,uid,all_po,context=context):

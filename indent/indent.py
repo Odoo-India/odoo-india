@@ -578,7 +578,6 @@ class indent_indent(osv.Model):
                             flag = True
                     if flag:
                         note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, order.name or '', order.indent_id.name or '',)
-                        note =''
                         voucher_id = voucher_obj.create(cr, uid, {'partner_id': order.partner_id.id, 'date': today, 'amount': total_amt, 'reference': order.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
                         obj_purchase_order.write(cr, uid, order.id, {'voucher_id': voucher_id,'processed_po':True}, context=context)
                 else:

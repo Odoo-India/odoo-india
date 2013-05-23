@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="report_purchase_order" model="purchase.order" name="purchase.order.india" rml="l10n_in_tax_retail_invoice/report/purchase_order.rml" string="Purchase Order"/>
+    </data>
+</openerp>

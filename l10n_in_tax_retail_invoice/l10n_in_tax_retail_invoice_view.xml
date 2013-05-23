@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    
+        <record model="ir.ui.view" id="product_category_hsn_view">
+        	<field name="name">product.category.hsn.view</field>
+        	<field name="inherit_id" ref="product.product_category_form_view"/>
+        	<field name="model">product.category</field>
+        	<field name="type">form</field>
+        	<field name="arch" type="xml">
+	            <xpath expr="//field[@name='parent_id']" position="after">
+            		<field name="hsn_classification"/>
+	            </xpath>
+       		</field>
+    	</record>
+    	
+    	<record model="ir.ui.view" id="product_product_packing_cost">
+        	<field name="name">product.product.packing.cost</field>
+        	<field name="inherit_id" ref="product.product_normal_form_view"/>
+        	<field name="model">product.product</field>
+        	<field name="type">form</field>
+        	<field name="arch" type="xml">
+	            <xpath expr="//field[@name='list_price']" position="after">
+	            	<field name="packing_cost_allowed" invisible="True"/>
+            		<field name="packing_cost_type" attrs="{'invisible':[('packing_cost_allowed','=',False), ('sale_ok','=',False)]}"/>
+            		<field name="packing_fixed" attrs="{'invisible':['|',('packing_cost_type','=','percentage'),('packing_cost_type','=', False)]}"/>
+            		<field name="packing_percent" attrs="{'invisible':['|', ('packing_cost_type','=','fixed'),'|', ('packing_cost_allowed','=',False),('packing_cost_type','=', False)]}"/>
+	            </xpath>
+       		</field>
+    	</record>
+    	
+    	<record model="ir.ui.view" id="res_company_tax_invoice_report">
+	        <field name="name">res.company.tax.invoice.report</field>
+	        <field name="inherit_id" ref="base.view_company_form"/>
+	        <field name="model">res.company</field>
+	        <field name="type">form</field>
+	        <field name="arch" type="xml">
+	            <xpath expr="//notebook/page[@string='Configuration']" position="after">
+	                <page string="Tax Details">
+                    	<group name="tax_info">
+                    	    <group>
+                    	    	<field name="tin_no"/>
+                    	        <field name="cst_no"/>
+                    	        <field name="ecc_no"/>
+	                            <field name="vat_no"/>
+	                        </group>
+	                        <group>
+	                        	<field name="tin_date"/>
+	                        	<field name="cst_date"/>
+	                        </group>
+                    	</group>
+	                </page>
+	            </xpath>
+       		</field>
+    	</record>
+    
+	    <record model="ir.ui.view" id="res_partner_tin_cst_view">
+	        <field name="name">res.partner.tin.cst.view</field>
+	        <field name="inherit_id" ref="base.view_partner_form"/>
+	        <field name="model">res.partner</field>
+	        <field name="type">form</field>
+	        <field name="arch" type="xml">
+	            <xpath expr="//notebook/page[@string='Accounting']" position="after">
+	                <page string="Tax Details">
+	                	<group>
+		                    <group>
+	                            <field name="tin_no"/>
+	                            <field name="cst_no"/>
+	                            <field name="pan_no"/>
+		                    </group>
+		                    <group>
+	                            <field name="tin_date"/>
+	                            <field name="cst_date"/>
+		                    </group>
+	                    </group>
+	                    
+	               </page>
+	            </xpath>
+	            <field name="category_id" position="after">
+	            	<field name="dealers_discount_allowed" invisible="True"/>
+	                <field name="dealer_id" domain="[('is_company', '=', True)]" placeholder="Dealer" attrs="{'invisible':[('dealers_discount_allowed','=',False)]}"/>
+	            </field>
+	            <xpath expr="//field[@name='street2']" position="after">
+            		<field name="village_taluka" placeholder="Village/Taluka/At Post"/>
+            	</xpath>
+	       </field>
+	    </record>
+	    
+	    <record id="view_order_form_inheriting" model="ir.ui.view">
+            <field name="name">sale.order.form.inheriting</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+            	<field name="partner_id" position="after">
+            		<field name="contact_id" domain="[('parent_id','=',partner_id)]"/>
+            	</field>
+            	<field name="partner_shipping_id" position="replace">
+            		<field name="partner_shipping_id" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" string="Consignee"/>
+            	</field>
+                <field name="currency_id" position="after">
+                	<field name="quote_validity"/>
+               	</field>
+               	<field name="origin" position="after">
+                	<field name="subject" placeholder="Subject"/>
+               	</field>
+               	<field name="payment_term" position="after">
+                	<field name="delivery_term"/>
+               	</field>
+           </field> 
+        </record>
+        
+        <record id="account_invoice_supplier_tree_inherit_freight_charge" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.tree.inherit.freight.charge</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='amount_untaxed']" position="after">
+                	<field name="freight_allowed" invisible="True"/>
+                	<field name="freight_charge" attrs="{'invisible':[('freight_allowed','=',False)]}"/>
+                </xpath>
+            </field>
+        </record>
+	    
+        <record id="account_invoice_supplier_form_inherit_freight_charge" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.form.inherit.freight.charge</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='amount_tax']" position="after">
+                	<field name="freight_allowed" invisible="True"/>
+                	<field name="freight_charge" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('freight_allowed','=',False)], 'readonly':[('state','!=','draft'), ('state','!=','proforma'), ('state','!=','proforma2')]}"/>
+                	                                                                                           
+                </xpath>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="purchase_order_tree_view_freight_inward">
+        	<field name="name">purchase.order.tree.view.freight.inward</field>
+        	<field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        	<field name="model">purchase.order</field>
+        	<field name="type">form</field>
+        	<field name="arch" type="xml">
+	            <xpath expr="//field[@name='amount_untaxed']" position="after">
+	            	<field name="freight_allowed" invisible="True"/>
+            		<field name="inward_freight" attrs="{'invisible':[('freight_allowed','=',False)]}"/>
+	            </xpath>
+       		</field>
+    	</record>
+        
+        <record model="ir.ui.view" id="purchase_order_form_view_freight_inward">
+        	<field name="name">purchase.order.form.view.freight.inward</field>
+        	<field name="inherit_id" ref="purchase.purchase_order_form"/>
+        	<field name="model">purchase.order</field>
+        	<field name="type">form</field>
+        	<field name="arch" type="xml">
+	            <xpath expr="//field[@name='amount_tax']" position="after">
+	            	<field name="freight_allowed" invisible="True"/>
+            		<field name="inward_freight" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('freight_allowed','=',False)], 'readonly':[('state','!=','draft'), ('state','!=','sent')]}"/>
+            		                                                                                           
+	            </xpath>
+       		</field>
+    	</record>
+    	
+    	<record id="view_account_invoice_inherit_form_reference_fields" model="ir.ui.view">
+            <field name="name">account.invoice.inherit.form.reference.fields</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name="origin" position="after">
+                    <field name="date"/>
+                    <field name="delivery_date"/>
+                    <field name="delivery_name"/>
+                    <field name="carrier_id" string="Dispatched Through"/>
+                    <field name="delivery_address_id"/>
+                    <field name="delivery_order_id"/>
+                </field>
+                <field name="date_due" position="after">
+                    <field name="dispatch_doc_no"/>
+                    <field name="dispatch_doc_date"/>
+                </field>
+              	<field name="fiscal_position" position="after">
+            		<label string=""/>
+                    <field name="consignee_account" nolabel="1"/>
+                </field>
+            </field>
+        </record>
+        
+    </data>
+</openerp>

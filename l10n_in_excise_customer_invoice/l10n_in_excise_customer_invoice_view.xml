@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<record model="ir.ui.view" id="res_company_account_view">
+	        <field name="name">res.company.account.view</field>
+	        <field name="inherit_id" ref="l10n_in_tax_retail_invoice.res_company_tax_invoice_report"/>
+	        <field name="model">res.company</field>
+	        <field name="type">form</field>
+	        <field name="arch" type="xml">
+	            <xpath expr="//notebook/page[@string='Tax Details']/group[@name='tax_info']" position="after">
+                    <group>
+		            	<group>
+			                <field name="range"/>
+			                <field name="division"/>
+			                <field name="commissionerate"/>
+		                </group>
+		                <group>
+			                <field name="tariff_rate"/>
+		                </group>
+	                </group>
+	            </xpath>
+	       </field>
+    	</record>
+    
+	    <record model="ir.ui.view" id="res_partner_inherit_view_ecc">
+	        <field name="name">res.partner.account.view</field>
+	        <field name="inherit_id" ref="l10n_in_tax_retail_invoice.res_partner_tin_cst_view"/>
+	        <field name="model">res.partner</field>
+	        <field name="type">form</field>
+	        <field name="arch" type="xml">
+	            <field name="cst_no" position="after">
+                	<field name="ecc_no"/>
+	            </field>
+	       </field>
+	    </record>
+	    
+    </data>
+</openerp>

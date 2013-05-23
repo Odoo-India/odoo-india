@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="report_sale_order_tax" model="sale.order" name="sale.order.tax" rml="l10n_in_tax_retail_invoice/report/sale_order_tax.rml" string="Sale Order with Taxes"/>
+    </data>
+</openerp>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <report id="account_print_check_india_idbi"
+            string="Print Check (IDBI)"
+            model="account.voucher"
+            name="account.print.check.india.idbi"
+            rml="l10n_in_account_check_writing_idbi/report/account_check_writing_india.rml"/>
+     </data>
+</openerp>

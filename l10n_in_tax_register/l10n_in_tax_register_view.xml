@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	
+        <record id="account_journal_items_view_tax" model="ir.ui.view">
+            <field name="name">account.move.line.excel</field>
+            <field name="model">account.move.line.excel</field>
+            <field name="arch" type="xml">
+                <form string="Tax Register Report" version="7.0">
+                	<group>
+                		<field name="chart_account_id"/>
+                		<field name="fiscalyear_id"/>
+                		<field name="filter" on_change="onchange_filter(filter, fiscalyear_id)"/>
+                		<field name="period_from" attrs="{'invisible':[('filter','=','filter_no')],'required':[('filter','=','filter_period')]}" domain="[('fiscalyear_id', '=', fiscalyear_id)]"/>
+                		<field name="period_to" attrs="{'invisible':[('filter','=','filter_no')],'required':[('filter','=','filter_period')]}" domain="[('fiscalyear_id', '=', fiscalyear_id)]"/>
+                	</group>
+                	<label for="journal_ids"/>
+                	<group name="Select Journal">
+                		<field name="journal_ids" domain="[('type', 'in', ('sale', 'sale_refund', 'purchase', 'purchase_refund'))]" nolabel="1"/>
+                	</group>
+                	<button name="genarate_excel_report" string="Print" type="object" class="oe_highlight"/>
+                	or
+                	<button string="Cancel" class="oe_link" special="cancel" />
+                </form>
+            </field>
+        </record>
+    	
+    	<record id="action_account_journal_items_tax" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.move.line.excel</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="account_journal_items_view_tax"/>
+            <field name="target">new</field>
+        </record>
+
+    	<menuitem action="action_account_journal_items_tax" id="menu_action_journal_items_report_new" parent="account.menu_tax_report" name="Tax Register" sequence="3000" />
+    	
+    	<record id="view_wizard_msg_voucher" model="ir.ui.view">
+            <field name="name">wizard.msg.voucher.form</field>
+            <field name="model">wizard.voucher.msg</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Tax Register Report">
+                    <separator string="Please save it in .xls format after downloading"  colspan="4"/>
+                    <field name="msg" colspan="4" nolabel="1"/>
+                    <field name="name" colspan="4"/>
+                    <field name="report" colspan="4" />
+                    <button special="cancel" string="_Ok" icon="gtk-ok" colspan="4"/>
+              </form>
+            </field>
+        </record>
+   	</data>
+</openerp>

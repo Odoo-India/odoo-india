@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report id="report_picking_form_402" model="stock.picking.out" name="stock.picking.form_402" string="Form 402" rml="l10n_in_form_402/report/picking_form_402.rml"/>
+    </data>
+</openerp>

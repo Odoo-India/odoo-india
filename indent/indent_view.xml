@@ -342,8 +342,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//group[@string='Traceability']" position="after">
                     <group string="Indent">
-                        <field name="indent_id"/>
-                        <field name="indentor_id"/>
+                        <field name="indent"/>
+                        <field name="indentor"/>
                     </group>
                 </xpath>
             </field>

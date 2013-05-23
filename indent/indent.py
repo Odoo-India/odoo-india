@@ -380,8 +380,8 @@ class indent_indent(osv.Model):
         location_id = self._default_stock_location(cr, uid, context=context)
         res = {
             'name': line.name,
-            'indent_id': indent.id,
-            'indentor_id': indent.indentor_id.id,
+            'indent': indent.id,
+            'indentor': indent.indentor_id.id,
             'picking_id': picking_id,
             'product_id': line.product_id.id,
             'date': date_planned,
@@ -1288,8 +1288,8 @@ class stock_move(osv.Model):
     _inherit = 'stock.move'
 
     _columns = {
-        'indent_id': fields.many2one('indent.indent', 'Indent'),
-        'indentor_id': fields.many2one('res.users', 'Indentor'),
+        'indent': fields.many2one('indent.indent', 'Indent'),
+        'indentor': fields.many2one('res.users', 'Indentor'),
     }
 
 stock_move()

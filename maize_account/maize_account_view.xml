@@ -49,5 +49,9 @@
             </field>
         </record>
 
+        <!--  Advance Payment Report -->
+        <report auto="False" id="report_advance_payment" model="account.voucher"
+                name="maize.advance.payment" rml="addons/maize_account/report/advance_payment_report.rml"
+                usage="default" string="Advance Payment Report"/>
     </data>
 </openerp>

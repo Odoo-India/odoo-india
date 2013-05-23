@@ -956,6 +956,16 @@ class purchase_order(osv.Model):
 
 purchase_order()
 
+class purchase_order_line(osv.Model):
+    _inherit = 'purchase.order.line'
+
+    _columns = {
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'indentor_id': fields.many2one('res.users', 'Indentor'),
+    }
+
+purchase_order_line()
+
 class purchase_requisition(osv.Model):
     _inherit = 'purchase.requisition'
 

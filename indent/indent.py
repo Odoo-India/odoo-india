@@ -422,6 +422,8 @@ class indent_indent(osv.Model):
         res = {
             'name': line.name,
             'origin': indent.name,
+            'indent_id': indent.id,
+            'indentor_id': indent.indentor_id.id,
             'date_planned': date_planned,
             'product_id': line.product_id.id,
             'product_qty': line.product_uom_qty,
@@ -1042,6 +1044,11 @@ purchase_requisition()
 class procurement_order(osv.osv):
     _inherit = 'procurement.order'
 
+    _columns = {
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'indentor_id': fields.many2one('res.users', 'Indentor'),
+    }
+
     def make_po(self, cr, uid, ids, context=None):
         """ Make purchase order from procurement
         @return: New created Purchase Orders procurement wise
@@ -1088,6 +1095,8 @@ class procurement_order(osv.osv):
                 name += '\n'+ product.description_purchase
             line_vals = {
                 'name': name,
+                'indent_id': procurement.indent_id and procurement.indent_id.id or False,
+                'indentor_id': procurement.indentor_id and procurement.indentor_id.id or False,
                 'product_qty': qty,
                 'product_id': procurement.product_id.id,
                 'product_uom': uom_id,

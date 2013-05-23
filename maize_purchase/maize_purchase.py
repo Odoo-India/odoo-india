@@ -539,12 +539,18 @@ class purchase_order(osv.Model):
         # Compute what the new orders should contain
 
         new_orders = {}
+        tander_ids = []
 
         for porder in [order for order in self.browse(cr, uid, ids, context=context) if order.state == 'draft']:
+            if porder.requisition_ids:
+                for tid in porder.requisition_ids:
+                    tander_ids += [tid.id]
+            
             order_key = make_key(porder, ('partner_id', 'location_id', 'pricelist_id'))
             new_order = new_orders.setdefault(order_key, ({}, []))
             new_order[1].append(porder.id)
             order_infos = new_order[0]
+            
             if not order_infos:
                 order_infos.update({
                     'origin': porder.origin,
@@ -559,9 +565,7 @@ class purchase_order(osv.Model):
                     'state': 'draft',
                     'order_line': {},
                     'notes': '%s' % (porder.notes or '',),
-                    'fiscal_position': porder.fiscal_position and porder.fiscal_position.id or False,
-                    
-                    
+                    'fiscal_position': porder.fiscal_position and porder.fiscal_position.id or False,                    
                     'package_and_forwording':porder.package_and_forwording or 0.0,
                     'commission':porder.commission or 0.0,
                     'delivey':porder.delivey or '',
@@ -573,9 +577,8 @@ class purchase_order(osv.Model):
                     'freight':porder.freight,
                     'freight_type':porder.freight_type,
                     'other_discount': porder.other_discount,
-                    'discount_percentage':porder.discount_percentage,                    
+                    'discount_percentage':porder.discount_percentage
                 })
-                print "order_infos", order_infos
             else:
                 if porder.date_order < order_infos['date_order']:
                     order_infos['date_order'] = porder.date_order
@@ -598,9 +601,7 @@ class purchase_order(osv.Model):
                             field_val = field_val.id
                         o_line[field] = field_val
                     o_line['uom_factor'] = order_line.product_uom and order_line.product_uom.factor or 1.0
-
-
-
+            
         allorders = []
         orders_info = {}
         for order_key, (order_data, old_ids) in new_orders.iteritems():
@@ -614,7 +615,9 @@ class purchase_order(osv.Model):
                 del value['uom_factor']
                 value.update(dict(key))
             order_data['order_line'] = [(0, 0, value) for value in order_data['order_line'].itervalues()]
+            order_data.update({'requisition_ids':[(6, 0, tander_ids)]})
 
+            print 'XXXXXXXXXXXXXXXXXXXXXXX', order_data
             # create the new order
             neworder_id = self.create(cr, uid, order_data)
             orders_info.update({neworder_id: old_ids})

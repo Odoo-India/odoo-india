@@ -309,9 +309,9 @@
             <field name="arch" type="xml">
                 <field name="origin" position="replace">
                     <field name="origin" invisible="1"/>
-                    <field name="indent_id"/>
-                    <field name="indentor_id"/>
-                    <field name="indent_date"/>
+                    <field name="indent_id" invisible="1"/>
+                    <field name="indentor_id" invisible="1"/>
+                    <field name="indent_date" invisible="1"/>
                     <field name="maize" groups="indent.group_maize_data"/>
                 </field>
                 <xpath expr="//button[@name='draft_validate']" position="replace"/>
@@ -334,6 +334,21 @@
             </field>
         </record>
 
+        <!-- Stock Move Form View -->
+        <record id="view_indent_move_form" model="ir.ui.view">
+            <field name="name">indent.move.form</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@string='Traceability']" position="after">
+                    <group string="Indent">
+                        <field name="indent_id"/>
+                        <field name="indentor_id"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
         <!-- Purchase Order Form View -->
         <record id="view_purchase_order_form" model="ir.ui.view">
             <field name="name">purchase.order.form.inherit</field>
@@ -345,9 +360,9 @@
                 </xpath>
                 <field name="origin" position="replace">
                     <field name="origin" invisible="1"/>
-                    <field name="indent_id"/>
-                    <field name="indentor_id"/>
-                    <field name="indent_date"/>
+                    <field name="indent_id" invisible="1"/>
+                    <field name="indentor_id" invisible="1"/>
+                    <field name="indent_date" invisible="1"/>
                     <field name="maize" groups="indent.group_maize_data"/>
                 </field>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">

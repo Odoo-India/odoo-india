@@ -380,6 +380,8 @@ class indent_indent(osv.Model):
         location_id = self._default_stock_location(cr, uid, context=context)
         res = {
             'name': line.name,
+            'indent_id': indent.id,
+            'indentor_id': indent.indentor_id.id,
             'picking_id': picking_id,
             'product_id': line.product_id.id,
             'date': date_planned,
@@ -1272,5 +1274,15 @@ class stock_location(osv.Model):
         return super(stock_location, self).unlink(cr, uid, ids, context=context)
 
 stock_location()
+
+class stock_move(osv.Model):
+    _inherit = 'stock.move'
+
+    _columns = {
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'indentor_id': fields.many2one('res.users', 'Indentor'),
+    }
+
+stock_move()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

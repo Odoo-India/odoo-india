@@ -28,8 +28,9 @@
     'website' : 'http://www.openerp.com',
     'summary' : 'Managing Indent',
     'description' : """
-The user will raise an indent form to the stores, The store keeper checks for the availability, if available issue the material else raise purchase requisition.
-================================================================================================================================================================ 
+Managing internal material request
+================================================================================================================================================================
+The user will raise an indent form to the stores, The store keeper checks for the availability, if available issue the material else raise purchase requisition. 
 """,
     'depends' : ['purchase_requisition', 'hr'],
     'data' : [

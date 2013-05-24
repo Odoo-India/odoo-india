@@ -290,7 +290,7 @@ class purchase_order(osv.Model):
                 'amount_total': 0.0,
                 'other_charges': 0.0,
             }
-            val = val1 = 0.0
+            val = val1 = packing_and_forwading = freight= 0.0
             cur = order.pricelist_id.currency_id
             for line in order.order_line:
                 val1 += line.price_subtotal
@@ -298,11 +298,21 @@ class purchase_order(osv.Model):
                 price_discount = line.price_unit
                 if line.discount != 0:
                     price_discount = (line.price_unit * (1 - (line.discount / 100)))
-                
+                if order.packing_type == 'per_unit':
+                    packing_and_forwading += order.package_and_forwording * line.product_qty
+                if order.freight_type == 'per_unit':
+                    freight += order.freight * line.product_qty
                 for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
                     val += c.get('amount', 0.0)
             
-            other_charge = order.package_and_forwording  - order.commission
+            if order.packing_type == 'per_unit':
+                other_charge = packing_and_forwading  - order.commission
+            elif order.packing_type == 'percentage':
+                other_charge = (order.package_and_forwording * val1) / 100
+            elif order.packing_type == 'include':
+                other_charge = 0.0
+            else:
+                other_charge = order.package_and_forwording  - order.commission
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
@@ -317,13 +327,17 @@ class purchase_order(osv.Model):
                     if order.freight != 0:
                         amount_untaxed += (amount_untaxed * order.freight) / 100
             else:
-                if order.insurance_type == 'fix' and order.freight_type == 'percentage':
+                if order.insurance_type == 'fix': 
                     amount_untaxed += order.insurance
-                    if order.freight != 0:
+                    if order.freight_type == 'per_unit':
+                        amount_untaxed += freight
+                    elif order.freight != 0:
                         amount_untaxed += (amount_untaxed * order.freight) / 100
                 elif order.insurance_type == 'include':
                     if order.freight_type == 'percentage':
                         amount_untaxed += (amount_untaxed * order.freight) / 100
+                    elif order.freight_type == 'per_unit':
+                        amount_untaxed += freight
                     else:
                         amount_untaxed += order.freight
                 elif order.freight_type == 'include':
@@ -331,6 +345,12 @@ class purchase_order(osv.Model):
                         amount_untaxed += (amount_untaxed * order.insurance) / 100
                     else:
                         amount_untaxed += order.insurance
+                elif order.insurance_type == 'percentage' and order.insurance != 0:
+                    amount_untaxed += (amount_untaxed * order.insurance) / 100
+                    if order.freight_type == 'per_unit':
+                        amount_untaxed += freight
+                    else:
+                        amount_untaxed += order.freight
                 else:
                     if order.insurance != 0:
                         amount_untaxed += (amount_untaxed * order.insurance) / 100
@@ -356,29 +376,30 @@ class purchase_order(osv.Model):
         'po_series_id': fields.many2one('product.order.series', 'Series', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The amount without tax", track_visibility='always'),
         'amount_tax': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Taxes',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The tax amount"),
         'amount_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Total',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total amount"),
         'other_charges': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Other Charges',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="Other Charges(computed as Packing & Forwarding - (Commission + Other Discount))"),
         'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'vat_ids': fields.many2many('account.tax', 'purchase_order_vat', 'vat_id', 'tax_id', 'VAT', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'freight': fields.float('Freight', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Insurance Type', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
-        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Freight Type', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('per_unit', 'Per Unit'), ('include', 'Include in price')], 'Freight Type', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'packing_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('per_unit', 'Per Unit'), ('include', 'Include in price')], 'Packing & Forwarding Type', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'payment_term_id': fields.many2one('account.payment.term', 'Payment Term', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'service_ids': fields.many2many('account.tax', 'purchase_order_service', 'service_id', 'tax_id', 'Service Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'voucher_id': fields.many2one('account.voucher', 'Payment', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
@@ -394,7 +415,8 @@ class purchase_order(osv.Model):
 
     _defaults = {
         'insurance_type': 'fix',
-        'freight_type': 'fix'
+        'freight_type': 'fix',
+        'packing_type': 'fix',
      }
     
     def search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False):
@@ -427,12 +449,14 @@ class purchase_order(osv.Model):
                 line_obj.write(cr, uid, [line.id], {'taxes_id': [(6, 0, excies_ids + vat_ids+ service_ids)]}, context=context)
         return super(purchase_order, self).write(cr, uid, ids, vals, context=context)
 
-    def onchange_reset(self, cr, uid, ids, insurance_type, freight_type):
+    def onchange_reset(self, cr, uid, ids, insurance_type, freight_type,packing_type):
         dict = {}
         if insurance_type == 'include':
             dict.update({'insurance': 0.0})
         if freight_type == 'include':
             dict.update({'freight': 0.0})
+        if packing_type == 'include':
+            dict.update({'package_and_forwording': 0.0})
         return {'value': dict}
 
     def action_invoice_create(self, cr, uid, ids, context=None):

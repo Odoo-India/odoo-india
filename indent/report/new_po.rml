@@ -271,7 +271,9 @@
             <para style="terp_tblheader_General_Centre">[[ sequence(order_line) ]]</para>
           </td>
           <td>
-            <para style="terp_default_9">[[ order_line.name ]]</para>
+            <para style="terp_default_9">[[ order_line.product_id.default_code ]] </para>
+            <para style="terp_default_9">[[ order_line.product_id.name ]] </para>
+            <para style="terp_default_9"> [[ order_line.product_id.desc2]] [[order_line.product_id.desc3]] [[order_line.product_id.desc4]]</para>
           </td>
           <td>
             <para style="terp_default_9">
@@ -553,7 +555,9 @@
             <para style="terp_tblheader_General_Centre">[[ sequence(order_line) ]]</para>
           </td>
           <td>
-            <para style="terp_default_9">[[ order_line.name ]]</para>
+            <para style="terp_default_9">[[ order_line.product_id.default_code ]] </para>
+            <para style="terp_default_9">[[ order_line.product_id.name ]] </para>
+            <para style="terp_default_9"> [[ order_line.product_id.desc2]] [[order_line.product_id.desc3]] [[order_line.product_id.desc4]]</para>
           </td>
           <td>
             <para style="terp_default_9">
@@ -835,7 +839,9 @@
             <para style="terp_tblheader_General_Centre">[[ sequence(order_line) ]]</para>
           </td>
           <td>
-            <para style="terp_default_9">[[ order_line.name ]]</para>
+            <para style="terp_default_9">[[ order_line.product_id.default_code ]] </para>
+            <para style="terp_default_9">[[ order_line.product_id.name ]] </para>
+            <para style="terp_default_9"> [[ order_line.product_id.desc2]] [[order_line.product_id.desc3]] [[order_line.product_id.desc4]]</para>
           </td>
           <td>
             <para style="terp_default_9">

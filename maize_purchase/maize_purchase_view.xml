@@ -47,7 +47,13 @@
                 	<separator string="Other Charges"/>
                     <group>
                         <group>
-                            <field name="package_and_forwording"/>
+                            <label for="package_and_forwording"/>
+                            <div>
+                                <field name="packing_type" on_change="onchange_reset(insurance_type,freight_type,packing_type)"/>
+                                <field name="package_and_forwording" class="oe_inline"/>
+                                <label string="%%" attrs="{'invisible':['|',('packing_type','=','fix'),('packing_type','=','include')]}"/>
+                                <label string="₹" attrs="{'invisible':[('packing_type','=','percentage')]}"/>
+                            </div>
                             <field name="commission"/>                            
                             <field name="payment_term_id"/>
                             <field name="delivey"/>
@@ -62,14 +68,14 @@
                             <field name="service_ids" widget="many2many_tags" domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}"/>
                             <label for="insurance"/>
                             <div>
-                                <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type)"/>
+                                <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type,packing_type)"/>
                                 <field name="insurance" class="oe_inline"/>
                                 <label string="%%" attrs="{'invisible':['|',('insurance_type','=','fix'),('insurance_type','=','include')]}"/>
                                 <label string="₹" attrs="{'invisible':[('insurance_type','=','percentage')]}"/>
                             </div>
                             <label for="freight"/>
                             <div>
-                                <field name="freight_type" on_change="onchange_reset(insurance_type,freight_type)" />
+                                <field name="freight_type" on_change="onchange_reset(insurance_type,freight_type,packing_type)" />
                                 <field name="freight" class="oe_inline"/>
                                 <label string="%%" attrs="{'invisible':['|',('freight_type','=','fix'),('freight_type','=','include')]}"/>
                                 <label string="₹" attrs="{'invisible':[('freight_type','=','percentage')]}"/>                                

@@ -53,10 +53,10 @@
         </record>
         
         <record id="maize_vat_c_form" model="account.tax">
-            <field name="name">'C' form to be Issued</field>
+            <field name="name">2.00 % C Form to be Issued</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
-            <field name="amount">0.00</field>
+            <field name="amount">0.02</field>
         </record>
         <record id="maize_vat_h_form" model="account.tax">
             <field name="name">'H' form to be Issued</field>

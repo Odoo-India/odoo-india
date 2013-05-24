@@ -160,7 +160,7 @@
     <images/>
   </stylesheet>
   <story>
-    <para style="terp_tblheader_General_Right"> 1st copy </para>
+    <para style="terp_tblheader_General_Right"> VENDOR (SUPPLIER COPY) </para>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
     <para style="terp_default_9">
@@ -215,7 +215,7 @@
 		    </para>
     	</td>
     	<td>
-    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.ref) or False ]]</para>
+    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or False ]]</para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
@@ -322,17 +322,17 @@
           </para>
         </td>
         <td>
-          <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
+          <para style="terp_default_9">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
         </td>
         <td>
           <para style="terp_default_9"></para>
         </td>
       </tr>
     </blockTable>
-     <blockTable colWidths="120.0,350.0,100.0" style="Tableau2">
+     <blockTable colWidths="120.0,180.0,270.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> Service </para>
+            <para style="terp_default_9"> Service [[ tax(order).get('service',removeParentNode('para'))]]</para>
             <para style="terp_default_9"> Excise </para>
             <para style="terp_default_9"> VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -343,20 +343,25 @@
             <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-            <para style="terp_default_9">: [[ tax(order).get('service',False) or '']]</para>
+            <para style="terp_default_9">: [[ tax(order).get('service',removeParentNode('para'))]]</para>
             <para style="terp_default_9">: [[ get_value().get('excise') or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('vat') or '']]</para>
-            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and 'Rs') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
-            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and 'Rs') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
+            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
+            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
-            <para style="terp_default_9">: MILL-DELIVERY</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
+            <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
         <td>
           <para style="terp_default_8">
             <font color="white"> </font>
           </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="terp_default_9"> [[ (get_value().get('excisable', '')) ]]</para>
         </td>
       </tr>
      </blockTable>
@@ -368,7 +373,7 @@
           </para>
         </td>
         <td>
-          <para style="terp_tblheader_Details">Total Amount : [[ formatLang(order.amount_total) or '0.0' ]]</para>
+          <para style="terp_default_9">Total Amount : [[ formatLang(order.amount_total) or '0.0' ]]</para>
         </td>
         <td>
           <para style="terp_default_9"></para>
@@ -436,7 +441,7 @@
   
   <!-- 2nd copy -->
   <story>
-    <para style="terp_tblheader_General_Right"> 2nd copy </para>
+    <para style="terp_tblheader_General_Right"> STORE COPY </para>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
   	<para style="terp_tblheader_General_Right"> [[ reset_no(order)  ]] </para>
     <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
@@ -492,7 +497,7 @@
 		    </para>
     	</td>
     	<td>
-    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.ref) or False ]]</para>
+    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or False ]]</para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
@@ -606,10 +611,10 @@
         </td>
       </tr>
     </blockTable>
-     <blockTable colWidths="120.0,350.0,100.0" style="Tableau2">
+     <blockTable colWidths="120.0,180.0,270.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> Service </para>
+            <para style="terp_default_9"> Service [[ tax(order).get('service',removeParentNode('para'))]]</para>
             <para style="terp_default_9"> Excise </para>
             <para style="terp_default_9"> VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -620,20 +625,25 @@
             <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-            <para style="terp_default_9">: [[ tax(order).get('service',False) or '']]</para>
+            <para style="terp_default_9">: [[ tax(order).get('service',removeParentNode('para'))]]</para>
             <para style="terp_default_9">: [[ get_value().get('excise') or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('vat') or '']]</para>
-            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and 'Rs') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
-            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and 'Rs') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
+            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
+            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
-            <para style="terp_default_9">: MILL-DELIVERY</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
+            <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
         <td>
           <para style="terp_default_8">
             <font color="white"> </font>
           </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="terp_default_9"> [[ (get_value().get('excisable', '')) ]]</para>
         </td>
       </tr>
      </blockTable>
@@ -713,7 +723,7 @@
   
   <!-- 3rd copy -->
   <story>
-    <para style="terp_tblheader_General_Right"> 3rd copy </para>
+    <para style="terp_tblheader_General_Right"> FILE COPY </para>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
   	<para style="terp_tblheader_General_Right"> [[ reset_no(order)  ]] </para>
     <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
@@ -769,7 +779,7 @@
 		    </para>
     	</td>
     	<td>
-    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.ref) or False ]]</para>
+    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or False ]]</para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
@@ -883,10 +893,10 @@
         </td>
       </tr>
     </blockTable>
-     <blockTable colWidths="120.0,350.0,100.0" style="Tableau2">
+     <blockTable colWidths="120.0,180.0,270.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> Service </para>
+            <para style="terp_default_9"> Service [[ tax(order).get('service',removeParentNode('para'))]]</para>
             <para style="terp_default_9"> Excise </para>
             <para style="terp_default_9"> VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -897,20 +907,25 @@
             <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-            <para style="terp_default_9">: [[ tax(order).get('service',False) or '']]</para>
+            <para style="terp_default_9">: [[ tax(order).get('service',removeParentNode('para'))]]</para>
             <para style="terp_default_9">: [[ get_value().get('excise') or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('vat') or '']]</para>
-            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and 'Rs') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
-            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and 'Rs') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
+            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
+            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
-            <para style="terp_default_9">: MILL-DELIVERY</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
+            <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
         <td>
           <para style="terp_default_8">
             <font color="white"> </font>
           </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="Standard">  <font color="white"> </font> </para>
+          <para style="terp_default_9"> [[ (get_value().get('excisable', '')) ]]</para>
         </td>
       </tr>
      </blockTable>

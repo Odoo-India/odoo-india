@@ -52,6 +52,8 @@ class new_po(report_sxw.rml_parse):
     
     def _serial_no(self, line):
         self.sr_no += 1
+        if line.product_id.ex_chapter:
+            self.get_value.update({'excisable': 'NOTE : SUBMIT CENVAT COPY ALONG WITH SUPPLY FOR OUR CENVAT CLAIM'})
         return self.sr_no
     
     def _reset_serial_no(self, line):

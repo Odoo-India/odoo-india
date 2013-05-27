@@ -37,6 +37,7 @@ SERIES = [
 ]
 class stock_picking_in(osv.osv):
     _inherit = "stock.picking.in"
+    _order = "id desc"
     _columns = {
         'lr_no': fields.char("LR No",size=64),
         'lr_date': fields.date("LR Date"),
@@ -661,6 +662,7 @@ purchase_order()
 
 class stock_picking(osv.Model):
     _inherit = "stock.picking"
+    _order = "id desc"
     _columns = {
             'type': fields.selection([('out', 'Sending Goods'), ('receipt', 'Receipt'),('in', 'Getting Goods'), ('internal', 'Internal')], 'Shipping Type', required=True, select=True, help="Shipping type specify, goods coming in or going out."),
             'ac_code_id': fields.many2one('ac.code', 'AC Code', help="AC Code"),
@@ -717,6 +719,7 @@ class stock_picking_receipt(osv.Model):
     _name = "stock.picking.receipt"
     _inherit = "stock.picking"
     _table = "stock_picking"
+    _order = "id desc"
     _description = "Receipt"
 
     def check_access_rights(self, cr, uid, operation, raise_exception=True):

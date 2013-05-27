@@ -54,7 +54,7 @@
                             <div>
                                 <field name="packing_type" on_change="onchange_reset(insurance_type,freight_type,packing_type)"/>
                                 <field name="package_and_forwording" class="oe_inline"/>
-                                <label string="%%" attrs="{'invisible':['|',('packing_type','=','fix'),('packing_type','=','include')]}"/>
+                                <label string="%%" attrs="{'invisible':['|','|',('packing_type','=','fix'),('packing_type','=','include'),('packing_type', '=', 'per_unit')]}"/>
                                 <label string="₹" attrs="{'invisible':[('packing_type','=','percentage')]}"/>
                             </div>
                             <field name="commission"/>                            
@@ -80,7 +80,7 @@
                             <div>
                                 <field name="freight_type" on_change="onchange_reset(insurance_type,freight_type,packing_type)" />
                                 <field name="freight" class="oe_inline"/>
-                                <label string="%%" attrs="{'invisible':['|',('freight_type','=','fix'),('freight_type','=','include')]}"/>
+                                <label string="%%" attrs="{'invisible':['|','|',('freight_type','=','fix'),('freight_type','=','include'),('freight_type', '=', 'per_unit')]}"/>
                                 <label string="₹" attrs="{'invisible':[('freight_type','=','percentage')]}"/>                                
                             </div>
                             <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>

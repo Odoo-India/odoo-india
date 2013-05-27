@@ -309,7 +309,7 @@ class purchase_order(osv.Model):
             if order.packing_type == 'per_unit':
                 other_charge = packing_and_forwading  - order.commission
             elif order.packing_type == 'percentage':
-                other_charge = (order.package_and_forwording * val1) / 100
+                other_charge = (order.package_and_forwording * val1) / 100 -order.commission
             elif order.packing_type == 'include':
                 other_charge = 0.0
             else:

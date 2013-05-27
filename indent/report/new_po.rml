@@ -166,6 +166,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
+    <para style="terp_header_Centre"> [[order.state == 'cancel' and 'CANCELLED']] </para>
     <blockTable colWidths="295.0,275.0" style="Tableau1">
         <tr>
         <td>
@@ -296,13 +297,13 @@
         </tr>
       </blockTable>
     </section>mobile
-    <blockTable colWidths="570.0" style="Table10">
+    <!--blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
                 <para style="terp_default_9"> ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
             </td>
         </tr>
-    </blockTable>
+    </blockTable-->
     <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
       <tr>
         <td>
@@ -361,6 +362,7 @@
           <para style="terp_default_8">
             <font color="white"> </font>
           </para>
+          <para style="terp_default_9"> <font color="white">[[ order.voucher_id.id or removeParentNode('para')]]</font> Advance Payment NO: [[order.voucher_id.id]] Amount [[ order.voucher_id.amount]]</para>
           <para style="Standard">  <font color="white"> </font> </para>
           <para style="Standard">  <font color="white"> </font> </para>
           <para style="Standard">  <font color="white"> </font> </para>
@@ -404,7 +406,7 @@
                 <para style="terp_default_left_7"><b>If you are booking through Transport Co., Please mention our name as consignee</b></para>
                 <para style="terp_default_left_7"><b>"MAIZE PRODUCTS, Kathwada delivery from Kathwada/Odhav</b></para>
                 <para style="terp_default_left_7"><font color="white"> </font></para>
-                <para style="terp_default_left_7">Bankers : Panjab National Bank, Vanijya Bhavan,</para>
+                <para style="terp_default_left_7">Bankers : Punjab National Bank, Vanijya Bhavan,</para>
                 <para style="terp_default_left_7">Karkaria, Ahmedabad-380022</para>
             </td>
             <td>
@@ -452,6 +454,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
+    <para style="terp_header_Centre"> [[order.state == 'cancel' and 'CANCELLED']] </para>
     <blockTable colWidths="295.0,275.0" style="Tableau1">
         <tr>
         <td>
@@ -582,13 +585,13 @@
         </tr>
       </blockTable>
     </section>mobile
-    <blockTable colWidths="570.0" style="Table10">
+    <!--blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
                 <para style="terp_default_9"> ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
             </td>
         </tr>
-    </blockTable>
+    </blockTable-->
     <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
       <tr>
         <td>
@@ -690,7 +693,7 @@
                 <para style="terp_default_left_7"><b>If you are booking through Transport Co., Please mention our name as consignee</b></para>
                 <para style="terp_default_left_7"><b>"MAIZE PRODUCTS, Kathwada delivery from Kathwada/Odhav</b></para>
                 <para style="terp_default_left_7"><font color="white"> </font></para>
-                <para style="terp_default_left_7">Bankers : Panjab National Bank, Vanijya Bhavan,</para>
+                <para style="terp_default_left_7">Bankers : Punjab National Bank, Vanijya Bhavan,</para>
                 <para style="terp_default_left_7">Karkaria, Ahmedabad-380022</para>
             </td>
             <td>
@@ -738,6 +741,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
+    <para style="terp_header_Centre"> [[order.state == 'cancel' and 'CANCELLED']] </para>
     <blockTable colWidths="295.0,275.0" style="Tableau1">
         <tr>
         <td>
@@ -868,13 +872,13 @@
         </tr>
       </blockTable>
     </section>mobile
-    <blockTable colWidths="570.0" style="Table10">
+    <!--blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
                 <para style="terp_default_9"> ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
             </td>
         </tr>
-    </blockTable>
+    </blockTable-->
     <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
       <tr>
         <td>
@@ -976,7 +980,7 @@
                 <para style="terp_default_left_7"><b>If you are booking through Transport Co., Please mention our name as consignee</b></para>
                 <para style="terp_default_left_7"><b>"MAIZE PRODUCTS, Kathwada delivery from Kathwada/Odhav</b></para>
                 <para style="terp_default_left_7"><font color="white"> </font></para>
-                <para style="terp_default_left_7">Bankers : Panjab National Bank, Vanijya Bhavan,</para>
+                <para style="terp_default_left_7">Bankers : Punjab National Bank, Vanijya Bhavan,</para>
                 <para style="terp_default_left_7">Karkaria, Ahmedabad-380022</para>
             </td>
             <td>

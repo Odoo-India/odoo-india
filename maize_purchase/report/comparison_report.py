@@ -75,11 +75,9 @@ class comparison_report(report_sxw.rml_parse):
             excise_name += exices.name
         for vat in order.vat_ids:
             vat_name += vat.name
-        print "\n-=-=- get value =-=->>", other_charge
         return self.get_value.update({'excise': excise_tax, 'vat': vat_tax, 'freight': freight_tax,'insurance': insurance_tax, 'excise_name': excise_name, 'vat_name': vat_name, 'packing': other_charge})
     
     def _get_value(self):
-        print "\n-==- vlaue -=-=->>>", self.get_value
         return self.get_value
     
     def set_context(self, objects, data, ids, report_type=None):

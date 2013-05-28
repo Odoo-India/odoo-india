@@ -2,7 +2,7 @@
 <document filename="indent.pdf">
   <template pageSize="(842.0,595.0)" title="Indent" author="Martin Simon" allowSplitting="20">
     <pageTemplate id="first">
-      <frame id="first" x1="1.0" y1="1.0" width="840" height="525"/>
+      <frame id="first" x1="1.0" y1="1.0" width="840" height="595"/>
     </pageTemplate>
   </template>
   <stylesheet>
@@ -187,6 +187,60 @@
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="terp_default_8">[[ setLang(order.indentor_id.lang) ]]</para>
     <pto_header>
+    <para style="terp_tblheader_Details_Centre"> [[ order.company_id.name or removeParentNode('para')]]-INDENT</para>
+    <para style="Table Heading"> [[ order.company_id.street or removeParentNode('para')]] </para>
+    <para style="Table Heading"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
+    <blockTable colWidths="410.0,10.0,400.0" style="Table1">
+    <tr>
+        <td>
+            <para style="P1"> TO : </para>
+            <para style="P1"> THE PURCHASE OFFICER, </para>
+            <para style="P1"> <font color="white"> </font> </para>
+            <para style="P1"> <font color="white"> </font> </para>
+            <para style="P1"> <font color="white"> </font> </para>
+            <para style="P1"> <font color="white"> </font> </para>
+            <para style="P1"> <font color="white"> </font> </para>
+            <para style="P1"> KINDLY ARRANGE TO PROCURE THE FOLLOWING MATERIALS AS PER GIVEN SCHEDULE.</para>
+            <para style="P1"> <font color="white"> </font> </para>
+        </td>
+        <td>
+        </td>
+        <td>
+            <blockTable colWidths="80.0,150.0,10.0,70.0,90.0" style="Table9">
+            <tr>
+                <td>
+                    <para style="P1">Indent No </para>
+                    <para style="P1">Indentor Code </para>
+                    <para style="P1">Indentor Dept </para>
+                    <para style="P1">Department </para>
+                    <para style="P1">Project <font color="white">[[ project_name(order.analytic_account_id) or removeParentNode('para')]]</font></para>
+                </td>
+                <td>
+                    <para style="P1"> : [[indent_no(order.name) or removeParentNode('para')]]</para>
+                    <para style="P1"> : [[(order.indentor_id and order.indentor_id.user_code) or False]] </para>
+                    <para style="P1"> : [[ (order.employee_department_id.name) or False ]] </para>
+                    <para style="P1"> : [[(order.department_id and order.department_id.name) or False]] </para>
+                    <para style="P1"> : [[ project_name(order.analytic_account_id) or removeParentNode('para')]] </para>
+                </td>
+                <td>
+                </td>
+                <td>
+                    <para style="P1">Indent Date </para>
+                    <para style="P1">Indentor </para>
+                    <para style="P1">Indent Type </para>
+                    <para style="P1">Print Date </para>
+                </td>
+                <td>
+                    <para style="P1"> : [[formatLang(order.indent_date, date = True) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[(order.indentor_id and order.indentor_id.name) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[(order.type) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[time.strftime('%d/%m/%y') or removeParentNode('para')]] </para>
+                </td>
+            </tr>
+            </blockTable>
+        </td>
+    </tr>
+    </blockTable>
     <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
         <td>
@@ -231,6 +285,9 @@
       </tr>
     </blockTable>
     </pto_header>
+    <para style="terp_tblheader_Details_Centre"> [[ order.company_id.name or removeParentNode('para')]]-INDENT</para>
+    <para style="Table Heading"> [[ order.company_id.street or removeParentNode('para')]] </para>
+    <para style="Table Heading"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
     <blockTable colWidths="410.0,10.0,400.0" style="Table1">
     <tr>
         <td>
@@ -254,14 +311,14 @@
                     <para style="P1">Indentor Code </para>
                     <para style="P1">Indentor Dept </para>
                     <para style="P1">Department </para>
-                    <para style="P1">Print Date </para>
+                    <para style="P1">Project <font color="white">[[ project_name(order.analytic_account_id) or removeParentNode('para')]]</font></para>
                 </td>
                 <td>
-                    <para style="P1"> : [[indent_no(order.name) or False]]</para>
+                    <para style="P1"> : [[indent_no(order.name) or removeParentNode('para')]]</para>
                     <para style="P1"> : [[(order.indentor_id and order.indentor_id.user_code) or False]] </para>
-                    <para style="P1"> : [[ (order.employee_department_id.name) ]] </para>
+                    <para style="P1"> : [[ (order.employee_department_id.name) or False]] </para>
                     <para style="P1"> : [[(order.department_id and order.department_id.name) or False]] </para>
-                    <para style="P1"> : [[formatLang(order.indent_date, date = True) or False]] </para>
+                    <para style="P1"> : [[ project_name(order.analytic_account_id) or removeParentNode('para')]] </para>
                 </td>
                 <td>
                 </td>
@@ -269,13 +326,13 @@
                     <para style="P1">Indent Date </para>
                     <para style="P1">Indentor </para>
                     <para style="P1">Indent Type </para>
-                    <para style="P1">Project </para>
+                    <para style="P1">Print Date </para>
                 </td>
                 <td>
-                    <para style="P1"> : [[formatLang(order.indent_date, date = True) or False]] </para>
-                    <para style="P1"> : [[(order.indentor_id and order.indentor_id.name) or False]] </para>
-                    <para style="P1"> : [[(order.type) or False]] </para>
-                    <para style="P1"> : [[ project_name(order.analytic_account_id) or False]] </para>
+                    <para style="P1"> : [[formatLang(order.indent_date, date = True) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[(order.indentor_id and order.indentor_id.name) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[(order.type) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[time.strftime('%d/%m/%y') or removeParentNode('para')]] </para>
                 </td>
             </tr>
             <!--para style="P1">Indent No : [[indent_no(order.name) or False]] Indent Date: [[formatLang(order.indent_date, date = True) or False]]</para>

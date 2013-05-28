@@ -293,19 +293,19 @@
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
             <!--para style="terp_default_Centre_9">[[ indent_no(order.requisition_id and order.requisition_id.origin) or '-' ]]</para-->
-            <para style="terp_default_Centre_9">[[ order_line.indent_id.name or removeParentNode('para') ]] / [[ order_line.indent_id.indentor_id.user_code or '' ]]</para>
-            <para style="terp_default_Centre_9">Proj:[[ order_line.indent_id.analytic_account_id.code or removeParentNode('para') ]]</para>
+            <para style="terp_default_Centre_9">[[ order_line.indent_id and order_line.indent_id.name or removeParentNode('para') ]] / [[ order_line.indent_id.indentor_id.user_code or '' ]]</para>
+            <para style="terp_default_Centre_9">Proj:[[ order_line.indent_id and order_line.indent_id.analytic_account_id and order_line.indent_id.analytic_account_id.code or removeParentNode('para') ]]</para>
           </td>
         </tr>
       </blockTable>
     </section>mobile
-    <!--blockTable colWidths="570.0" style="Table10">
+    <blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
-                <para style="terp_default_9"> ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
+                <para style="terp_default_9"> [[ (order.po_series_id.code == 'PK' or order.po_series_id.code == 'CH') and removeParentNode('para')]] ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
             </td>
         </tr>
-    </blockTable-->
+    </blockTable>
     <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
       <tr>
         <td>
@@ -597,19 +597,19 @@
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
             <!--para style="terp_default_Centre_9">[[ indent_no(order.requisition_id and order.requisition_id.origin) or '-' ]]</para-->
-            <para style="terp_default_Centre_9">[[ order_line.indent_id.name or removeParentNode('para') ]] / [[ order_line.indent_id.indentor_id.user_code or '' ]]</para>
-            <para style="terp_default_Centre_9">Proj:[[ order_line.indent_id.analytic_account_id.code or removeParentNode('para') ]]</para>
+            <para style="terp_default_Centre_9">[[ order_line.indent_id and order_line.indent_id.name or removeParentNode('para') ]] / [[ order_line.indent_id.indentor_id.user_code or '' ]]</para>
+            <para style="terp_default_Centre_9">Proj:[[ order_line.indent_id and order_line.indent_id.analytic_account_id and order_line.indent_id.analytic_account_id.code or removeParentNode('para') ]]</para>
           </td>
         </tr>
       </blockTable>
     </section>mobile
-    <!--blockTable colWidths="570.0" style="Table10">
+    <blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
-                <para style="terp_default_9"> ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
+                <para style="terp_default_9"> [[ (order.po_series_id.code == 'PK' or order.po_series_id.code == 'CH') and removeParentNode('para')]] ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
             </td>
         </tr>
-    </blockTable-->
+    </blockTable>
     <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
       <tr>
         <td>
@@ -901,19 +901,19 @@
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
             <!--para style="terp_default_Centre_9">[[ indent_no(order.requisition_id and order.requisition_id.origin) or '-' ]]</para-->
-            <para style="terp_default_Centre_9">[[ order_line.indent_id.name or removeParentNode('para') ]] / [[ order_line.indent_id.indentor_id.user_code or '' ]]</para>
-            <para style="terp_default_Centre_9">Proj:[[ order_line.indent_id.analytic_account_id.code or removeParentNode('para') ]]</para>
+            <para style="terp_default_Centre_9">[[ order_line.indent_id and order_line.indent_id.name or removeParentNode('para') ]] / [[ order_line.indent_id.indentor_id.user_code or '' ]]</para>
+            <para style="terp_default_Centre_9">Proj:[[ order_line.indent_id and order_line.indent_id.analytic_account_id and order_line.indent_id.analytic_account_id.code or removeParentNode('para') ]]</para>
           </td>
         </tr>
       </blockTable>
     </section>mobile
-    <!--blockTable colWidths="570.0" style="Table10">
+    <blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
-                <para style="terp_default_9"> ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
+                <para style="terp_default_9"> [[ (order.po_series_id.code == 'PK' or order.po_series_id.code == 'CH') and removeParentNode('para')]] ALL DELIVERIES LATER THAN THE DELIVERY DATE MENTIONED IN THE ORDER WILL ATTRACT 0.5% PENALTY PER WEEK (MAXIMUM UPTO 5%), HENCE PLEASE CONFIRM THE DELIVERY AT THE TIME OF ACCEPTING THE ORDER</para>
             </td>
         </tr>
-    </blockTable-->
+    </blockTable>
     <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
       <tr>
         <td>

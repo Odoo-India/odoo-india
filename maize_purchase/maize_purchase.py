@@ -263,6 +263,7 @@ purchase_requisition_partner()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
+    _order = 'id desc'
     def action_cancel(self, cr, uid, ids, context=None):
         wf_service = netsvc.LocalService("workflow")
         for purchase in self.browse(cr, uid, ids, context=context):

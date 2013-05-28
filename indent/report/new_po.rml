@@ -238,7 +238,7 @@
 	<blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
-                <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition overleaf.</para>
+                <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition below.</para>
             </td>
         </tr>
     </blockTable>
@@ -292,7 +292,9 @@
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
-            <para style="terp_default_Centre_9">[[ indent_no(order.requisition_id and order.requisition_id.origin) or '-' ]]</para>
+            <!--para style="terp_default_Centre_9">[[ indent_no(order.requisition_id and order.requisition_id.origin) or '-' ]]</para-->
+            <para style="terp_default_Centre_9">[[ order_line.indent_id.name or removeParentNode('para') ]] / [[ order_line.indent_id.indentor_id.user_code or '' ]]</para>
+            <para style="terp_default_Centre_9">Proj:[[ order_line.indent_id.analytic_account_id.code or removeParentNode('para') ]]</para>
           </td>
         </tr>
       </blockTable>
@@ -540,7 +542,7 @@
 	<blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
-                <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition overleaf.</para>
+                <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition below.</para>
             </td>
         </tr>
     </blockTable>
@@ -594,7 +596,9 @@
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
-            <para style="terp_default_Centre_9">[[ indent_no(order.requisition_id and order.requisition_id.origin) or '-' ]]</para>
+            <!--para style="terp_default_Centre_9">[[ indent_no(order.requisition_id and order.requisition_id.origin) or '-' ]]</para-->
+            <para style="terp_default_Centre_9">[[ order_line.indent_id.name or removeParentNode('para') ]] / [[ order_line.indent_id.indentor_id.user_code or '' ]]</para>
+            <para style="terp_default_Centre_9">Proj:[[ order_line.indent_id.analytic_account_id.code or removeParentNode('para') ]]</para>
           </td>
         </tr>
       </blockTable>
@@ -842,7 +846,7 @@
 	<blockTable colWidths="570.0" style="Table10">
         <tr>
             <td>
-                <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition overleaf.</para>
+                <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition below.</para>
             </td>
         </tr>
     </blockTable>
@@ -896,7 +900,9 @@
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
-            <para style="terp_default_Centre_9">[[ indent_no(order.requisition_id and order.requisition_id.origin) or '-' ]]</para>
+            <!--para style="terp_default_Centre_9">[[ indent_no(order.requisition_id and order.requisition_id.origin) or '-' ]]</para-->
+            <para style="terp_default_Centre_9">[[ order_line.indent_id.name or removeParentNode('para') ]] / [[ order_line.indent_id.indentor_id.user_code or '' ]]</para>
+            <para style="terp_default_Centre_9">Proj:[[ order_line.indent_id.analytic_account_id.code or removeParentNode('para') ]]</para>
           </td>
         </tr>
       </blockTable>

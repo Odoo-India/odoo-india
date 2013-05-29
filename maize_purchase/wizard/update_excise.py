@@ -20,7 +20,7 @@
 ##############################################################################
 from osv import fields, osv
 
-class update_excise(osv.osv_memory):
+class update_excise(osv.TransientModel):
     _name = "update.excise"
     _description = "Update Excise"
 

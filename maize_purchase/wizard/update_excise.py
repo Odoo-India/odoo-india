@@ -25,6 +25,10 @@ class update_excise(osv.TransientModel):
     _description = "Update Excise"
 
     def update_excise_amount(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        excise_ids = [excise.id for excise in self.browse(cr, uid, ids[0], context=context).excise_ids]
+        self.pool.get('purchase.order').write(cr, uid, context.get('active_ids', []), {'excies_ids': [(6, 0, excise_ids)]}, context=context)
         return True
 
     _columns = {

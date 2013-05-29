@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_update_excise" model="ir.ui.view">
+            <field name="name">update.excise.form</field>
+            <field name="model">update.excise</field>
+            <field name="arch" type="xml">
+                <form string="Update Excise" version="7.0">
+                    <group>
+                        <field name="excise_ids" widget="many2many_tags" domain="[('tax_type', '=', 'excise')]"/>
+                    </group>
+                    <footer>
+                        <button string="Update Excise" name="update_excise_amount" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_update_excise" model="ir.actions.act_window">
+            <field name="name">Update Excise</field>
+            <field name="res_model">update.excise</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_update_excise"/>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</openerp>

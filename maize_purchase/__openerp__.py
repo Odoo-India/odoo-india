@@ -46,6 +46,7 @@ This module inherits the base product module which maintains some product histor
         'wizard/import_issue_line_data.xml',
         #'wizard/import_inward_data.xml',
         #'wizard/import_inward_line_data.xml',
+        'wizard/update_excise_wizard.xml',
         'maize_purchase_view.xml',
         'maize_tax_data.xml',
         'code_data.xml',

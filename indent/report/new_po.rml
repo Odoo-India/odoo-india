@@ -208,6 +208,7 @@
     	<td>
 		    <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
 		    <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
+		    <para style="P1">Phone : [[ order.partner_id and order.partner_id.phone or '-']] <font color="white"> .....</font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('para')]]</para>
 		    <para style="P1">
 		    <font color="white"> </font>
 		    </para>
@@ -216,12 +217,12 @@
 		    </para>
     	</td>
     	<td>
-    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or False ]]</para>
+    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
-            <para style="terp_default_9"> Mobile : [[ (order.partner_id and order.partner_id.mobile) or False ]]</para>
+            <para style="terp_default_9"> Mobile : [[ (order.partner_id and order.partner_id.mobile) or removeParentNode('para') ]]</para>
     	</td>
     	<td>
 		    <para style="terp_default_Right_new">S.T.TIN No.: 24075101425 Dt. 01-10-2005</para>
@@ -340,8 +341,8 @@
       <tr>
         <td>
             <para style="terp_default_9"> [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','') ]] Service Tax </para>
-            <para style="terp_default_9"> [[ (order.contract == True and removeParentNode('para')) ]] Excise </para>
-            <para style="terp_default_9"> [[ (order.contract == True and removeParentNode('para')) ]] VAT </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
@@ -351,8 +352,8 @@
         </td>
         <td>
             <para style="terp_default_9">: [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','')]]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or '']]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or '']]</para>
+            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
+            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
             <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
@@ -512,6 +513,7 @@
     	<td>
 		    <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
 		    <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
+		    <para style="P1">Phone : [[ order.partner_id and order.partner_id.phone or '-']] <font color="white"> .....</font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('para')]]</para>
 		    <para style="P1">
 		    <font color="white"> </font>
 		    </para>
@@ -520,12 +522,12 @@
 		    </para>
     	</td>
     	<td>
-    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or False ]]</para>
+    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
-            <para style="terp_default_9"> Mobile : [[ (order.partner_id and order.partner_id.mobile) or False ]]</para>
+            <para style="terp_default_9"> Mobile : [[ (order.partner_id and order.partner_id.mobile) or removeParentNode('para') ]]</para>
     	</td>
     	<td>
 		    <para style="terp_default_Right_new">S.T.TIN No.: 24075101425 Dt. 01-10-2005</para>
@@ -644,8 +646,8 @@
       <tr>
         <td>
             <para style="terp_default_9"> [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','') ]] Service Tax </para>
-            <para style="terp_default_9"> [[ (order.contract == True and removeParentNode('para')) ]] Excise </para>
-            <para style="terp_default_9"> [[ (order.contract == True and removeParentNode('para')) ]] VAT </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
@@ -655,8 +657,8 @@
         </td>
         <td>
             <para style="terp_default_9">: [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','')]]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or '']]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or '']]</para>
+            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
+            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
             <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
@@ -816,6 +818,7 @@
     	<td>
 		    <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
 		    <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
+		    <para style="P1">Phone : [[ order.partner_id and order.partner_id.phone or '-']] <font color="white"> .....</font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('para')]]</para>
 		    <para style="P1">
 		    <font color="white"> </font>
 		    </para>
@@ -824,12 +827,12 @@
 		    </para>
     	</td>
     	<td>
-    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or False ]]</para>
+    	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
     	    <para style="Standard">  <font color="white"> </font> </para>
-            <para style="terp_default_9"> Mobile : [[ (order.partner_id and order.partner_id.mobile) or False ]]</para>
+            <para style="terp_default_9"> Mobile : [[ (order.partner_id and order.partner_id.mobile) or removeParentNode('para') ]]</para>
     	</td>
     	<td>
 		    <para style="terp_default_Right_new">S.T.TIN No.: 24075101425 Dt. 01-10-2005</para>
@@ -948,8 +951,8 @@
       <tr>
         <td>
             <para style="terp_default_9"> [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','') ]] Service Tax </para>
-            <para style="terp_default_9"> [[ (order.contract == True and removeParentNode('para')) ]] Excise </para>
-            <para style="terp_default_9"> [[ (order.contract == True and removeParentNode('para')) ]] VAT </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
@@ -959,8 +962,8 @@
         </td>
         <td>
             <para style="terp_default_9">: [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','')]]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or '']]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or '']]</para>
+            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
+            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
             <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>

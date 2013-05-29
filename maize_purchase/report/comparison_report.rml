@@ -232,8 +232,8 @@
             <para style="terp_default_8"> [[ data['form']['insurance'] == True and ((po_line.insurance_type == 'fix' and formatLang(po_line.insurance)) or (po_line.insurance_type == 'percentage' and get_value().get('insurance')) or '0.00') or removeParentNode('td')]]</para>
         </td>
         <td>
-            <para style="terp_default_8"> [[ data['form']['freight'] == True and (po_line.freight_type == 'percentage' and formatLang(po_line.freight) + ' %') or formatLang(po_line.freight) or removeParentNode('para')]]</para>
-            <para style="terp_default_8"> [[ data['form']['freight'] == True and ((po_line.freight_type == 'fix' and formatLang(po_line.freight)) or (po_line.freight_type == 'percentage' and get_value().get('freight') or (po_line.freight_type == 'per_unit' and get_value().get('freight') and 'per unit')) or '0.00') or removeParentNode('td')]]</para>
+            <para style="terp_default_8"> [[ data['form']['freight'] == True and (po_line.freight_type == 'percentage' and formatLang(po_line.freight) + ' %') or (po_line.freight_type == 'extra' and removeParentNode('para')) or formatLang(po_line.freight) or removeParentNode('para')]]</para>
+            <para style="terp_default_8"> [[ data['form']['freight'] == True and ((po_line.freight_type == 'fix' and formatLang(po_line.freight)) or (po_line.freight_type == 'percentage' and get_value().get('freight') or (po_line.freight_type == 'per_unit' and get_value().get('freight') and 'per unit') or (po_line.freight_type == 'extra' and 'EXTRA')) or '0.00') or removeParentNode('td')]]</para>
         </td>
         <td>
             <para style="terp_default_8">  [[ po_line.amount_total]]</para>

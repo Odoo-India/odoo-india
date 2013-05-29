@@ -45,7 +45,7 @@ class indent(report_sxw.rml_parse):
         self.cr = cr
         self.uid = uid
         self.get_value ={}
-        self.already_print_report(cr, uid, context)
+       # self.already_print_report(cr, uid, context)
         super(indent, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({
               'time': time, 

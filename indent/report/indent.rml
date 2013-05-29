@@ -3,6 +3,9 @@
   <template pageSize="(842.0,595.0)" title="Indent" author="Martin Simon" allowSplitting="20">
     <pageTemplate id="first">
       <frame id="first" x1="1.0" y1="1.0" width="840" height="595"/>
+      <pageGraphics>
+          <drawString x="26.0cm" y="20.5cm">Page <pageNumber/>dddd<pageCount/></drawString>
+      </pageGraphics>
     </pageTemplate>
   </template>
   <stylesheet>

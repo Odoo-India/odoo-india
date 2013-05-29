@@ -354,7 +354,7 @@
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or '']]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or '']]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
-            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
+            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
@@ -658,7 +658,7 @@
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or '']]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or '']]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
-            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
+            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
@@ -962,7 +962,7 @@
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or '']]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or '']]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
-            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or  'Include in Price') ]]</para>
+            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>

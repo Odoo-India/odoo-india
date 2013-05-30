@@ -125,6 +125,7 @@
                                                 <field name="type"/>
                                                 <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
                                                 <field name="virtual_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
+                                                <field name="delay"/>
                                             </group>
                                         </group>
                                         <label for="name"/>

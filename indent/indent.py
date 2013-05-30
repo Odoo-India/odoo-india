@@ -22,6 +22,7 @@
 import time
 import datetime
 from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -441,6 +442,11 @@ class indent_indent(osv.Model):
             res = dict(res, company_id = indent.company_id.id)
         return res
 
+    def _get_date_planned(self, cr, uid, indent, line, start_date, context=None):
+        date_planned = datetime.datetime.strptime(start_date, DEFAULT_SERVER_DATETIME_FORMAT) + relativedelta(days=line.delay or 0.0)
+        date_planned = (date_planned - timedelta(days=indent.company_id.security_lead)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        return date_planned
+
     def _create_pickings_and_procurements(self, cr, uid, indent, product_lines, picking_id=False, context=None):
         move_obj = self.pool.get('stock.move')
         picking_obj = self.pool.get('stock.picking')
@@ -448,7 +454,7 @@ class indent_indent(osv.Model):
         proc_ids = []
 
         for line in product_lines:
-            date_planned = indent.indent_date
+            date_planned = self._get_date_planned(cr, uid, indent, line, indent.indent_date, context=context)
 
             if line.product_id:
                 if line.product_id.type in ('product', 'consu'):
@@ -709,6 +715,7 @@ class indent_product_lines(osv.Model):
         'price_subtotal': fields.function(_amount_subtotal, string='Subtotal', digits_compute= dp.get_precision('Account'), store=True),
         'qty_available': fields.float('Stock'),
         'virtual_available': fields.float('Forecasted Qty'),
+        'delay': fields.float('Lead Time', required=True),
         'name': fields.text('Purpose', required=True),
         'specification': fields.text('Item Specification'),
     }
@@ -722,13 +729,14 @@ class indent_product_lines(osv.Model):
         'product_uom_qty': 1,
         'product_uos_qty': 1,
         'type': 'make_to_order',
+        'delay': 0.0,
     }
 
     def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', analytic_account_id=False, indent_type=False, context=None):
         result = {}
         product_obj = self.pool.get('product.product')
         if not product_id:
-            return {'value': {'product_uom_qty': 1.0, 'product_uom': False, 'price_unit': 0.0, 'qty_available': 0.0, 'virtual_available': 0.0, 'name': ''}}
+            return {'value': {'product_uom_qty': 1.0, 'product_uom': False, 'price_unit': 0.0, 'qty_available': 0.0, 'virtual_available': 0.0, 'name': '', 'delay': 0.0}}
         if analytic_account_id:
             prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0152')], context=context)
             if product_id not in prod_ids:
@@ -741,6 +749,7 @@ class indent_product_lines(osv.Model):
         result['price_unit'] = product.list_price
         result['qty_available'] = product.qty_available
         result['virtual_available'] = product.virtual_available
+        result['delay'] = product.seller_ids[0].delay
         return {'value': result}
 
 indent_product_lines()

@@ -101,6 +101,19 @@
                 </xpath>
             </field>
         </record>
+        
+        <!--  Inherit Product Tree view -->
+        <record id="maize_inherit_product_tree_view" model="ir.ui.view">
+            <field name="name">maize.inherit.product.tree.view</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="major_group_id" invisible="1"/>
+                    <field name="sub_group_id" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
         <menuitem groups="base.group_no_one"
             id="menu_maize_config"
             name="Maize"

@@ -264,23 +264,19 @@ purchase_requisition_partner()
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
     _order = 'id desc'
+
     def action_cancel(self, cr, uid, ids, context=None):
         wf_service = netsvc.LocalService("workflow")
         for purchase in self.browse(cr, uid, ids, context=context):
-            for pick in purchase.picking_ids:
-                wf_service.trg_validate(uid, 'stock.picking', pick.id, 'button_cancel', cr)
-            for inv in purchase.invoice_ids:
-                if inv and inv.state not in ('cancel','draft'):
-                    raise osv.except_osv(
-                        _('Unable to cancel this purchase order.'),
-                        _('You must first cancel all receptions related to this purchase order.'))
-                if inv:
-                    wf_service.trg_validate(uid, 'account.invoice', inv.id, 'invoice_cancel', cr)
-        self.write(cr,uid,ids,{'state':'cancel'})
+            if purchase.voucher_id and purchase.voucher_id.state not in ('draft', 'cancel'):
+                raise osv.except_osv(
+                    _('Unable to cancel this purchase order.'),
+                    _('First cancel an advance payment related to this purchase order.'))
+            else:
+                wf_service.trg_validate(uid, 'account.voucher', purchase.voucher_id.id, 'cancel_voucher', cr)
 
-        for (id, name) in self.name_get(cr, uid, ids):
-            wf_service.trg_validate(uid, 'purchase.order', id, 'purchase_cancel', cr)
-        return True
+        return super(purchase_order, self).action_cancel(cr, uid, ids, context=context)
+
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         amount_untaxed = 0

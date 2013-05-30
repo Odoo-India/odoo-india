@@ -636,7 +636,6 @@
         <menuitem action="maize_seires_report"
             id="menu_action_maize_series_report"
             parent="stock.next_id_61" sequence="6"/>
-        <report id="report_issue_slip" model="stock.picking" name="maize.stock.issue.slip" string="Issue Slip" rml="maize_purchase/report/issue_report.rml"/>
 
         <!-- Purchase Order Tree View -->
         <record id="purchase.purchase_order_tree" model="ir.ui.view">

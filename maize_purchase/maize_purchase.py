@@ -842,6 +842,13 @@ class stock_move(osv.osv):
                 res[move.id]['puchase_year'] = po_year 
                 res[move.id]['indent_year'] = indent_year
         return res
+    
+    def _get_today(self,cr, uid, ids, name, args, context=None):
+        res = {}
+        for move in self.browse(cr, uid, ids, context=context):
+            res[move.id] = time.strftime('%d/%m/%Y')
+        return res
+    
     _columns = {
             'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type',store=True),
             'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
@@ -869,6 +876,7 @@ class stock_move(osv.osv):
             'excisable_item': fields.related('picking_id', 'excisable_item', type="boolean", relation='stock.picking', string="Excisable Item", store=True),
             #'gate_pass_id': fields.related('picking_id', 'gp_no', type="many2one", relation='gate.pass', string="Gate Pass No", store=True),
             #'despatch_mode': fields.related('picking_id', 'despatch_mode', type="selection", relation='stock.picking', string="Mode of Despatch", store=True),
+            'today': fields.function(_get_today, string="Today Date",type="date"),
                 }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):

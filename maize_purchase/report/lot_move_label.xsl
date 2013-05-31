@@ -5,7 +5,7 @@
     <xsl:variable name="height_increment">3.8</xsl:variable>
     <xsl:variable name="width_increment">5</xsl:variable>
     <xsl:variable name="frame_height">5.0cm</xsl:variable>
-    <xsl:variable name="frame_width">20.5cm</xsl:variable>
+    <xsl:variable name="frame_width">19.5cm</xsl:variable>
     <xsl:variable name="number_columns">2</xsl:variable>
     <xsl:variable name="max_frames">21</xsl:variable>
 
@@ -60,6 +60,6 @@
         <para style="nospace">Department: <xsl:value-of select="emp_department"/></para>
         <para style="nospace">Location: <xsl:value-of select="department"/></para>
         <barCode><xsl:value-of select="tracking"/></barCode>
-        <nextFrame/>
+        <!-- nextFrame/-->
     </xsl:template>
 </xsl:stylesheet>

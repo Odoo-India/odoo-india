@@ -75,6 +75,12 @@
             <field name="condition">check_reject()</field>
         </record>
 
+        <record model="workflow.transition" id="trans_inprogress_reject">
+            <field name="act_from" ref="act_inprogress"/>
+            <field name="act_to" ref="act_reject"/>
+            <field name="signal">subflow.cancel</field>
+        </record>
+
         <record model="workflow.transition" id="trans_inprogress_received">
             <field name="act_from" ref="act_inprogress"/>
             <field name="act_to" ref="act_received"/>

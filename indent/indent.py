@@ -749,7 +749,7 @@ class indent_product_lines(osv.Model):
         result['price_unit'] = product.list_price
         result['qty_available'] = product.qty_available
         result['virtual_available'] = product.virtual_available
-        result['delay'] = product.seller_ids[0].delay
+        result['delay'] = product.seller_ids and product.seller_ids[0].delay or 0.0
         return {'value': result}
 
 indent_product_lines()

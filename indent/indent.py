@@ -444,7 +444,6 @@ class indent_indent(osv.Model):
 
     def _get_date_planned(self, cr, uid, indent, line, start_date, context=None):
         date_planned = datetime.datetime.strptime(start_date, DEFAULT_SERVER_DATETIME_FORMAT) + relativedelta(days=line.delay or 0.0)
-        date_planned = (date_planned - timedelta(days=indent.company_id.security_lead)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         return date_planned
 
     def _create_pickings_and_procurements(self, cr, uid, indent, product_lines, picking_id=False, context=None):

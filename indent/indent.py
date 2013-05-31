@@ -62,43 +62,6 @@ class indent_indent(osv.Model):
         },
     }
 
-    def _check_po_done(self, cr, uid, ids, field_name, arg=False, context=None):
-        res = {}
-        requisition_obj = self.pool.get('purchase.requisition')
-        for record in ids:
-            res[record] = False
-            req_ids = requisition_obj.search(cr, uid, [('indent_id', '=', record),('state', '!=', 'cancel')])
-            if req_ids:
-                po_done = False
-                for req_id in requisition_obj.browse(cr, uid, req_ids):
-#                    if req_id.state == 'done':
-#                        res[record] = True
-#                        return res
-                    if req_id.state == 'done':
-                        po_done = True
-                res[record] = po_done
-            else:
-                res[record] = False
-        for r in self.browse(cr,uid,ids):
-            if r.contract or r.type == 'existing' and r.state=='inprogress':
-                res[r.id] = True
-#            if r.type == 'existing' and r.state=='inprogress':
- #               self.write(cr, uid, [r.id], {'purchase_count': True})
-        return res
-
-    def _check_shipment_done(self, cr, uid, ids, field_name, arg=False, context=None):
-        res = {}
-        purchase_obj = self.pool.get('purchase.order')
-        shipped =False
-        for record in ids:
-            po_ids = purchase_obj.search(cr, uid, [('indent_id', '=', record), ('state', '=', 'approved')])
-            for po_data in purchase_obj.read(cr, uid,po_ids,['shipped']):
-                shipped = False
-                if po_data['shipped']:
-                    shipped = True
-            res[record] = shipped
-        return res
-
     def _total_amount(self, cr, uid, ids, name, args, context=None):
         result = {}
         for indent in self.browse(cr, uid, ids, context=context):
@@ -126,9 +89,6 @@ class indent_indent(osv.Model):
         'description': fields.text('Item Description', readonly=True, states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', readonly=True, states={'draft': [('readonly', False)]}),
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', readonly=True, states={'draft': [('readonly', False)]}),
-        'requisition_done': fields.function(_check_po_done, type='boolean', string="Check Requisition Done"),
-        'shipment_done': fields.function(_check_shipment_done, type="boolean", string="Shipment Done"),
-        'purchase_count': fields.boolean('Purchase Done', help="Check box True means the Purchase Order is done for this Indent"),
         'active': fields.boolean('Active'),
         'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item For', readonly=True, states={'draft': [('readonly', False)]}),
         'amount_total': fields.function(_total_amount, type="float", string='Total', store=True),
@@ -158,7 +118,6 @@ class indent_indent(osv.Model):
         'requirement': 'ordinary',
         'type': 'new',
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c),
-        'purchase_count': False,
         'active': True,
     }
 
@@ -190,9 +149,6 @@ class indent_indent(osv.Model):
             'required_date': self._get_required_date(cr, uid, context=context),
             'picking_id': False,
             'indent_authority_ids': [],
-            'requisition_done': False,
-            'shipment_done': False,
-            'purchase_count': False,
             'state': 'draft',
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
@@ -491,202 +447,6 @@ class indent_indent(osv.Model):
             seq['company_id'] = vals['company_id']
         return self.pool.get('ir.sequence').create(cr, uid, seq)
 
-    def process_purchase_order(self,cr,uid,ids,context):
-        obj_purchase_order = self.pool.get('purchase.order')
-        wf_service = netsvc.LocalService("workflow")
-        seq_obj = self.pool.get('ir.sequence')
-        series_obj = self.pool.get('product.order.series')
-        payment_term_obj = self.pool.get('account.payment.term')
-        voucher_obj = self.pool.get('account.voucher')
-        po_seq = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order') or '/'
-        requisition_obj = self.pool.get('purchase.requisition')
-        for indent in self.browse(cr,uid,ids,context):
-            if indent.contract or indent.type == 'existing':
-                all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'draft'),('processed_po', '!=', True)])
-            else:
-                all_po = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('processed_po', '!=', True)])
-            l={}
-            result_dict = {}
-            for p in obj_purchase_order.browse(cr,uid,all_po,context=context):
-                l.update({p.id: {'po_series_id':p.po_series_id and p.po_series_id.id or False,
-                                'payment_term_id':p.payment_term_id.id,
-                                'partner':p.partner_id.id,
-                                'package_and_forwording':p.package_and_forwording,
-                                'commission':p.commission,
-                                'delivey':p.delivey,
-                                'dispatch_id':p.dispatch_id.id,
-                                'excies_ids':p.excies_ids,
-                                'vat_ids':p.vat_ids,
-                                'insurance':p.insurance,
-                                'insurance_type':p.insurance_type,
-                                'freight':p.freight,
-                                'freight_type':p.freight_type,
-                                'other_discount': p.other_discount,
-                                'discount_percentage':p.discount_percentage,
-                                }})
-            for k, v in l.iteritems():
-                str_age=str(v)
-                if result_dict.has_key(str_age):
-                    result_dict[str_age]+=[k]
-                else:
-                    result_dict[str_age]=[k]   
-            for nk, nv in result_dict.iteritems():
-                if len(nv) > 1:
-                    if not indent.contract and indent.type != 'existing':
-                        obj_purchase_order.action_cancel(cr,uid,nv,context)
-                        obj_purchase_order.action_cancel_draft(cr,uid,nv,context)
-                    po_merged_id = obj_purchase_order.do_merge(cr,uid,nv,context).keys()[0]
-                    po = obj_purchase_order.browse(cr,uid,po_merged_id,context=context)
-                    
-                    if not indent.contract and indent.type != 'existing':
-                        seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
-                        po_seq = seq_obj.get(cr, uid, seq)
-                    order = []
-                    for p_order in obj_purchase_order.browse(cr,uid,nv):
-                        for x in  p_order.requisition_ids:
-                            order.append(x.id)
-                    obj_purchase_order.write(cr,uid,po_merged_id,{'processed_po':True,'name':po_seq,'requisition_ids':[(6,0, order)]})
-                    order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
-                    today = order.date_order
-                    month = datetime.datetime.today().month
-                    if month < 4:
-                        po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
-                    else:
-                        po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
-                    for line in order.order_line:
-                        self.pool.get('product.product').write(cr,uid,line.product_id.id,{
-                                                                      'last_supplier_rate': line.price_unit,
-                                                                      'last_po_no':order.id,
-                                                                      'last_po_series':order.po_series_id.id,
-                                                                      'last_supplier_code':order.partner_id.id,
-                                                                      'last_po_date':order.date_order,
-                                                                      'last_po_year':po_year
-                                                                  },context=context)
-                    obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
-                    if not indent.contract and indent.type != 'existing':
-                        wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
-                        wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
-                    totlines = []
-                    total_amt = 0.0
-                    flag = False
-                    if order.payment_term_id:
-                        totlines = payment_term_obj.compute(cr, uid, order.payment_term_id.id, order.amount_total, order.date_order or False, context=context)
-                    journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
-                    journal_id = journal_ids and journal_ids[0] or False
-                    if not journal_id:
-                        raise osv.except_osv(_("Warning !"),_('You must define a journal related to an advance payment.'))
-                    journal = self.pool.get('account.journal').browse(cr, uid, journal_id, context=context)
-                    account_id = journal.default_credit_account_id or journal.default_debit_account_id or False
-                    if not account_id:
-                        raise osv.except_osv(_("Warning !"),_('You must define a default debit and credit account for a journal.'))
-                    for line in totlines:
-                        today = fields.date.context_today(self, cr, uid, context=context)
-                        if line[0] == today:
-                            total_amt += line[1]
-                            flag = True
-                    if flag:
-                        note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, order.name or '', order.indent_id.name or '',)
-                        voucher_id = voucher_obj.create(cr, uid, {'partner_id': order.partner_id.id, 'date': today, 'amount': total_amt, 'reference': order.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
-                        obj_purchase_order.write(cr, uid, order.id, {'voucher_id': voucher_id,'processed_po':True}, context=context)
-                else:
-                    if nv:
-                        order_w = []
-                        po_w = obj_purchase_order.browse(cr,uid,nv[0],context=context)
-                        if not indent.contract and indent.type != 'existing':
-                            seq = series_obj.browse(cr, uid, po_w.po_series_id.id, context=context).seq_id.code
-                            po_seq = seq_obj.get(cr, uid, seq)
-                        
-                        for p_order in obj_purchase_order.browse(cr,uid,nv):
-                            for x in  p_order.requisition_ids:
-                                order_w.append(x.id)
-                        if not indent.contract and indent.type != 'existing':
-                            po_vals = {'name':po_seq, 'requisition_ids':[(6,0, order_w)]}
-                        else:
-                            po_vals = {'requisition_ids':[(6,0, order_w)]}
-                        
-                        po_vals.update({'processed_po':True})    
-                        obj_purchase_order.write(cr,uid,nv,po_vals)
-                            
-                        #advance payment
-                        totlines = []
-                        total_amt = 0.0
-                        flag = False
-                        if po_w.payment_term_id:
-                            totlines = payment_term_obj.compute(cr, uid, po_w.payment_term_id.id, po_w.amount_total, po_w.date_order or False, context=context)
-                        journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
-                        journal_id = journal_ids and journal_ids[0] or False
-                        if not journal_id:
-                            raise osv.except_osv(_("Warning !"),_('You must define a journal related to an advance payment.'))
-                        journal = self.pool.get('account.journal').browse(cr, uid, journal_id, context=context)
-                        account_id = journal.default_credit_account_id or journal.default_debit_account_id or False
-                        if not account_id:
-                            raise osv.except_osv(_("Warning !"),_('You must define a default debit and credit account for a journal.'))
-                        for line in totlines:
-                            today = fields.date.context_today(self, cr, uid, context=context)
-                            if line[0] == today:
-                                total_amt += line[1]
-                                flag = True
-                        if flag:
-                            note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, po_w.name or '', po_w.indent_id.name or '',)
-                            note =''
-                            voucher_id = voucher_obj.create(cr, uid, {'partner_id': po_w.partner_id.id, 'date': today, 'amount': total_amt, 'reference': po_w.name, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
-                            obj_purchase_order.write(cr, uid, po_w.id, {'voucher_id': voucher_id}, context=context)
-
-#            for po_grp_ser in po_grp_series:
-#                for po_grp_partner in po_grp_partners:
-#                    if po_grp_partner['partner_id_count'] > 1 and po_grp_ser['po_series_id_count'] > 1:
-#                        po_to_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0]), ('po_series_id', '=', po_grp_ser['po_series_id'][0])])
-#                        if po_to_merge:
-#                            obj_purchase_order.action_cancel(cr,uid,po_to_merge,context)
-#                            obj_purchase_order.action_cancel_draft(cr,uid,po_to_merge,context)
-#                            po_merged_id = obj_purchase_order.do_merge(cr,uid,po_to_merge,context).keys()[0]
-#                            po = obj_purchase_order.browse(cr,uid,po_merged_id,context=context)
-#                            seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
-#                            po_seq = seq_obj.get(cr, uid, seq)
-#                            order = []
-#                            for p_order in obj_purchase_order.browse(cr,uid,po_to_merge):
-#                                for x in  p_order.requisition_ids:
-#                                    order.append(x.id)
-#                                
-#                            obj_purchase_order.write(cr,uid,po_merged_id,{'name':po_seq,'requisition_ids':[(6,0, order)]})
-#                            order = obj_purchase_order.browse(cr,uid,po_merged_id,context)
-#                            today = order.date_order
-#                            year = datetime.datetime.today().year
-#                            month = datetime.datetime.today().month
-#                            if month < 4:
-#                                po_year=str(datetime.datetime.today().year-1)+'-'+str(datetime.datetime.today().year)
-#                            else:
-#                                po_year=str(datetime.datetime.today().year)+'-'+str(datetime.datetime.today().year+1)
-#                            for line in order.order_line:
-#                                self.pool.get('product.product').write(cr,uid,line.product_id.id,{
-#                                                                              'last_supplier_rate': line.price_unit,
-#                                                                              'last_po_no':order.id,
-#                                                                              'last_po_series':order.po_series_id.id,
-#                                                                              'last_supplier_code':order.partner_id.id,
-#                                                                              'last_po_date':order.date_order,
-#                                                                              'last_po_year':po_year
-#                                                                          },context=context)
-#                            obj_purchase_order.write(cr,uid,po_merged_id,{'indentor_id':indent.indentor_id.id,'indent_date':indent.indent_date,'indent_id':indent.id,'origin':indent.name})
-#                            wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_confirm', cr)
-#                            wf_service.trg_validate(uid, 'purchase.order', po_merged_id, 'purchase_approve', cr)
-#                    else:
-#                        # write purchase order series
-#                        po_without_merge = obj_purchase_order.search(cr, uid, [('indent_id', '=', indent.id),('state', '=', 'approved'),('partner_id', '=', po_grp_partner['partner_id'][0]), ('po_series_id', '=', po_grp_ser['po_series_id'][0])])
-#                        if po_without_merge:
-#                            po_w = obj_purchase_order.browse(cr,uid,po_without_merge[0],context=context)
-#                            seq = series_obj.browse(cr, uid, po_w.po_series_id.id, context=context).seq_id.code
-#                            po_seq = seq_obj.get(cr, uid, seq)
-#                            order_w = []
-#                            for p_order in obj_purchase_order.browse(cr,uid,po_without_merge):
-#                                for x in  p_order.requisition_ids:
-#                                    order_w.append(x.id)                         
-#                            obj_purchase_order.write(cr,uid,po_without_merge,{'name':po_seq, 'requisition_ids':[(6,0, order_w)]})
-            req_ids = requisition_obj.search(cr, uid, [('indent_id', '=', indent.id),('state', '!=', 'cancel')])
-            req_done = requisition_obj.search(cr, uid, [('indent_id', '=', indent.id), ('state', '=', 'done')])
-            if len(req_done) == len(req_ids):
-                self.write(cr, uid, indent.id, {'purchase_count': True}, context=context)
-        return True
-
 indent_indent()
 
 class indent_product_lines(osv.Model):
@@ -965,7 +725,6 @@ class purchase_order(osv.Model):
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
         'maize': fields.char('Maize PO Number', size=256, readonly=True),
         'contract_name': fields.char('Contract Name', size=256, readonly=True),
-        'processed_po':fields.boolean('Process Purchase')
     }
 
 purchase_order()

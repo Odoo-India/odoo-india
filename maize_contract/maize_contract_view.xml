@@ -11,13 +11,13 @@
                     <field name="contract" invisible="1"/>
                 </xpath>
                 <xpath expr="//div[@name='buttons']/button[@string='Inward']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|','|',('contract', '=', True),('purchase_count', '=', False),('type', '=', 'existing')]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('type', '=', 'existing')]}</attribute>
                 </xpath>
                 <xpath expr="//div[@name='buttons']/button[@string='Enquiry']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('type', '=', 'existing')]}</attribute>
                 </xpath>
                 <xpath expr="//div[@name='buttons']/button[@string='Issue Reciept(s)']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|','|',('contract', '=', True),('purchase_count', '=', False),('type', '=', 'existing')]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('type', '=', 'existing')]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='company_id']" position='after'>
                     <field name="indent_equipment_id"/>
@@ -32,7 +32,7 @@
             <field name="name">contract.contract.tree</field>
             <field name="model">indent.indent</field>
             <field name="arch" type="xml">
-                <tree string="Indents" colors="gray:state=='received';red:shipment_done==True;green:purchase_count==True;">
+                <tree string="Indents" colors="gray:state=='received';">
                     <field name="name" string="Contract #"/>
                     <field name="indentor_id"/>
                     <field name="indent_date"/>
@@ -41,9 +41,6 @@
                     <field name="analytic_account_id"/>
                     <field name="requirement"/>
                     <field name="type"/>
-                    <field name="shipment_done" invisible="1"/>
-                    <field name="purchase_count" invisible="1"/>
-                    <field name="requisition_done" invisible="1"/>
                     <field name="state"/>
                 </tree>
             </field>

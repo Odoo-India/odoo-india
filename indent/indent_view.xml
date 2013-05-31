@@ -54,6 +54,7 @@
                         <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight"/>
                         <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight"/>
                         <button name="indent_reject" string="Reject" states="waiting_approval"/>
+                        <button name="action_receive_products" string="Receive Product(s)" states="inprogress" type="object" class="oe_highlight"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
                     </header>
                     <sheet>

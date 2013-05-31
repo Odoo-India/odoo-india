@@ -151,6 +151,23 @@ class purchase_order_line(osv.Model):
                 res[po_line.id] = 0
         return res
     
+    # Need To Fix (if product is change twice and uom is different than in 7.0 give warning of different category)
+    def onchange_product_id(self, cr, uid, ids, pricelist_id, product_id, qty, uom_id,
+            partner_id, date_order=False, fiscal_position_id=False, date_planned=False,
+            name=False, price_unit=False, context=None):
+        res = super(purchase_order_line,self).onchange_product_id(cr, uid, ids, pricelist_id, product_id, qty, uom_id,
+            partner_id, date_order, fiscal_position_id, date_planned,
+            name, price_unit, context)
+        if not product_id:
+            return res
+        product_product = self.pool.get('product.product')
+        product = product_product.browse(cr, uid, product_id, context=context)
+        if product.description_purchase:
+            res['value'].update({'name': product.description_purchase})
+        else:
+            res['value'].update({'name': ''})
+        return res
+    
     _columns = {
         'discount': fields.float('Discount (%)'),
         'price_subtotal': fields.function(_amount_line, multi="tax", string='Subtotal', digits_compute= dp.get_precision('Account'),store=True),
@@ -175,6 +192,7 @@ class purchase_order_line(osv.Model):
         'received_amount': fields.function(_received_amount, multi="amount", string="Received", digits_compute= dp.get_precision('Account'),store=True),
         'pending_amount': fields.function(_received_amount, multi="amount", string="Pending", digits_compute= dp.get_precision('Account'),store=True),
         'last_month_consumption': fields.function(_last_consumption, string="Last Month Consumption", digits_compute= dp.get_precision('Account'),store=True),
+        'name': fields.text('Description'),
       }
 purchase_order_line()
 

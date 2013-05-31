@@ -859,9 +859,9 @@ class procurement_order(osv.osv):
             taxes_ids = procurement.product_id.supplier_taxes_id
             taxes = acc_pos_obj.map_tax(cr, uid, partner.property_account_position, taxes_ids)
 
-            name = product.partner_ref
+            name = ''
             if product.description_purchase:
-                name += '\n'+ product.description_purchase
+                name = product.description_purchase
             line_vals = {
                 'name': name,
                 'indent_id': procurement.indent_id and procurement.indent_id.id or False,

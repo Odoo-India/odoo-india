@@ -45,7 +45,7 @@ class import_po_data(osv.osv_memory):
     
     def do_import_po_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ashvin/Desktop/script/POHEADER.csv"
+        file_path = "/home/ashvin/Desktop/script/POHEADERR.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -96,6 +96,12 @@ class import_po_data(osv.osv_memory):
                     ins = 0.0
                 if data["INSAMOUNT"]:
                     ins_type = 'fix'
+                yourref = ''
+                ourref = ''
+                if data["YOURREF"]:
+                    yourref = data["YOURREF"]
+                if data["OURREF"]:
+                    ourref = data["OURREF"]                    
                     
                 if data["EXCISE"]:
                     data["EXCISE"] = int(data["EXCISE"])
@@ -196,6 +202,8 @@ class import_po_data(osv.osv_memory):
                         'notes':note,
                         'payment_term_id':payment_term,
                         'freight':freight_rs,
+                        'your_ref':yourref,
+                        'our_ref':ourref,
                                                    }
                 po = po_pool.create(cr, uid, vals, context)
                 
@@ -207,7 +215,7 @@ class import_po_data(osv.osv_memory):
         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
         print "rejectedrejectedrejected", rejected
-        _logger.info("Successfully completed import journal process.")
+        _logger.info("Successfully completed import PO process.")
         return True
     
 #    def po_line_create(self,cr,uid,ids):

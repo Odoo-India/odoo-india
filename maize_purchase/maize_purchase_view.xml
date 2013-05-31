@@ -102,6 +102,10 @@
                 <xpath expr="//field[@name='partner_ref']" position='after'>
                     <field name='po_series_id' string="PO Series" domain="[('type', '=', 'purchase')]" widget="selection"/>
                     <field name='contract_id' string="Contract Series" attrs="{'invisible': [('contract', '=', False)]}" domain="[('type', '=', 'indent')]" widget="selection"/>
+                    <field name="our_ref"/>
+                </xpath>
+                <xpath expr="//field[@name='warehouse_id']" position='after'>
+                	<field name="your_ref"/>
                 </xpath>
                 <xpath expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']" position='after'>
                 	<page string="Tenders">

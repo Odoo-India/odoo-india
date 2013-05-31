@@ -410,7 +410,9 @@ class purchase_order(osv.Model):
         'discount_percentage':  fields.float('Discount (%)', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in %", track_visibility='always'),
         'discount_amount':  fields.float('Discount (%)', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in %", track_visibility='always'),
         'requisition_ids' : fields.many2many('purchase.requisition','purchase_requisition_rel11','purchase_id','requisition_id','Latest Requisition'),
-        'warehouse_id': fields.many2one('stock.warehouse', 'Destination Warehouse', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}), 
+        'warehouse_id': fields.many2one('stock.warehouse', 'Destination Warehouse', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'our_ref': fields.char('Our Reference',size=250, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'your_ref': fields.char('Your Reference',size=250, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
     }
 
     _defaults = {

@@ -44,7 +44,7 @@ class import_po_line_data(osv.osv_memory):
         return fields,data_lines
     
     def po_line_create(self,cr,uid,ids,context=None):
-        file_path = "/home/ashvin/Desktop/script/POTRANS.csv"
+        file_path = "/home/ashvin/Desktop/script/POTRANSS.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -58,40 +58,45 @@ class import_po_line_data(osv.osv_memory):
         indent = []
         rejected =[]
         exist_line=[]
+        indent_not_found_list = []
         for data in data_lines:
             try:
                 maize_name = data['POSERIES']+'/'+data["PONO"]
-                if not maize_name in exist_line:
-                    if data["PONO"] and data['POSERIES']:
-                        po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
-                    if data["ITEMCODE"]:
-                        product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
-                        prod_name1 = self.pool.get('product.product').read(cr, uid, product,['name'])['name']
-                        prod_name2 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
-                        prod_name3 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
-                        prod_name4 = self.pool.get('product.product').read(cr, uid, product,['desc3'])['desc3']
-                    if data["PORATE"]:
-                        rate = data["PORATE"]
-                        
-                    if data["DISCPER"]:
-                        discount = data["DISCPER"]
-                        self.pool.get('purchase.order').write(cr,uid,po[0],{'discount_percentage':discount})
-
-                    ind_name = ''
-                    ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
+                if data["PONO"] and data['POSERIES']:
+                    po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
+                if data["ITEMCODE"]:
+                    product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+                    prod_name1 = self.pool.get('product.product').read(cr, uid, product,['name'])['name']
+                    prod_name2 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
+                    prod_name3 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
+                    prod_name4 = self.pool.get('product.product').read(cr, uid, product,['desc3'])['desc3']
+                if data["PORATE"]:
+                    rate = data["PORATE"]
                     
-                    if ind:
-                        ind_name = self.pool.get('indent.indent').read(cr, uid, ind[0],['name'])['name']
-                        self.pool.get('purchase.order').write(cr,uid,po[0],{'origin':ind_name})
-                    if data["SQTY"]:
-                        qty = data["SQTY"]
-                        
-                    if data["DLVDATE"]:
-                        if data["DLVDATE"] == 'NULL' or data["DLVDATE"] == '' or data["DLVDATE"] == '00:00.0' or data["DLVDATE"] == '  ':
-                            dlv_date = ''
-                        else:
-                            dlv_date=datetime.datetime.strptime(data["DLVDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
-                            
+                if data["DISCPER"]:
+                    discount = data["DISCPER"]
+                    self.pool.get('purchase.order').write(cr,uid,po[0],{'discount_percentage':discount})
+
+                ind_name = ''
+                ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
+                
+                indent_id=False
+                indentor_id=False
+                if data["INDENTNO"]:
+                    indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
+                    indent_id = indent and indent[0] or ''
+                if data["INDENTOR"]:
+                    indentor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])
+                    indentor_id = indentor and indentor[0] or ''
+                if data["SQTY"]:
+                    qty = data["SQTY"]
+                    
+                if data["DLVDATE"]:
+                    if data["DLVDATE"] == 'NULL' or data["DLVDATE"] == '' or data["DLVDATE"] == '00:00.0' or data["DLVDATE"] == '  ':
+                        dlv_date = ''
+                    else:
+                        dlv_date=datetime.datetime.strptime(data["DLVDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
+                if indent:
                     vals = {'order_id':po[0],
                             'product_id':product,
                             'price_unit':rate,
@@ -100,76 +105,83 @@ class import_po_line_data(osv.osv_memory):
                             'product_qty':qty,
                             'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
                             'date_planned':dlv_date,
-                            'freight':freight_rs,
+                            #'freight':freight_rs,
+                            'indent_id':int(indent_id),
+                            'indentor_id':int(indentor_id),
                            }
+                    print ">>>>>>>>>>>>>>>>>>>>>>>>", vals
                     exist_line.append(maize_name)
                     po = pol_pool.create(cr, uid, vals, context)
                 else:
-                    if data["PONO"] and data['POSERIES']:
-                        po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
-                    if data["ITEMCODE"]:
-                        product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
-                        prod_name1 = self.pool.get('product.product').read(cr, uid, product,['name'])['name']
-                        prod_name2 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
-                        prod_name3 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
-                        prod_name4 = self.pool.get('product.product').read(cr, uid, product,['desc3'])['desc3']                        
-                    if data["PORATE"]:
-                        rate = data["PORATE"]
-                    if data["SQTY"]:
-                        qty = data["SQTY"]
-                        
-                    if data["DISCPER"]:
-                        discount = data["DISCPER"]
-                        
-                    if data["DLVDATE"]:
-                        if data["DLVDATE"] == 'NULL' or data["DLVDATE"] == '' or data["DLVDATE"] == '00:00.0' or data["DLVDATE"] == '  ':
-                            dlv_date = ''
-                        else:
-                            dlv_date=datetime.datetime.strptime(data["DLVDATE"], '%d-%m-%y').strftime("%Y-%m-%d")    
-        
-                    vals_line = {
-                            'product_id':product,
-                            'price_unit':float(rate),
-                            #'discount': discount,
-                            'product_qty':qty,
-                            'name':prod_name1 or ''+'\n'+prod_name2 or ''+'\n'+prod_name3 or ''+'\n'+prod_name4 or '',
-                            'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                            'date_planned':dlv_date,
-                           }
-                    ind_name = ''
-                    ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
-                    
-                    if ind:
-                        ind_name = self.pool.get('indent.indent').read(cr, uid, ind[0],['name'])['name']
-                                            
-                    if data["PONO"] and data['POSERIES']:
-                        po = po_order.search(cr,uid,[('maize','=',maize_name)])
-                        pp = po_order.browse(cr, uid, po[0])
-                        po_vals = {
-                                'discount_percentage':discount,
-                                'maize':pp.maize,
-                                'po_series_id':pp.po_series_id.id,
-                                'date_order':pp.date_order,
-                                'partner_id': pp.partner_id.id,
-                                'delivey':pp.delivey,
-                                'origin':ind_name,
-                                'location_id':12,
-                                'pricelist_id':2,
-                                'insurance':pp.insurance,
-                                'insurance_type':pp.insurance_type,
-                                'excies_ids':[(6,0,[i.id for i in pp.excies_ids])],
-                                'vat_ids':[(6,0,[v.id for v in pp.vat_ids])],
-                                'order_line':[(0,0,vals_line)],
-                                'notes':pp.notes,
-                                'payment_term_id':pp.payment_term_id.id,
-                                'freight':pp.freight
-                                }
-                        pop = po_order.create(cr, uid, po_vals, context)
-
+                    indent_not_found_list.append(data["INDENTNO"])
+                
+#                else:
+#                    if data["PONO"] and data['POSERIES']:
+#                        po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
+#                    if data["ITEMCODE"]:
+#                        product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+#                        prod_name1 = self.pool.get('product.product').read(cr, uid, product,['name'])['name']
+#                        prod_name2 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
+#                        prod_name3 = self.pool.get('product.product').read(cr, uid, product,['desc2'])['desc2']
+#                        prod_name4 = self.pool.get('product.product').read(cr, uid, product,['desc3'])['desc3']                        
+#                    if data["PORATE"]:
+#                        rate = data["PORATE"]
+#                    if data["SQTY"]:
+#                        qty = data["SQTY"]
+#                        
+#                    if data["DISCPER"]:
+#                        discount = data["DISCPER"]
+#                        
+#                    if data["DLVDATE"]:
+#                        if data["DLVDATE"] == 'NULL' or data["DLVDATE"] == '' or data["DLVDATE"] == '00:00.0' or data["DLVDATE"] == '  ':
+#                            dlv_date = ''
+#                        else:
+#                            dlv_date=datetime.datetime.strptime(data["DLVDATE"], '%d-%m-%y').strftime("%Y-%m-%d")    
+#        
+#                    vals_line = {
+#                            'product_id':product,
+#                            'price_unit':float(rate),
+#                            #'discount': discount,
+#                            'product_qty':qty,
+#                            'name':prod_name1 or ''+'\n'+prod_name2 or ''+'\n'+prod_name3 or ''+'\n'+prod_name4 or '',
+#                            'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
+#                            'date_planned':dlv_date,
+#                           }
+#                    ind_name = ''
+#                    ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
+#                    
+#                    if ind:
+#                        ind_name = self.pool.get('indent.indent').read(cr, uid, ind[0],['name'])['name']
+#                                            
+#                    if data["PONO"] and data['POSERIES']:
+#                        po = po_order.search(cr,uid,[('maize','=',maize_name)])
+#                        pp = po_order.browse(cr, uid, po[0])
+#                        po_vals = {
+#                                'discount_percentage':discount,
+#                                'maize':pp.maize,
+#                                'po_series_id':pp.po_series_id.id,
+#                                'date_order':pp.date_order,
+#                                'partner_id': pp.partner_id.id,
+#                                'delivey':pp.delivey,
+#                                'origin':ind_name,
+#                                'location_id':12,
+#                                'pricelist_id':2,
+#                                'insurance':pp.insurance,
+#                                'insurance_type':pp.insurance_type,
+#                                'excies_ids':[(6,0,[i.id for i in pp.excies_ids])],
+#                                'vat_ids':[(6,0,[v.id for v in pp.vat_ids])],
+#                                'order_line':[(0,0,vals_line)],
+#                                'notes':pp.notes,
+#                                'payment_term_id':pp.payment_term_id.id,
+#                                'freight':pp.freight
+#                                }
+#                        pop = po_order.create(cr, uid, po_vals, context)
             except:
                 rejected.append(data['PONO'])
+                
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['PONO']), exc_info=True)
                 continue
+        print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.", indent_not_found_list
         aaa = self.pool.get('purchase.order').search(cr,uid,[])
         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})

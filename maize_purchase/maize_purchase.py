@@ -157,7 +157,7 @@ class purchase_order_line(osv.Model):
             name=False, price_unit=False, context=None):
         res = super(purchase_order_line,self).onchange_product_id(cr, uid, ids, pricelist_id, product_id, qty, uom_id,
             partner_id, date_order, fiscal_position_id, date_planned,
-            name, price_unit, context)
+            name, price_unit, context=context)
         if not product_id:
             return res
         product_product = self.pool.get('product.product')
@@ -307,7 +307,7 @@ class purchase_order(osv.Model):
                 'amount_total': 0.0,
                 'other_charges': 0.0,
             }
-            val = val1 = packing_and_forwading = freight= 0.0
+            val = val1 = packing_and_forwading = freight = other_tax = 0.0
             cur = order.pricelist_id.currency_id
             for line in order.order_line:
                 val1 += line.price_subtotal
@@ -377,6 +377,9 @@ class purchase_order(osv.Model):
             if order.discount_percentage != 0:
                 total_discount += ((amount_untaxed + res[order.id]['other_charges']) * order.discount_percentage)/ 100
             res[order.id]['amount_total'] = amount_untaxed + res[order.id]['other_charges'] - total_discount
+            for other in self.pool.get('account.tax').compute_all(cr, uid, order.other_tax_ids, 1, res[order.id]['amount_total'], order.product_id, order.partner_id)['taxes']:
+                other_tax += other.get('amount',0.0)
+            res[order.id]['amount_total'] += other_tax
         return res
 
     def _get_order(self, cr, uid, ids, context=None):
@@ -393,22 +396,22 @@ class purchase_order(osv.Model):
         'po_series_id': fields.many2one('product.order.series', 'Series', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The amount without tax", track_visibility='always'),
         'amount_tax': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Taxes',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The tax amount"),
         'amount_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Total',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total amount"),
         'other_charges': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Other Charges',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="Other Charges(computed as Packing & Forwarding - (Commission + Other Discount))"),
         'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
@@ -431,6 +434,7 @@ class purchase_order(osv.Model):
         'warehouse_id': fields.many2one('stock.warehouse', 'Destination Warehouse', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'our_ref': fields.char('Our Reference',size=250, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'your_ref': fields.char('Your Reference',size=250, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'other_tax_ids': fields.many2many('account.tax', 'purchase_order_other', 'other_tax_id', 'tax_id', 'Other Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
     }
 
     _defaults = {

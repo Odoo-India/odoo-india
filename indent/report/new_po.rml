@@ -205,6 +205,7 @@
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
             <para style="terp_default_9"> Discount / Round Off </para>
+            <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
             <para style="terp_default_9"> Delivery </para>
             <para style="terp_default_9"> Despatch </para>
         </td>
@@ -216,6 +217,7 @@
             <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.freight_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
@@ -372,7 +374,7 @@
         <td>
             <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
             <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
-            <para style="P1">Phone : [[ order.partner_id and order.partner_id.phone or '-']] <font color="white"> .....</font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('para')]]</para>
+            <para style="P1"><font>Phone : [[ order.partner_id and order.partner_id.phone or revmoveParentNode('font')]]</font> <font color="white"> .....</font><font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('font')]]</font></para>
         </td>
         <td>
             <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
@@ -476,7 +478,7 @@
     	<td>
 		    <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
 		    <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
-		    <para style="P1">Phone : [[ order.partner_id and order.partner_id.phone or '-']] <font color="white"> .....</font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('para')]]</para>
+		    <para style="P1"><font>Phone : [[ order.partner_id and order.partner_id.phone or revmoveParentNode('font')]]</font> <font color="white"> .....</font><font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('font')]]</font></para>
     	</td>
     	<td>
     	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
@@ -609,6 +611,7 @@
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
             <para style="terp_default_9"> Discount / Round Off </para>
+            <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
             <para style="terp_default_9"> Delivery </para>
             <para style="terp_default_9"> Despatch </para>
         </td>
@@ -620,6 +623,7 @@
             <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.freight_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
@@ -771,6 +775,7 @@
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
             <para style="terp_default_9"> Discount / Round Off </para>
+            <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
             <para style="terp_default_9"> Delivery </para>
             <para style="terp_default_9"> Despatch </para>
         </td>
@@ -782,6 +787,7 @@
             <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.freight_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
@@ -938,7 +944,7 @@
         <td>
             <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
             <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
-            <para style="P1">Phone : [[ order.partner_id and order.partner_id.phone or '-']] <font color="white"> .....</font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('para')]]</para>
+            <para style="P1"><font>Phone : [[ order.partner_id and order.partner_id.phone or revmoveParentNode('font')]]</font> <font color="white"> .....</font><font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('font')]]</font></para>
         </td>
         <td>
             <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
@@ -1045,7 +1051,7 @@
     	<td>
 		    <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
 		    <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
-		    <para style="P1">Phone : [[ order.partner_id and order.partner_id.phone or '-']] <font color="white"> .....</font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('para')]]</para>
+		    <para style="P1"><font>Phone : [[ order.partner_id and order.partner_id.phone or revmoveParentNode('font')]]</font> <font color="white"> .....</font><font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('font')]]</font></para>
     	</td>
     	<td>
     	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
@@ -1178,6 +1184,7 @@
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
             <para style="terp_default_9"> Discount / Round Off </para>
+            <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
             <para style="terp_default_9"> Delivery </para>
             <para style="terp_default_9"> Despatch </para>
         </td>
@@ -1189,6 +1196,7 @@
             <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.freight_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
@@ -1340,6 +1348,7 @@
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
             <para style="terp_default_9"> Discount / Round Off </para>
+            <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
             <para style="terp_default_9"> Delivery </para>
             <para style="terp_default_9"> Despatch </para>
         </td>
@@ -1351,6 +1360,7 @@
             <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.freight_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
@@ -1507,7 +1517,7 @@
         <td>
             <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
             <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
-            <para style="P1">Phone : [[ order.partner_id and order.partner_id.phone or '-']] <font color="white"> .....</font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('para')]]</para>
+            <para style="P1"><font>Phone : [[ order.partner_id and order.partner_id.phone or revmoveParentNode('font')]]</font> <font color="white"> .....</font><font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('font')]]</font></para>
         </td>
         <td>
             <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
@@ -1614,7 +1624,7 @@
     	<td>
 		    <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
 		    <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
-		    <para style="P1">Phone : [[ order.partner_id and order.partner_id.phone or '-']] <font color="white"> .....</font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('para')]]</para>
+		    <para style="P1"><font>Phone : [[ order.partner_id and order.partner_id.phone or revmoveParentNode('font')]]</font> <font color="white"> .....</font><font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('font')]]</font></para>
     	</td>
     	<td>
     	    <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
@@ -1747,6 +1757,7 @@
             <para style="terp_default_9"> Freight </para>
             <para style="terp_default_9"> Discount (%)</para>
             <para style="terp_default_9"> Discount / Round Off </para>
+            <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
             <para style="terp_default_9"> Delivery </para>
             <para style="terp_default_9"> Despatch </para>
         </td>
@@ -1758,6 +1769,7 @@
             <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.freight_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
+            <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>

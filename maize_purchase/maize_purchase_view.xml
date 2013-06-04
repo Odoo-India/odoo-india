@@ -88,6 +88,7 @@
                             <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="other_discount"/>
                             <field name="discount_percentage"/>
+                            <field name="other_tax_ids" widget="many2many_tags"/>
                            	<label for="amount_total"/>
                             <field name="amount_total" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <group colspan="4">

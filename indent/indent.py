@@ -339,6 +339,7 @@ class indent_indent(osv.Model):
             'name': line.name,
             'indent': indent.id,
             'indentor': indent.indentor_id.id,
+            'department_id': indent.department_id.id,
             'picking_id': picking_id,
             'product_id': line.product_id.id,
             'date': date_planned,
@@ -381,6 +382,7 @@ class indent_indent(osv.Model):
             'origin': indent.name,
             'indent_id': indent.id,
             'indentor_id': indent.indentor_id.id,
+            'department_id': indent.department_id.id,
             'date_planned': date_planned,
             'product_id': line.product_id.id,
             'product_qty': line.product_uom_qty,
@@ -735,6 +737,7 @@ class purchase_order_line(osv.Model):
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'indentor_id': fields.many2one('res.users', 'Indentor'),
+        'department_id': fields.many2one('stock.location', 'Department'),
     }
 
 purchase_order_line()
@@ -816,6 +819,7 @@ class procurement_order(osv.osv):
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'indentor_id': fields.many2one('res.users', 'Indentor'),
+        'department_id': fields.many2one('stock.location', 'Department'),
     }
 
     def make_po(self, cr, uid, ids, context=None):
@@ -866,6 +870,7 @@ class procurement_order(osv.osv):
                 'name': name,
                 'indent_id': procurement.indent_id and procurement.indent_id.id or False,
                 'indentor_id': procurement.indentor_id and procurement.indentor_id.id or False,
+                'department_id': procurement.department_id and procurement.department_id.id or False,
                 'product_qty': qty,
                 'product_id': procurement.product_id.id,
                 'product_uom': uom_id,
@@ -1059,6 +1064,7 @@ class stock_move(osv.Model):
     _columns = {
         'indent': fields.many2one('indent.indent', 'Indent'),
         'indentor': fields.many2one('res.users', 'Indentor'),
+        'department_id': fields.many2one('stock.location', 'Department'),
     }
 
 stock_move()

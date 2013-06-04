@@ -338,6 +338,7 @@
                     <group string="Indent">
                         <field name="indent" readonly="1"/>
                         <field name="indentor" readonly="1"/>
+                        <field name="department_id" readonly="1"/>
                     </group>
                 </xpath>
             </field>
@@ -362,6 +363,7 @@
                 <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
                     <field name="indent_id" readonly="1"/>
                     <field name="indentor_id" readonly="1"/>
+                    <field name="department_id" readonly="1"/>
                 </xpath>
             </field>
         </record>

@@ -294,14 +294,14 @@
                             <field name="bill_no"/>
                             <field name="bill_date"/>
                             <field name="tax_cal" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
-                            <field name="excies"/>
-                            <field name="cess"/>
-                            <field name="high_cess"/>
-                            <field name="import_duty" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
-                            <field name="cenvat"/>
-                            <field name="c_cess"/>
-                            <field name="c_high_cess"/>
-                            <field name="import_duty1" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
+                            <field name="excies" sum="Total Excise"/>
+                            <field name="cess" sum="Total Cess"/>
+                            <field name="high_cess" sum="Total High Cess"/>
+                            <field name="import_duty" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)" sum="Total Import Duty"/>
+                            <field name="cenvat" sum="Total CENVAT"/>
+                            <field name="c_cess" sum="Total Cess"/>
+                            <field name="c_high_cess" sum="Total High Cess"/>
+                            <field name="import_duty1" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)" sum="Total Import Duty"/>
                             <field name="state"/>
                         </tree>
                         <form string="Receipt" version="7.0">

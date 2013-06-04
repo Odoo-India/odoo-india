@@ -805,7 +805,7 @@ class stock_picking_receipt(osv.Model):
                  * Ready to Receive: products reserved, simply waiting for confirmation.\n
                  * Received: has been processed, can't be modified or cancelled anymore\n
                  * Cancelled: has been cancelled, can't be confirmed anymore"""),
-        'party_id': fields.many2one('res.partner', 'Party Name'),
+        'party_id': fields.many2one('res.partner', 'Excisable Party Name'),
         'amount_total': fields.function(_total_amount, multi="cal",type="float", string='Total', store=True),
         'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff(computed as (Diff + Import Duty))", store=True),
         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
@@ -880,6 +880,7 @@ class stock_move(osv.osv):
             'cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
             'high_cess': fields.float('High cess.', digits_compute= dp.get_precision('Account')),
             'import_duty': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
+            'import_duty1': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
             'cenvat': fields.float('CenVAT.', digits_compute= dp.get_precision('Account')),
             'c_cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
             'c_high_cess': fields.float('High Cess.', digits_compute= dp.get_precision('Account')),
@@ -897,6 +898,8 @@ class stock_move(osv.osv):
             #'gate_pass_id': fields.related('picking_id', 'gp_no', type="many2one", relation='gate.pass', string="Gate Pass No", store=True),
             #'despatch_mode': fields.related('picking_id', 'despatch_mode', type="selection", relation='stock.picking', string="Mode of Despatch", store=True),
             'today': fields.function(_get_today, string="Today Date",type="date"),
+            # required=False because we change product on_change in po line so it come black in some case
+            'name': fields.char('Description', select=True),
                 }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
@@ -957,6 +960,9 @@ class stock_move(osv.osv):
         if tax_cal == 0:
             new_tax.update({'amount': (line.price_unit* move.product_qty) + tax_main+child_tax,'rate': line.price_unit})
         return {'value': new_tax}
+    
+    def onchange_excise(self, cr, uid, ids, excise, context=None):
+        return {'value': {'excise': excise or 0.0, 'cenvat':excise or 0.0}}
 
 stock_move()
 

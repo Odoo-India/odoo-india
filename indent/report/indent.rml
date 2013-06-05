@@ -16,9 +16,6 @@
     <blockTableStyle id="Table1">
       <blockAlignment value="LEFT"/>
       <blockValign value="TOP"/>
-      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
-      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
-      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
     </blockTableStyle>
     <blockTableStyle id="Table3">
       <blockAlignment value="LEFT"/>
@@ -193,30 +190,23 @@
     <para style="terp_tblheader_Details_Centre"> [[ order.company_id.name or removeParentNode('para')]]-INDENT</para>
     <para style="Table Heading"> [[ order.company_id.street or removeParentNode('para')]] </para>
     <para style="Table Heading"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
-    <blockTable colWidths="410.0,10.0,400.0" style="Table1">
+    <blockTable colWidths="200.0,10.0,600.0" style="Table1">
     <tr>
         <td>
             <para style="P1"> TO : </para>
             <para style="P1"> THE PURCHASE OFFICER, </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> KINDLY ARRANGE TO PROCURE THE FOLLOWING MATERIALS AS PER GIVEN SCHEDULE.</para>
-            <para style="P1"> <font color="white"> </font> </para>
         </td>
         <td>
         </td>
         <td>
-            <blockTable colWidths="80.0,150.0,10.0,70.0,90.0" style="Table9">
+            <blockTable colWidths="80.0,260.0,10.0,70.0,180.0" style="Table9">
             <tr>
                 <td>
                     <para style="P1">Indent No </para>
                     <para style="P1">Indentor Code </para>
                     <para style="P1">Indentor Dept </para>
                     <para style="P1">Department </para>
-                    <para style="P1">Project <font color="white">[[ project_name(order.analytic_account_id) or removeParentNode('para')]]</font></para>
+                    <para style="P1">Project <font color="white">[[ project_name(order.analytic_account_id)  or removeParentNode('para')]]  [[removeParentNode('font')]]</font></para>
                 </td>
                 <td>
                     <para style="P1"> : [[indent_no(order.name) or removeParentNode('para')]]</para>
@@ -244,6 +234,8 @@
         </td>
     </tr>
     </blockTable>
+    <para style="P1"> KINDLY ARRANGE TO PROCURE THE FOLLOWING MATERIALS AS PER GIVEN SCHEDULE.</para>
+    <para style="P1"> <font color="white"> </font> </para>
     <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
         <td>
@@ -291,30 +283,23 @@
     <para style="terp_tblheader_Details_Centre"> [[ order.company_id.name or removeParentNode('para')]]-INDENT</para>
     <para style="Table Heading"> [[ order.company_id.street or removeParentNode('para')]] </para>
     <para style="Table Heading"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
-    <blockTable colWidths="410.0,10.0,400.0" style="Table1">
+    <blockTable colWidths="200.0,10.0,600.0" style="Table1">
     <tr>
         <td>
             <para style="P1"> TO : </para>
             <para style="P1"> THE PURCHASE OFFICER, </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> <font color="white"> </font> </para>
-            <para style="P1"> KINDLY ARRANGE TO PROCURE THE FOLLOWING MATERIALS AS PER GIVEN SCHEDULE.</para>
-            <para style="P1"> <font color="white"> </font> </para>
         </td>
         <td>
         </td>
         <td>
-            <blockTable colWidths="80.0,150.0,10.0,70.0,90.0" style="Table9">
+            <blockTable colWidths="80.0,260.0,10.0,70.0,180.0" style="Table9">
             <tr>
                 <td>
                     <para style="P1">Indent No </para>
                     <para style="P1">Indentor Code </para>
                     <para style="P1">Indentor Dept </para>
                     <para style="P1">Department </para>
-                    <para style="P1">Project <font color="white">[[ project_name(order.analytic_account_id) or removeParentNode('para')]]</font></para>
+                    <para style="P1">Project <font color="white">[[ project_name(order.analytic_account_id)  or removeParentNode('para')]] [[removeParentNode('font')]]</font></para>
                 </td>
                 <td>
                     <para style="P1"> : [[indent_no(order.name) or removeParentNode('para')]]</para>
@@ -351,6 +336,8 @@
         </td>
     </tr>
     </blockTable>
+    <para style="P1"> KINDLY ARRANGE TO PROCURE THE FOLLOWING MATERIALS AS PER GIVEN SCHEDULE.</para>
+    <para style="P1"> <font color="white"> </font> </para>
     <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
         <td>

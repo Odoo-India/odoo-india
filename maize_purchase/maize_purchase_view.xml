@@ -219,6 +219,26 @@
                			</group>
                 	</group>
                 </xpath>
+                <xpath expr="//field[@name='date_done']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='stock_journal_id']" position="after">
+                    <field name="date_done" string="Inward Date"/>
+                </xpath>
+                <xpath expr="//field[@name='date']" position="attributes">
+                    <attribute name="string">Purchase Date</attribute>
+                </xpath>
+            </field>
+        </record>
+        
+        <!--  Inherit tree view for chagne the string of date field -->
+        <record id="maize_inherit_stock_picking_in_tree" model="ir.ui.view">
+            <field name="name">maize.inherit.stock.picking.in.tree</field>
+            <field name="model">stock.picking.in</field>
+            <field name="inherit_id" ref="stock.view_picking_in_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date']" position="attributes">
+                    <attribute name="string">Purchase Date</attribute>
+                </xpath>
             </field>
         </record>
 		<!-- RECEIPT FORM --> 
@@ -232,8 +252,8 @@
                     <field name="backorder_id"/>
                     <field name="inward_id"/>
                     <field name="origin"/>
-                    <field name="date"/>
-                    <field name="min_date"/>
+                    <field name="date" invisible="1"/>
+                    <field name="min_date" invisible="1"/>
                     <field name="invoice_state" groups="account.group_account_invoice"/>
                     <field name="stock_journal_id" widget="selection" groups="account.group_account_user"/>
                     <field name="state"/>
@@ -360,6 +380,17 @@
                 <xpath expr="//button[@name='draft_force_assign']"  position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
+                <xpath expr="//field[@name='date_done']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='origin']" position="before">
+                    <field name="date_done" string="Receipt Date"/>
+                </xpath>
+                <xpath expr="//field[@name='date']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='min_date']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
             </field>
         </record>
 
@@ -449,6 +480,25 @@
                     <field name="tr_code_id"/>
                     <field name="cylinder"/>
                 </field>
+                <xpath expr="//field[@name='date_done']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='maize']" position="after">
+                    <field name="date_done" string="Issue Date"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <!--  Stock Picking Out form view inherit -->
+        <record id="maize_inherit_view_stock_picking_out_form" model="ir.ui.view">
+            <field name="name">maize.inherit.stock.picking.out.form</field>
+            <field name="model">stock.picking.out</field>
+            <field name="inherit_id" ref="stock.view_picking_out_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_done']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='stock_journal_id']" position="after">
+                    <field name="date_done" string="Delivery Date"/>
+                </xpath>
             </field>
         </record>
         

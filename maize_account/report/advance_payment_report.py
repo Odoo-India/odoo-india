@@ -58,7 +58,8 @@ class advance_payment(report_sxw.rml_parse):
         if po_id:
             po = po_obj.browse(self.cr, self.uid, po_id)[0]
             percentage = (advance_amount * 100) / po.amount_total
-            self.get_value.update({'percentage': percentage, 'amount_total': po.amount_total, 'po_no': po.name, 'po_date': po.date_order})
+            product = '[' + str(po.order_line and po.order_line[0].product_id.default_code) + '] ' + str(po.order_line and po.order_line[0].product_id.name) or ' ' 
+            self.get_value.update({'percentage': percentage, 'amount_total': po.amount_total, 'po_no': po.name, 'po_date': po.date_order,'product': product})
         return self._get_value
     
     def _get_value(self):

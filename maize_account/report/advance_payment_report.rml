@@ -162,7 +162,7 @@
             <para style="terp_default_9">: [[ order.id ]]</para>
             <para style="terp_default_9">: [[ formatLang(order.date, date = True)]]</para>
             <para style="terp_default_9">: [[ get_value().get('po_no', '') ]] Dated [[ formatLang(get_value().get('po_date', ''), date=True)]]</para>
-            <para style="terp_default_9">  <font color="white"> </font> </para>
+            <para style="terp_default_9">: [[ get_value().get('product',  '')]]</para>
             <para style="terp_default_9">: [[ order.partner_id.supp_code or '']]</para>
             <para style="terp_default_9">: [[ order.partner_id.name or '']]</para>
             <para style="terp_default_9">: [[ order.partner_id.city or '']]</para>

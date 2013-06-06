@@ -49,11 +49,6 @@ class product_product(osv.osv):
             res[product_id] = packing_cost_allowed
         return res
     
-    def _default_check_packing_cost_allowed(self, cr, uid, ids, context=None):
-        res_company = self.pool.get('res.company')
-        packing_cost_allowed = res_company.browse(cr, uid, uid, context=context).packing_cost
-        return packing_cost_allowed
-    
     _columns = {
         'packing_cost_type': fields.selection([
             ('fixed', 'Fixed'),
@@ -65,8 +60,8 @@ class product_product(osv.osv):
     }
     
     _defaults = {
-         'packing_cost_allowed': _default_check_packing_cost_allowed,
-         'packing_cost_type': 'percentage',
+        'packing_cost_allowed': lambda self, cr, uid, context: self.pool.get('res.company').browse(cr, uid, uid, context=context).packing_cost,
+        'packing_cost_type': 'percentage',
      }
     
 class res_partner(osv.osv):
@@ -81,11 +76,6 @@ class res_partner(osv.osv):
             res[partner_id] = dealers_discount_allowed
         return res
     
-    def _default_check_dealers_discount_allowed(self, cr, uid, ids, context=None):
-        res_company = self.pool.get('res.company')
-        dealers_discount_allowed = res_company.browse(cr, uid, uid, context=context).dealers_discount
-        return dealers_discount_allowed
-    
     _columns = {
         'tin_no' : fields.char('TIN', size=32, help="Tax Identification Number"),
         'cst_no' : fields.char('CST', size=32, help='Central Sales Tax Number of Customer'),
@@ -98,7 +88,7 @@ class res_partner(osv.osv):
     }
     
     _defaults = {
-         'dealers_discount_allowed': _default_check_dealers_discount_allowed,
+         'dealers_discount_allowed': lambda self, cr, uid, context: self.pool.get('res.company').browse(cr, uid, uid, context=context).dealers_discount,
     }
     def _check_recursion(self, cr, uid, ids, context=None):
         level = 100
@@ -592,11 +582,6 @@ class account_invoice(osv.osv):
         })
         return super(account_invoice, self).copy(cr, uid, id, default, context)
     
-    def _check_freight_allowed(self, cr, uid, ids, context=None):
-        res_company_obj = self.pool.get('res.company')
-        freight_allowed = res_company_obj.browse(cr, uid, uid, context=context).freight
-        return freight_allowed
-    
     _columns = {
         'delivery_order_id': fields.many2one('stock.picking', 'Delivery Order', readonly="True"),
         'delivery_address_id': fields.many2one('res.partner', 'Delivery Address'),
@@ -638,7 +623,7 @@ class account_invoice(osv.osv):
     }
     
     _defaults = {
-         'freight_allowed': _check_freight_allowed,
+        'freight_allowed': lambda self, cr, uid, context: self.pool.get('res.company').browse(cr, uid, uid, context=context).freight,
      }
     
 #    def button_reset_taxes(self, cr, uid, ids, context=None):
@@ -795,11 +780,6 @@ class purchase_order(osv.osv):
         res = super(purchase_order, self.pool.get('purchase.order'))._get_order(cr, uid, ids, context=context)
         return res
     
-    def _check_freight_allowed(self, cr, uid, ids, context=None):
-        res_company = self.pool.get('res.company')
-        freight_allowed = res_company.browse(cr, uid, uid, context=context).freight
-        return freight_allowed
-    
     _columns = {
         'inward_freight': fields.float('Inward Freight'),
         'freight_allowed': fields.boolean('Freight Allowed'),
@@ -819,7 +799,7 @@ class purchase_order(osv.osv):
     }
     
     _defaults = {
-         'freight_allowed': _check_freight_allowed,
+        'freight_allowed': lambda self, cr, uid, context: self.pool.get('res.company').browse(cr, uid, uid, context=context).freight,
      }
     
     

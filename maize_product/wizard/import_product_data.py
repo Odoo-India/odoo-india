@@ -46,7 +46,7 @@ class import_product_data(osv.osv_memory):
 
     #TODO:FIX ME TO FIND INDENT
     def import_product_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ashvin/Desktop/script/ITEMMAST.csv"
+        file_path = "/home/ara/Desktop/script/ITEMMAST.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -80,6 +80,7 @@ class import_product_data(osv.osv_memory):
                 last_supplier_code=data["LSUPPCODE"].strip()
                 last_supplier_rate=data["LSUPPRATE"].strip()
                 last_po_series=data["LPOSERIES"].strip()
+                last_issue_date = data["LISSUDATE"].strip()
                 if default_code:
                     default_code = '0'+default_code
                 if last_po_series:
@@ -108,9 +109,15 @@ class import_product_data(osv.osv_memory):
                     else:
                         last_po_date=datetime.datetime.strptime(last_po_date, '%d/%m/%Y').strftime("%Y-%m-%d")
 
+                if last_issue_date:
+                    if last_issue_date == 'NULL' or last_issue_date == '' or last_issue_date == '00:00.0' or last_issue_date == '  ' or last_issue_date == ' ':
+                        last_issue_date = False
+                    else:
+                        last_issue_date=datetime.datetime.strptime(last_issue_date, '%d/%m/%Y').strftime("%Y-%m-%d")
+
+
                 if last_supplier_code:
-                    if last_supplier_code[1:] == "'":
-                        last_supplier_code = last_supplier_code[1:]
+                    last_supplier_code = last_supplier_code[1:]
                     supplier = self.pool.get("res.partner").search(cr,uid,[('supp_code','=',last_supplier_code)])
                     if supplier == [] or supplier == False:
                         un_sup = self.pool.get("res.partner").search(cr,uid,[('supp_code','=','1111111'),('name','=','Undefine Supplier')])
@@ -172,12 +179,15 @@ class import_product_data(osv.osv_memory):
                         'major_group_id':major_group_id,
                         'sub_group_id':sub_group_id,
                         'state':'done',
+                        'last_issue_date':last_issue_date
                         }
                 prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
                 if not prod:
-                    p = product_pool.create(cr, uid, vals, context)
+                    product_pool.create(cr, uid, vals, context)
                     i = i+1
                     print ">>>>>>>>>>>>>>",i
+#                 else:
+#                     product_pool.write(cr, uid, prod[0],{'last_issue_date':last_issue_date}, context)
             except:
                 rejected.append(data['ITEMCODE'])
                 _logger.warning("Skipping Record with Itemcode code '%s'."%(data['ITEMCODE']), exc_info=True)

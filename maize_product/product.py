@@ -281,19 +281,23 @@ class product_product(osv.Model):
             categ_name = obj_prod_categ.browse(cr,uid,record.categ_id.id).name
             if categ_name == 'Local':
                 categ_code ='01'
+                categ_id = obj_prod_categ.search(cr,uid,[('name','=',categ_name)])
             else:
                 categ_code ='02'
+                categ_id = obj_prod_categ.search(cr,uid,[('name','=',categ_name)])
             major_group_code = obj_major_grp.browse(cr,uid,record.major_group_id and record.major_group_id.id).code or ''
             sub_group_code = obj_sub_grp.browse(cr,uid,record.sub_group_id and record.sub_group_id.id).code or ''
-
+            
             major_id = obj_major_grp.search(cr,uid,[('code','=',major_group_code)])
             sub_id = obj_sub_grp.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('code','=',sub_group_code)])
-            seq_id = self.search(cr,uid,[('major_group_id','=',major_id and major_id[0] or False),('sub_group_id','=',sub_id and sub_id[0] or False)])
+            seq_id = self.search(cr,uid,[('categ_id','=',categ_id),('major_group_id','=',major_id and major_id[0] or False),('sub_group_id','=',sub_id and sub_id[0] or False)])
             seq_id.sort()
             product_code=1
             if record.type=='product' or record.type == 'service':
                 if len(seq_id)>=2:
                     last_rec=self.browse(cr,uid,seq_id[-2])
+                    if int(last_rec.default_code[6:9]) == 999:
+                        raise osv.except_osv(_('Warning!'), _('Maximum Number reached of this major group'))
                     product_code = int(last_rec.default_code[6:9])+1
                     default_code = categ_code+major_group_code+sub_group_code+"%03d"%(product_code)
                 else:

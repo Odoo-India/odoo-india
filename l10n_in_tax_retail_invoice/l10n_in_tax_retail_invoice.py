@@ -44,9 +44,9 @@ class product_product(osv.osv):
     def _check_packing_cost_allowed(self, cr, uid, ids, name, args, context=None):
         res = {}
         res_company = self.pool.get('res.company')
-        for id in ids:
+        for product_id in ids:
             packing_cost_allowed = res_company.browse(cr, uid, uid, context=context).packing_cost
-            res[id] = packing_cost_allowed
+            res[product_id] = packing_cost_allowed
         return res
     
     def _default_check_packing_cost_allowed(self, cr, uid, ids, context=None):
@@ -76,9 +76,9 @@ class res_partner(osv.osv):
     def _check_dealers_discount_allowed(self, cr, uid, ids, name, args, context=None):
         res = {}
         res_company = self.pool.get('res.company')
-        for id in ids:
+        for partner_id in ids:
             dealers_discount_allowed = res_company.browse(cr, uid, uid, context=context).dealers_discount
-            res[id] = dealers_discount_allowed
+            res[partner_id] = dealers_discount_allowed
         return res
     
     def _default_check_dealers_discount_allowed(self, cr, uid, ids, context=None):
@@ -151,15 +151,20 @@ class sale_order(osv.osv):
     
     _inherit = "sale.order"
     
-    def _get_pack_total(self, cursor, user, ids, name, arg, context=None):
+    def _get_pack_total(self, cr, uid, ids, name, arg, context=None):
         res = {}
         tot_diff = 0.0
-        for sale in self.browse(cursor, user, ids, context=context):
-            tot_diff = 0.0
+        for sale in self.browse(cr, uid, ids, context=context):
+            res[sale.id] = {
+            'packing_total': 0.0,
+            'dealers_disc': 0.0,
+            }
             for line in sale.order_line:
-                tot_diff += line.packing_amount  # Need to check if packing cost apply by qty sold? 
-            res[sale.id] = tot_diff
+                if line.lst_price:
+                    res[sale.id]['packing_total'] += (line.price_unit - line.lst_price) * line.product_uom_qty 
+                res[sale.id]['dealers_disc'] += line.packing_amount  # Need to check if packing cost apply by qty sold? 
         return res
+
     
     def copy(self, cr, uid, id, default=None, context=None):
         default = default or {}
@@ -186,18 +191,6 @@ class sale_order(osv.osv):
         res = super(sale_order, self.pool.get('sale.order'))._get_order(cr, uid, ids, context=context)
         return res
     
-    def _get_difference(self, cursor, user, ids, name, arg, context=None):
-        res = {}
-        tot_diff = 0.0
-        for sale in self.browse(cursor, user, ids):
-            tot_diff = 0.0
-            for line in sale.order_line:
-                if line.lst_price:
-                    tot_diff += (line.price_unit - line.lst_price) * line.product_uom_qty
-#                tot_diff = tot_diff - line.packing_amount # Need to check if packing cost apply by qty sold? 
-            res[sale.id] = tot_diff
-        return res
-    
     def _get_qty_total(self, cr, uid, ids):
         res = {}
         qty = 0.0
@@ -210,7 +203,7 @@ class sale_order(osv.osv):
     _columns = {
         'contact_id': fields.many2one('res.partner', 'Contact'),
         'partner_shipping_id': fields.many2one('res.partner', 'Delivery Address', required=True, help="Delivery address for current sales order."),
-        'packing_total': fields.function(_get_pack_total, type="float", string='Packing Cost', store=True),
+        'packing_total': fields.function(_get_pack_total, type="float", string='Packing Cost', store=True, multi='sums'),
         'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
             store={
                 'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
@@ -220,7 +213,7 @@ class sale_order(osv.osv):
         'quote_validity': fields.integer('Quote Validity', help="Validity of Quote in days."),
         'subject': fields.text('Subject'),
         'invoice_id': fields.many2one('account.invoice', 'Invoice ID'),
-        'dealers_disc': fields.function(_get_difference, type="float", string='Dealers Discount', store=True),
+        'dealers_disc': fields.function(_get_pack_total, type="float", string='Dealers Discount', store=True, multi='sums'),
         'delivery_term': fields.integer('Delivery Term', help='Delivery Term in Weeks')
     }
     
@@ -233,8 +226,8 @@ class sale_order(osv.osv):
 
         # create invoices through the sales orders' workflow
         inv_ids0 = set(inv.id for sale in self.browse(cr, uid, ids, context) for inv in sale.invoice_ids)
-        for id in ids:
-            wf_service.trg_validate(uid, 'sale.order', id, 'manual_invoice', cr)
+        for sale_order_id in ids:
+            wf_service.trg_validate(uid, 'sale.order', sale_order_id, 'manual_invoice', cr)
         inv_ids1 = set(inv.id for sale in self.browse(cr, uid, ids, context) for inv in sale.invoice_ids)
         # determine newly created invoices
         new_inv_ids = list(inv_ids1 - inv_ids0)
@@ -283,8 +276,8 @@ class sale_order_line(osv.osv):
     def _amount_line(self, cr, uid, ids, field_name, arg, context=None):
         packing_cost_allowed = False
         res = super(sale_order_line, self)._amount_line(cr, uid, ids, field_name, arg, context=context)
-        for id in ids:
-            packing_cost_allowed = self.browse(cr, uid, id, context=context).order_id.company_id.packing_cost
+        for line_id in ids:
+            packing_cost_allowed = self.browse(cr, uid, line_id, context=context).order_id.company_id.packing_cost
         if packing_cost_allowed:
             for sale_order_line_id in res:
                 qty = self.browse(cr, uid, sale_order_line_id, context=context).product_uom_qty
@@ -396,10 +389,10 @@ class sale_order_line_make_invoice(osv.osv_memory):
                 pay_term = order.partner_id.property_payment_term.id
             else:
                 pay_term = False
-            delivery_id = stock_picking_obj.search(cr, uid, [('sale_id', '=', order.id)])
-            for id in delivery_id:
-                delivery_date = stock_picking_obj.browse(cr, uid, id, context=context).date_done
-                delivery_name = stock_picking_obj.browse(cr, uid, id, context=context).name
+            delivery_ids = stock_picking_obj.search(cr, uid, [('sale_id', '=', order.id)])
+            for delivery_id in delivery_ids:
+                delivery_date = stock_picking_obj.browse(cr, uid, delivery_id, context=context).date_done
+                delivery_name = stock_picking_obj.browse(cr, uid, delivery_id, context=context).name
             inv = {
                 'name': order.name,
                 'origin': order.name,
@@ -490,8 +483,8 @@ class stock_picking(osv.osv):
             group=False, type='out_invoice', context=None):
         sale_order_obj = self.pool.get('sale.order')
         
-        for id in ids:
-            sale_id = self.browse(cr, uid, id, context=context).sale_id.id
+        for picking_id in ids:
+            sale_id = self.browse(cr, uid, picking_id, context=context).sale_id.id
         
         res = super(stock_picking, self).action_invoice_create(cr, uid, ids, journal_id=journal_id,
             group=group, type=type, context=context)
@@ -678,9 +671,9 @@ class account_invoice_line(osv.osv):
     def _amount_line(self, cr, uid, ids, prop, unknow_none, unknow_dict):
         res = super(account_invoice_line, self)._amount_line(cr, uid, ids, prop, unknow_none, unknow_dict)
         packing_cost_allowed = False
-        for id in ids:
-            if self.browse(cr, uid, id).invoice_id:
-                packing_cost_allowed = self.browse(cr, uid, id).invoice_id.company_id.packing_cost
+        for invoice_line_id in ids:
+            if self.browse(cr, uid, invoice_line_id).invoice_id:
+                packing_cost_allowed = self.browse(cr, uid, invoice_line_id).invoice_id.company_id.packing_cost
         if packing_cost_allowed:
             for account_invoice_line_id in res:
                 qty = self.browse(cr, uid, account_invoice_line_id).quantity
@@ -839,9 +832,9 @@ class purchase_order(osv.osv):
         res = super(purchase_order, self).action_invoice_create(cr, uid, ids, context=context)
         account_invoice_obj = self.pool.get('account.invoice')
         freight_allowed = False
-        for id in ids:
-            freight_allowed = self.browse(cr, uid, id, context=context).company_id.freight
-            inward_freight = self.browse(cr, uid, id, context=context).inward_freight
+        for purchase_order_id in ids:
+            freight_allowed = self.browse(cr, uid, purchase_order_id, context=context).company_id.freight
+            inward_freight = self.browse(cr, uid, purchase_order_id, context=context).inward_freight
         if freight_allowed:
             account_invoice_obj.write(cr, uid, res, {'freight_charge': inward_freight}, context=context)
             account_invoice_obj.button_compute(cr, uid, [res], context=context, set_total=True)

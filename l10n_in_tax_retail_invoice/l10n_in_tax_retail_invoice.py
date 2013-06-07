@@ -266,8 +266,9 @@ class sale_order_line(osv.osv):
             packing_cost_allowed = self.browse(cr, uid, line_id, context=context).order_id.company_id.packing_cost
         if packing_cost_allowed:
             for sale_order_line_id in res:
-                qty = self.browse(cr, uid, sale_order_line_id, context=context).product_uom_qty
-                packing_amount = self.browse(cr, uid, sale_order_line_id, context=context).packing_amount
+                sale_order_line_obj = self.browse(cr, uid, sale_order_line_id, context=context)
+                qty = sale_order_line_obj.product_uom_qty
+                packing_amount = sale_order_line_obj.packing_amount
                 res[sale_order_line_id] += qty * packing_amount
         return res
     
@@ -514,9 +515,10 @@ class account_invoice(osv.osv):
     def _amount_all(self, cr, uid, ids, name, args, context=None):
         res = super(account_invoice, self)._amount_all(cr, uid, ids, name, args, context=context)
         for invoice_id in res:
-            freight_allowed = self.browse(cr, uid, invoice_id, context=context).company_id.freight
+            account_invoice_obj = self.browse(cr, uid, invoice_id, context=context)
+            freight_allowed = account_invoice_obj.company_id.freight
             if freight_allowed:
-                freight_charge = self.browse(cr, uid, invoice_id, context=context).freight_charge
+                freight_charge = account_invoice_obj.freight_charge
                 res[invoice_id]['amount_total'] += freight_charge
         return res
     
@@ -651,7 +653,6 @@ class account_invoice_line(osv.osv):
     _inherit = 'account.invoice.line'
 
     def _amount_line(self, cr, uid, ids, prop, unknow_none, unknow_dict):
-        print "called amount line ......"
         res = super(account_invoice_line, self)._amount_line(cr, uid, ids, prop, unknow_none, unknow_dict)
         packing_cost_allowed = False
         for invoice_line_id in ids:
@@ -659,7 +660,6 @@ class account_invoice_line(osv.osv):
                 packing_cost_allowed = self.browse(cr, uid, invoice_line_id).invoice_id.company_id.packing_cost
         if packing_cost_allowed:
             for account_invoice_line_id in res:
-                print "in ifffffffffffff  ......"
                 account_invoice_line_obj = self.browse(cr, uid, account_invoice_line_id) 
                 qty = account_invoice_line_obj.quantity
                 packing_amount = account_invoice_line_obj.packing_amount
@@ -769,9 +769,10 @@ class purchase_order(osv.osv):
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = super(purchase_order, self)._amount_all(cr, uid, ids, field_name, arg, context=context)
         for purchase_id in res:
-            freight_allowed = self.browse(cr, uid, purchase_id, context=context).company_id.freight
+            purchase_order_obj =  self.browse(cr, uid, purchase_id, context=context)
+            freight_allowed = purchase_order_obj.company_id.freight
             if freight_allowed:
-                inward_freight = self.browse(cr, uid, purchase_id, context=context).inward_freight
+                inward_freight = purchase_order_obj.inward_freight
                 res[purchase_id]['amount_total'] += inward_freight
         return res
     

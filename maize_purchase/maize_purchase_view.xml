@@ -104,6 +104,8 @@
                     <field name='po_series_id' string="PO Series" domain="[('type', '=', 'purchase')]" widget="selection"/>
                     <field name='contract_id' string="Contract Series" attrs="{'invisible': [('contract', '=', False)]}" domain="[('type', '=', 'indent')]" widget="selection"/>
                     <field name="our_ref"/>
+                    <field name="is_copy" invisible="1"/>
+                    <field name="is_template" attrs="{'invisible': ['|', ('is_copy', '=', True),('state', '!=', 'draft')]}"/>
                 </xpath>
                 <xpath expr="//field[@name='warehouse_id']" position='after'>
                 	<field name="your_ref"/>
@@ -127,6 +129,187 @@
                 </xpath>
             </field>
         </record>
+
+        <!--  Purcahse Order Template Form view -->
+        <record id="maize_purchase_order_template_form" model="ir.ui.view">
+            <field name="name">purchase.order.template.form</field>
+            <field name="model">purchase.order</field>
+            <field name="arch" type="xml">
+                <form string="Purchase Order" version="7.0">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,approved,done" statusbar_colors='{"except_picking":"red","except_invoice":"red","confirmed":"blue"}' readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_right oe_button_box" name="buttons">
+                        <button name="po_genrate" type="object" string="PO Genrate" attrs="{'invisible': [('is_template', '!=', True)]}"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <label string="Request for Quotation " attrs="{'invisible': [('state','not in',('draft','sent'))]}"/>
+                            <label string="Purchase Order " attrs="{'invisible': [('state','in',('draft','sent'))]}"/>
+                            <field name="name" class="oe_inline" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" on_change="onchange_partner_id(partner_id)" context="{'search_default_supplier':1,'default_supplier':1,'default_customer':0}" domain="[('supplier','=',True)]"/>
+                            <field name="partner_ref"/>
+                            <field domain="[('type','=','purchase')]" name="pricelist_id" groups="product.group_purchase_pricelist" on_change="onchange_pricelist(pricelist_id, context)"/>
+                            <field name="currency_id" invisible='1'/>
+                            <field name="journal_id" invisible='1'/>
+                            <field name="contract" invisible="1"/>
+                            <field name="is_template" attrs="{'readonly': [('state', '=', 'draft')]}"/>
+                        </group>
+                        <group>
+                            <field name="date_order"/>
+                            <field name="origin" attr="{'invisible': [('origin','=',False)]}"/>
+                            <field name="warehouse_id" on_change="onchange_warehouse_id(warehouse_id)" widget="selection" groups="stock.group_locations"/>
+                            <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Purchase Order">
+                            <field name="order_line">
+                                <tree string="Purchase Order Lines" editable="bottom">
+                                    <field name="product_id" on_change="onchange_product_id(parent.pricelist_id,product_id,0,product_uom,parent.partner_id, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,context)"/>
+                                    <field name="name"/>
+                                    <field name="date_planned"/>
+                                    <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                                    <field name="account_analytic_id" groups="purchase.group_analytic_accounting" domain="[('type','not in',('view','template'))]"/>
+                                    <field name="product_qty" on_change="onchange_product_id(parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id,parent.date_order,parent.fiscal_position,date_planned,name,price_unit,context)"/>
+                                    <field name="product_uom" groups="product.group_uom" on_change="onchange_product_uom(parent.pricelist_id,product_id,product_qty,product_uom,parent.partner_id, parent.date_order,parent.fiscal_position,date_planned,name,price_unit,context)"/>
+                                    <field name="price_unit"/>
+                                    <field name="taxes_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"/>
+                                    <field name="price_subtotal"/>
+                                </tree>
+                            </field>
+                            <separator string="Other Charges"/>
+                            <group>
+                                <group>
+                                    <label for="package_and_forwording"/>
+                                    <div>
+                                        <field name="packing_type" on_change="onchange_reset(insurance_type,freight_type,packing_type)"/>
+                                        <field name="package_and_forwording" class="oe_inline"/>
+                                        <label string="%%" attrs="{'invisible':['|','|',('packing_type','=','fix'),('packing_type','=','include'),('packing_type', '=', 'per_unit')]}"/>
+                                        <label string="₹" attrs="{'invisible':[('packing_type','=','percentage')]}"/>
+                                    </div>
+                                    <field name="commission"/>                            
+                                    <field name="payment_term_id"/>
+                                    <field name="delivey"/>
+                                    <field name="voucher_id" invisible="1"/>
+                                    <field name="dispatch_id"/>
+                                </group>
+                                <group>
+                                    <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_tax" invisible="1"/>
+                                    <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','excise')]" attrs="{'invisible': [('contract', '=', True)]}"/>
+                                    <label string=""/>
+                                    <button name="%(action_update_excise)d" string="Update Excise" type="action" class="oe_edit_only oe_link"/>
+                                    <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]" attrs="{'invisible': [('contract', '=', True)]}"/>
+                                    <field name="service_ids" widget="many2many_tags" domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}"/>
+                                    <label for="insurance"/>
+                                    <div>
+                                        <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type,packing_type)"/>
+                                        <field name="insurance" class="oe_inline"/>
+                                        <label string="%%" attrs="{'invisible':['|',('insurance_type','=','fix'),('insurance_type','=','include')]}"/>
+                                        <label string="₹" attrs="{'invisible':[('insurance_type','=','percentage')]}"/>
+                                    </div>
+                                    <label for="freight"/>
+                                    <div>
+                                        <field name="freight_type" on_change="onchange_reset(insurance_type,freight_type,packing_type)" />
+                                        <field name="freight" class="oe_inline"/>
+                                        <label string="%%" attrs="{'invisible':['|','|',('freight_type','=','fix'),('freight_type','=','include'),('freight_type', '=', 'per_unit')]}"/>
+                                        <label string="₹" attrs="{'invisible':[('freight_type','=','percentage')]}"/>                                
+                                    </div>
+                                    <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="other_discount"/>
+                                    <field name="discount_percentage"/>
+                                    <field name="other_tax_ids" widget="many2many_tags"/>
+                                    <label for="amount_total"/>
+                                    <field name="amount_total" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <group colspan="4">
+                                        <button name="button_dummy" states="draft" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                                    </group>
+                                </group>
+                            </group>
+                            <div class="oe_clear"/>
+                            <field name="notes" class="oe_inline" placeholder="Terms and conditions..."/>
+                        </page>
+                        <page string="Incoming Shipments &amp; Invoices">
+                            <group>
+                                <group>
+                                    <field name="dest_address_id" string="Customer Address" on_change="onchange_dest_address_id(dest_address_id)" groups="stock.group_locations"/>
+                                    <field name="minimum_planned_date"/>
+                                    <field name="location_id" groups="stock.group_locations"/>
+                                    <field name="shipped" groups="base.group_no_one"/>
+                                </group>
+                                <group>
+                                    <field name="invoice_method"/>
+                                    <field name="invoiced"/>
+                                    <field name="payment_term_id" widget="selection"/>
+                                    <field name="fiscal_position" attrs="{'readonly': [('invoiced','=', True)]}" />
+                                    <!-- We do not need these fields anymore, the information is in open chatter -->
+                                    <field name="validator" groups="base.group_no_one"/>
+                                    <field name="date_approve" groups="base.group_no_one"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Tenders">
+                        <field name="requisition_ids" widget="one2many_list"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+        
+        
+        <!--  Purchase Order with Template  -->
+        <record id="maize_purchase_order_action_template" model="ir.actions.act_window">
+            <field name="name">Puchase Template</field>
+            <field name="res_model">purchase.order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph,calendar</field>
+            <field name="domain">[('is_template','=',True)]</field>
+            <field name="context">{'default_is_template': True}</field>
+            <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create Template for Purchase Order. 
+              </p><p>
+                The Template contains the history of the discussion/negociation
+                you had with your supplier.
+              </p>
+            </field>
+        </record>
+        
+        <record id="maize_purchase_template_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase.purchase_order_tree"/>
+            <field name="act_window_id" ref="maize_purchase_order_action_template"/>
+        </record>
+        
+        <record id="maize_puchase_template_form_view1" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="maize_purchase_order_template_form"/>
+            <field name="act_window_id" ref="maize_purchase_order_action_template"/>
+        </record>
+        
+        <!--  Inherit Requsest For Quotation for set Domain-->
+        <record id="purchase.purchase_rfq" model="ir.actions.act_window">
+            <field name="domain">[('is_template' ,'=', False),('state','in',('draft','sent','confirmed'))]</field>
+        </record>
+        
+        <menuitem action="maize_purchase_order_action_template" id="maize_menu_purchase_template"
+            parent="purchase.menu_procurement_management"
+            sequence="3"/>
 
         <!-- Purchase Requisition Form Inherit for add field -->
         <record id="view_maize_purchase_requisition_order" model="ir.ui.view">

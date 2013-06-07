@@ -388,6 +388,14 @@ class purchase_order(osv.Model):
             result[line.order_id.id] = True
         return result.keys()
     
+    def po_genrate(self, cr, uid, ids, context=None):
+        default = {}
+        default.update({
+            'is_template': False,
+            'is_copy': True,
+        })
+        return super(purchase_order, self).copy(cr, uid, ids[0], default, context=context)
+    
     _columns = {
         'package_and_forwording': fields.float('Packing & Forwarding', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'insurance': fields.float('Insurance',  states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
@@ -435,6 +443,8 @@ class purchase_order(osv.Model):
         'our_ref': fields.char('Our Reference',size=250, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'your_ref': fields.char('Your Reference',size=250, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'other_tax_ids': fields.many2many('account.tax', 'purchase_order_other', 'other_tax_id', 'tax_id', 'Other Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'is_template': fields.boolean('Is Template', help="If it's check means this PO is template and use for recreate same PO from it."),
+        'is_copy': fields.boolean('Is Copy', help="If it's check means this PO is Copy from Template"),
     }
 
     _defaults = {

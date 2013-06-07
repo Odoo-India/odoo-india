@@ -31,4 +31,20 @@ class product_product(osv.Model):
 
 product_product()
 
+class stock_move(osv.Model):
+    _inherit = 'stock.move'
+
+    def write(self, cr, uid, ids, vals, context=None):
+        prodlot_obj = self.pool.get('stock.production.lot')
+        if vals.get('prodlot_id'):
+            prodlot = prodlot_obj.browse(cr, uid, vals.get('prodlot_id'), context=context)
+            if prodlot.product_id and prodlot.product_id.return_container and prodlot.product_id.product_container_id:
+                default = dict(product_id = prodlot.product_id.product_container_id.id)
+                new_prodlot = prodlot_obj.copy(cr, uid, vals.get('prodlot_id'), default, context=context)
+                default = dict(product_id = prodlot.product_id.product_container_id.id, product_uom = prodlot.product_id.product_container_id.uom_id.id, product_qty = 1, prodlot_id = new_prodlot)
+                [self.copy(cr, uid, id, default, context=context) for id in ids]
+        return super(stock_move, self).write(cr, uid, ids, vals, context=context)
+
+stock_move()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

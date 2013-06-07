@@ -43,9 +43,8 @@ class product_product(osv.osv):
     
     def _check_packing_cost_allowed(self, cr, uid, ids, name, args, context=None):
         res = {}
-        res_company = self.pool.get('res.company')
         for product_id in ids:
-            packing_cost_allowed = res_company.browse(cr, uid, uid, context=context).packing_cost
+            packing_cost_allowed = self.pool.get('res.company').browse(cr, uid, uid, context=context).packing_cost
             res[product_id] = packing_cost_allowed
         return res
     
@@ -70,9 +69,8 @@ class res_partner(osv.osv):
     
     def _check_dealers_discount_allowed(self, cr, uid, ids, name, args, context=None):
         res = {}
-        res_company = self.pool.get('res.company')
         for partner_id in ids:
-            dealers_discount_allowed = res_company.browse(cr, uid, uid, context=context).dealers_discount
+            dealers_discount_allowed = self.pool.get('res.company').browse(cr, uid, uid, context=context).dealers_discount
             res[partner_id] = dealers_discount_allowed
         return res
     
@@ -164,8 +162,7 @@ class sale_order(osv.osv):
         return super(sale_order, self).copy(cr, uid, id, default, context=context)
     
     def _amount_line_tax(self, cr, uid, line, context=None):
-        sale_order_line_obj = self.pool.get('sale.order.line')
-        packing_cost_allowed = sale_order_line_obj.browse(cr, uid, line.id, context=context).order_id.company_id.packing_cost
+        packing_cost_allowed = self.pool.get('sale.order.line').browse(cr, uid, line.id, context=context).order_id.company_id.packing_cost
         if packing_cost_allowed:
             val = 0.0
             for c in self.pool.get('account.tax').compute_all(cr, uid, line.tax_id, (line.price_unit + line.packing_amount) * (1 - (line.discount or 0.0) / 100.0), line.product_uom_qty, line.product_id, line.order_id.partner_id)['taxes']:
@@ -211,7 +208,6 @@ class sale_order(osv.osv):
         """ create invoices for the given sales orders (ids), and open the form
             view of one of the newly created invoices
         """
-        mod_obj = self.pool.get('ir.model.data')
         wf_service = netsvc.LocalService("workflow")
 
         # create invoices through the sales orders' workflow
@@ -222,7 +218,7 @@ class sale_order(osv.osv):
         # determine newly created invoices
         new_inv_ids = list(inv_ids1 - inv_ids0)
         self.write(cr, uid, ids[0], {'invoice_id': new_inv_ids[0]}, context=context)
-        res = mod_obj.get_object_reference(cr, uid, 'account', 'invoice_form')
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'account', 'invoice_form')
         res_id = res and res[1] or False,
 
         return {
@@ -289,7 +285,6 @@ class sale_order_line(osv.osv):
             lang=lang, update_tax=update_tax, date_order=date_order, packaging=packaging, fiscal_position=fiscal_position, flag=flag, context=context)
         context = context or {}
         lang = lang or context.get('lang', False)
-        partner_obj = self.pool.get('res.partner')
         product_obj = self.pool.get('product.product')
         if product:
             packing_cost_allowed = product_obj.browse(cr, uid, product, context=context).company_id.packing_cost
@@ -297,7 +292,7 @@ class sale_order_line(osv.osv):
             # Dealer's Discount Feature
             if dealers_discount_allowed:
                 if partner_id:
-                    partner_rec = partner_obj.browse(cr, uid, partner_id, context=context)
+                    partner_rec = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
                     if partner_rec.dealer_id:
                         res['value']['lst_price'] = res['value']['price_unit']
                         res['value']['price_unit'] = 0.0
@@ -471,7 +466,6 @@ class stock_picking(osv.osv):
     
     def action_invoice_create(self, cr, uid, ids, journal_id=False,
             group=False, type='out_invoice', context=None):
-        sale_order_obj = self.pool.get('sale.order')
         
         for picking_id in ids:
             sale_id = self.browse(cr, uid, picking_id, context=context).sale_id.id
@@ -481,7 +475,7 @@ class stock_picking(osv.osv):
         
         for key in res:
             invoice_id = res[key]
-        sale_order_obj.write(cr, uid, sale_id, {'invoice_id': invoice_id}, context=context)
+        self.pool.get('sale.order').write(cr, uid, sale_id, {'invoice_id': invoice_id}, context=context)
         return res
         
     
@@ -674,7 +668,6 @@ class account_invoice_line(osv.osv):
     
     def product_id_change(self, cr, uid, ids, product, uom_id, qty=0, name='', type='out_invoice', partner_id=False, fposition_id=False, price_unit=False, currency_id=False, context=None, company_id=None):
         res = super(account_invoice_line, self).product_id_change(cr, uid, ids, product, uom_id, qty=qty, name=name, type=type, partner_id=partner_id, fposition_id=fposition_id, price_unit=price_unit, currency_id=currency_id, context=context, company_id=company_id)
-        partner_obj = self.pool.get('res.partner')
         product_obj = self.pool.get('product.product')
 
         if product:
@@ -683,7 +676,7 @@ class account_invoice_line(osv.osv):
             
             # Dealer's Discount Feature
             if dealers_discount_allowed:
-                partner_rec = partner_obj.browse(cr, uid, partner_id, context=context)
+                partner_rec = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
                 if not partner_rec.dealer_id:
                     res['value']['price_unit'] = res['value']['price_unit']
                 else:

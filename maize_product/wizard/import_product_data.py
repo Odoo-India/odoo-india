@@ -172,6 +172,7 @@ class import_product_data(osv.osv_memory):
                         #"last_po_no":"LPONUMBER",
                         'last_supplier_code':last_supplier_code,
                         'last_supplier_rate':last_supplier_rate,
+                        'list_price':last_supplier_rate,
                         'last_po_series':last_po_series,
                         'type':type,
                         'purchase_requisition':purchase_requisition,
@@ -186,8 +187,8 @@ class import_product_data(osv.osv_memory):
                     product_pool.create(cr, uid, vals, context)
                     i = i+1
                     print ">>>>>>>>>>>>>>",i
-#                 else:
-#                     product_pool.write(cr, uid, prod[0],{'last_issue_date':last_issue_date}, context)
+                else:
+                    product_pool.write(cr, uid, prod[0],{'list_price':last_supplier_rate}, context)
             except:
                 rejected.append(data['ITEMCODE'])
                 _logger.warning("Skipping Record with Itemcode code '%s'."%(data['ITEMCODE']), exc_info=True)

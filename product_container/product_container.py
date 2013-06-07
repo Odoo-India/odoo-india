@@ -41,7 +41,7 @@ class stock_move(osv.Model):
             if prodlot.product_id and prodlot.product_id.return_container and prodlot.product_id.product_container_id:
                 default = dict(product_id = prodlot.product_id.product_container_id.id)
                 new_prodlot = prodlot_obj.copy(cr, uid, vals.get('prodlot_id'), default, context=context)
-                default = dict(product_id = prodlot.product_id.product_container_id.id, product_uom = prodlot.product_id.product_container_id.uom_id.id, product_qty = 1, prodlot_id = new_prodlot)
+                default = dict(product_id = prodlot.product_id.product_container_id.id, product_uom = prodlot.product_id.product_container_id.uom_id.id, product_qty = 1, prodlot_id = new_prodlot, state = 'assigned')
                 [self.copy(cr, uid, id, default, context=context) for id in ids]
         return super(stock_move, self).write(cr, uid, ids, vals, context=context)
 

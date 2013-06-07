@@ -46,7 +46,8 @@ class import_product_supp_data(osv.osv_memory):
 
     #TODO:FIX ME TO FIND INDENT
     def import_product_supp_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ashvin/Desktop/script/ITEM_MASTER_SUPPLIERWISE.csv"
+        file_path = "/home/ara/Desktop/script/ITEM_MASTER_SUPPLIERWISE.csv"
+        
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -58,10 +59,21 @@ class import_product_supp_data(osv.osv_memory):
         product_pool =self.pool.get('product.supplierinfo')
         indent = []
         rejected =[]
-#        pr = self.pool.get('product.product').search(cr,uid,[('state','=','draft')])
-#        print "prprprprprprprprprprprpr", pr
 #        self.pool.get('product.product').write(cr,uid,pr,{'state':'done'})
-        
+        #set undefine supplier on all product where seller is none
+#         prod = self.pool.get('product.product').search(cr,uid,[])
+#         for p in prod:
+#             seller = self.pool.get('product.product').browse(cr,uid,p).seller_ids
+#             if seller == []:
+#                 s = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])[0]
+#                 vals = {
+#                         'product_id':p,
+#                         'name':s,
+#                         'min_qty':0,
+#                         'delay':1,
+#                         }
+#                 product_pool.create(cr, uid, vals, context)
+
         for data in data_lines:
             try:
                 default_code = data["ITEMCODE"].strip()

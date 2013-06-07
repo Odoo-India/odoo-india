@@ -391,8 +391,11 @@
           <td>
             <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.default_code) or '' ]]</para>
             <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.name) or '' ]]</para>
-            <para style="terp_default_9">Purpose: [[ (order_line.name) or '']] </para>
-            <para style="terp_default_9">Specification: [[ (order_line.specification) or '' ]]</para>
+            <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.desc2) or '' ]]</para>
+            <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.desc3) or '' ]]</para>
+            <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.desc4) or '' ]]</para>
+            <!--para style="terp_default_9">Purpose: [[ (order_line.name) or '']] </para-->
+            <!--para style="terp_default_9">Specification: [[ (order_line.specification) or '' ]]</para-->
           </td>
           <td>
             <para style="terp_default_9"> [[ (order_line.product_id and order_line.product_id.uom_id.name) or '' ]]</para>

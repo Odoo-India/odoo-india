@@ -539,7 +539,9 @@
           <td>
             <para style="terp_default_9">[[ order_line.product_id.default_code ]] </para>
             <para style="terp_default_9">[[ order_line.product_id.name ]] </para>
-            <para style="terp_default_9">[[ order_line.product_id.desc2]] [[order_line.product_id.desc3]] [[order_line.product_id.desc4]]</para>
+            <para style="terp_default_9">[[ order_line.product_id.desc2 or removeParentNode('para')]]</para>
+            <para style="terp_default_9">[[ order_line.product_id.desc3 or removeParentNode('para') ]] </para>
+            <para style="terp_default_9">[[ order_line.product_id.desc4 or removeParentNode('para') ]] </para>
             <para style="terp_default_8"> <font color="white"> </font> </para>
             <para style="terp_default_9"> [[order_line.name]] </para>
           </td>
@@ -1112,7 +1114,9 @@
           <td>
             <para style="terp_default_9">[[ order_line.product_id.default_code ]] </para>
             <para style="terp_default_9">[[ order_line.product_id.name ]] </para>
-            <para style="terp_default_9"> [[ order_line.product_id.desc2]] [[order_line.product_id.desc3]] [[order_line.product_id.desc4]]</para>
+            <para style="terp_default_9">[[ order_line.product_id.desc2 or removeParentNode('para')]]</para>
+            <para style="terp_default_9">[[ order_line.product_id.desc3 or removeParentNode('para') ]] </para>
+            <para style="terp_default_9">[[ order_line.product_id.desc4 or removeParentNode('para') ]] </para>            
             <para style="terp_default_8"> <font color="white"> </font> </para>
             <para style="terp_default_9"> [[order_line.name]] </para>
           </td>
@@ -1685,7 +1689,9 @@
           <td>
             <para style="terp_default_9">[[ order_line.product_id.default_code ]] </para>
             <para style="terp_default_9">[[ order_line.product_id.name ]] </para>
-            <para style="terp_default_9"> [[ order_line.product_id.desc2]] [[order_line.product_id.desc3]] [[order_line.product_id.desc4]]</para>
+            <para style="terp_default_9">[[ order_line.product_id.desc2 or removeParentNode('para')]]</para>
+            <para style="terp_default_9">[[ order_line.product_id.desc3 or removeParentNode('para') ]] </para>
+            <para style="terp_default_9">[[ order_line.product_id.desc4 or removeParentNode('para') ]] </para>            
             <para style="terp_default_8"> <font color="white"> </font> </para>
             <para style="terp_default_9"> [[order_line.name]] </para>
           </td>

@@ -287,8 +287,9 @@ class sale_order_line(osv.osv):
         lang = lang or context.get('lang', False)
         product_obj = self.pool.get('product.product')
         if product:
-            packing_cost_allowed = product_obj.browse(cr, uid, product, context=context).company_id.packing_cost
-            dealers_discount_allowed = product_obj.browse(cr, uid, product, context=context).company_id.dealers_discount
+            product_product_obj = product_obj.browse(cr, uid, product, context=context)
+            packing_cost_allowed = product_product_obj.company_id.packing_cost
+            dealers_discount_allowed = product_product_obj.company_id.dealers_discount
             # Dealer's Discount Feature
             if dealers_discount_allowed:
                 if partner_id:
@@ -376,8 +377,9 @@ class sale_order_line_make_invoice(osv.osv_memory):
                 pay_term = False
             delivery_ids = stock_picking_obj.search(cr, uid, [('sale_id', '=', order.id)])
             for delivery_id in delivery_ids:
-                delivery_date = stock_picking_obj.browse(cr, uid, delivery_id, context=context).date_done
-                delivery_name = stock_picking_obj.browse(cr, uid, delivery_id, context=context).name
+                delivery = stock_picking_obj.browse(cr, uid, delivery_id, context=context)
+                delivery_date = delivery.date_done
+                delivery_name = delivery.name
             inv = {
                 'name': order.name,
                 'origin': order.name,
@@ -492,8 +494,9 @@ class stock_picking(osv.osv):
         res = super(stock_picking, self)._prepare_invoice_line(cr, uid, group, picking, move_line, invoice_id,
         invoice_vals, context=context)
         
-        dealers_discount_allowed = self.browse(cr, uid, picking.id, context=context).company_id.dealers_discount
-        packing_cost_allowed = self.browse(cr, uid, picking.id, context=context).company_id.packing_cost
+        stock_picking_obj = self.browse(cr, uid, picking.id, context=context)
+        dealers_discount_allowed = stock_picking_obj.company_id.dealers_discount
+        packing_cost_allowed = stock_picking_obj.company_id.packing_cost
         
         # Dealer's Discount Feature
         if dealers_discount_allowed:
@@ -648,6 +651,7 @@ class account_invoice_line(osv.osv):
     _inherit = 'account.invoice.line'
 
     def _amount_line(self, cr, uid, ids, prop, unknow_none, unknow_dict):
+        print "called amount line ......"
         res = super(account_invoice_line, self)._amount_line(cr, uid, ids, prop, unknow_none, unknow_dict)
         packing_cost_allowed = False
         for invoice_line_id in ids:
@@ -655,8 +659,10 @@ class account_invoice_line(osv.osv):
                 packing_cost_allowed = self.browse(cr, uid, invoice_line_id).invoice_id.company_id.packing_cost
         if packing_cost_allowed:
             for account_invoice_line_id in res:
-                qty = self.browse(cr, uid, account_invoice_line_id).quantity
-                packing_amount = self.browse(cr, uid, account_invoice_line_id).packing_amount
+                print "in ifffffffffffff  ......"
+                account_invoice_line_obj = self.browse(cr, uid, account_invoice_line_id) 
+                qty = account_invoice_line_obj.quantity
+                packing_amount = account_invoice_line_obj.packing_amount
                 res[account_invoice_line_id] += qty * packing_amount
         return res
     
@@ -806,8 +812,9 @@ class purchase_order(osv.osv):
         account_invoice_obj = self.pool.get('account.invoice')
         freight_allowed = False
         for purchase_order_id in ids:
-            freight_allowed = self.browse(cr, uid, purchase_order_id, context=context).company_id.freight
-            inward_freight = self.browse(cr, uid, purchase_order_id, context=context).inward_freight
+            purchase_order_obj = self.browse(cr, uid, purchase_order_id, context=context)
+            freight_allowed = purchase_order_obj.company_id.freight
+            inward_freight = purchase_order_obj.inward_freight
         if freight_allowed:
             account_invoice_obj.write(cr, uid, res, {'freight_charge': inward_freight}, context=context)
             account_invoice_obj.button_compute(cr, uid, [res], context=context, set_total=True)

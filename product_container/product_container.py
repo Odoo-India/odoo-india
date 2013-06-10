@@ -31,20 +31,22 @@ class product_product(osv.Model):
 
 product_product()
 
-class stock_move(osv.Model):
-    _inherit = 'stock.move'
+class stock_picking_in(osv.Model):
+    _inherit = 'stock.picking.in'
 
-    def write(self, cr, uid, ids, vals, context=None):
+    def action_process(self, cr, uid, ids, context=None):
         prodlot_obj = self.pool.get('stock.production.lot')
-        if vals.get('prodlot_id'):
-            prodlot = prodlot_obj.browse(cr, uid, vals.get('prodlot_id'), context=context)
-            if prodlot.product_id and prodlot.product_id.return_container and prodlot.product_id.product_container_id:
-                default = dict(product_id = prodlot.product_id.product_container_id.id)
-                new_prodlot = prodlot_obj.copy(cr, uid, vals.get('prodlot_id'), default, context=context)
-                default = dict(product_id = prodlot.product_id.product_container_id.id, product_uom = prodlot.product_id.product_container_id.uom_id.id, product_qty = 1, prodlot_id = new_prodlot, state = 'assigned')
-                [self.copy(cr, uid, id, default, context=context) for id in ids]
-        return super(stock_move, self).write(cr, uid, ids, vals, context=context)
+        move_obj = self.pool.get('stock.move')
+        for picking in self.browse(cr, uid, ids, context=context):
+            if picking.type == 'in':
+                for move in picking.move_lines:
+                    if move.prodlot_id and move.product_id and move.product_id.return_container and move.product_id.product_container_id:
+                        default = dict(product_id = move.product_id.product_container_id.id)
+                        new_prodlot = prodlot_obj.copy(cr, uid, move.prodlot_id.id, default, context=context)
+                        default = dict(product_id = move.product_id.product_container_id.id, product_uom = move.product_id.product_container_id.uom_id.id, product_qty = 1, prodlot_id = new_prodlot, state = 'assigned')
+                        move_obj.copy(cr, uid, move.id, default, context=context)
+        return super(stock_picking_in, self).action_process(cr, uid, ids, context=context)
 
-stock_move()
+stock_picking_in()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

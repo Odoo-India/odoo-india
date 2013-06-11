@@ -53,6 +53,9 @@ Reports
         'l10n_in_tax_retail_invoice_view.xml',
         'res_config_view.xml',
     ],
+    'test':[
+        'test/purchase_order.yml',
+    ],
     'installable': True,
     'auto_install': False,
 }

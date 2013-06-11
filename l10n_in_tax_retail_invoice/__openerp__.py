@@ -55,6 +55,7 @@ Reports
     ],
     'test':[
         'test/purchase_order.yml',
+        'test/sale_order.yml',
     ],
     'installable': True,
     'auto_install': False,

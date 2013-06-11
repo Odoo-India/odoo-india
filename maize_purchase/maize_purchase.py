@@ -722,17 +722,17 @@ class stock_picking(osv.Model):
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
                         dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                        if move.product_id and move.product_id.ex_chapter:
+                            vals.update({'excisable_item': True})
                     vals= {'inward_id': pick.id or False}
-                    if move.product_id and move.product_id.ex_chapter:
-                        vals.update({'excisable_item': True})
                 else:
                     for move in pick.backorder_id.move_lines:
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
                         dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                        if move.product_id and move.product_id.ex_chapter:
+                            vals.update({'excisable_item': True})
                     vals= {'inward_id': pick.backorder_id and pick.backorder_id.id or False}
-                    if move.product_id and move.product_id.ex_chapter:
-                        vals.update({'excisable_item': True})
                 vals.update({'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                         'partner_id': pick.partner_id.id,
                         'stock_journal_id': pick.stock_journal_id or False,
@@ -782,9 +782,11 @@ class stock_picking_receipt(osv.Model):
                 diff += line.diff
                 total += line.amount
                 import_duty += line.import_duty
+            if receipt.purchase_id:
+                total = receipt.purchase_id.amount_total
             result[receipt.id]['total_diff'] = diff + import_duty
             result[receipt.id]['amount_subtotal'] = total
-            result[receipt.id]['amount_total'] = total - ( diff + import_duty)
+            result[receipt.id]['amount_total'] = total + ( diff + import_duty)
         return result
     
     def button_dummy(self, cr, uid, ids, context=None):
@@ -910,6 +912,7 @@ class stock_move(osv.osv):
             'today': fields.function(_get_today, string="Today Date",type="date"),
             # required=False because we change product on_change in po line so it come black in some case
             'name': fields.char('Description', select=True),
+            'challan_qty': fields.float('Challan Quantity', digits_compute=dp.get_precision('Product Unit of Measure'),states={'done': [('readonly', True)]},help="This Quntity is used for backorder and actual received quntity"),
                 }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
@@ -971,8 +974,8 @@ class stock_move(osv.osv):
             new_tax.update({'amount': (line.price_unit* move.product_qty) + tax_main+child_tax,'rate': line.price_unit})
         return {'value': new_tax}
     
-    def onchange_excise(self, cr, uid, ids, excise, context=None):
-        return {'value': {'excise': excise or 0.0, 'cenvat':excise or 0.0}}
+    def onchange_excise(self, cr, uid, ids, excise, cess, high_cess,import_duty, context=None):
+        return {'value': {'excise': excise or 0.0, 'cenvat':excise or 0.0, 'cess': cess or 0.0, 'c_cess': cess or 0.0, 'high_cess': high_cess or 0.0, 'c_high_cess': high_cess or 0.0, 'import_duty': import_duty or 0.0, 'import_duty1': import_duty or 0.0}}
 
 stock_move()
 
@@ -1050,3 +1053,19 @@ class stock_partial_picking(osv.osv_memory):
         if 'date' in fields:
             res.update(date=time.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
         return res
+    
+    def _partial_move_for(self, cr, uid, move):
+        partial_move = {
+            'product_id' : move.product_id.id,
+            'quantity' : move.challan_qty if move.state == 'assigned' else 0,
+            'product_uom' : move.product_uom.id,
+            'prodlot_id' : move.prodlot_id.id,
+            'move_id' : move.id,
+            'location_id' : move.location_id.id,
+            'location_dest_id' : move.location_dest_id.id,
+        }
+        if partial_move.get('quantity',False) == 0.0 :
+            raise osv.except_osv(_('Configuration Error!'), _('Please Enter the challan quantity'))
+        if move.picking_id.type == 'in' and move.product_id.cost_method == 'average':
+            partial_move.update(update_cost=True, **self._product_cost_for_average_update(cr, uid, move))
+        return partial_move

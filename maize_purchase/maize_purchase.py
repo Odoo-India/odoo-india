@@ -76,7 +76,21 @@ class stock_picking_in(osv.osv):
         'maize_in': fields.char('Maize', size=256, readonly=True),
             
     }
+
+    def create(self, cr, uid, vals, context=None):
+        vals['name'] = False
+        return super(stock_picking_in, self).create(cr, uid, vals, context=context)
+
 stock_picking_in()
+
+class stock_picking_out(osv.Model):
+    _inherit = 'stock.picking.out'
+
+    def create(self, cr, uid, vals, context=None):
+        vals['name'] = False
+        return super(stock_picking_out, self).create(cr, uid, vals, context=context)
+
+stock_picking_out()
 
 class purchase_order_line(osv.Model):
     _inherit = 'purchase.order.line'
@@ -737,7 +751,11 @@ class stock_picking(osv.Model):
             'excisable_item': fields.boolean('Excisable Item'),
             'warehouse_id': fields.related('purchase_id', 'warehouse_id', type='many2one', relation='stock.warehouse', string='Destination Warehouse'),
                 }
-    
+
+    def create(self, cr, uid, vals, context=None):
+        vals['name'] = False
+        return super(stock_picking, self).create(cr, uid, vals, context=context)
+
     def do_partial(self, cr, uid, ids, partial_datas, context=None):
         receipt_obj = self.pool.get('stock.picking.receipt')
         stock_move = self.pool.get('stock.move')

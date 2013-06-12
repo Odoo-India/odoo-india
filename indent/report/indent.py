@@ -117,6 +117,7 @@ class indent(report_sxw.rml_parse):
         stock_obj = self.pool.get('stock.move')
         stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'internal'),('state', '=', 'done'), ('create_date', '<=', date)])
         stock_id = sorted(stock_id,reverse=True)
+        self.get_value.update({'date':'','department':''})
         if stock_id and len(stock_id) >= 2:
             pick = stock_obj.browse(self.cr, self.uid, stock_id[1])
             self.get_value.update({'date': pick.picking_id.date.split(' ')[0], 'department' : pick.location_dest_id.name})

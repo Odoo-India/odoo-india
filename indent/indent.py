@@ -876,7 +876,7 @@ class procurement_order(osv.osv):
                 'product_uom': uom_id,
                 'price_unit': price or 0.0,
                 'date_planned': schedule_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                'move_dest_id': res_id,
+                'move_dest_id': False,
                 'taxes_id': [(6,0,taxes)],
             }
             name = seq_obj.get(cr, uid, 'purchase.order') or _('PO: %s') % procurement.name

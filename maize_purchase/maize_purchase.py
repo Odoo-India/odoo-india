@@ -824,7 +824,7 @@ class stock_picking_receipt(osv.Model):
         return self.pool.get('stock.picking')._workflow_signal(cr, uid, ids, signal, context=context)
 
     def _total_amount(self, cr, uid, ids, name, args, context=None):
-        result = dict([(id, {'amount_total':0.0,'total_diff':0.0,'amount_subtotal':0.0}) for id in ids])
+        result = dict([(id, {'amount_total':0.0,'total_diff':0.0,'amount_subtotal':0.0, 'import_duty':0.0}) for id in ids])
         for receipt in self.browse(cr, uid, ids, context=context):
             total = 0.0
             diff = 0.0
@@ -833,7 +833,8 @@ class stock_picking_receipt(osv.Model):
                 diff += line.diff
                 total += line.amount
                 import_duty += line.import_duty
-            result[receipt.id]['total_diff'] = diff + import_duty
+            result[receipt.id]['total_diff'] = diff 
+            result[receipt.id]['import_duty'] = import_duty
             result[receipt.id]['amount_subtotal'] = total
             result[receipt.id]['amount_total'] = total + ( diff + import_duty)
         return result
@@ -868,10 +869,11 @@ class stock_picking_receipt(osv.Model):
                  * Cancelled: has been cancelled, can't be confirmed anymore"""),
         'party_id': fields.many2one('res.partner', 'Excisable Party Name'),
         'amount_total': fields.function(_total_amount, multi="cal",type="float", string='Total', store=True),
-        'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff(computed as (Diff + Import Duty))", store=True),
+        'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff", store=True),
         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
         'department_id': fields.related('purchase_id', 'indent_id', 'department_id', type="many2one", relation="stock.location", store=True),
         'maize_receipt': fields.char('Maize', size=256, readonly=True),
+        'import_duty': fields.function(_total_amount, multi="cal", type="float", string='Import Duty', help="Total Import Duty", store=True),
     }
     _defaults = {
         'type': 'receipt',

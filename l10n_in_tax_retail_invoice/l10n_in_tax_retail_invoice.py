@@ -625,29 +625,6 @@ class account_invoice(osv.osv):
         'freight_allowed': lambda self, cr, uid, context: self.pool.get('res.company').browse(cr, uid, uid, context=context).freight,
      }
     
-#    def button_reset_taxes(self, cr, uid, ids, context=None):
-#        if context is None:
-#            context = {}
-#        ctx = context.copy()
-#        ait_obj = self.pool.get('account.invoice.tax')
-#        for id in ids:
-#            cr.execute("DELETE FROM account_invoice_tax WHERE invoice_id=%s AND manual is False", (id,))
-#            partner = self.browse(cr, uid, id, context=ctx).partner_id
-#            if partner.lang:
-#                ctx.update({'lang': partner.lang})
-#            for taxe in ait_obj.compute(cr, uid, id, context=ctx).values():
-#                ait_obj.create(cr, uid, taxe)
-#        # Update the stored value (fields.function), so we write to trigger recompute
-#        self.pool.get('account.invoice').write(cr, uid, ids, {'invoice_line':[]}, context=ctx)
-#        return True
-#
-#    def button_compute(self, cr, uid, ids, context=None, set_total=False):
-#        self.button_reset_taxes(cr, uid, ids, context)
-#        for inv in self.browse(cr, uid, ids, context=context):
-#            if set_total:
-#                self.pool.get('account.invoice').write(cr, uid, [inv.id], {'check_total': inv.amount_total})
-#        return True
-    
 class account_invoice_line(osv.osv):
     
     _inherit = 'account.invoice.line'
@@ -760,11 +737,6 @@ class account_invoice_tax(osv.osv):
 
 class purchase_order(osv.osv):
     _inherit = 'purchase.order'
-    
-#    def amount_to_text(self, amount):
-#        amount_in_word = amount_to_text(amount)
-#        amount_in_word = amount_in_word.replace("euro", "Rupees").replace("Cents", "Paise").replace("Cent", "Paise")
-#        return amount_in_word
     
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         res = super(purchase_order, self)._amount_all(cr, uid, ids, field_name, arg, context=context)

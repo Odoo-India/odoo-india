@@ -42,6 +42,14 @@ class product_product(osv.osv):
     _inherit = "product.product"
     
     def _check_packing_cost_allowed(self, cr, uid, ids, name, args, context=None):
+        '''
+        This function allows us to use Packing Cost Features. 
+
+        :param ids: list of product record ids.
+        :param name : browse name fields of packing_cost_allowed
+        :returns: True or False value of Packing Cost of company. 
+        :rtype: dict
+        '''
         res = {}
         for product_id in ids:
             packing_cost_allowed = self.pool.get('res.company').browse(cr, uid, uid, context=context).packing_cost
@@ -68,6 +76,13 @@ class res_partner(osv.osv):
     _inherit = "res.partner"
     
     def _check_dealers_discount_allowed(self, cr, uid, ids, name, args, context=None):
+        '''
+        This function allows us to use dealers discount feature.
+
+        :param ids: list of partner record ids. 
+        :returns: True or False value of dealers discount of company
+        :rtype: dict of true and false value
+        '''
         res = {}
         for partner_id in ids:
             dealers_discount_allowed = self.pool.get('res.company').browse(cr, uid, uid, context=context).dealers_discount
@@ -89,6 +104,9 @@ class res_partner(osv.osv):
          'dealers_discount_allowed': lambda self, cr, uid, context: self.pool.get('res.company').browse(cr, uid, uid, context=context).dealers_discount,
     }
     def _check_recursion(self, cr, uid, ids, context=None):
+        """
+        Set constraints to cannot create recursive dealers.
+        """
         level = 100
         while len(ids):
             cr.execute('select distinct dealer_id from res_partner where id IN %s',(tuple(ids),))
@@ -140,6 +158,12 @@ class sale_order(osv.osv):
     _inherit = "sale.order"
     
     def _get_pack_total(self, cr, uid, ids, name, arg, context=None):
+        '''
+        The purpose of this function is to build and return packing_total and dealers_disc
+        :param ids: list of sale order ids
+        :returns: packing_total and dealers_disc
+        :rtype: dictionary
+        '''
         res = {}
         tot_diff = 0.0
         for sale in self.browse(cr, uid, ids, context=context):
@@ -155,6 +179,10 @@ class sale_order(osv.osv):
 
     
     def copy(self, cr, uid, id, default=None, context=None):
+        """
+        override orm copy method.
+        cannot duplicate invoice for sale order.
+        """
         default = default or {}
         default.update({
             'invoice_id':False,
@@ -162,6 +190,12 @@ class sale_order(osv.osv):
         return super(sale_order, self).copy(cr, uid, id, default, context=context)
     
     def _amount_line_tax(self, cr, uid, line, context=None):
+        '''
+        The purpose of this function is calculate amount with tax       
+        :param line: browse the record of sale.order.line
+        :returns: amount val
+        :rtype: int
+        '''
         packing_cost_allowed = self.pool.get('sale.order.line').browse(cr, uid, line.id, context=context).order_id.company_id.packing_cost
         if packing_cost_allowed:
             val = 0.0
@@ -171,10 +205,22 @@ class sale_order(osv.osv):
         return super(sale_order, self)._amount_line_tax(cr, uid, line, context=context)
     
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
+        '''
+        The purpose of this function is Calculate a amount, untaxed and tax   
+        :param ids: list of sale order record ids.
+        :returns: amount_total, amount_untaxed,amount_tax
+        :rtype: dictionary
+        '''
         res = super(sale_order, self)._amount_all(cr, uid, ids, field_name, arg, context=context)
         return res
     
     def _get_order(self, cr, uid, ids, context=None):
+        '''
+        The purpose of this function to reculated amount total.  
+        :param ids: list of sale order line record ids
+        :returns: Recalculated sale order id
+        :rtype: int
+        '''        
         res = super(sale_order, self.pool.get('sale.order'))._get_order(cr, uid, ids, context=context)
         return res
     

@@ -23,7 +23,7 @@ import time
 from lxml import etree
 
 from openerp.osv import fields, osv
-from tools.amount_to_text_en import amount_to_text
+from openerp.tools.amount_to_text_en import amount_to_text
 from openerp.tools.translate import _
 from openerp import netsvc
 import openerp.addons.decimal_precision as dp

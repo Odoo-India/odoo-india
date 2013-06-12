@@ -51,7 +51,7 @@ class comparison_report(report_sxw.rml_parse):
                 freight += order.freight * line.product_qty
             for exices in self.pool.get('account.tax').compute_all(self.cr, self.uid, order.excies_ids, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
                 excise_tax += exices.get('amount', 0.0)
-            val1 += excise_tax
+            val1 = excise_tax
             for vat in self.pool.get('account.tax').compute_all(self.cr, self.uid, order.vat_ids, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
                 vat_tax += vat.get('amount', 0.0)
             val1 += vat_tax

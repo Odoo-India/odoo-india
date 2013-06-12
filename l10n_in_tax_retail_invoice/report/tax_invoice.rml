@@ -246,7 +246,7 @@
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
           <para style="P23">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.street) or '' ]] [[ (o.partner_id and o.partner_id.street2) or '']]</para>
+          <para style="P21">[[ display_address(o.partner_id) ]]</para>
         </td>
         <td>
           <para style="P10">Invoice No.</para>
@@ -259,8 +259,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_id and o.partner_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '']], [[ (o.partner_id and o.partner_id.state_id.name) or '' ]].</para>
         </td>
         <td>
           <para style="P10">Delivery Note</para>
@@ -294,7 +292,7 @@
             <font face="Helvetica" size="8.0">Consignee</font>
           </para>
           <para style="P23">[[ (o.delivery_address_id and o.delivery_address_id.title and o.delivery_address_id.title.name) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.street) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.street2)]]</para>
+          <para style="P21">[[ display_address(o.delivery_address_id) ]]</para>
         </td>
         <td>
           <para style="P10">Buyer's Order No.</para>
@@ -307,8 +305,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.city) or '' ]] - [[ (o.delivery_address_id and o.delivery_address_id.zip) or '']], [[ (o.delivery_address_id and o.delivery_address_id.state_id and o.delivery_address_id.state_id.name)]].</para>
         </td>
         <td>
           <para style="P10">Dispatch Document No.</para>
@@ -755,7 +751,7 @@
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
           <para style="P23">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.street) or '' ]] [[ (o.partner_id and o.partner_id.street2) or '']]</para>
+          <para style="P21">[[ display_address(o.partner_id) ]]</para>
         </td>
         <td>
           <para style="P10">Invoice No.</para>
@@ -768,8 +764,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_id and o.partner_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '']], [[ (o.partner_id and o.partner_id.state_id.name) or '' ]].</para>
         </td>
         <td>
           <para style="P10">Delivery Note</para>
@@ -803,7 +797,7 @@
             <font face="Helvetica" size="8.0">Consignee</font>
           </para>
           <para style="P23">[[ (o.delivery_address_id and o.delivery_address_id.title and o.delivery_address_id.title.name) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.street) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.street2)]]</para>
+          <para style="P21">[[ display_address(o.delivery_address_id) ]]</para>
         </td>
         <td>
           <para style="P10">Buyer's Order No.</para>
@@ -816,8 +810,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.city) or '' ]] - [[ (o.delivery_address_id and o.delivery_address_id.zip) or '']], [[ (o.delivery_address_id and o.delivery_address_id.state_id and o.delivery_address_id.state_id.name)]].</para>
         </td>
         <td>
           <para style="P10">Dispatch Document No.</para>
@@ -1264,7 +1256,7 @@
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
           <para style="P23">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.street) or '' ]] [[ (o.partner_id and o.partner_id.street2) or '']]</para>
+          <para style="P21">[[ display_address(o.partner_id) ]]</para>
         </td>
         <td>
           <para style="P10">Invoice No.</para>
@@ -1277,8 +1269,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_id and o.partner_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '']], [[ (o.partner_id and o.partner_id.state_id.name) or '' ]].</para>
         </td>
         <td>
           <para style="P10">Delivery Note</para>
@@ -1312,7 +1302,7 @@
             <font face="Helvetica" size="8.0">Consignee</font>
           </para>
           <para style="P23">[[ (o.delivery_address_id and o.delivery_address_id.title and o.delivery_address_id.title.name) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.street) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.street2)]]</para>
+          <para style="P21">[[ display_address(o.delivery_address_id) ]]</para>
         </td>
         <td>
           <para style="P10">Buyer's Order No.</para>
@@ -1325,8 +1315,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.city) or '' ]] - [[ (o.delivery_address_id and o.delivery_address_id.zip) or '']], [[ (o.delivery_address_id and o.delivery_address_id.state_id and o.delivery_address_id.state_id.name)]].</para>
         </td>
         <td>
           <para style="P10">Dispatch Document No.</para>
@@ -1773,7 +1761,7 @@
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
           <para style="P23">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.street) or '' ]] [[ (o.partner_id and o.partner_id.street2) or '']]</para>
+          <para style="P21">[[ display_address(o.partner_id) ]]</para>
         </td>
         <td>
           <para style="P10">Invoice No.</para>
@@ -1786,8 +1774,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_id and o.partner_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '']], [[ (o.partner_id and o.partner_id.state_id.name) or '' ]].</para>
         </td>
         <td>
           <para style="P10">Delivery Note</para>
@@ -1821,7 +1807,7 @@
             <font face="Helvetica" size="8.0">Consignee</font>
           </para>
           <para style="P23">[[ (o.delivery_address_id and o.delivery_address_id.title and o.delivery_address_id.title.name) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.street) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.street2)]]</para>
+          <para style="P21">[[ display_address(o.delivery_address_id) ]]</para>
         </td>
         <td>
           <para style="P10">Buyer's Order No.</para>
@@ -1834,8 +1820,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.city) or '' ]] - [[ (o.delivery_address_id and o.delivery_address_id.zip) or '']], [[ (o.delivery_address_id and o.delivery_address_id.state_id and o.delivery_address_id.state_id.name)]].</para>
         </td>
         <td>
           <para style="P10">Dispatch Document No.</para>

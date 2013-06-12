@@ -241,7 +241,7 @@
       <font color="white">.............................................................</font>
       <font face="Helvetica" size="7.0">(Original)</font>
     </para>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table9">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table9">
       <tr>
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
@@ -285,7 +285,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table10">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table10">
       <tr>
         <td>
           <para style="P17">
@@ -329,7 +329,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,300.0" style="Table11">
+    <blockTable colWidths="210.0,320.0" style="Table11">
       <tr>
         <td>
           <para style="P1">
@@ -699,7 +699,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="334.0,197.0" style="Table8">
+    <blockTable colWidths="334.0,205.0" style="Table8">
       <tr>
         <td>
           <para style="terp_default_9">Declaration</para>
@@ -746,7 +746,7 @@
       <font color="white">..........................................................</font>
       <font face="Helvetica" size="7.0">(Duplicate)</font>
     </para>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table9">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table9">
       <tr>
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
@@ -790,7 +790,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table10">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table10">
       <tr>
         <td>
           <para style="P17">
@@ -834,7 +834,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,300.0" style="Table11">
+    <blockTable colWidths="210.0,320.0" style="Table11">
       <tr>
         <td>
           <para style="P1">
@@ -1204,7 +1204,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="334.0,197.0" style="Table8">
+    <blockTable colWidths="334.0,205.0" style="Table8">
       <tr>
         <td>
           <para style="terp_default_9">Declaration</para>
@@ -1251,7 +1251,7 @@
       <font color="white">.........................................................</font>
       <font face="Helvetica" size="7.0">(Triplicate)</font>
     </para>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table9">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table9">
       <tr>
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
@@ -1295,7 +1295,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table10">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table10">
       <tr>
         <td>
           <para style="P17">
@@ -1339,7 +1339,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,300.0" style="Table11">
+    <blockTable colWidths="210.0,320.0" style="Table11">
       <tr>
         <td>
           <para style="P1">
@@ -1709,7 +1709,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="334.0,197.0" style="Table8">
+    <blockTable colWidths="334.0,205.0" style="Table8">
       <tr>
         <td>
           <para style="terp_default_9">Declaration</para>
@@ -1756,7 +1756,7 @@
       <font color="white">........................................................</font>
       <font face="Helvetica" size="7.0">(Extra Copy)</font>
     </para>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table9">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table9">
       <tr>
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
@@ -1800,7 +1800,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table10">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table10">
       <tr>
         <td>
           <para style="P17">
@@ -1844,7 +1844,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,300.0" style="Table11">
+    <blockTable colWidths="210.0,320.0" style="Table11">
       <tr>
         <td>
           <para style="P1">
@@ -2214,7 +2214,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="334.0,197.0" style="Table8">
+    <blockTable colWidths="334.0,205.0" style="Table8">
       <tr>
         <td>
           <para style="terp_default_9">Declaration</para>

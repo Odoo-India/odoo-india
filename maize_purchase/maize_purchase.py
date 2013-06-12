@@ -331,7 +331,7 @@ class purchase_order(osv.Model):
                 val = excise_tax+val1
                 res[order.id]['excise_total'] = val
                 for vat in self.pool.get('account.tax').compute_all(cr, uid, order.vat_ids, val, 1, line.product_id, order.partner_id)['taxes']:
-                    vat_tax += vat.get('amount', 0.0)
+                    vat_tax = vat.get('amount', 0.0)
                 res[order.id]['vat_amount'] = vat_tax
                 val += vat_tax
                 res[order.id]['vat_total'] = val
@@ -815,8 +815,6 @@ class stock_picking_receipt(osv.Model):
                 diff += line.diff
                 total += line.amount
                 import_duty += line.import_duty
-            if receipt.purchase_id:
-                total = receipt.purchase_id.amount_total
             result[receipt.id]['total_diff'] = diff + import_duty
             result[receipt.id]['amount_subtotal'] = total
             result[receipt.id]['amount_total'] = total + ( diff + import_duty)

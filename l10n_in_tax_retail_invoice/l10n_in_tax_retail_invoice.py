@@ -85,8 +85,7 @@ class res_partner(osv.osv):
         '''
         res = {}
         for partner_id in ids:
-            dealers_discount_allowed = self.pool.get('res.company').browse(cr, uid, uid, context=context).dealers_discount
-            res[partner_id] = dealers_discount_allowed
+            res[partner_id] = self.pool.get('res.company').browse(cr, uid, uid, context=context).dealers_discount
         return res
     
     _columns = {

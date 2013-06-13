@@ -599,11 +599,11 @@ class account_invoice(osv.osv):
         return res
     
     def _get_invoice_tax(self, cr, uid, ids, context=None):
-        res = super(account_invoice, self)._get_invoice_tax(cr, uid, ids, context=context)
+        res = super(account_invoice, self.pool.get('account.invoice'))._get_invoice_tax(cr, uid, ids, context=context)
         return res
     
     def _get_invoice_line(self, cr, uid, ids, context=None):
-        res = super(account_invoice, self)._get_invoice_line(cr, uid, ids, context=context)
+        res = super(account_invoice, self.pool.get('account.invoice'))._get_invoice_line(cr, uid, ids, context=context)
         return res
     
     def _get_pack_total(self, cursor, user, ids, name, arg, context=None):

@@ -1,5 +1,5 @@
 -
-  I create a Purchase Order
+  I create a Purchase Order with cost price 13.0.
 -
   !record {model: purchase.order, id: purchase_order_1}:
     partner_id: base.res_partner_3
@@ -10,16 +10,32 @@
         product_qty: 1.0
         price_unit: 13.0
 -
-  I confirm the purchase order
+  I confirm the purchase order and supplier invoice is created.
 -
   !workflow {model: purchase.order, ref: purchase_order_1, action: purchase_confirm}
 -
- In order to test the PDF reports defined on an invoice, we will print an Invoice Report
+  I check that the untaxed Amount should be 13.0, Inward Freight should be 5.0, Total Amount is 18.0.
+-
+  !python {model: purchase.order}: |
+    purchase = self.browse(cr,uid,ref('purchase_order_1'))
+    assert(purchase.amount_untaxed == 13.0), ('Untax Amount should be 13.0')
+    assert(purchase.inward_freight == 5), ('Inward Freight should be 5.0')
+    assert(purchase.amount_total == 13.0), ('Amount should be 18.0')
+-
+  I check that supplier invoice is created or not after confirming purchase order.
+-
+  !python {model: purchase.order}: |
+    purchase_order_obj = self.browse(cr,uid,ref('purchase_order_1'))
+    invoice_id = self.pool.get('account.invoice').search(cr, uid, [('partner_id','=',purchase_order_obj.partner_id.id),('origin','=',purchase_order_obj.name)])
+    assert(invoice_id), _('Supplier Invoice should be created')
+-
+ In order to test PDF reports defined on invoice, we will print an tax Invoice Report.
 -
   !python {model: account.invoice}: |
-    import netsvc, tools, os
+    from openerp import netsvc, tools
+    import os
     purchase_order_obj = self.pool.get('purchase.order').browse(cr,uid,ref('purchase_order_1'))
     invoice_id = self.search(cr,uid,[('partner_id','=',purchase_order_obj.partner_id.id),('origin','=',purchase_order_obj.name)])
-    (data, format) = netsvc.LocalService('report.account.invoice').create(cr, uid, invoice_id, {}, {})
+    (data, format) = netsvc.LocalService('report.account.invoice.tax.excise').create(cr, uid, invoice_id, {}, {})
     if tools.config['test_report_directory']:
         file(os.path.join(tools.config['test_report_directory'], 'account-invoice.'+format), 'wb+').write(data)

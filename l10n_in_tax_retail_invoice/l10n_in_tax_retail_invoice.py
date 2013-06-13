@@ -40,21 +40,6 @@ class product_category(osv.osv):
 class product_product(osv.osv):
     
     _inherit = "product.product"
-    
-    def _check_packing_cost_allowed(self, cr, uid, ids, name, args, context=None):
-        '''
-        This function allows us to use Packing Cost Features. 
-
-        :param ids: list of product record ids.
-        :param name : browse name fields of packing_cost_allowed
-        :returns: True or False value of Packing Cost of company. 
-        :rtype: dict
-        '''
-        res = {}
-        for product_id in ids:
-            res[product_id] = self.pool.get('res.company').browse(cr, uid, uid, context=context).packing_cost
-        return res
-    
     _columns = {
         'packing_cost_type': fields.selection([
             ('fixed', 'Fixed'),
@@ -62,7 +47,7 @@ class product_product(osv.osv):
             ], 'Packing Cost Type'),
         'packing_fixed': fields.float('Packing Cost Amount'),
         'packing_percent': fields.float('Packing Cost Percentage', help='Give % in range of 0-100'),
-        'packing_cost_allowed': fields.function(_check_packing_cost_allowed, string='Packing Cost Allowed', type='boolean')
+        'packing_cost_allowed': fields.boolean('Packing Cost Allowed')
     }
     
     _defaults = {
@@ -73,20 +58,6 @@ class product_product(osv.osv):
 class res_partner(osv.osv):
     
     _inherit = "res.partner"
-    
-    def _check_dealers_discount_allowed(self, cr, uid, ids, name, args, context=None):
-        '''
-        This function allows us to use dealers discount feature.
-
-        :param ids: list of partner record ids. 
-        :returns: True or False value of dealers discount of company
-        :rtype: dict of true and false value
-        '''
-        res = {}
-        for partner_id in ids:
-            res[partner_id] = self.pool.get('res.company').browse(cr, uid, uid, context=context).dealers_discount
-        return res
-    
     _columns = {
         'tin_no' : fields.char('TIN', size=32, help="Tax Identification Number"),
         'cst_no' : fields.char('CST', size=32, help='Central Sales Tax Number of Customer'),
@@ -94,7 +65,7 @@ class res_partner(osv.osv):
         'tin_date' : fields.date('TIN Date', help="Tax Identification Number Date"),
         'cst_date' : fields.date('CST Date', help="Central Sales Tax Number Date"),
         'dealer_id': fields.many2one('res.partner', 'Dealer'),
-        'dealers_discount_allowed': fields.function(_check_dealers_discount_allowed, string='Dealers Discount Allowed', type='boolean'),
+        'dealers_discount_allowed': fields.boolean('Dealers Discount Allowed'),
         'village_taluka': fields.char('Village', size=32),
     }
     

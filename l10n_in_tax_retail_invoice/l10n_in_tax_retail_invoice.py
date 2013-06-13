@@ -216,7 +216,7 @@ class sale_order(osv.osv):
     
     def _get_order(self, cr, uid, ids, context=None):
         '''
-        The purpose of this function to reculated amount total.  
+        The purpose of this function to reculate amount total.  
         :param ids: list of sale order line record ids
         :returns: Recalculated sale order id
         :rtype: int
@@ -281,21 +281,26 @@ class sale_order(osv.osv):
         }
     
     def _prepare_invoice(self, cr, uid, order, lines, context=None):
+        """Override  method of sale order to update invoice with delivery order
+           information.
+           :param browse_record order: sale.order record to invoice
+           :param list(int) line: list of invoice line IDs that must be
+                                  attached to the invoice
+           :return: dict of value to update the invoice
+        """
         stock_picking_obj = self.pool.get('stock.picking')
         res = super(sale_order, self)._prepare_invoice(cr, uid, order, lines, context=context)
         delivery_id = stock_picking_obj.search(cr, uid, [('sale_id', '=', order.id)], context=context)
         if delivery_id:
             delivery = stock_picking_obj.browse(cr, uid, delivery_id[0], context=context)
-            delivery_date = delivery.date_done
-            delivery_name = delivery.name
             res.update(
                 {
                     'delivery_order_id': delivery_id[0],
                     'delivery_address_id': order.partner_shipping_id.id,
                     'date': order.date_order,
                     'carrier_id': order.carrier_id and order.carrier_id.id,
-                    'delivery_name': delivery_name or None,
-                    'delivery_date': delivery_date or False,
+                    'delivery_name': delivery.date_done or None,
+                    'delivery_date': delivery.name or False,
                     'sale_id': order.id
                 }
             )
@@ -306,6 +311,12 @@ class sale_order_line(osv.osv):
     _inherit = 'sale.order.line'
     
     def _amount_line(self, cr, uid, ids, field_name, arg, context=None):
+        '''
+        The purpose of this function is calculate price total value.
+        :param ids: list of order line ids
+        :param field_name: name of price subtotal
+        :returns: subtotal value
+        '''
         packing_cost_allowed = False
         res = super(sale_order_line, self)._amount_line(cr, uid, ids, field_name, arg, context=context)
         for line_id in ids:
@@ -327,6 +338,11 @@ class sale_order_line(osv.osv):
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
             uom=False, qty_uos=0, uos=False, name='', partner_id=False,
             lang=False, update_tax=True, date_order=False, packaging=False, fiscal_position=False, flag=False, context=None):
+        '''
+        The purpose of this function to get value of price unit, list price, packing amount on product change.
+        :return: return this value list price , price unit, packing amount.
+        :rtype: dictionary
+        '''
         res = super(sale_order_line, self).product_id_change(cr, uid, ids, pricelist, product, qty=0,
             uom=uom, qty_uos=qty_uos, uos=uos, name=name, partner_id=partner_id,
             lang=lang, update_tax=update_tax, date_order=date_order, packaging=packaging, fiscal_position=fiscal_position, flag=flag, context=context)
@@ -491,6 +507,14 @@ class stock_picking(osv.osv):
     _inherit = "stock.picking"
     
     def _prepare_invoice(self, cr, uid, picking, partner, inv_type, journal_id, context=None):
+        """Override  method of picking to update invoice with delivery order
+           information.
+           :param browse_record picking: stock.picking record to invoice
+           :param partner: browse record of partner
+           :param inv_type: invoice type (in or out invoice).
+           :param journal_id: journal id
+           :return: dict of value to update the invoice for picking
+        """        
         res = super(stock_picking, self)._prepare_invoice(cr, uid, picking, partner, inv_type, journal_id, context=context)
         freight_allowed = self.browse(cr, uid, picking.id, context=context).company_id.freight
         if picking.sale_id:
@@ -515,7 +539,9 @@ class stock_picking(osv.osv):
     
     def action_invoice_create(self, cr, uid, ids, journal_id=False,
             group=False, type='out_invoice', context=None):
-        
+        """
+        Overrride method from picking to update invoice id to sale order.
+        """
         for picking_id in ids:
             sale_id = self.browse(cr, uid, picking_id, context=context).sale_id.id
         
@@ -559,6 +585,10 @@ class account_invoice(osv.osv):
     _inherit = 'account.invoice'
     
     def _amount_all(self, cr, uid, ids, name, args, context=None):
+        """
+        Override function from account invoice.
+        Purpose of this function is to add freight charge to amount total.
+        """
         res = super(account_invoice, self)._amount_all(cr, uid, ids, name, args, context=context)
         for invoice_id in res:
             account_invoice_obj = self.browse(cr, uid, invoice_id, context=context)
@@ -569,14 +599,24 @@ class account_invoice(osv.osv):
         return res
     
     def _get_invoice_tax(self, cr, uid, ids, context=None):
-        res = super(account_invoice, self.pool.get('account.invoice'))._get_invoice_tax(cr, uid, ids, context=context)
+        res = super(account_invoice, self)._get_invoice_tax(cr, uid, ids, context=context)
         return res
     
     def _get_invoice_line(self, cr, uid, ids, context=None):
-        res = super(account_invoice, self.pool.get('account.invoice'))._get_invoice_line(cr, uid, ids, context=context)
+        res = super(account_invoice, self)._get_invoice_line(cr, uid, ids, context=context)
         return res
     
     def _get_pack_total(self, cursor, user, ids, name, arg, context=None):
+        '''
+        The purpose of this function is calculate packing total
+        @param user: pass login user id
+        @param ids: pass invoice id
+        @param name: pass packing_total
+        @param args: None
+        @param context: pass context in 'type' : 'out_invoice', 'no_store_function': True/False, 'journal_type': 'sale'
+        @return: return a dict in invoice_id with packing amount of invoice line.
+        @rtype : dict
+        '''
         res = {}
         tot_diff = 0.0
         for invoice in self.browse(cursor, user, ids, context=context):
@@ -587,6 +627,16 @@ class account_invoice(osv.osv):
         return res
     
     def _get_difference(self, cursor, user, ids, name, arg, context=None):
+        '''
+        The purpose of this function is calculate dealers discount amount for the product
+        @param user: pass login user id
+        @param ids: pass list of invoice ids
+        @param name: pass dealers_disc
+        @param args: None
+        @param context: pass context in 'type' : 'out_invoice', 'no_store_function': True/False, 'journal_type': 'sale'
+        @return: return a dict in invoice_id with dealers_discount of amount
+        @rtype : dict
+        '''
         res = {}
         tot_diff = 0.0
         for invoice in self.browse(cursor, user, ids):
@@ -607,6 +657,13 @@ class account_invoice(osv.osv):
         return res
     
     def amount_to_text(self, amount, currency):
+        '''
+        The purpose of this function is to use payment amount change in word
+        @param amount: pass Total payment of amount
+        @param currency: pass which currency to pay
+        @return: return amount in word
+        @rtype : string
+        '''
         amount_in_word = amount_to_text(amount)
         if currency == 'INR':
             amount_in_word = amount_in_word.replace("euro", "Rupees").replace("Cents", "Paise").replace("Cent", "Paise")
@@ -676,6 +733,13 @@ class account_invoice_line(osv.osv):
     _inherit = 'account.invoice.line'
 
     def _amount_line(self, cr, uid, ids, prop, unknow_none, unknow_dict):
+        '''
+        The purpose of this function to give price subtotal.    
+        :param: ids: list of invoice line record ids.
+        :param: prop: field price subtotal
+        :return: calculted price subtotal value.
+        :rtype: dictionary
+        '''
         res = super(account_invoice_line, self)._amount_line(cr, uid, ids, prop, unknow_none, unknow_dict)
         packing_cost_allowed = False
         for invoice_line_id in ids:
@@ -696,6 +760,11 @@ class account_invoice_line(osv.osv):
     }
     
     def product_id_change(self, cr, uid, ids, product, uom_id, qty=0, name='', type='out_invoice', partner_id=False, fposition_id=False, price_unit=False, currency_id=False, context=None, company_id=None):
+        '''
+        The purpose of this function to get value of price unit, list price and packing amount on product value change.
+        :return: return this value price unit, list price, packing amount
+        :rtype: dictionary
+        '''
         res = super(account_invoice_line, self).product_id_change(cr, uid, ids, product, uom_id, qty=qty, name=name, type=type, partner_id=partner_id, fposition_id=fposition_id, price_unit=price_unit, currency_id=currency_id, context=context, company_id=company_id)
         product_obj = self.pool.get('product.product')
 
@@ -726,6 +795,13 @@ class account_invoice_tax(osv.osv):
     _inherit = "account.invoice.tax"
 
     def compute(self, cr, uid, invoice_id, context=None):
+        '''
+        The purpose of this function calculate the total tax amount include price of product and check invoice out/in
+        base_amount + tax_amount
+        @param ids: pass invoice id include tax for the product
+        @return: return tax category,total tax,product price * unit,invoice tax code,account ids etc..
+        @rtype : dict
+        '''
         tax_grouped = {}
         tax_obj = self.pool.get('account.tax')
         cur_obj = self.pool.get('res.currency')
@@ -785,6 +861,10 @@ class purchase_order(osv.osv):
     _inherit = 'purchase.order'
     
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
+        """
+        override function from purchase order to add inward freigh value with amount total.
+        return: amount total with inward freight value
+        """
         res = super(purchase_order, self)._amount_all(cr, uid, ids, field_name, arg, context=context)
         for purchase_id in res:
             purchase_order_obj =  self.browse(cr, uid, purchase_id, context=context)
@@ -795,6 +875,9 @@ class purchase_order(osv.osv):
         return res
     
     def _get_order(self, cr, uid, ids, context=None):
+        """
+        The purpose of this function is to recalculate amount total based on order line
+        """
         res = super(purchase_order, self.pool.get('purchase.order'))._get_order(cr, uid, ids, context=context)
         return res
     

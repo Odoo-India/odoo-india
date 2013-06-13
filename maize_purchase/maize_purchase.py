@@ -760,6 +760,7 @@ class stock_picking(osv.Model):
         receipt_obj = self.pool.get('stock.picking.receipt')
         stock_move = self.pool.get('stock.move')
         warehouse_obj = self.pool.get('stock.warehouse')
+        seq_obj = self.pool.get('ir.sequence')
         res = super(stock_picking,self).do_partial(cr, uid, ids, partial_datas, context=context)
         vals = {}
         if context.get('default_type') == 'in':
@@ -795,6 +796,16 @@ class stock_picking(osv.Model):
 
                         })
             receipt_obj.create(cr, uid, vals, context=context)
+        for picking in self.browse(cr, uid, ids, context=context):
+            seq_name = 'stock.picking'
+            if picking.type == 'in':
+                seq_name = 'stock.picking.in'
+            elif picking.type == 'out':
+                seq_name = 'stock.picking.out'
+            elif picking.type == 'receipt':
+                seq_name = 'stock.picking.receipt'
+            name = seq_obj.get(cr, uid, seq_name)
+            self.write(cr, uid, [picking.id], {'name': name}, context=context)
         return res
 stock_picking()
 

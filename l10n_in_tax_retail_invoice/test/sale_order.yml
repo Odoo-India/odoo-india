@@ -21,7 +21,6 @@
     order_line:
       - name: USB Adapter
         product_uom_qty: 1.0
-        product_uos_qty: 1.0
         price_unit: 18.0
         packing_amount: 5.0
         lst_price: 10.0
@@ -34,19 +33,20 @@
   !workflow {model: sale.order, action: order_confirm, ref: sale_order_01}
 
 -
-  I check that the untaxed Amount should be 23.0, Tax should be 1.15, Total Amount is 24.15.
+  I select Packing cost and check that the untaxed Amount should be 23.0, Tax should be 1.15, Total Amount is 24.15.
 -
   !python {model: sale.order}: |
     sale = self.browse(cr, uid, ref('sale_order_01'))
-    assert(sale.amount_untaxed == 23.0), ('Untax Amount should be 23.0')
-    assert(sale.amount_tax == 1.15), ('Tax should be 1.15')
-    assert(sale.amount_total == 24.15), ('Amount should be 24.15')
+    if sale.company_id.packing_cost:
+        assert(sale.amount_untaxed == 23.0), _('Untax Amount should be 23.0')
+        assert(sale.amount_tax == 1.15), _('Tax should be 1.15')
+        assert(sale.amount_total == 24.15), _('Amount should be 24.15')
 -
   I check that the dealers discount should be 8.0.
 -
   !python {model: sale.order}: |
     sale = self.browse(cr, uid, ref('sale_order_01'))
-    assert(sale.dealers_disc == 8.0), ('Dealers discount should be 8.0')
+    assert(sale.dealers_disc == 8.0), _('Dealers discount should be 8.0')
 
 -
   I check that customer invoice is created or not after confirming sale order.

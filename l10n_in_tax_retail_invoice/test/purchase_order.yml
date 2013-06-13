@@ -1,5 +1,5 @@
 -
-  I create a Purchase Order with cost price 13.0.
+  I create a Purchase Order with cost price 13.0 and inward freight 5.0.
 -
   !record {model: purchase.order, id: purchase_order_1}:
     partner_id: base.res_partner_3
@@ -14,13 +14,14 @@
 -
   !workflow {model: purchase.order, ref: purchase_order_1, action: purchase_confirm}
 -
-  I check that the untaxed Amount should be 13.0, Inward Freight should be 5.0, Total Amount is 18.0.
+  I select Purchase Freight and check that the untaxed Amount should be 13.0, and Total Amount should be 18.0.
 -
   !python {model: purchase.order}: |
     purchase = self.browse(cr,uid,ref('purchase_order_1'))
-    assert(purchase.amount_untaxed == 13.0), ('Untax Amount should be 13.0')
-    assert(purchase.inward_freight == 5.0), ('Inward Freight should be 5.0')
-    assert(purchase.amount_total == 18.0), ('Amount should be 18.0')
+    assert(purchase.amount_untaxed == 13.0), _('Untax Amount should be 13.0')
+    assert(purchase.inward_freight == 5.0), _('Inward Freight should be 5.0')
+    if purchase.company_id.freight:
+        assert(purchase.amount_total == 18.0), _('Amount should be 18.0')
 -
   I check that supplier invoice is created or not after confirming purchase order.
 -

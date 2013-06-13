@@ -163,16 +163,18 @@ class sale_order(osv.osv):
         :rtype: dictionary
         '''
         res = {}
-        tot_diff = 0.0
         for sale in self.browse(cr, uid, ids, context=context):
             res[sale.id] = {
             'packing_total': 0.0,
             'dealers_disc': 0.0,
             }
+            packing_total = dealers_disc = 0.0
             for line in sale.order_line:
                 if line.lst_price:
-                    res[sale.id]['packing_total'] += (line.price_unit - line.lst_price) * line.product_uom_qty 
-                res[sale.id]['dealers_disc'] += line.packing_amount  # Need to check if packing cost apply by qty sold? 
+                    dealers_disc += (line.price_unit - line.lst_price) * line.product_uom_qty 
+                packing_total += line.packing_amount  # Need to check if packing cost apply by qty sold?
+            res[sale.id]['packing_total'] = packing_total
+            res[sale.id]['dealers_disc'] = dealers_disc
         return res
 
     
@@ -234,7 +236,7 @@ class sale_order(osv.osv):
     _columns = {
         'contact_id': fields.many2one('res.partner', 'Contact'),
         'partner_shipping_id': fields.many2one('res.partner', 'Delivery Address', required=True, help="Delivery address for current sales order."),
-        'packing_total': fields.function(_get_pack_total, type="float", string='Packing Cost', store=True, multi='sums'),
+        'packing_total': fields.function(_get_pack_total, type="float", string='Packing Cost', store=True, multi='_get_pack_total'),
         'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
             store={
                 'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
@@ -244,7 +246,7 @@ class sale_order(osv.osv):
         'quote_validity': fields.integer('Quote Validity', help="Validity of Quote in days."),
         'subject': fields.text('Subject'),
         'invoice_id': fields.many2one('account.invoice', 'Invoice ID'),
-        'dealers_disc': fields.function(_get_pack_total, type="float", string='Dealers Discount', store=True, multi='sums'),
+        'dealers_disc': fields.function(_get_pack_total, type="float", string='Dealers Discount', store=True, multi='_get_pack_total'),
         'delivery_term': fields.integer('Delivery Term', help='Delivery Term in Weeks')
     }
     
@@ -606,7 +608,7 @@ class account_invoice(osv.osv):
     
     def _get_pack_total(self, cursor, user, ids, name, arg, context=None):
         '''
-        The purpose of this function is calculate packing total
+        The purpose of this function is calculate packing total and dealers discount
         @param user: pass login user id
         @param ids: pass invoice id
         @param name: pass packing_total
@@ -616,33 +618,18 @@ class account_invoice(osv.osv):
         @rtype : dict
         '''
         res = {}
-        tot_diff = 0.0
         for invoice in self.browse(cursor, user, ids, context=context):
-            tot_diff = 0.0
-            for line in invoice.invoice_line:
-                tot_diff += line.packing_amount  # Need to check if packing cost apply by qty sold? 
-            res[invoice.id] = tot_diff
-        return res
-    
-    def _get_difference(self, cursor, user, ids, name, arg, context=None):
-        '''
-        The purpose of this function is calculate dealers discount amount for the product
-        @param user: pass login user id
-        @param ids: pass list of invoice ids
-        @param name: pass dealers_disc
-        @param args: None
-        @param context: pass context in 'type' : 'out_invoice', 'no_store_function': True/False, 'journal_type': 'sale'
-        @return: return a dict in invoice_id with dealers_discount of amount
-        @rtype : dict
-        '''
-        res = {}
-        tot_diff = 0.0
-        for invoice in self.browse(cursor, user, ids):
-            tot_diff = 0.0
+            res[invoice.id] = {
+            'packing_total': 0.0,
+            'dealers_disc': 0.0,
+            }            
+            packing_total = dealers_disc = 0.0
             for line in invoice.invoice_line:
                 if line.lst_price:
-                    tot_diff += (line.price_unit - line.lst_price) * line.quantity
-            res[invoice.id] = tot_diff
+                    dealers_disc += (line.price_unit - line.lst_price) * line.quantity
+                packing_total += line.packing_amount  # Need to check if packing cost apply by qty sold?
+            res[invoice.id]['packing_total'] = packing_total 
+            res[invoice.id]['dealers_disc'] = dealers_disc
         return res
     
     def _get_qty_total(self, cr, uid, ids):
@@ -693,8 +680,8 @@ class account_invoice(osv.osv):
         'dispatch_doc_no': fields.char('Dispatch Document No.', size=16),
         'dispatch_doc_date': fields.date('Dispatch Document Date'),
         'consignee_account': fields.char('Consignee Account', size=32, help="Account Name, applies when there is customer for consignee."),
-        'dealers_disc': fields.function(_get_difference, type="float", string='Dealers Discount', store=True),
-        'packing_total': fields.function(_get_pack_total, type="float", string='Packing Cost', store=True),
+        'dealers_disc': fields.function(_get_pack_total, type="float", string='Dealers Discount', store=True, multi='_get_pack_total'),
+        'packing_total': fields.function(_get_pack_total, type="float", string='Packing Cost', store=True, multi='_get_pack_total'),
         'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Subtotal', track_visibility='always',
         store={
             'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),

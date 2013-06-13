@@ -67,9 +67,13 @@
                             <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="amount_tax" invisible="1"/>
                             <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','excise')]" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="excise_amount"/>
+                            <field name="excise_total"/>
                             <label string=""/>
                             <button name="%(action_update_excise)d" string="Update Excise" type="action" class="oe_edit_only oe_link"/>
                             <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="vat_amount"/>
+                            <field name="vat_total"/>
                             <field name="service_ids" widget="many2many_tags" domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}"/>
                             <label for="insurance"/>
                             <div>
@@ -428,6 +432,14 @@
                 <xpath expr="//field[@name='product_qty']" position="after">
                     <field name="challan_qty" sum="Total Challan Quantity"/>
                 </xpath>
+                <xpath expr="//button[@string='Split in Serial Number']" position="replace">
+                    <button
+                       name="%(stock.track_line)d"
+                       string="Split in Serial Number"
+                       groups="stock.group_production_lot"
+                       type="action" icon="gtk-justify-fill"
+                       attrs="{'invisible': [('challan_qty', '&lt;', 1.0)]}"/>
+                </xpath>
             </field>
         </record>
         
@@ -537,8 +549,8 @@
                             <field name="rate"/>
                             <field name="product_qty" sum="Total Quantity"/>
                             <field name="challan_qty" sum="Total Challan Quantity"/>
-                            <field name="diff" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
-                            <field name="amount"/>
+                            <field name="diff" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)" sum="Total Diff"/>
+                            <field name="amount" sum="Total Amount"/>
                             <field name="bill_no"/>
                             <field name="bill_date"/>
                             <field name="tax_cal" on_change="onchange_amount(parent.purchase_id, product_id,diff,import_duty,tax_cal)"/>
@@ -597,6 +609,7 @@
                 <group class="oe_subtotal_footer oe_right">
                        <field name="amount_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                        <field name="total_diff" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                       <field name="import_duty" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                        <div class="oe_subtotal_footer_separator oe_inline">
                            <label for="amount_total"/>
                            <button name="button_dummy"

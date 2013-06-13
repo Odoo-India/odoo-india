@@ -76,7 +76,21 @@ class stock_picking_in(osv.osv):
         'maize_in': fields.char('Maize', size=256, readonly=True),
             
     }
+
+    def create(self, cr, uid, vals, context=None):
+        vals['name'] = False
+        return super(stock_picking_in, self).create(cr, uid, vals, context=context)
+
 stock_picking_in()
+
+class stock_picking_out(osv.Model):
+    _inherit = 'stock.picking.out'
+
+    def create(self, cr, uid, vals, context=None):
+        vals['name'] = False
+        return super(stock_picking_out, self).create(cr, uid, vals, context=context)
+
+stock_picking_out()
 
 class purchase_order_line(osv.Model):
     _inherit = 'purchase.order.line'
@@ -306,8 +320,12 @@ class purchase_order(osv.Model):
                 'amount_tax': 0.0,
                 'amount_total': 0.0,
                 'other_charges': 0.0,
+                'excise_amount': 0.0,
+                'excise_total': 0.0,
+                'vat_amount': 0.0,
+                'vat_total': 0.0,
             }
-            val = val1 = packing_and_forwading = freight = other_tax = 0.0
+            val = val1 = packing_and_forwading = freight = excise_tax = vat_tax = other_tax = 0.0
             cur = order.pricelist_id.currency_id
             for line in order.order_line:
                 val1 += line.price_subtotal
@@ -319,21 +337,30 @@ class purchase_order(osv.Model):
                     packing_and_forwading += order.package_and_forwording * line.product_qty
                 if order.freight_type == 'per_unit':
                     freight += order.freight * line.product_qty
-                for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
-                    val += c.get('amount', 0.0)
-            
+                #for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
+                    #val += c.get('amount', 0.0)
+                for exices in self.pool.get('account.tax').compute_all(cr, uid, order.excies_ids, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
+                    excise_tax += exices.get('amount', 0.0)
+                res[order.id]['excise_amount'] = excise_tax
+                val = excise_tax+val1
+                res[order.id]['excise_total'] = val
+                for vat in self.pool.get('account.tax').compute_all(cr, uid, order.vat_ids, val, 1, line.product_id, order.partner_id)['taxes']:
+                    vat_tax = vat.get('amount', 0.0)
+                res[order.id]['vat_amount'] = vat_tax
+                val += vat_tax
+                res[order.id]['vat_total'] = val
             if order.packing_type == 'per_unit':
                 other_charge = packing_and_forwading  - order.commission
             elif order.packing_type == 'percentage':
                 other_charge = (order.package_and_forwording * val1) / 100 -order.commission
             elif order.packing_type == 'include':
-                other_charge = 0.0
+                other_charge = order.package_and_forwording  - order.commission
             else:
                 other_charge = order.package_and_forwording  - order.commission
             res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
             res[order.id]['other_charges'] = cur_obj.round(cr, uid, cur, other_charge)
-            amount_untaxed = res[order.id]['amount_tax'] + res[order.id]['amount_untaxed']
+            amount_untaxed = res[order.id]['vat_total']
             if order.insurance_type == order.freight_type:
                 if order.insurance_type == 'fix':
                     amount_untaxed += order.insurance
@@ -422,6 +449,26 @@ class purchase_order(osv.Model):
                 'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="Other Charges(computed as Packing & Forwarding - (Commission + Other Discount))"),
+        'excise_amount': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Excise Amount',
+            store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums",help="The total excise amount"),
+        'excise_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Excise Total',
+            store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums",help="The total after excise"),
+        'vat_amount': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='VAT Amount',
+            store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums",help="The total VAT amount"),
+        'vat_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='VAT Total',
+            store={
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (_get_order, None, 10),
+            }, multi="sums",help="The total after VAT"),
         'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'vat_ids': fields.many2many('account.tax', 'purchase_order_vat', 'vat_id', 'tax_id', 'VAT', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'freight': fields.float('Freight', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
@@ -704,11 +751,16 @@ class stock_picking(osv.Model):
             'excisable_item': fields.boolean('Excisable Item'),
             'warehouse_id': fields.related('purchase_id', 'warehouse_id', type='many2one', relation='stock.warehouse', string='Destination Warehouse'),
                 }
-    
+
+    def create(self, cr, uid, vals, context=None):
+        vals['name'] = False
+        return super(stock_picking, self).create(cr, uid, vals, context=context)
+
     def do_partial(self, cr, uid, ids, partial_datas, context=None):
         receipt_obj = self.pool.get('stock.picking.receipt')
         stock_move = self.pool.get('stock.move')
         warehouse_obj = self.pool.get('stock.warehouse')
+        seq_obj = self.pool.get('ir.sequence')
         res = super(stock_picking,self).do_partial(cr, uid, ids, partial_datas, context=context)
         vals = {}
         if context.get('default_type') == 'in':
@@ -744,6 +796,16 @@ class stock_picking(osv.Model):
 
                         })
             receipt_obj.create(cr, uid, vals, context=context)
+        for picking in self.browse(cr, uid, ids, context=context):
+            seq_name = 'stock.picking'
+            if picking.type == 'in':
+                seq_name = 'stock.picking.in'
+            elif picking.type == 'out':
+                seq_name = 'stock.picking.out'
+            elif picking.type == 'receipt':
+                seq_name = 'stock.picking.receipt'
+            name = seq_obj.get(cr, uid, seq_name)
+            self.write(cr, uid, [picking.id], {'name': name}, context=context)
         return res
 stock_picking()
 
@@ -773,7 +835,7 @@ class stock_picking_receipt(osv.Model):
         return self.pool.get('stock.picking')._workflow_signal(cr, uid, ids, signal, context=context)
 
     def _total_amount(self, cr, uid, ids, name, args, context=None):
-        result = dict([(id, {'amount_total':0.0,'total_diff':0.0,'amount_subtotal':0.0}) for id in ids])
+        result = dict([(id, {'amount_total':0.0,'total_diff':0.0,'amount_subtotal':0.0, 'import_duty':0.0}) for id in ids])
         for receipt in self.browse(cr, uid, ids, context=context):
             total = 0.0
             diff = 0.0
@@ -782,9 +844,8 @@ class stock_picking_receipt(osv.Model):
                 diff += line.diff
                 total += line.amount
                 import_duty += line.import_duty
-            if receipt.purchase_id:
-                total = receipt.purchase_id.amount_total
-            result[receipt.id]['total_diff'] = diff + import_duty
+            result[receipt.id]['total_diff'] = diff 
+            result[receipt.id]['import_duty'] = import_duty
             result[receipt.id]['amount_subtotal'] = total
             result[receipt.id]['amount_total'] = total + ( diff + import_duty)
         return result
@@ -819,10 +880,11 @@ class stock_picking_receipt(osv.Model):
                  * Cancelled: has been cancelled, can't be confirmed anymore"""),
         'party_id': fields.many2one('res.partner', 'Excisable Party Name'),
         'amount_total': fields.function(_total_amount, multi="cal",type="float", string='Total', store=True),
-        'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff(computed as (Diff + Import Duty))", store=True),
+        'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff", store=True),
         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
         'department_id': fields.related('purchase_id', 'indent_id', 'department_id', type="many2one", relation="stock.location", store=True),
         'maize_receipt': fields.char('Maize', size=256, readonly=True),
+        'import_duty': fields.function(_total_amount, multi="cal", type="float", string='Import Duty', help="Total Import Duty", store=True),
     }
     _defaults = {
         'type': 'receipt',
@@ -1064,8 +1126,6 @@ class stock_partial_picking(osv.osv_memory):
             'location_id' : move.location_id.id,
             'location_dest_id' : move.location_dest_id.id,
         }
-        if partial_move.get('quantity',False) == 0.0 :
-            raise osv.except_osv(_('Configuration Error!'), _('Please Enter the challan quantity'))
         if move.picking_id.type == 'in' and move.product_id.cost_method == 'average':
             partial_move.update(update_cost=True, **self._product_cost_for_average_update(cr, uid, move))
         return partial_move

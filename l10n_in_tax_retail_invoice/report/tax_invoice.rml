@@ -343,7 +343,7 @@
       </tr>
     </blockTable> 
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="P1">Description of Goods</para>
@@ -394,7 +394,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.invoice_line,'l') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       	<tr>
           <td>
             <para style="terp_default_91">[[ l.product_id and l.product_id.categ_id.name or '']]</para>
@@ -511,7 +511,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.tax_line,'t') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
         <tr>
           <td>
             <para style="terp_default_81">[[ t.name ]] <font face="Helvetica">([[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font') or ((t.base)) ]])</font></para>
@@ -575,7 +575,76 @@
       </blockTable>
     </section>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
+    <section>
+      <blockTable colWidths="210.0,70.0,50.0,71.0,40.0,89.0" style="Table4"> [[( o.freight_allowed == True and o.company_id.packing_cost == False) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_81"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_8">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[( o.company_id.packing_cost and o.freight_allowed == True) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_81"><font face="Helvetica">Inward Freight</font></para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="terp_default_Right_8">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+           </td>
+         </tr>
+       </blockTable>
+     </section>
+    
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Dealers' Discount </para>
@@ -636,7 +705,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Total</para>
@@ -848,7 +917,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="P1">Description of Goods</para>
@@ -899,7 +968,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.invoice_line,'l') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       	<tr>
           <td>
             <para style="terp_default_91">[[ l.product_id and l.product_id.categ_id.name or '']]</para>
@@ -1016,7 +1085,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.tax_line,'t') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
         <tr>
           <td>
             <para style="terp_default_81">[[ t.name ]] <font face="Helvetica">([[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font') or ((t.base)) ]])</font></para>
@@ -1079,7 +1148,76 @@
         </tr>
       </blockTable>
     </section>
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
+    
+    <section>
+      <blockTable colWidths="210.0,70.0,50.0,71.0,40.0,89.0" style="Table4"> [[( o.freight_allowed == True and o.company_id.packing_cost == False) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_81"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_8">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[( o.company_id.packing_cost and o.freight_allowed == True) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+           <para style="terp_default_81"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_8">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+    </section>
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Dealers' Discount </para>
@@ -1141,7 +1279,7 @@
     </blockTable>
     
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Total</para>
@@ -1353,7 +1491,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="P1">Description of Goods</para>
@@ -1404,7 +1542,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.invoice_line,'l') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       	<tr>
           <td>
             <para style="terp_default_91">[[ l.product_id and l.product_id.categ_id.name or '']]</para>
@@ -1521,7 +1659,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.tax_line,'t') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
         <tr>
           <td>
             <para style="terp_default_81">[[ t.name ]] <font face="Helvetica">([[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font') or ((t.base)) ]])</font></para>
@@ -1585,7 +1723,76 @@
       </blockTable>
     </section>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
+    <section>
+      <blockTable colWidths="210.0,70.0,50.0,71.0,40.0,89.0" style="Table4"> [[( o.freight_allowed == True and o.company_id.packing_cost == False) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_81"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_8">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[( o.company_id.packing_cost and o.freight_allowed == True) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+           <para style="terp_default_81"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_8">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+    </section>
+    
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Dealers' Discount </para>
@@ -1646,7 +1853,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Total</para>
@@ -1858,7 +2065,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="P1">Description of Goods</para>
@@ -1909,7 +2116,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.invoice_line,'l') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       	<tr>
           <td>
             <para style="terp_default_91">[[ l.product_id and l.product_id.categ_id.name or '']]</para>
@@ -2026,7 +2233,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.tax_line,'t') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
         <tr>
           <td>
             <para style="terp_default_81">[[ t.name ]] <font face="Helvetica">([[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font') or ((t.base)) ]])</font></para>
@@ -2090,7 +2297,76 @@
       </blockTable>
     </section>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
+    <section>
+      <blockTable colWidths="210.0,70.0,50.0,71.0,40.0,89.0" style="Table4"> [[( o.freight_allowed == True and o.company_id.packing_cost == False) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_81"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_8">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[( o.company_id.packing_cost and o.freight_allowed == True) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+           <para style="terp_default_81"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_8">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+    </section>
+    
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Dealers' Discount </para>
@@ -2151,7 +2427,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Total</para>

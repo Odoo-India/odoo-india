@@ -52,8 +52,7 @@ class product_product(osv.osv):
         '''
         res = {}
         for product_id in ids:
-            packing_cost_allowed = self.pool.get('res.company').browse(cr, uid, uid, context=context).packing_cost
-            res[product_id] = packing_cost_allowed
+            res[product_id] = self.pool.get('res.company').browse(cr, uid, uid, context=context).packing_cost
         return res
     
     _columns = {

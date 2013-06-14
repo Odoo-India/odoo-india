@@ -774,17 +774,20 @@ class stock_picking(osv.Model):
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
                         dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                        stock_move.write(cr, uid, [move.id], {'challan_qty':0.0})
                         if move.product_id and move.product_id.ex_chapter:
                             vals.update({'excisable_item': True})
-                    vals= {'inward_id': pick.id or False}
+                    vals.update({'inward_id': pick.id or False})
                 else:
                     for move in pick.backorder_id.move_lines:
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
                         dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                        for move in pick.move_lines:
+                            stock_move.write(cr, uid, [move.id], {'challan_qty':0.0})
                         if move.product_id and move.product_id.ex_chapter:
                             vals.update({'excisable_item': True})
-                    vals= {'inward_id': pick.backorder_id and pick.backorder_id.id or False}
+                    vals.update({'inward_id': pick.backorder_id and pick.backorder_id.id or False})
                 vals.update({'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                         'partner_id': pick.partner_id.id,
                         'stock_journal_id': pick.stock_journal_id or False,
@@ -1091,41 +1094,3 @@ class tr_code(osv.Model):
 
 tr_code()
 
-class stock_partial_picking(osv.osv_memory):
-    _name = "stock.partial.picking"
-    _inherit = "stock.partial.picking"
-    
-    def default_get(self, cr, uid, fields, context=None):
-        if context is None: context = {}
-        res = {}
-        picking_ids = context.get('active_ids', [])
-        active_model = context.get('active_model')
-
-        if not picking_ids or len(picking_ids) != 1:
-            # Partial Picking Processing may only be done for one picking at a time
-            return res
-        assert active_model in ('stock.picking', 'stock.picking.in', 'stock.picking.out','stock.picking.receipt'), 'Bad context propagation'
-        picking_id, = picking_ids
-        if 'picking_id' in fields:
-            res.update(picking_id=picking_id)
-        if 'move_ids' in fields:
-            picking = self.pool.get('stock.picking').browse(cr, uid, picking_id, context=context)
-            moves = [self._partial_move_for(cr, uid, m) for m in picking.move_lines if m.state not in ('done','cancel')]
-            res.update(move_ids=moves)
-        if 'date' in fields:
-            res.update(date=time.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
-        return res
-    
-    def _partial_move_for(self, cr, uid, move):
-        partial_move = {
-            'product_id' : move.product_id.id,
-            'quantity' : move.challan_qty if move.state == 'assigned' else 0,
-            'product_uom' : move.product_uom.id,
-            'prodlot_id' : move.prodlot_id.id,
-            'move_id' : move.id,
-            'location_id' : move.location_id.id,
-            'location_dest_id' : move.location_dest_id.id,
-        }
-        if move.picking_id.type == 'in' and move.product_id.cost_method == 'average':
-            partial_move.update(update_cost=True, **self._product_cost_for_average_update(cr, uid, move))
-        return partial_move

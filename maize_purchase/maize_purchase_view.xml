@@ -432,13 +432,8 @@
                 <xpath expr="//field[@name='product_qty']" position="after">
                     <field name="challan_qty" sum="Total Challan Quantity"/>
                 </xpath>
-                <xpath expr="//button[@string='Split in Serial Number']" position="replace">
-                    <button
-                       name="%(stock.track_line)d"
-                       string="Split in Serial Number"
-                       groups="stock.group_production_lot"
-                       type="action" icon="gtk-justify-fill"
-                       attrs="{'invisible': [('challan_qty', '&lt;', 1.0)]}"/>
+                <xpath expr="//tree[@string='Stock Moves']" position="attributes">
+                    <attribute name="editable">bottom</attribute>
                 </xpath>
             </field>
         </record>
@@ -466,6 +461,14 @@
                     <field name="challan_qty" attrs="{'invisible': [('type', '!=', 'in')]}"/>
                 </xpath>
             </field>
+        </record>
+        
+        <!-- new action for stock picking challan field -->
+        <record id="action_stock_picking_inherit" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="maize_inherit_view_split_in_lots"/>
+            <field name="act_window_id" ref="stock.track_line"/>
         </record>
         
         <!--  Inherit tree view for chagne the string of date field -->

@@ -1,0 +1,57 @@
+.oe_secondary_submenu > li > a:focus
+{
+
+  display: block;
+  outline: 0;
+ 
+  background:rgba(124, 123, 173,0.5);
+  font-size: 13px;
+  color: white;
+  padding: 2px 20px;
+  padding-right:4px;
+  margin: 0px 0px 0 -20px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+
+/* 
+ZoomIt customizations 
+
+The 3 CSS classes below can be changed to any other CSS class you desire. Just make sure 
+to fill the parameters with the new classes when starting jqZoomIt().
+
+Default values in script:
+
+- zoomClass			: 'zoomIt_zoomed', // additional styling on zoom container
+- zoomLoadingClass	: 'zoomIt_loading', // css class to apply before the big image is fully loaded
+- zoomAreaClass		: 'zoomIt_area', // additional styling on zoomed area
+*/		
+
+/* big image container */
+.zoomIt_zoomed{
+	border:2px #CCC solid;
+	-moz-box-shadow: 10px 10px 5px #888;
+	-webkit-box-shadow: 10px 10px 5px #888;
+	box-shadow: 10px 10px 5px #888;
+}
+/* big image loading class */
+.zoomIt_loading{
+	background:url(images/loading.gif) center center no-repeat;
+}
+/* small image zoomed area overlay */
+.zoomIt_area{
+	border:none;
+}
+.alt_base{
+  -webkit-transition: font-size 0.2s ease-in;
+  -moz-transition: font-size 0.2s ease-in;
+  -ms-transition: font-size 0.2s ease-in;
+  -o-transition: font-size 0.2s ease-in;
+  transition: font-size 0.2s ease-in;
+}
+.alt_base.alt_after{
+  font-size:19px;
+}

@@ -572,7 +572,7 @@ class purchase_order(osv.Model):
             flag = False
             if po.payment_term_id:
                 totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_total, po.date_order or False, context=context)
-            journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
+            journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'TBNK')], context=context)
             journal_id = journal_ids and journal_ids[0] or False
             if not journal_id:
                 raise osv.except_osv(_("Warning !"),_('You must define a journal related to an advance payment.'))
@@ -600,6 +600,11 @@ class purchase_order(osv.Model):
                             wf_service.trg_validate(uid, 'purchase.order', order.id, 'purchase_cancel', cr)
 
                 pp.tender_done(context=context)
+        return res
+
+    def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
+        res = super(purchase_order, self)._prepare_order_line_move(cr, uid, order, order_line, picking_id, context=context)
+        res = dict(res, indent = order_line.indent_id.id, indentor = order_line.indentor_id.id, department_id = order_line.department_id.id)
         return res
 
     def open_advance_payment(self, cr, uid, ids, context=None):

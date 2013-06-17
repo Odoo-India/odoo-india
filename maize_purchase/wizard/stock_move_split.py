@@ -55,7 +55,7 @@ class stock_partial_picking(osv.osv_memory):
     def _partial_move_for(self, cr, uid, move):
         partial_move = {
             'product_id' : move.product_id.id,
-            'quantity' : move.challan_qty if move.state == 'assigned' else 0,
+            'quantity' : move.product_qty if move.state == 'assigned' and move.type == 'out' else move.challan_qty,
             'product_uom' : move.product_uom.id,
             'prodlot_id' : move.prodlot_id.id,
             'move_id' : move.id,
@@ -76,8 +76,10 @@ class split_in_production_lot(osv.osv_memory):
         res = super(split_in_production_lot, self).default_get(cr, uid, fields, context=context)
         if context.get('active_id'):
             move = self.pool.get('stock.move').browse(cr, uid, context['active_id'], context=context)
-            if 'challan_qty' in fields:
+            if 'challan_qty' in fields and context.get('picking_type') not in ['out']:
                 res.update({'challan_qty': move.challan_qty})
+            else:
+                res.update({'challan_qty': move.product_qty})
         return res
 
     _columns = {

@@ -951,6 +951,27 @@ class stock_move(osv.osv):
             res[move.id] = time.strftime('%d/%m/%Y')
         return res
     
+    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+        """
+        @ Set Challan_qty String on the base of picking type
+        """
+        context = context or {}
+        res = super(stock_move, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
+        eview = etree.fromstring(res['arch'])
+        node = eview.xpath("//field[@name='challan_qty']") and eview.xpath("//field[@name='challan_qty']")[0]
+        if context.get('picking_type') == 'internal':
+            if 'challan_qty' in res['fields'].keys():
+                node.set('string', _('Issue Quantity'))
+        if context.get('picking_type') == 'out' and node in eview:
+            location = eview.xpath("//field[@name='location_id']") and eview.xpath("//field[@name='location_id']")[0] 
+            location.set('modifiers', '{"invisible":false}')
+            eview.remove(node)
+        if context.get('picking_type') == 'internal':
+            stock = eview.xpath("//field[@name='qty_available']") and eview.xpath("//field[@name='qty_available']")[0]
+            stock.set('modifiers', '{"invisible":false}')
+        res['arch'] = etree.tostring(eview)
+        return res
+    
     _columns = {
             'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type',store=True),
             'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
@@ -983,6 +1004,7 @@ class stock_move(osv.osv):
             # required=False because we change product on_change in po line so it come black in some case
             'name': fields.char('Description', select=True),
             'challan_qty': fields.float('Challan Quantity', digits_compute=dp.get_precision('Product Unit of Measure'),states={'done': [('readonly', True)]},help="This Quntity is used for backorder and actual received quntity"),
+            'qty_available': fields.float('Stock'),
                 }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
@@ -1046,6 +1068,13 @@ class stock_move(osv.osv):
     
     def onchange_excise(self, cr, uid, ids, excise, cess, high_cess,import_duty, context=None):
         return {'value': {'excise': excise or 0.0, 'cenvat':excise or 0.0, 'cess': cess or 0.0, 'c_cess': cess or 0.0, 'high_cess': high_cess or 0.0, 'c_high_cess': high_cess or 0.0, 'import_duty': import_duty or 0.0, 'import_duty1': import_duty or 0.0}}
+
+    def onchange_product_id(self, cr, uid, ids, prod_id=False, loc_id=False,
+                            loc_dest_id=False, partner_id=False):
+        res = super(stock_move,self).onchange_product_id(cr, uid, ids, prod_id, loc_id, loc_dest_id, partner_id)
+        product = self.pool.get('product.product').browse(cr, uid, [prod_id])[0]
+        res['value'].update({'qty_available': product and product.qty_available or 0.0})
+        return res
 
 stock_move()
 

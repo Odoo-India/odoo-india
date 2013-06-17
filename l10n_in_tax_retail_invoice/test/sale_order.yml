@@ -1,5 +1,6 @@
 -
-  we have a VAT tax defined.
+  In order to test the tax invoice reports defined on an invoice, we will create sale order with packing amount and dealers discount. 
+  For that we have a VAT tax defined.
 -  
     !record {model: account.tax, id: tax_1}:
       name: 'Vat'
@@ -13,7 +14,7 @@
       tax_categ: 'other'
       amount: 0.01
 -
-  create  one  sale order for [ADPT] USB Adapter.
+  Create  one  sale order for [ADPT] USB Adapter.
 -
    !record {model: sale.order, id: sale_order_01}:
     partner_id: base.res_partner_2

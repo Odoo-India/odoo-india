@@ -1,5 +1,5 @@
 -
-  I create a Purchase Order with cost price 13.0 and inward freight 5.0.
+  In order to test the tax invoice reports defined on an invoice, I create a Purchase Order with cost price 13.0 and inward freight 5.0.
 -
   !record {model: purchase.order, id: purchase_order_1}:
     partner_id: base.res_partner_3

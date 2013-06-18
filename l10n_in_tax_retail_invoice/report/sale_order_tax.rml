@@ -247,12 +247,12 @@
       <font face="Helvetica-Bold">Sales Order</font>
       <font color="white">..................................................................</font>
     </para>
-    <blockTable colWidths="240.0,113.0,177.0" style="Table9">
+    <blockTable colWidths="200.0,133.0,197.0" style="Table9">
       <tr>
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
           <para style="P23">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.street) or '' ]] [[ (o.partner_id and o.partner_id.street2) or '']]</para>
+          <para style="P21">[[ display_address(o.partner_id) ]]</para>
         </td>
         <td>
           <para style="P10">Order No.</para>
@@ -265,7 +265,7 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_id and o.partner_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '' ]], [[ (o.partner_id and o.partner_id.state_id.name) or '' ]].</para>
+          <para style="P21"></para>
         </td>
         <td>
           <para style="P10">Mode/Terms of Payment</para>
@@ -277,14 +277,14 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="240.0,113.0,177.0" style="Table10">
+    <blockTable colWidths="200.0,133.0,197.0" style="Table10">
       <tr>
         <td>
           <para style="P17">
             <font face="Helvetica" size="8.0">Consignee</font>
           </para>
           <para style="P23">[[ (o.partner_shipping_id and o.partner_shipping_id.title and o.partner_shipping_id.title.name) or '' ]] [[ (o.partner_shipping_id and o.partner_shipping_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_shipping_id and o.partner_shipping_id.street) or '' ]] [[ (o.partner_shipping_id and o.partner_shipping_id.street2)]]</para>
+          <para style="P21">[[ display_address(o.partner_shipping_id) ]]</para>
         </td>
         <td>
           <para style="P10">Buyer's Order No.</para>
@@ -297,7 +297,7 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_shipping_id and o.partner_shipping_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '' ]], [[ (o.partner_shipping_id and o.partner_shipping_id.state_id and o.partner_shipping_id.state_id.name)]].</para>
+          <para style="P21"></para>
         </td>
         <td>
           <para style="P10">Dispatched through</para>
@@ -309,7 +309,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="240.0,290.0" style="Table11">
+    <blockTable colWidths="200.0,330.0" style="Table11">
       <tr>
         <td>
         </td>
@@ -677,7 +677,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="334.0,197.0" style="Table8">
+    <blockTable colWidths="334.0,205.0" style="Table8">
       <tr>
         <td>
           <para style="terp_default_9">Declaration</para>

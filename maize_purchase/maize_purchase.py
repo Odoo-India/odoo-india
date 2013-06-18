@@ -779,7 +779,6 @@ class stock_picking(osv.Model):
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
                         dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
-                        stock_move.write(cr, uid, [move.id], {'challan_qty':0.0})
                         if move.product_id and move.product_id.ex_chapter:
                             vals.update({'excisable_item': True})
                     vals.update({'inward_id': pick.id or False})
@@ -945,6 +944,14 @@ class stock_move(osv.osv):
                 res[move.id]['indent_year'] = indent_year
         return res
     
+    def _get_stock(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        product_obj = self.pool.get('product.product')
+        for move in self.browse(cr, uid, ids, context=context):
+            product = product_obj.browse(cr, uid, [move.product_id.id])[0]
+            res[move.id] = product and product.qty_available or 0.0
+        return res 
+    
     def _get_today(self,cr, uid, ids, name, args, context=None):
         res = {}
         for move in self.browse(cr, uid, ids, context=context):
@@ -968,7 +975,7 @@ class stock_move(osv.osv):
             eview.remove(node)
         if context.get('picking_type') == 'internal':
             stock = eview.xpath("//field[@name='qty_available']") and eview.xpath("//field[@name='qty_available']")[0]
-            stock.set('modifiers', '{"invisible":false}')
+            stock.set('modifiers', '{"invisible":false,"readonly":true}')
         res['arch'] = etree.tostring(eview)
         return res
     
@@ -1004,7 +1011,7 @@ class stock_move(osv.osv):
             # required=False because we change product on_change in po line so it come black in some case
             'name': fields.char('Description', select=True),
             'challan_qty': fields.float('Challan Quantity', digits_compute=dp.get_precision('Product Unit of Measure'),states={'done': [('readonly', True)]},help="This Quntity is used for backorder and actual received quntity"),
-            'qty_available': fields.float('Stock'),
+            'qty_available': fields.function(_get_stock, string="Stock", type="float")
                 }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):

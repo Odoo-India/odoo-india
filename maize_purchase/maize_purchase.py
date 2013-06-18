@@ -197,7 +197,7 @@ class purchase_order_line(osv.Model):
         'advance_percentage': fields.function(_get_advance_percentage, string="(%)", digits_compute= dp.get_precision('Account'),store=True),
         'po_series_id': fields.related('order_id', 'po_series_id', type="many2one", relation="product.order.series", string="PO Sr", store=True),
         'po_payment_term_id': fields.related('order_id', 'payment_term_id', type="many2one", relation='account.payment.term', string="Payment Term", store=True),
-        'po_delivery': fields.related('order_id', 'delivey', type="char", relation="purchase.order",string="Mill Delivery/Ex-Godown",store=True),
+        'po_delivery': fields.related('order_id', 'delivey', type="many2one", relation="purchase.delivery",string="Mill Delivery/Ex-Godown",store=True),
         'po_indentor_id': fields.related('order_id', 'indentor_id', type="many2one", relation="res.users", string="Indentor",store=True),
         'po_excise': fields.function(_amount_line, multi="tax", string='Excise', digits_compute= dp.get_precision('Account'),store=True),
         'po_cess': fields.function(_amount_line, multi="tax",string='Cess', digits_compute= dp.get_precision('Account'),store=True),
@@ -256,6 +256,21 @@ class purchase_dispatch(osv.Model):
     ]
 
 purchase_dispatch()
+
+class purchase_delivery(osv.Model):
+    _name = 'purchase.delivery'
+    _description = 'Purchase Delivery'
+
+    _columns = {
+        'name': fields.char('Name', size=64, required=True, translate=True),
+        'code': fields.char('Code', size=32, required=True),
+    }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the dispatch must be unique!')
+    ]
+
+purchase_delivery()
 
 class purchase_requisition_partner(osv.osv_memory):
     _inherit = "purchase.requisition.partner"
@@ -427,7 +442,7 @@ class purchase_order(osv.Model):
         'package_and_forwording': fields.float('Packing & Forwarding', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'insurance': fields.float('Insurance',  states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'commission': fields.float('Commission', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
-        'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'delivey': fields.many2one('purchase.delivery', 'Ex. GoDown / Mill Delivey', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'po_series_id': fields.many2one('product.order.series', 'Series', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
@@ -681,7 +696,7 @@ class purchase_order(osv.Model):
                     'fiscal_position': porder.fiscal_position and porder.fiscal_position.id or False,                    
                     'package_and_forwording':porder.package_and_forwording or 0.0,
                     'commission':porder.commission or 0.0,
-                    'delivey':porder.delivey or '',
+                    'delivey':porder.delivey.id or '',
                     'dispatch_id':porder.dispatch_id and porder.dispatch_id.id or False,
                     'excies_ids':[(6,0, [excies.id for excies in porder.excies_ids])],
                     'vat_ids':[(6,0, [vat.id for vat in porder.vat_ids])],
@@ -803,6 +818,11 @@ class stock_picking(osv.Model):
 
                         })
             receipt_obj.create(cr, uid, vals, context=context)
+        else:
+            for pick in self.browse(cr, uid, ids, context=context):
+                if pick.state != 'done' and pick.backorder_id:
+                    for move in pick.move_lines:
+                        stock_move.write(cr, uid, [move.id], {'challan_qty':0.0})
         for picking in self.browse(cr, uid, ids, context=context):
             seq_name = 'stock.picking'
             if picking.type == 'in':

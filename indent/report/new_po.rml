@@ -218,7 +218,7 @@
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
+            <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
         <td>
@@ -626,7 +626,7 @@
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
+            <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
         <td>
@@ -790,7 +790,7 @@
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
+            <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
         <td>
@@ -1201,7 +1201,7 @@
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
+            <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
         <td>
@@ -1365,7 +1365,7 @@
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
+            <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
         <td>
@@ -1776,7 +1776,7 @@
             <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
             <para style="terp_default_9">: [[ order.other_discount or '']]</para>
             <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.delivey ) or '']]</para>
+            <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
         </td>
         <td>

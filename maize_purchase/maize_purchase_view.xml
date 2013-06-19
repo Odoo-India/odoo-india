@@ -67,13 +67,13 @@
                             <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="amount_tax" invisible="1"/>
                             <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','excise')]" attrs="{'invisible': [('contract', '=', True)]}"/>
-                            <field name="excise_amount"/>
-                            <field name="excise_total"/>
+                            <field name="excise_amount" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="excise_total" attrs="{'invisible': [('contract', '=', True)]}"/>
                             <label string=""/>
                             <button name="%(action_update_excise)d" string="Update Excise" type="action" class="oe_edit_only oe_link"/>
                             <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]" attrs="{'invisible': [('contract', '=', True)]}"/>
-                            <field name="vat_amount"/>
-                            <field name="vat_total"/>
+                            <field name="vat_amount" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="vat_total" attrs="{'invisible': [('contract', '=', True)]}"/>
                             <field name="service_ids" widget="many2many_tags" domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}"/>
                             <label for="insurance"/>
                             <div>

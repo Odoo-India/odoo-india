@@ -198,7 +198,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','') ]] Service Tax </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -606,7 +606,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','') ]] Service Tax </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -770,7 +770,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','') ]] Service Tax </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -1181,7 +1181,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','') ]] Service Tax </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -1345,7 +1345,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','') ]] Service Tax </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font')]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -1756,7 +1756,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','') ]] Service Tax </para>
+            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('para')]] </font>Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>

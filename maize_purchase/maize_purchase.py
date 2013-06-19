@@ -345,6 +345,7 @@ class purchase_order(osv.Model):
             for line in order.order_line:
                 val1 += line.price_subtotal
                 amount_untaxed = val1
+                vat_tax = 0.0
                 price_discount = line.price_unit
                 if line.discount != 0:
                     price_discount = (line.price_unit * (1 - (line.discount / 100)))
@@ -360,7 +361,7 @@ class purchase_order(osv.Model):
                 val = excise_tax+val1
                 res[order.id]['excise_total'] = val
                 for vat in self.pool.get('account.tax').compute_all(cr, uid, order.vat_ids, val, 1, line.product_id, order.partner_id)['taxes']:
-                    vat_tax = vat.get('amount', 0.0)
+                    vat_tax += vat.get('amount', 0.0)
                 res[order.id]['vat_amount'] = vat_tax
                 val += vat_tax
                 res[order.id]['vat_total'] = val

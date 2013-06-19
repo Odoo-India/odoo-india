@@ -71,6 +71,12 @@ class indent_indent(osv.Model):
             result[indent.id] = total
         return result
 
+    def _get_product_line(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('indent.product.lines').browse(cr, uid, ids, context=context):
+            result[line.indent_id.id] = True
+        return result.keys()
+
     _columns = {
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
         'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
@@ -91,7 +97,12 @@ class indent_indent(osv.Model):
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', readonly=True, states={'draft': [('readonly', False)]}),
         'active': fields.boolean('Active'),
         'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item For', readonly=True, states={'draft': [('readonly', False)]}),
-        'amount_total': fields.function(_total_amount, type="float", string='Total', store=True),
+        'amount_total': fields.function(_total_amount, type="float", string='Total',
+            store={
+                'indent.indent': (lambda self, cr, uid, ids, c={}: ids, ['product_lines'], 20),
+                'indent.product.lines': (_get_product_line, ['price_subtotal', 'product_uom_qty', 'indent_id'], 20),
+            },
+            ),
         'maize': fields.char('Maize', size=256, readonly=True),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting For Approval'), ('inprogress', 'Inprogress'), ('received', 'Received'), ('reject', 'Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }

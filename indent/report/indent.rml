@@ -226,7 +226,7 @@
                 <td>
                     <para style="P1"> : [[formatLang(order.indent_date, date = True) or removeParentNode('para')]] </para>
                     <para style="P1"> : [[(order.indentor_id and order.indentor_id.name) or removeParentNode('para')]] </para>
-                    <para style="P1"> : [[(order.type) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[(order.type == 'new' and 'New' or 'Existing') or removeParentNode('para')]] </para>
                     <para style="P1"> : [[time.strftime('%d/%m/%y') or removeParentNode('para')]] </para>
                 </td>
             </tr>
@@ -236,7 +236,7 @@
     </blockTable>
     <para style="P1"> KINDLY ARRANGE TO PROCURE THE FOLLOWING MATERIALS AS PER GIVEN SCHEDULE.</para>
     <para style="P1"> <font color="white"> </font> </para>
-    <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
+    <blockTable colWidths="15.0,195.0,30.0,40.0,60.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_Details_Centre">SR No.</para>
@@ -319,7 +319,7 @@
                 <td>
                     <para style="P1"> : [[formatLang(order.indent_date, date = True) or removeParentNode('para')]] </para>
                     <para style="P1"> : [[(order.indentor_id and order.indentor_id.name) or removeParentNode('para')]] </para>
-                    <para style="P1"> : [[(order.type) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[(order.type == 'new' and 'Store' or 'Repairing') or removeParentNode('para')]] </para>
                     <para style="P1"> : [[time.strftime('%d/%m/%y') or removeParentNode('para')]] </para>
                 </td>
             </tr>
@@ -338,7 +338,7 @@
     </blockTable>
     <para style="P1"> KINDLY ARRANGE TO PROCURE THE FOLLOWING MATERIALS AS PER GIVEN SCHEDULE.</para>
     <para style="P1"> <font color="white"> </font> </para>
-    <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
+    <blockTable colWidths="15.0,195.0,30.0,40.0,60.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
       <tr>
         <td>
           <para style="terp_tblheader_Details_Centre">SR No.</para>
@@ -383,7 +383,7 @@
     </blockTable>
     <section>
       <para style="terp_default_9">[[ repeatIn(order.product_lines,'order_line') ]]</para>
-      <blockTable colWidths="15.0,195.0,40.0,40.0,50.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Line">
+      <blockTable colWidths="15.0,195.0,30.0,40.0,60.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Line">
         <tr>
           <td>
             <para style="terp_default_Centre_9">[[ sequence(order_line) ]] </para>
@@ -438,7 +438,7 @@
         </tr>
       </blockTable>
     </section>
-    <blockTable colWidths="390.0,115.0,30.0,285.0" style="Tableau2">
+    <blockTable colWidths="395.0,115.0,30.0,280.0" style="Tableau2">
       <tr>
         <td>
           <para style="terp_default_8">

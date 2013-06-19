@@ -197,7 +197,7 @@ class purchase_order_line(osv.Model):
         'advance_percentage': fields.function(_get_advance_percentage, string="(%)", digits_compute= dp.get_precision('Account'),store=True),
         'po_series_id': fields.related('order_id', 'po_series_id', type="many2one", relation="product.order.series", string="PO Sr", store=True),
         'po_payment_term_id': fields.related('order_id', 'payment_term_id', type="many2one", relation='account.payment.term', string="Payment Term", store=True),
-        'po_delivery': fields.related('order_id', 'delivey', type="char", relation="purchase.order",string="Mill Delivery/Ex-Godown",store=True),
+        'po_delivery': fields.related('order_id', 'delivey', type="many2one", relation="purchase.delivery",string="Mill Delivery/Ex-Godown",store=True),
         'po_indentor_id': fields.related('order_id', 'indentor_id', type="many2one", relation="res.users", string="Indentor",store=True),
         'po_excise': fields.function(_amount_line, multi="tax", string='Excise', digits_compute= dp.get_precision('Account'),store=True),
         'po_cess': fields.function(_amount_line, multi="tax",string='Cess', digits_compute= dp.get_precision('Account'),store=True),
@@ -256,6 +256,21 @@ class purchase_dispatch(osv.Model):
     ]
 
 purchase_dispatch()
+
+class purchase_delivery(osv.Model):
+    _name = 'purchase.delivery'
+    _description = 'Purchase Delivery'
+
+    _columns = {
+        'name': fields.char('Name', size=64, required=True, translate=True),
+        'code': fields.char('Code', size=32, required=True),
+    }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the dispatch must be unique!')
+    ]
+
+purchase_delivery()
 
 class purchase_requisition_partner(osv.osv_memory):
     _inherit = "purchase.requisition.partner"
@@ -325,11 +340,12 @@ class purchase_order(osv.Model):
                 'vat_amount': 0.0,
                 'vat_total': 0.0,
             }
-            val = val1 = packing_and_forwading = freight = excise_tax = vat_tax = other_tax = 0.0
+            val = val1 = packing_and_forwading = freight = excise_tax = vat_tax = other_tax = service_tax= 0.0
             cur = order.pricelist_id.currency_id
             for line in order.order_line:
                 val1 += line.price_subtotal
                 amount_untaxed = val1
+                vat_tax = 0.0
                 price_discount = line.price_unit
                 if line.discount != 0:
                     price_discount = (line.price_unit * (1 - (line.discount / 100)))
@@ -345,9 +361,12 @@ class purchase_order(osv.Model):
                 val = excise_tax+val1
                 res[order.id]['excise_total'] = val
                 for vat in self.pool.get('account.tax').compute_all(cr, uid, order.vat_ids, val, 1, line.product_id, order.partner_id)['taxes']:
-                    vat_tax = vat.get('amount', 0.0)
+                    vat_tax += vat.get('amount', 0.0)
                 res[order.id]['vat_amount'] = vat_tax
                 val += vat_tax
+                for service in self.pool.get('account.tax').compute_all(cr, uid, order.service_ids, val, 1, line.product_id, order.partner_id)['taxes']:
+                    service_tax = service.get('amount', 0.0)
+                val += service_tax
                 res[order.id]['vat_total'] = val
             if order.packing_type == 'per_unit':
                 other_charge = packing_and_forwading  - order.commission
@@ -427,46 +446,46 @@ class purchase_order(osv.Model):
         'package_and_forwording': fields.float('Packing & Forwarding', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'insurance': fields.float('Insurance',  states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'commission': fields.float('Commission', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
-        'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
+        'delivey': fields.many2one('purchase.delivery', 'Ex. GoDown / Mill Delivey', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'po_series_id': fields.many2one('product.order.series', 'Series', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The amount without tax", track_visibility='always'),
         'amount_tax': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Taxes',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="The tax amount"),
         'amount_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Total',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total amount"),
         'other_charges': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Other Charges',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="Other Charges(computed as Packing & Forwarding - (Commission + Other Discount))"),
         'excise_amount': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Excise Amount',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total excise amount"),
         'excise_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Excise Total',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total after excise"),
         'vat_amount': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='VAT Amount',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total VAT amount"),
         'vat_total': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='VAT Total',
             store={
-                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total after VAT"),
         'excies_ids': fields.many2many('account.tax', 'purchase_order_exices', 'exices_id', 'tax_id', 'Excise', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
@@ -572,7 +591,7 @@ class purchase_order(osv.Model):
             flag = False
             if po.payment_term_id:
                 totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_total, po.date_order or False, context=context)
-            journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
+            journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'TBNK')], context=context)
             journal_id = journal_ids and journal_ids[0] or False
             if not journal_id:
                 raise osv.except_osv(_("Warning !"),_('You must define a journal related to an advance payment.'))
@@ -600,6 +619,11 @@ class purchase_order(osv.Model):
                             wf_service.trg_validate(uid, 'purchase.order', order.id, 'purchase_cancel', cr)
 
                 pp.tender_done(context=context)
+        return res
+
+    def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
+        res = super(purchase_order, self)._prepare_order_line_move(cr, uid, order, order_line, picking_id, context=context)
+        res = dict(res, indent = order_line.indent_id.id, indentor = order_line.indentor_id.id, department_id = order_line.department_id.id)
         return res
 
     def open_advance_payment(self, cr, uid, ids, context=None):
@@ -676,7 +700,7 @@ class purchase_order(osv.Model):
                     'fiscal_position': porder.fiscal_position and porder.fiscal_position.id or False,                    
                     'package_and_forwording':porder.package_and_forwording or 0.0,
                     'commission':porder.commission or 0.0,
-                    'delivey':porder.delivey or '',
+                    'delivey':porder.delivey.id or '',
                     'dispatch_id':porder.dispatch_id and porder.dispatch_id.id or False,
                     'excies_ids':[(6,0, [excies.id for excies in porder.excies_ids])],
                     'vat_ids':[(6,0, [vat.id for vat in porder.vat_ids])],
@@ -776,15 +800,17 @@ class stock_picking(osv.Model):
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                         if move.product_id and move.product_id.ex_chapter:
                             vals.update({'excisable_item': True})
-                    vals= {'inward_id': pick.id or False}
+                    vals.update({'inward_id': pick.id or False})
                 else:
                     for move in pick.backorder_id.move_lines:
                         dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
                         dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
+                        for move in pick.move_lines:
+                            stock_move.write(cr, uid, [move.id], {'challan_qty':0.0})
                         if move.product_id and move.product_id.ex_chapter:
                             vals.update({'excisable_item': True})
-                    vals= {'inward_id': pick.backorder_id and pick.backorder_id.id or False}
+                    vals.update({'inward_id': pick.backorder_id and pick.backorder_id.id or False})
                 vals.update({'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                         'partner_id': pick.partner_id.id,
                         'stock_journal_id': pick.stock_journal_id or False,
@@ -796,6 +822,11 @@ class stock_picking(osv.Model):
 
                         })
             receipt_obj.create(cr, uid, vals, context=context)
+        else:
+            for pick in self.browse(cr, uid, ids, context=context):
+                if pick.state != 'done' and pick.backorder_id:
+                    for move in pick.move_lines:
+                        stock_move.write(cr, uid, [move.id], {'challan_qty':0.0})
         for picking in self.browse(cr, uid, ids, context=context):
             seq_name = 'stock.picking'
             if picking.type == 'in':
@@ -937,10 +968,39 @@ class stock_move(osv.osv):
                 res[move.id]['indent_year'] = indent_year
         return res
     
+    def _get_stock(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        product_obj = self.pool.get('product.product')
+        for move in self.browse(cr, uid, ids, context=context):
+            product = product_obj.browse(cr, uid, [move.product_id.id])[0]
+            res[move.id] = product and product.qty_available or 0.0
+        return res 
+    
     def _get_today(self,cr, uid, ids, name, args, context=None):
         res = {}
         for move in self.browse(cr, uid, ids, context=context):
             res[move.id] = time.strftime('%d/%m/%Y')
+        return res
+    
+    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+        """
+        @ Set Challan_qty String on the base of picking type
+        """
+        context = context or {}
+        res = super(stock_move, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
+        eview = etree.fromstring(res['arch'])
+        node = eview.xpath("//field[@name='challan_qty']") and eview.xpath("//field[@name='challan_qty']")[0]
+        if context.get('picking_type') == 'internal':
+            if 'challan_qty' in res['fields'].keys():
+                node.set('string', _('Issue Quantity'))
+        if context.get('picking_type') == 'out' and node in eview:
+            location = eview.xpath("//field[@name='location_id']") and eview.xpath("//field[@name='location_id']")[0] 
+            location.set('modifiers', '{"invisible":false}')
+            eview.remove(node)
+        if context.get('picking_type') == 'internal':
+            stock = eview.xpath("//field[@name='qty_available']") and eview.xpath("//field[@name='qty_available']")[0]
+            stock.set('modifiers', '{"invisible":false,"readonly":true}')
+        res['arch'] = etree.tostring(eview)
         return res
     
     _columns = {
@@ -975,6 +1035,7 @@ class stock_move(osv.osv):
             # required=False because we change product on_change in po line so it come black in some case
             'name': fields.char('Description', select=True),
             'challan_qty': fields.float('Challan Quantity', digits_compute=dp.get_precision('Product Unit of Measure'),states={'done': [('readonly', True)]},help="This Quntity is used for backorder and actual received quntity"),
+            'qty_available': fields.function(_get_stock, string="Stock", type="float")
                 }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
@@ -1039,6 +1100,13 @@ class stock_move(osv.osv):
     def onchange_excise(self, cr, uid, ids, excise, cess, high_cess,import_duty, context=None):
         return {'value': {'excise': excise or 0.0, 'cenvat':excise or 0.0, 'cess': cess or 0.0, 'c_cess': cess or 0.0, 'high_cess': high_cess or 0.0, 'c_high_cess': high_cess or 0.0, 'import_duty': import_duty or 0.0, 'import_duty1': import_duty or 0.0}}
 
+    def onchange_product_id(self, cr, uid, ids, prod_id=False, loc_id=False,
+                            loc_dest_id=False, partner_id=False):
+        res = super(stock_move,self).onchange_product_id(cr, uid, ids, prod_id, loc_id, loc_dest_id, partner_id)
+        product = self.pool.get('product.product').browse(cr, uid, [prod_id])[0]
+        res['value'].update({'qty_available': product and product.qty_available or 0.0})
+        return res
+
 stock_move()
 
 class ac_code(osv.Model):
@@ -1091,41 +1159,3 @@ class tr_code(osv.Model):
 
 tr_code()
 
-class stock_partial_picking(osv.osv_memory):
-    _name = "stock.partial.picking"
-    _inherit = "stock.partial.picking"
-    
-    def default_get(self, cr, uid, fields, context=None):
-        if context is None: context = {}
-        res = {}
-        picking_ids = context.get('active_ids', [])
-        active_model = context.get('active_model')
-
-        if not picking_ids or len(picking_ids) != 1:
-            # Partial Picking Processing may only be done for one picking at a time
-            return res
-        assert active_model in ('stock.picking', 'stock.picking.in', 'stock.picking.out','stock.picking.receipt'), 'Bad context propagation'
-        picking_id, = picking_ids
-        if 'picking_id' in fields:
-            res.update(picking_id=picking_id)
-        if 'move_ids' in fields:
-            picking = self.pool.get('stock.picking').browse(cr, uid, picking_id, context=context)
-            moves = [self._partial_move_for(cr, uid, m) for m in picking.move_lines if m.state not in ('done','cancel')]
-            res.update(move_ids=moves)
-        if 'date' in fields:
-            res.update(date=time.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
-        return res
-    
-    def _partial_move_for(self, cr, uid, move):
-        partial_move = {
-            'product_id' : move.product_id.id,
-            'quantity' : move.challan_qty if move.state == 'assigned' else 0,
-            'product_uom' : move.product_uom.id,
-            'prodlot_id' : move.prodlot_id.id,
-            'move_id' : move.id,
-            'location_id' : move.location_id.id,
-            'location_dest_id' : move.location_dest_id.id,
-        }
-        if move.picking_id.type == 'in' and move.product_id.cost_method == 'average':
-            partial_move.update(update_cost=True, **self._product_cost_for_average_update(cr, uid, move))
-        return partial_move

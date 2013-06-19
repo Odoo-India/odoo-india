@@ -33,28 +33,28 @@ class comparison_report(report_sxw.rml_parse):
                                   'get_value': self._get_value,})
         self.context = context
     
-    def _tax(self,order):
+    def _tax(self,order, line):
         tax_obj = self.pool.get('account.tax')
         excise_tax = vat_tax = val1 = packing_and_forwading = freight = other_charge = subtotal= price_discount = 0.0
         excise_name = vat_name = ''
-        for line in order.order_line:
-            freight_tax = order.freight
-            insurance_tax = order.insurance
-            val1 += line.price_subtotal
-            subtotal += line.price_subtotal
-            price_discount = line.price_unit
-            if line.discount != 0:
-                price_discount = (line.price_unit * (1 - (line.discount / 100)))
-            if order.packing_type == 'per_unit':
-                packing_and_forwading += order.package_and_forwording * line.product_qty
-            if order.freight_type == 'per_unit':
-                freight += order.freight * line.product_qty
-            for exices in self.pool.get('account.tax').compute_all(self.cr, self.uid, order.excies_ids, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
-                excise_tax += exices.get('amount', 0.0)
-            val1 = excise_tax
-            for vat in self.pool.get('account.tax').compute_all(self.cr, self.uid, order.vat_ids, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
-                vat_tax += vat.get('amount', 0.0)
-            val1 += vat_tax
+        #for line in order.order_line:
+        freight_tax = order.freight
+        insurance_tax = order.insurance
+        val1 += line.price_subtotal
+        subtotal += line.price_subtotal
+        price_discount = line.price_unit
+        if line.discount != 0:
+            price_discount = (line.price_unit * (1 - (line.discount / 100)))
+        if order.packing_type == 'per_unit':
+            packing_and_forwading += order.package_and_forwording * line.product_qty
+        if order.freight_type == 'per_unit':
+            freight += order.freight * line.product_qty
+        for exices in self.pool.get('account.tax').compute_all(self.cr, self.uid, order.excies_ids, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
+            excise_tax += exices.get('amount', 0.0)
+        val1 = excise_tax
+        for vat in self.pool.get('account.tax').compute_all(self.cr, self.uid, order.vat_ids, price_discount, line.product_qty, line.product_id, order.partner_id)['taxes']:
+            vat_tax += vat.get('amount', 0.0)
+        val1 += vat_tax
         if order.packing_type == 'per_unit':
             other_charge = packing_and_forwading
         elif order.packing_type == 'percentage':

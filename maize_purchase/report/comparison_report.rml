@@ -206,10 +206,10 @@
             <para style="terp_default_8"> [[ (product_line.price_unit) or '0.00']]</para>
         </td>
         <td>
-            <para style="terp_default_8"> [[ data['form']['discount'] == True and (po_line.discount_percentage or '0.00') or removeParentNode('td')]]</para>
+            <para style="terp_default_8"> [[ data['form']['discount'] == True and (product_line.discount or '0.00') or removeParentNode('td')]]</para>
         </td>
         <td>
-            <para style="terp_default_8"> [[ (data['form']['package_and_forwording'] == True or removeParentNode('td')) and tax(po_line or '0.00')]] [[ (po_line.insurance_type == 'percentage' and formatLang(po_line.package_and_forwording) + ' %') or formatLang(po_line.package_and_forwording)]]</para>
+            <para style="terp_default_8"> [[ (data['form']['package_and_forwording'] == True or removeParentNode('td')) and tax(po_line, product_line or '0.00')]] [[ (po_line.packing_type == 'percentage' and formatLang(po_line.package_and_forwording) + ' %')]]</para>
             <para style="terp_default_8"> [[ data['form']['package_and_forwording'] == True and ((po_line.packing_type == 'fix' and formatLang(po_line.package_and_forwording)) or (po_line.packing_type == 'percentage' and get_value().get('packing') or (po_line.packing_type == 'per_unit' and get_value().get('packing') and 'per unit')) or '0.00') or removeParentNode('td')]]</para>
             <!--para style="terp_default_8"> [[ data['form']['package_and_forwording'] == True and (po_line.package_and_forwording or '0.00') or removeParentNode('td')]]</para-->
         </td>
@@ -217,14 +217,14 @@
             <para style="terp_default_8"> [[ data['form']['commission'] == True and (po_line.commission  or '0.00') or removeParentNode('td')]]</para>
         </td>
         <td>
-            <para style="terp_default_8"> [[ data['form']['delivey'] == True and (po_line.delivey  or '0.00') or removeParentNode('td')]]</para>
+            <para style="terp_default_8"> [[ data['form']['delivey'] == True and (po_line.delivey.name  or '0.00') or removeParentNode('td')]]</para>
         </td>
         <td>
-            <para style="terp_default_8"> [[ (data['form']['excise'] == True or removeParentNode('td')) and tax(po_line or '0.00') ]] [[ get_value().get('excise_name') or ' ']]</para>
+            <para style="terp_default_8"> [[ (data['form']['excise'] == True or removeParentNode('td')) and tax(po_line, product_line or '0.00') ]] [[ get_value().get('excise_name') or ' ']]</para>
             <para style="terp_default_8"> [[ (data['form']['excise'] == True or removeParentNode('td')) and get_value().get('excise') or '0.00']]</para>
         </td>
         <td>
-            <para style="terp_default_8"> [[ (data['form']['vat'] == True or removeParentNode('td')) and tax(po_line or '0.00') ]] [[ get_value().get('vat_name') or ' ']]</para>
+            <para style="terp_default_8"> [[ (data['form']['vat'] == True or removeParentNode('td')) and tax(po_line, product_line or '0.00') ]] [[ get_value().get('vat_name') or ' ']]</para>
             <para style="terp_default_8"> [[ (data['form']['vat'] == True or removeParentNode('td')) and get_value().get('vat') or '0.00']]</para>
         </td>
         <td>

@@ -67,13 +67,13 @@
                             <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="amount_tax" invisible="1"/>
                             <field name="excies_ids" widget="many2many_tags" domain="[('tax_type','=','excise')]" attrs="{'invisible': [('contract', '=', True)]}"/>
-                            <field name="excise_amount"/>
-                            <field name="excise_total"/>
+                            <field name="excise_amount" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="excise_total" attrs="{'invisible': [('contract', '=', True)]}"/>
                             <label string=""/>
                             <button name="%(action_update_excise)d" string="Update Excise" type="action" class="oe_edit_only oe_link"/>
                             <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]" attrs="{'invisible': [('contract', '=', True)]}"/>
-                            <field name="vat_amount"/>
-                            <field name="vat_total"/>
+                            <field name="vat_amount" attrs="{'invisible': [('contract', '=', True)]}"/>
+                            <field name="vat_total" attrs="{'invisible': [('contract', '=', True)]}"/>
                             <field name="service_ids" widget="many2many_tags" domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}"/>
                             <label for="insurance"/>
                             <div>
@@ -426,19 +426,19 @@
                 <xpath expr="//field[@name='product_id']" position="after">
                     <field name="department_id"/>
                 </xpath>
+                <xpath expr="//field[@name='product_id']" position="replace">
+                    <field name="product_id" on_change="onchange_product_id(product_id,location_id,location_dest_id, parent.partner_id)"/>
+                </xpath>
                 <xpath expr="//field[@name='product_qty']" position="replace">
                     <field name="product_qty" on_change="onchange_quantity(product_id, product_qty, product_uom, product_uos)" sum="Total Quantity"/>
                 </xpath>
                 <xpath expr="//field[@name='product_qty']" position="after">
-                    <field name="challan_qty" sum="Total Challan Quantity"/>
+                    <field name="type" invisible="1"/>
+                    <field name="qty_available" invisible="1"/>
+                    <field name="challan_qty" sum="Total Challan Quantity" attrs="{'invisible': [('type', '=', 'out')]}"/>
                 </xpath>
-                <xpath expr="//button[@string='Split in Serial Number']" position="replace">
-                    <button
-                       name="%(stock.track_line)d"
-                       string="Split in Serial Number"
-                       groups="stock.group_production_lot"
-                       type="action" icon="gtk-justify-fill"
-                       attrs="{'invisible': [('challan_qty', '&lt;', 1.0)]}"/>
+                <xpath expr="//tree[@string='Stock Moves']" position="attributes">
+                    <attribute name="editable">bottom</attribute>
                 </xpath>
             </field>
         </record>
@@ -463,9 +463,17 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='product_id']" position="after">
                     <field name="type" invisible="1"/>
-                    <field name="challan_qty" attrs="{'invisible': [('type', '!=', 'in')]}"/>
+                    <field name="challan_qty" attrs="{'invisible': [('type', '=', 'out')]}"/>
                 </xpath>
             </field>
+        </record>
+        
+        <!-- new action for stock picking challan field -->
+        <record id="action_stock_picking_inherit" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="maize_inherit_view_split_in_lots"/>
+            <field name="act_window_id" ref="stock.track_line"/>
         </record>
         
         <!--  Inherit tree view for chagne the string of date field -->

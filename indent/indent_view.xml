@@ -67,7 +67,6 @@
                         </div>
                         <div class="oe_right oe_inline" name="buttons">
                             <button name="%(action_purchase_requisition_indent_view)d" string="Enquiry" type="action" groups="purchase.group_purchase_user" states="inprogress"/>
-                            <button name="action_receive_products" string="Inward" type="object" states="inprogress"/>
                             <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('state', '!=', 'inprogress'),'|',('type', '!=', 'existing'),]}"/>
                         </div>
                         <group>

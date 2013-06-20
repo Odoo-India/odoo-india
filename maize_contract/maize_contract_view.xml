@@ -10,14 +10,8 @@
                 <xpath expr="//field[@name='name']" position='after'>
                     <field name="contract" invisible="1"/>
                 </xpath>
-                <xpath expr="//div[@name='buttons']/button[@string='Inward']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('type', '=', 'existing')]}</attribute>
-                </xpath>
                 <xpath expr="//div[@name='buttons']/button[@string='Enquiry']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('type', '=', 'existing')]}</attribute>
-                </xpath>
-                <xpath expr="//div[@name='buttons']/button[@string='Issue Reciept(s)']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|',('contract', '=', True),('type', '=', 'existing')]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|', '|', ('contract', '=', True),('type', '=', 'existing'), ('state', '!=', 'inprogress')]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='company_id']" position='after'>
                     <field name="indent_equipment_id"/>

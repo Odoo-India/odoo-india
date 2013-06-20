@@ -26,6 +26,7 @@ from openerp.report import report_sxw
 from openerp.osv import osv
 from openerp import pooler
 from openerp.tools.translate import _
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
 class indent(report_sxw.rml_parse):
 
@@ -114,8 +115,9 @@ class indent(report_sxw.rml_parse):
         return self._get_value()
     
     def _last_issue(self, product_id, date):
+        date = datetime.strptime(date , DEFAULT_SERVER_DATETIME_FORMAT)
         stock_obj = self.pool.get('stock.move')
-        stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'internal'),('state', '=', 'done'), ('create_date', '<=', date)])
+        stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'internal'),('state', '=', 'done'), ('write_date', '<=', str(date))])
         stock_id = sorted(stock_id,reverse=True)
         self.get_value.update({'date':'','department':''})
         if stock_id and len(stock_id) >= 2:
@@ -129,9 +131,11 @@ class indent(report_sxw.rml_parse):
     def _last_consumption_qty(self, product_id):
         last_year = str(datetime.now() - relativedelta(years=1)).split('-')[0]
         current_year = str(datetime.now()).split('-')[0]
+        current_year = datetime.strptime(current_year+'-03-31', DEFAULT_SERVER_DATE_FORMAT)
+        last_year = datetime.strptime(last_year+'-04-01', DEFAULT_SERVER_DATE_FORMAT)
         res = {}
         stock_obj = self.pool.get('stock.move')
-        stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'out'),('state', '=', 'done'), ('create_date', '<=', '03-31-'+ current_year),('create_date', '>=', '04-01-'+ last_year)])
+        stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'out'),('state', '=', 'done'), ('write_date', '<=', str(current_year)),('write_date', '>=', str(last_year))])
         consume_qty = 0.0
         if stock_id:
             for id in stock_id:
@@ -146,9 +150,11 @@ class indent(report_sxw.rml_parse):
     def _current_consumption_qty(self, product_id):
         next_year = str(datetime.now() + relativedelta(years=1)).split('-')[0]
         current_year = str(datetime.now()).split('-')[0]
+        next_year = datetime.strptime(next_year+'-03-31', DEFAULT_SERVER_DATE_FORMAT)
+        current_year = datetime.strptime(current_year+'-04-01',DEFAULT_SERVER_DATE_FORMAT)
         res = {}
         stock_obj = self.pool.get('stock.move')
-        stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'out'),('state', '=', 'done'), ('create_date', '<=', '03-31-'+ next_year),('create_date', '>=', '04-01-'+ current_year)])
+        stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'out'),('state', '=', 'done'), ('write_date', '<=', str(next_year)),('write_date', '>=', str(current_year))])
         consume_qty = 0.0
         if stock_id:
             for id in stock_id:

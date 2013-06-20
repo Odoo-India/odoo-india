@@ -272,11 +272,11 @@
                 <para style="terp_default_2"> ENGINEER SIGN </para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
                 <para style="terp_default_2"> DEPT HEAD</para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
                 <para style="terp_default_2"> ENGG HEAD </para>
             </td>
             <td>
@@ -497,11 +497,11 @@
                 <para style="terp_default_2"> ENGINEER SIGN </para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
                 <para style="terp_default_2"> DEPT HEAD</para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
                 <para style="terp_default_2"> ENGG HEAD </para>
             </td>
             <td>
@@ -723,11 +723,11 @@
                 <para style="terp_default_2"> ENGINEER SIGN </para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
                 <para style="terp_default_2"> DEPT HEAD</para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
                 <para style="terp_default_2"> ENGG HEAD </para>
             </td>
             <td>

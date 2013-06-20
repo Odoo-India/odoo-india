@@ -58,19 +58,17 @@
                         <field name="state" widget="statusbar" statusbar_visible="draft,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
                     </header>
                     <sheet>
-                    	<div class="oe_title">
-	                        <h1>
-	                            <label string="Draft Indent" attrs="{'invisible': [('state','&lt;&gt;','draft')]}"/>
+                        <div class="oe_title">
+                            <h1>
+                                <label string="Draft Indent" attrs="{'invisible': [('state','&lt;&gt;','draft')]}"/>
                                 <label string="Indent" attrs="{'invisible': [('state', '=', 'draft')]}"/>
-	                            <field name="name" class="oe_inline"/>
+                                <field name="name" class="oe_inline"/>
 	                        </h1>
                         </div>
-	                    <div class="oe_right oe_inline" name="buttons">
-	  	                    <button name="%(action_purchase_requisition_indent_view)d" string="Enquiry" type="action" groups="purchase.group_purchase_user"/> 
-							<button name="action_receive_products" string="Inward" type="object"/>
-                            <button name="action_issue_receipt" string="Issue Reciept(s)" type="object" groups="purchase.group_purchase_user"/>  
-	                        <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('state', '!=', 'inprogress'),'|',('type', '!=', 'existing'),]}"/>
-	                        	
+                        <div class="oe_right oe_inline" name="buttons">
+                            <button name="%(action_purchase_requisition_indent_view)d" string="Enquiry" type="action" groups="purchase.group_purchase_user"/>
+                            <button name="action_receive_products" string="Inward" type="object"/>
+                            <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('state', '!=', 'inprogress'),'|',('type', '!=', 'existing'),]}"/>
                         </div>
                         <group>
                             <group>

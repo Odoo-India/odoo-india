@@ -328,22 +328,6 @@ class indent_indent(osv.Model):
         }
         return result
 
-    def action_issue_receipt(self, cr, uid, ids, context=None):
-        '''
-        This function returns an action that display internal move of given indent ids.
-        '''
-        assert len(ids) == 1, 'This option should only be used for a single id at a time'
-        domain = [('indent_id.id','=',ids[0]),('type','=','internal')]
-        result = {
-            'name': _('Issue Receipt'),
-            'view_type': 'form',
-            "view_mode": 'tree,form',
-            'res_model': 'stock.picking',
-            'domain': domain,
-            'type': 'ir.actions.act_window',
-        }
-        return result
-
     def _prepare_indent_line_move(self, cr, uid, indent, line, picking_id, date_planned, context=None):
         location_id = self._default_stock_location(cr, uid, context=context)
         res = {

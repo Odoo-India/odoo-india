@@ -241,12 +241,12 @@
       <font color="white">.............................................................</font>
       <font face="Helvetica" size="7.0">(Original)</font>
     </para>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table9">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table9">
       <tr>
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
           <para style="P23">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.street) or '' ]] [[ (o.partner_id and o.partner_id.street2) or '']]</para>
+          <para style="P21">[[ display_address(o.partner_id) ]]</para>
         </td>
         <td>
           <para style="P10">Invoice No.</para>
@@ -259,8 +259,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_id and o.partner_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '']], [[ (o.partner_id and o.partner_id.state_id.name) or '' ]].</para>
         </td>
         <td>
           <para style="P10">Delivery Note</para>
@@ -287,14 +285,14 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table10">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table10">
       <tr>
         <td>
           <para style="P17">
             <font face="Helvetica" size="8.0">Consignee</font>
           </para>
           <para style="P23">[[ (o.delivery_address_id and o.delivery_address_id.title and o.delivery_address_id.title.name) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.street) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.street2)]]</para>
+          <para style="P21">[[ display_address(o.delivery_address_id) ]]</para>
         </td>
         <td>
           <para style="P10">Buyer's Order No.</para>
@@ -307,8 +305,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.city) or '' ]] - [[ (o.delivery_address_id and o.delivery_address_id.zip) or '']], [[ (o.delivery_address_id and o.delivery_address_id.state_id and o.delivery_address_id.state_id.name)]].</para>
         </td>
         <td>
           <para style="P10">Dispatch Document No.</para>
@@ -333,7 +329,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,300.0" style="Table11">
+    <blockTable colWidths="210.0,320.0" style="Table11">
       <tr>
         <td>
           <para style="P1">
@@ -347,7 +343,7 @@
       </tr>
     </blockTable> 
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="P1">Description of Goods</para>
@@ -398,7 +394,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.invoice_line,'l') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       	<tr>
           <td>
             <para style="terp_default_91">[[ l.product_id and l.product_id.categ_id.name or '']]</para>
@@ -515,7 +511,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.tax_line,'t') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
         <tr>
           <td>
             <para style="terp_default_81">[[ t.name ]] <font face="Helvetica">([[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font') or ((t.base)) ]])</font></para>
@@ -579,7 +575,76 @@
       </blockTable>
     </section>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
+    <section>
+      <blockTable colWidths="210.0,70.0,50.0,71.0,40.0,89.0" style="Table5"> [[( o.freight_allowed == True and o.company_id.packing_cost == False) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_10"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_10">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[( o.company_id.packing_cost and o.freight_allowed == True) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_10"><font face="Helvetica">Inward Freight</font></para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="P1">
+               <font color="white"> </font>
+             </para>
+           </td>
+           <td>
+             <para style="terp_default_Right_10">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+           </td>
+         </tr>
+       </blockTable>
+     </section>
+    
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Dealers' Discount </para>
@@ -640,7 +705,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Total</para>
@@ -703,7 +768,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="334.0,197.0" style="Table8">
+    <blockTable colWidths="334.0,205.0" style="Table8">
       <tr>
         <td>
           <para style="terp_default_9">Declaration</para>
@@ -750,12 +815,12 @@
       <font color="white">..........................................................</font>
       <font face="Helvetica" size="7.0">(Duplicate)</font>
     </para>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table9">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table9">
       <tr>
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
           <para style="P23">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.street) or '' ]] [[ (o.partner_id and o.partner_id.street2) or '']]</para>
+          <para style="P21">[[ display_address(o.partner_id) ]]</para>
         </td>
         <td>
           <para style="P10">Invoice No.</para>
@@ -768,8 +833,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_id and o.partner_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '']], [[ (o.partner_id and o.partner_id.state_id.name) or '' ]].</para>
         </td>
         <td>
           <para style="P10">Delivery Note</para>
@@ -796,14 +859,14 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table10">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table10">
       <tr>
         <td>
           <para style="P17">
             <font face="Helvetica" size="8.0">Consignee</font>
           </para>
           <para style="P23">[[ (o.delivery_address_id and o.delivery_address_id.title and o.delivery_address_id.title.name) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.street) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.street2)]]</para>
+          <para style="P21">[[ display_address(o.delivery_address_id) ]]</para>
         </td>
         <td>
           <para style="P10">Buyer's Order No.</para>
@@ -816,8 +879,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.city) or '' ]] - [[ (o.delivery_address_id and o.delivery_address_id.zip) or '']], [[ (o.delivery_address_id and o.delivery_address_id.state_id and o.delivery_address_id.state_id.name)]].</para>
         </td>
         <td>
           <para style="P10">Dispatch Document No.</para>
@@ -842,7 +903,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,300.0" style="Table11">
+    <blockTable colWidths="210.0,320.0" style="Table11">
       <tr>
         <td>
           <para style="P1">
@@ -856,7 +917,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="P1">Description of Goods</para>
@@ -907,7 +968,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.invoice_line,'l') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       	<tr>
           <td>
             <para style="terp_default_91">[[ l.product_id and l.product_id.categ_id.name or '']]</para>
@@ -1024,7 +1085,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.tax_line,'t') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
         <tr>
           <td>
             <para style="terp_default_81">[[ t.name ]] <font face="Helvetica">([[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font') or ((t.base)) ]])</font></para>
@@ -1087,7 +1148,76 @@
         </tr>
       </blockTable>
     </section>
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
+    
+    <section>
+      <blockTable colWidths="210.0,70.0,50.0,71.0,40.0,89.0" style="Table5"> [[( o.freight_allowed == True and o.company_id.packing_cost == False) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_10"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_10">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[( o.company_id.packing_cost and o.freight_allowed == True) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+           <para style="terp_default_10"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_10">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+    </section>
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Dealers' Discount </para>
@@ -1149,7 +1279,7 @@
     </blockTable>
     
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Total</para>
@@ -1212,7 +1342,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="334.0,197.0" style="Table8">
+    <blockTable colWidths="334.0,205.0" style="Table8">
       <tr>
         <td>
           <para style="terp_default_9">Declaration</para>
@@ -1259,12 +1389,12 @@
       <font color="white">.........................................................</font>
       <font face="Helvetica" size="7.0">(Triplicate)</font>
     </para>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table9">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table9">
       <tr>
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
           <para style="P23">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.street) or '' ]] [[ (o.partner_id and o.partner_id.street2) or '']]</para>
+          <para style="P21">[[ display_address(o.partner_id) ]]</para>
         </td>
         <td>
           <para style="P10">Invoice No.</para>
@@ -1277,8 +1407,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_id and o.partner_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '']], [[ (o.partner_id and o.partner_id.state_id.name) or '' ]].</para>
         </td>
         <td>
           <para style="P10">Delivery Note</para>
@@ -1305,14 +1433,14 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table10">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table10">
       <tr>
         <td>
           <para style="P17">
             <font face="Helvetica" size="8.0">Consignee</font>
           </para>
           <para style="P23">[[ (o.delivery_address_id and o.delivery_address_id.title and o.delivery_address_id.title.name) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.street) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.street2)]]</para>
+          <para style="P21">[[ display_address(o.delivery_address_id) ]]</para>
         </td>
         <td>
           <para style="P10">Buyer's Order No.</para>
@@ -1325,8 +1453,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.city) or '' ]] - [[ (o.delivery_address_id and o.delivery_address_id.zip) or '']], [[ (o.delivery_address_id and o.delivery_address_id.state_id and o.delivery_address_id.state_id.name)]].</para>
         </td>
         <td>
           <para style="P10">Dispatch Document No.</para>
@@ -1351,7 +1477,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,300.0" style="Table11">
+    <blockTable colWidths="210.0,320.0" style="Table11">
       <tr>
         <td>
           <para style="P1">
@@ -1365,7 +1491,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="P1">Description of Goods</para>
@@ -1416,7 +1542,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.invoice_line,'l') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       	<tr>
           <td>
             <para style="terp_default_91">[[ l.product_id and l.product_id.categ_id.name or '']]</para>
@@ -1533,7 +1659,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.tax_line,'t') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
         <tr>
           <td>
             <para style="terp_default_81">[[ t.name ]] <font face="Helvetica">([[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font') or ((t.base)) ]])</font></para>
@@ -1597,7 +1723,76 @@
       </blockTable>
     </section>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
+    <section>
+      <blockTable colWidths="210.0,70.0,50.0,71.0,40.0,89.0" style="Table5"> [[( o.freight_allowed == True and o.company_id.packing_cost == False) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_10"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_10">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[( o.company_id.packing_cost and o.freight_allowed == True) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+           <para style="terp_default_10"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_10">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+    </section>
+    
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Dealers' Discount </para>
@@ -1658,7 +1853,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Total</para>
@@ -1721,7 +1916,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="334.0,197.0" style="Table8">
+    <blockTable colWidths="334.0,205.0" style="Table8">
       <tr>
         <td>
           <para style="terp_default_9">Declaration</para>
@@ -1768,12 +1963,12 @@
       <font color="white">........................................................</font>
       <font face="Helvetica" size="7.0">(Extra Copy)</font>
     </para>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table9">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table9">
       <tr>
         <td>
           <para style="P22">Buyer (if other than consignee)</para>
           <para style="P23">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.street) or '' ]] [[ (o.partner_id and o.partner_id.street2) or '']]</para>
+          <para style="P21">[[ display_address(o.partner_id) ]]</para>
         </td>
         <td>
           <para style="P10">Invoice No.</para>
@@ -1786,8 +1981,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.partner_id and o.partner_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.partner_id and o.partner_id.city) or '' ]] - [[ (o.partner_id and o.partner_id.zip) or '']], [[ (o.partner_id and o.partner_id.state_id.name) or '' ]].</para>
         </td>
         <td>
           <para style="P10">Delivery Note</para>
@@ -1814,14 +2007,14 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,140.0,160.0" style="Table10">
+    <blockTable colWidths="210.0,160.0,160.0" style="Table10">
       <tr>
         <td>
           <para style="P17">
             <font face="Helvetica" size="8.0">Consignee</font>
           </para>
           <para style="P23">[[ (o.delivery_address_id and o.delivery_address_id.title and o.delivery_address_id.title.name) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.name) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.street) or '' ]] [[ (o.delivery_address_id and o.delivery_address_id.street2)]]</para>
+          <para style="P21">[[ display_address(o.delivery_address_id) ]]</para>
         </td>
         <td>
           <para style="P10">Buyer's Order No.</para>
@@ -1834,8 +2027,6 @@
       </tr>
       <tr>
         <td>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.village_taluka) or '' ]]</para>
-          <para style="P21">[[ (o.delivery_address_id and o.delivery_address_id.city) or '' ]] - [[ (o.delivery_address_id and o.delivery_address_id.zip) or '']], [[ (o.delivery_address_id and o.delivery_address_id.state_id and o.delivery_address_id.state_id.name)]].</para>
         </td>
         <td>
           <para style="P10">Dispatch Document No.</para>
@@ -1860,7 +2051,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="230.0,300.0" style="Table11">
+    <blockTable colWidths="210.0,320.0" style="Table11">
       <tr>
         <td>
           <para style="P1">
@@ -1874,7 +2065,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table3">[[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="P1">Description of Goods</para>
@@ -1925,7 +2116,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.invoice_line,'l') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       	<tr>
           <td>
             <para style="terp_default_91">[[ l.product_id and l.product_id.categ_id.name or '']]</para>
@@ -2042,7 +2233,7 @@
     
     <section>
       <para style="terp_default_2">[[ repeatIn(o.tax_line,'t') ]]</para>
-      <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table4"> [[ o.company_id.packing_cost or removeParentNode('blockTable') and (t.tax_code_id and t.tax_code_id.notprintable) and removeParentNode('blockTable')]]
         <tr>
           <td>
             <para style="terp_default_81">[[ t.name ]] <font face="Helvetica">([[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font') or ((t.base)) ]])</font></para>
@@ -2106,7 +2297,76 @@
       </blockTable>
     </section>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
+    <section>
+      <blockTable colWidths="210.0,70.0,50.0,71.0,40.0,89.0" style="Table5"> [[( o.freight_allowed == True and o.company_id.packing_cost == False) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+            <para style="terp_default_10"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_10">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      
+      <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[( o.company_id.packing_cost and o.freight_allowed == True) or removeParentNode('blockTable')]]
+        <tr>
+          <td>
+           <para style="terp_default_10"><font face="Helvetica">Inward Freight</font></para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="P1">
+              <font color="white"> </font>
+            </para>
+          </td>
+          <td>
+            <para style="terp_default_Right_10">[[ o.currency_id.symbol ]] [[ formatLang(o.freight_charge, digits=get_digits(dp='Account')) ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+    </section>
+    
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ ( o.company_id.dealers_discount == True and o.company_id.packing_cost == True ) or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Dealers' Discount </para>
@@ -2167,7 +2427,7 @@
       </tr>
     </blockTable>
     
-    <blockTable colWidths="200.0,60.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
+    <blockTable colWidths="210.0,50.0,50.0,61.0,50.0,40.0,69.0" style="Table5"> [[ o.company_id.packing_cost or removeParentNode('blockTable') ]]
       <tr>
         <td>
           <para style="terp_default_10">Total</para>
@@ -2230,7 +2490,7 @@
     <para style="terp_default_9">
       <font color="white"> </font>
     </para>
-    <blockTable colWidths="334.0,197.0" style="Table8">
+    <blockTable colWidths="334.0,205.0" style="Table8">
       <tr>
         <td>
           <para style="terp_default_9">Declaration</para>

@@ -1,0 +1,69 @@
+-
+  In order to test the tax invoice reports defined on an invoice, we will create sale order with packing amount and dealers discount. 
+  For that we have a VAT tax defined.
+-  
+    !record {model: account.tax, id: tax_1}:
+      name: 'Vat'
+      tax_categ: 'vat'
+      amount: 0.04
+-
+  we have a Additional tax defined.
+-  
+    !record {model: account.tax, id: tax_2}:
+      name: 'Additional'
+      tax_categ: 'other'
+      amount: 0.01
+-
+  Create  one  sale order for [ADPT] USB Adapter.
+-
+   !record {model: sale.order, id: sale_order_01}:
+    partner_id: base.res_partner_2
+    order_policy: 'prepaid'
+    order_line:
+      - name: USB Adapter
+        product_uom_qty: 1.0
+        price_unit: 18.0
+        packing_amount: 5.0
+        lst_price: 10.0
+        tax_id:
+          - tax_1
+          - tax_2
+-
+  I confirm sale order. 
+-
+  !workflow {model: sale.order, action: order_confirm, ref: sale_order_01}
+
+-
+  I select Packing cost and check that the untaxed Amount should be 23.0, Tax should be 1.15, Total Amount is 24.15.
+-
+  !python {model: sale.order}: |
+    sale = self.browse(cr, uid, ref('sale_order_01'))
+    if sale.company_id.packing_cost:
+        assert(sale.amount_untaxed == 23.0), _('Untax Amount should be 23.0')
+        assert(sale.amount_tax == 1.15), _('Tax should be 1.15')
+        assert(sale.amount_total == 24.15), _('Amount should be 24.15')
+-
+  I check that the dealers discount should be 8.0.
+-
+  !python {model: sale.order}: |
+    sale = self.browse(cr, uid, ref('sale_order_01'))
+    assert(sale.dealers_disc == 8.0), _('Dealers discount should be 8.0')
+
+-
+  I check that customer invoice is created or not after confirming sale order.
+-
+  !python {model: sale.order}: |
+    sale_order_obj = self.browse(cr, uid, ref('sale_order_01'))
+    invoice_id = self.pool.get('account.invoice').search(cr, uid, [('partner_id','=',sale_order_obj.partner_id.id),('origin','=',sale_order_obj.name)])
+    assert(invoice_id), _('customer Invoice should be created') 
+-
+ In order to test the PDF reports defined on an invoice, we will print an Tax Invoice Report.
+-
+  !python {model: account.invoice}: |
+    import netsvc, tools, os
+    sale_order_obj = self.pool.get('sale.order').browse(cr, uid, ref('sale_order_01'))
+    invoice_id = self.search(cr, uid, [('partner_id','=',sale_order_obj.partner_id.id),('origin','=',sale_order_obj.name)])
+    (data, format) = netsvc.LocalService('report.account.invoice.tax.excise').create(cr, uid, invoice_id, {}, {})
+    if tools.config['test_report_directory']:
+        file(os.path.join(tools.config['test_report_directory'], 'account-invoice.'+format), 'wb+').write(data)
+

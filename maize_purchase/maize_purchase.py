@@ -919,6 +919,7 @@ class stock_picking_receipt(osv.Model):
     }
     _defaults = {
         'type': 'receipt',
+        'invoice_state': '2binvoiced',
     }
 
 stock_picking_receipt()

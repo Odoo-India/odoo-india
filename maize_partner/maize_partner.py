@@ -68,8 +68,8 @@ class tax_code(osv.Model):
     _name = "tax.code"
     _rec_name="code"
     _columns = {
-        'code': fields.char('Code', size=256),
-        'name': fields.char('Name', size=256),
+        'code': fields.char('STCODE', size=256),
+        'name': fields.char('STDESC', size=256),
         }
 tax_code()
 

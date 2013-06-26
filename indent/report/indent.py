@@ -21,6 +21,7 @@
 
 import time
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from openerp.report import report_sxw
 from openerp.osv import osv
 from openerp import pooler
@@ -39,6 +40,8 @@ class indent(report_sxw.rml_parse):
               'indent_no': self._indent_no,
               'sequence': self._serial_no,
               'last_issue': self._last_issue,
+              'last_consumption_qty': self._last_consumption_qty,
+              'current_consumption_qty': self._current_consumption_qty,
               })
         self.context = context
 
@@ -48,15 +51,43 @@ class indent(report_sxw.rml_parse):
     
     def _last_issue(self, product_id, date):
         res = {}
-        picking_obj = self.pool.get('stock.move')
-        picking_id = picking_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('state', '=', 'done'), ('create_date', '<=', date)])
-        picking_id = sorted(picking_id,reverse=True)
-        if picking_id and len(picking_id) >= 2:
-            pick = picking_obj.browse(self.cr, self.uid, picking_id[1])
+        stock_obj = self.pool.get('stock.move')
+        stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'internal'),('state', '=', 'done'), ('create_date', '<=', date)])
+        stock_id = sorted(stock_id,reverse=True)
+        if stock_id and len(stock_id) >= 2:
+            pick = stock_obj.browse(self.cr, self.uid, stock_id[1])
             res.update({'date': pick.picking_id.date.split(' ')[0], 'department' : pick.location_dest_id.name})
-        elif picking_id:
-            pick = picking_obj.browse(self.cr, self.uid, picking_id[0])
+        elif stock_id:
+            pick = stock_obj.browse(self.cr, self.uid, stock_id[0])
             res.update({'date': pick.picking_id.date.split(' ')[0], 'department' : pick.location_dest_id.name})
+        return res
+
+    def _last_consumption_qty(self, product_id):
+        last_year = str(datetime.now() - relativedelta(years=1)).split('-')[0]
+        current_year = str(datetime.now()).split('-')[0]
+        res = {}
+        stock_obj = self.pool.get('stock.move')
+        stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'out'),('state', '=', 'done'), ('create_date', '<=', '03-31-'+ current_year),('create_date', '>=', '04-01-'+ last_year)])
+        consume_qty = 0.0
+        if stock_id:
+            for id in stock_id:
+                stock_data = stock_obj.browse(self.cr, self.uid, id)
+                consume_qty += stock_data.product_qty
+            res.update({'last_year_qty': consume_qty})
+        return res
+    
+    def _current_consumption_qty(self, product_id):
+        next_year = str(datetime.now() + relativedelta(years=1)).split('-')[0]
+        current_year = str(datetime.now()).split('-')[0]
+        res = {}
+        stock_obj = self.pool.get('stock.move')
+        stock_id = stock_obj.search(self.cr, self.uid, [('product_id', '=', product_id.id), ('type', '=', 'out'),('state', '=', 'done'), ('create_date', '<=', '03-31-'+ next_year),('create_date', '>=', '04-01-'+ current_year)])
+        consume_qty = 0.0
+        if stock_id:
+            for id in stock_id:
+                stock_data = stock_obj.browse(self.cr, self.uid, id)
+                consume_qty += stock_data.product_qty
+            res.update({'current_year_qty': consume_qty})
         return res
 
     def _indent_no(self, name):

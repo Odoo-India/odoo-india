@@ -32,5 +32,7 @@ class purchase_order(osv.Model):
         'octroi': fields.float('Octroi'),
         'tax': fields.float('Tax'),
         'delivey': fields.char('Ex. GoDown / Mill Delivey',size=50),
+        'discount': fields.float('Discount'),
+        'excise': fields.float('Excise'),
                 }
 purchase_order()

@@ -2,10 +2,11 @@
 <openerp>
     <data>
         <!-- Inherit the Product Form For Product History Page-->
-        <record id="product_normal_form_view" model="ir.ui.view">
+        <record id="inherit_product_normal_form_view" model="ir.ui.view">
             <field name="name">inherit.product.product.form</field>
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_normal_form_view" />
+            <field name="priority">20</field>
             <field name="arch" type="xml">
             	<xpath expr="//label[@for='name']" position='replace'>
             	</xpath>
@@ -130,7 +131,7 @@
             groups="base.group_no_one"
             id="menu_maize_po_series"
             parent="menu_maize_config" sequence="2"/>
-            
+
 <!-- product major group code -->
 
         <record id="product_major_group_form_view" model="ir.ui.view">
@@ -171,7 +172,7 @@
             groups="base.group_no_one"
             id="menu_maize_major_groups"
             parent="menu_maize_config" sequence="5"/>
-            
+
 <!-- product sub group code -->
 
         <record id="product_sub_group_form_view" model="ir.ui.view">
@@ -213,6 +214,6 @@
         <menuitem action="product_sub_group_form_action"
             groups="base.group_no_one"
             id="menu_maize_sub_groups"
-            parent="menu_maize_config" sequence="5"/>                 
+            parent="menu_maize_config" sequence="5"/>
     </data>
 </openerp>

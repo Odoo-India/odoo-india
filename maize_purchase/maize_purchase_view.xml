@@ -26,13 +26,15 @@
                     <page string="Enquire Details">
                         <group>
                             <group>
-                                <field name="octroi"/>
+                                <field name="discount"/>
+                                <field name="excise"/>
                                 <field name="tax"/>
+                                <field name="octroi"/>
                                 <field name="package_and_forwording"/>
                                 <field name="insurance"/>
-                                <field name="commission"/>
                             </group>
                             <group>
+                                <field name="commission"/>
                                 <field name="other_charge"/>
                                 <field name="other_discount"/>
                                 <field name="payment_term_id" widget="selection"/>

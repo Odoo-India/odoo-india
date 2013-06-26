@@ -104,6 +104,9 @@ class report_stock_move(osv.osv):
         'ac_code_id': fields.many2one('ac.code', 'AC Code', help="AC Code"),
         'tr_code_id': fields.many2one('tr.code', 'TR Code', help="TR Code"),
         'cylinder': fields.char('Cylinder Number', size=50),
+        'inward_id': fields.many2one('stock.picking.in', 'Inward',ondelete='set null'),
+        'inward_date': fields.date('Inward Date', readonly=True),
+        'receipt_value' : fields.float(' Value', required=True),
     }
 
     def init(self, cr):
@@ -166,7 +169,9 @@ class report_stock_move(osv.osv):
                         al.tr_code_id as tr_code_id,
                         al.ac_code_id as ac_code_id,
                         al.cylinder as cylinder,
-                        sum(al.in_value - al.out_value) as value
+                        al.inward_id as inward_id,
+                        sum(al.in_value - al.out_value) as value,
+                        al.receipt_value as receipt_value
                     FROM (SELECT
                         CASE WHEN sp.type in ('out') THEN
                             sum(sm.product_qty * pu.factor / pu2.factor)
@@ -176,6 +181,10 @@ class report_stock_move(osv.osv):
                             sum(sm.product_qty * pu.factor / pu2.factor)
                             ELSE 0.0
                             END AS in_qty,
+                        CASE WHEN sp.type in ('receipt') THEN
+                            sum(sm.product_qty * pu.factor / pu2.factor)
+                            ELSE 0.0
+                            END AS receipt_qty,
                         CASE WHEN sp.type in ('out') THEN
                             sum(sm.product_qty * pu.factor / pu2.factor) * pt.standard_price
                             ELSE 0.0
@@ -184,6 +193,10 @@ class report_stock_move(osv.osv):
                             sum(sm.product_qty * pu.factor / pu2.factor) * pt.standard_price
                             ELSE 0.0
                             END AS in_value,
+                        CASE WHEN sp.type in ('receipt') THEN
+                            sum(sm.product_qty * pu.factor / pu2.factor) * sm.rate
+                            ELSE 0.0
+                            END AS receipt_value,
                         min(sm.id) as sm_id,
                         sm.date as dp,
                         to_char(date_trunc('day',sm.date), 'YYYY') as curr_year,
@@ -237,6 +250,7 @@ class report_stock_move(osv.osv):
                             sp.tr_code_id as tr_code_id,
                             sp.ac_code_id as ac_code_id,
                             sp.cylinder as cylinder,
+                            sp.inward_id as inward_id,
                             to_char(date_trunc('day',sm.date), 'YYYY-MM-DD') as date
                     FROM
                         stock_move sm
@@ -251,13 +265,13 @@ class report_stock_move(osv.osv):
                         sm.id,sp.type, sm.date,sm.supplier_id,
                         sm.product_id,sm.state,sm.product_uom,sm.date_expected,
                         sm.product_id,pt.standard_price, sm.picking_id, sm.product_qty,
-                        sm.company_id,sm.product_qty, sm.location_id,sm.location_dest_id,pu.factor,pt.categ_id, sp.stock_journal_id,sp.gate_pass_id,sp.gp_date,sp.challan_no, sp.case_code,sp.purchase_id,sp.tr_code,sp.lr_no,sp.lr_date,sp.department_id,ps.name,sm.indent_id,sm.inward_year,sm.puchase_year,sm.indent_year,sm.indentor_id,sm.diff,sm.excies,sm.rate,sm.bill_no,sm.bill_date,sm.cess,sm.high_cess,sm.import_duty,sm.cenvat,sm.payment_id,sp.despatch_mode,sp.tr_code_id,sp.ac_code_id,sp.cylinder)
+                        sm.company_id,sm.product_qty, sm.location_id,sm.location_dest_id,pu.factor,pt.categ_id, sp.stock_journal_id,sp.gate_pass_id,sp.gp_date,sp.challan_no, sp.case_code,sp.purchase_id,sp.tr_code,sp.lr_no,sp.lr_date,sp.department_id,ps.name,sm.indent_id,sm.inward_year,sm.puchase_year,sm.indent_year,sm.indentor_id,sm.diff,sm.excies,sm.rate,sm.bill_no,sm.bill_date,sm.cess,sm.high_cess,sm.import_duty,sm.cenvat,sm.payment_id,sp.despatch_mode,sp.tr_code_id,sp.ac_code_id,sp.cylinder,sp.inward_id)
                     AS al
                     GROUP BY
                         al.out_qty,al.in_qty,al.curr_year,al.curr_month,
                         al.curr_day,al.curr_day_diff,al.curr_day_diff1,al.curr_day_diff2,al.dp,al.location_id,al.location_dest_id,
                         al.partner_id,al.product_id,al.state,al.product_uom,
-                        al.picking_id,al.company_id,al.type,al.product_qty, al.categ_id, al.stock_journal,al.gate_pass_id,al.gp_date,al.challan_no,al.case_code,al.purchase_id,al.po_series_id,al.indent_id,al.inward_year,al.puchase_year,al.indent_year,al.indentor_id,al.tr_code,al.diff,al.lr_no,al.lr_date,al.excies,al.rate,al.department_id,al.bill_no,al.bill_date,al.cess,al.high_cess,al.import_duty,al.cenvat,al.half_cess,al.half_high_cess,al.half_import_duty,al.half_cenvat,al.payment_id,al.despatch_mode,al.tr_code_id,al.ac_code_id,al.cylinder)
+                        al.picking_id,al.company_id,al.type,al.product_qty, al.categ_id, al.stock_journal,al.gate_pass_id,al.gp_date,al.challan_no,al.case_code,al.purchase_id,al.po_series_id,al.indent_id,al.inward_year,al.puchase_year,al.indent_year,al.indentor_id,al.tr_code,al.diff,al.lr_no,al.lr_date,al.excies,al.rate,al.department_id,al.bill_no,al.bill_date,al.cess,al.high_cess,al.import_duty,al.cenvat,al.half_cess,al.half_high_cess,al.half_import_duty,al.half_cenvat,al.payment_id,al.despatch_mode,al.tr_code_id,al.ac_code_id,al.cylinder,al.inward_id,al.receipt_value)
         """)
 
 report_stock_move()

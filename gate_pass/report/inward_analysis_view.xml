@@ -13,8 +13,11 @@
                 <field name="day" invisible="1"/>
                 <field name="type" invisible="1"/>
                 <field name="company_id" invisible="1"/>
-                <field name="picking_id" invisible="context.get('issue_new',False)"/>
+                <field name="picking_id" invisible="context.get('issue_view',False)"/>
                 <field name="date"/>
+                <field name="inward_id" invisible="context.get('receipt_view',True)"/>
+                <field name="inward_year" invisible="context.get('receipt_view',True)"/>
+                <!-- field name="inward_date" invisible="context.get('receipt_view',True)"/-->
                 <field name="partner_id" invisible="context.get('issue_new',False)"/>
                 <field name="location_id" invisible="1"/>
                 <field name="location_dest_id" invisible="1"/>
@@ -25,13 +28,12 @@
                 <field name="stock_journal" invisible="1"/>
                 <field name="state" invisible="1"/>
                 <field name="id" string="No" invisible="1"/>
-                <field name="inward_year" invisible="1"/>
                 <field name="gate_pass_id" invisible="context.get('gate_pass_id',True)"/>
                 <field name="gp_date" invisible="context.get('gate_pass_id',True)"/>
                 <field name="challan_no" invisible="context.get('challan_no',True)"/>
                 <field name="case_code" invisible="context.get('case_code',True)"/>
-                <field name="product_qty" string="Challan" sum="Total Challan " invisible="1"/>
-                <field name="product_qty" string="Received" sum="Total Received" invisible="context.get('receipt_view',True)"/>
+                <field name="product_qty" sum="Total Quantity"/>
+                <!-- field name="product_qty" string="Received Qty" sum="Total Received" invisible="context.get('receipt_view',True)"/-->
                 <field name="bill_no" invisible="context.get('bill_no',True)"/>
                 <field name="bill_date" invisible="context.get('bill_no',True)"/>
                 <field name="diff" invisible="context.get('diff_view',True)"/>
@@ -41,10 +43,11 @@
                 <field name="product_qty_out" sum="Total outgoing quantity" invisible="1"/>
                 <field name="product_uom" invisible="context.get('product_uom_view',False)"/>
                 <field name="rate"/>
-                <field name="value" sum="Total value"/>
+                <field name="receipt_value" sum="Receipt Total" invisible="context.get('receipt_view',True)"/>
+                <field name="value" sum="Total value" invisible="not context.get('receipt_view',True)"/>
                 <field name="excies" invisible="context.get('receipt_view',True)"/>
                 <field name="tr_code" invisible="1"/>
-                <field name="department_id" invisible="context.get('issue_view',True)"/>
+                <field name="department_id" invisible="context.get('receipt_view',True)"/>
                 <field name="cess" invisible="context.get('receipt_view',True)"/>
                 <field name="high_cess" invisible="context.get('receipt_view',True)"/>
                 <field name="import_duty" invisible="context.get('tax',True)"/>
@@ -53,12 +56,12 @@
                 <field name="half_high_cess" invisible="context.get('tax',True)"/>
                 <field name="half_import_duty" invisible="context.get('tax',True)"/>
                 <field name="half_cenvat" invisible="context.get('tax',True)"/>
-                <field name="despatch_mode" invisible="1"/>
+                <field name="despatch_mode" invisible="context.get('despatch_view', False)"/>
                 <field name="cylinder" invisible="context.get('cylinder_view',True)"/>
                 <field name="tr_code_id" invisible="context.get('tr_code_view',True)"/>
                 <field name="ac_code_id" invisible="context.get('ac_code_view',True)"/>
                 <field name="payment_id" invisible="context.get('po',True)"/>
-                <field name="indentor_id" invisible="1"/>
+                <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
                 <field name="indent_id" invisible="context.get('indent_id_view',False)"/>
                 <field name="purchase_id" invisible="context.get('issue_new',False)"/>
                 <field name="po_series_id" invisible="context.get('issue_new',False)"/>
@@ -134,7 +137,7 @@
                     <filter string="Purchase Series" name="group_series" icon="terp-folder-orange" context="{'group_by':'po_series_id','po_series_id_view':True}"/>
                     <filter string="Department" name="group_department" icon="terp-folder-orange" context="{'group_by':'department_id','department_id_view':True}"/>
                     <filter string="Payment Term" name="group_payment" icon="terp-folder-orange" context="{'group_by':'payment_id'}"/>
-                    <filter string="Despatch Mode" name="group_despatch_mode" icon="terp-folder-orange" context="{'group_by':'despatch_mode'}"/>
+                    <filter string="Despatch Mode" name="group_despatch_mode" icon="terp-folder-orange" context="{'group_by':'despatch_mode', 'despatch_view':True}"/>
                     <filter string="TR Code" name="group_tr_code" icon="terp-folder-orange" context="{'group_by':'tr_code_id','tr_code_id_view':True}"/>
                     <filter string="AC Code" name="group_ac_code" icon="terp-folder-orange" context="{'group_by':'ac_code_id','ac_code_id_view':True}"/>
                     <filter string="Indent" name="group_indent" icon="terp-folder-orange" context="{'group_by':'indent_id','indent_id_view':True}"/>

@@ -46,6 +46,41 @@
                     <field name="freight"/>
                     <field name="other_charges"/>
                 </xpath>
+                <xpath expr="//page[@string='Invoice']/div/field[@name='tax_line']" position='replace'>
+                </xpath>
+                <xpath expr="//page[@string='Invoice']/group" position="replace">
+                    <separator string="Other Charges"/>
+                    <group>
+                        <group>
+                             <field name="carting"/>
+                             <field name="freight" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                             <field name="package_and_forwording" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                             <field name="insurance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="loading_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="inspection_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="delivery_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="other_charges" string="Others" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <group>
+                            <field name="rounding_shortage" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="amount_untaxed" string="Taxable Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="vat_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="additional_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="bill_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="debit_note_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="advance_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="retention_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="net_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="reconciled" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="account_code"/>
+                            <field name="st_code"/>
+                            <field name="due_date"/>
+                            <field name="c_form"/>
+                        </group>
+                    </group>
+                </xpath>
             </field>
         </record>
 

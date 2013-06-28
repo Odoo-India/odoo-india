@@ -17,15 +17,22 @@
                     <field name="po_series_id" invisible="context.get('po_series_id',True)"/>
                     <field name="contract_id" invisible="context.get('contract_id_view',True)"/>
                     <field name="date" invisible="context.get('date',True)"/>
+                    <field name="indent_id" invisible="context.get('date',True)"/>
                     <field name="partner_id" invisible="context.get('partner_id_view',False)"/>
                     <field name="payment_term_id" invisible="context.get('payment_term_id_view',False)"/>
                     <field name="product_id"/>
-                    <field name="product_uom_qty" sum="Total Quntity"/>
+                    <field name="product_uom_qty" sum="Total Quantity"/>
+                    <field name="pending_qty" sum="Total Pending Quantity" invisible="context.get('pending_view',True)"/>
                     <field name="product_uom" invisible="context.get('product_uom_view',False)"/>
                     <field name="price_unit"/>
+                    <field name="discount"/>
                     <field name="price_total"  sum="Total Untax"/>
+                    <field name="excise_tax" invisible="context.get('tax',True)"/>
+                    <field name="cess_tax" invisible="context.get('tax',True)"/>
+                    <field name="st_tax" invisible="context.get('tax',True)"/>
+                    <field name="insurance" invisible="context.get('tax',True)"/>
+                    <field name="pending_value" invisible="context.get('pending_view',True)"/>
                     <field name="puchase_total" sum="Total"/>
-                    <field name="indent_id" invisible="1"/>
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>
                     <field name="month" invisible="1"/>
@@ -82,6 +89,8 @@
                         <filter name="group_purchase_maize_id" string="Purchase Order (maize)" icon="terp-stock_symbol-selection" context="{'purchase_maize_id': False}"/>
                         <filter name="group_indent_maize_id" string="Maize Indent" icon="terp-stock_symbol-selection" context="{'indent_maize_id': False}"/>
                         <filter name="group_payment_term_id" string="Payment Term" icon="terp-stock_symbol-selection" context="{'payment_term_id_view': False}"/>
+                        <filter name="group pending" string="Pending calculation" context="{'pending_view': False}"/>
+                        <filter name="gorup Excise" string="Excise,cess etc.." context="{'tax': False}"/>
                     </group>
                     
                     <group expand="1" string="Group By...">

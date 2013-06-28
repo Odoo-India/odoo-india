@@ -28,6 +28,7 @@ class report_stock_move(osv.osv):
     _name = "report.stock.move"
     _description = "Moves Statistics"
     _auto = False
+    
     _columns = {
         'date': fields.date('Date', readonly=True),
         'year': fields.char('Year', size=4, readonly=True),
@@ -45,7 +46,7 @@ class report_stock_move(osv.osv):
         'state': fields.selection([('draft', 'Draft'), ('waiting', 'Waiting'), ('confirmed', 'Confirmed'), ('assigned', 'Available'), ('done', 'Done'), ('cancel', 'Cancelled')], 'Status', readonly=True, select=True),
         'product_qty':fields.integer('Quantity',readonly=True),
         'categ_id': fields.many2one('product.category', 'Product Category', ),
-        'product_qty_in':fields.integer('In Qty',readonly=True),
+        'product_qty_in':fields.integer('Challan',readonly=True),
         'product_qty_out':fields.integer('Out Qty',readonly=True),
         'value' : fields.float('Total Value', required=True),
         'day_diff2':fields.float('Lag (Days)',readonly=True,  digits_compute=dp.get_precision('Shipping Delay'), group_operator="avg"),
@@ -265,7 +266,7 @@ class report_stock_move(osv.osv):
                         sm.id,sp.type, sm.date,sm.supplier_id,
                         sm.product_id,sm.state,sm.product_uom,sm.date_expected,
                         sm.product_id,pt.standard_price, sm.picking_id, sm.product_qty,
-                        sm.company_id,sm.product_qty, sm.location_id,sm.location_dest_id,pu.factor,pt.categ_id, sp.stock_journal_id,sp.gate_pass_id,sp.gp_date,sp.challan_no, sp.case_code,sp.purchase_id,sp.tr_code,sp.lr_no,sp.lr_date,sp.department_id,ps.name,sm.indent_id,sm.inward_year,sm.puchase_year,sm.indent_year,sm.indentor_id,sm.diff,sm.excies,sm.rate,sm.bill_no,sm.bill_date,sm.cess,sm.high_cess,sm.import_duty,sm.cenvat,sm.payment_id,sp.despatch_mode,sp.tr_code_id,sp.ac_code_id,sp.cylinder,sp.inward_id)
+                        sm.company_id,sm.location_id,sm.location_dest_id,pu.factor,pt.categ_id, sp.stock_journal_id,sp.gate_pass_id,sp.gp_date,sp.challan_no, sp.case_code,sp.purchase_id,sp.tr_code,sp.lr_no,sp.lr_date,sp.department_id,ps.name,sm.indent_id,sm.inward_year,sm.puchase_year,sm.indent_year,sm.indentor_id,sm.diff,sm.excies,sm.rate,sm.bill_no,sm.bill_date,sm.cess,sm.high_cess,sm.import_duty,sm.cenvat,sm.payment_id,sp.despatch_mode,sp.tr_code_id,sp.ac_code_id,sp.cylinder,sp.inward_id)
                     AS al
                     GROUP BY
                         al.out_qty,al.in_qty,al.curr_year,al.curr_month,

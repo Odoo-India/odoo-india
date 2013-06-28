@@ -17,6 +17,7 @@
                 <field name="date"/>
                 <field name="inward_id" invisible="context.get('receipt_view',True)"/>
                 <field name="inward_year" invisible="context.get('receipt_view',True)"/>
+                <field name="inward_year" invisible="context.get('inward_view',True)"/>
                 <!-- field name="inward_date" invisible="context.get('receipt_view',True)"/-->
                 <field name="partner_id" invisible="context.get('issue_new',False)"/>
                 <field name="location_id" invisible="1"/>
@@ -32,15 +33,13 @@
                 <field name="gp_date" invisible="context.get('gate_pass_id',True)"/>
                 <field name="challan_no" invisible="context.get('challan_no',True)"/>
                 <field name="case_code" invisible="context.get('case_code',True)"/>
-                <field name="product_qty" sum="Total Quantity"/>
-                <!-- field name="product_qty" string="Received Qty" sum="Total Received" invisible="context.get('receipt_view',True)"/-->
+                <field name="product_qty" sum="Total Quantity" invisible="not context.get('inward_view',True)"/>
+                <field name="product_qty_in" sum="Total incoming quantity" invisible="context.get('inward_view',True)"/>
+                <field name="product_qty" string="Received" sum="Total Received" invisible="context.get('inward_view',True)"/>
                 <field name="bill_no" invisible="context.get('bill_no',True)"/>
                 <field name="bill_date" invisible="context.get('bill_no',True)"/>
                 <field name="diff" invisible="context.get('diff_view',True)"/>
-                <field name="indent_year" invisible="context.get('indent',True)"/>
-                <field name="puchase_year" invisible="context.get('tax',True)"/>
-                <field name="product_qty_in" sum="Total incoming quantity" invisible="context.get('inward_view',True)"/>
-                <field name="product_qty_out" sum="Total outgoing quantity" invisible="1"/>
+                <field name="product_qty_out" sum="Total outgoing quantity" invisible="context.get('out_view',True)"/>
                 <field name="product_uom" invisible="context.get('product_uom_view',False)"/>
                 <field name="rate"/>
                 <field name="receipt_value" sum="Receipt Total" invisible="context.get('receipt_view',True)"/>
@@ -62,9 +61,11 @@
                 <field name="ac_code_id" invisible="context.get('ac_code_view',True)"/>
                 <field name="payment_id" invisible="context.get('po',True)"/>
                 <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
+                <field name="indent_year" invisible="context.get('indent',True)"/>
                 <field name="indent_id" invisible="context.get('indent_id_view',False)"/>
                 <field name="purchase_id" invisible="context.get('issue_new',False)"/>
                 <field name="po_series_id" invisible="context.get('issue_new',False)"/>
+                <field name="puchase_year" invisible="context.get('po',True)"/>
                 <field name="day_diff1" invisible="context.get('indent',True)"/>
                 <field name="day_diff" invisible="context.get('indent',True)"/>
                 <field name="day_diff2" string="Delay(Days)" invisible="context.get('indent',True)"/>
@@ -92,7 +93,7 @@
                 <separator/>
                 <filter icon="terp-go-home" name="in" string="Inward" domain="[('type','=','in')]" context="{'inward_view': False}"/>
                 <filter icon="terp-go-home" name="internal" string="Issue" domain="[('type','=','internal')]" context="{'issue_view':False,'issue_new':True}"/>
-                <filter icon="terp-go-home" name="out" string="Outgoing" domain="[('type','=','out')]"/>
+                <filter icon="terp-go-home" name="out" string="Outgoing" domain="[('type','=','out')]" context="{'out_view': False}"/>
                 <filter icon="terp-go-home" name="receipt" string="Receipt" domain="[('type','=','receipt')]" context="{'receipt_view': False}"/>
                 <filter icon="terp-go-home" name="Cash Code" string="Cash Only" domain="[('case_code','=', True)]"/>
                 <field name="product_id" default_focus="1"/>

@@ -64,8 +64,7 @@
                         <group>
                             <field name="rounding_shortage" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="amount_untaxed" string="Taxable Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="vat_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="additional_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="vat_amount" string="VAT / Additional Tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="bill_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="debit_note_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="advance_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>

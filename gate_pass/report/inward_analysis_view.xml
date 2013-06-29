@@ -6,7 +6,7 @@
         <field name="name">report.stock.move.tree</field>
         <field name="model">report.stock.move</field>
         <field name="arch" type="xml">
-            <tree string="Moves Analysis" create="false">
+            <tree string="Moves Analysis" create="false" delete="false">
                 <field name="date" invisible="1"/>
                 <field name="year" invisible="1" />
                 <field name="month" invisible="1"/>
@@ -18,7 +18,7 @@
                 <field name="inward_id" invisible="context.get('receipt_view',True)"/>
                 <field name="inward_year" invisible="context.get('receipt_view',True)"/>
                 <field name="inward_year" invisible="context.get('inward_view',True)"/>
-                <!-- field name="inward_date" invisible="context.get('receipt_view',True)"/-->
+                <field name="inward_date" invisible="context.get('receipt_view',True)"/>
                 <field name="partner_id" invisible="context.get('issue_new',False)"/>
                 <field name="location_id" invisible="1"/>
                 <field name="location_dest_id" invisible="1"/>
@@ -46,6 +46,8 @@
                 <field name="value" sum="Total value" invisible="not context.get('receipt_view',True)"/>
                 <field name="excies" invisible="context.get('receipt_view',True)"/>
                 <field name="tr_code" invisible="1"/>
+                <field name="major_group_id" invisible="1"/>
+                <field name="sub_group_id" invisible="1"/>
                 <field name="department_id" invisible="context.get('receipt_view',True)"/>
                 <field name="cess" invisible="context.get('receipt_view',True)"/>
                 <field name="high_cess" invisible="context.get('receipt_view',True)"/>
@@ -144,6 +146,8 @@
                     <filter string="Indent" name="group_indent" icon="terp-folder-orange" context="{'group_by':'indent_id','indent_id_view':True}"/>
                     <filter string="Indentor" name="group_indentor" icon="terp-folder-orange" context="{'group_by':'indentor_id','indentor_id_view':True}"/>
                     <filter string="Company" name="group_state" icon="terp-go-home" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                    <filter string="Major Group" icon="terp-go-year" context="{'group_by':'major_group_id'}"  help="Major Group"/>
+                    <filter string="Sub Group" icon="terp-go-year" context="{'group_by':'sub_group_id'}"  help="Sub Group"/>
                     <filter string="Day" icon="terp-go-today" context="{'group_by':'day'}" help="Day Planned"/>
                     <filter string="Month" icon="terp-go-month" context="{'group_by':'date'}" help="Month Planned"/>
                     <filter string="Year" icon="terp-go-year" context="{'group_by':'year'}"  help="Year Planned"/>

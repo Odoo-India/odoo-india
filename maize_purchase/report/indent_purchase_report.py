@@ -22,6 +22,7 @@
 from openerp import tools
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
+from openerp.tools.translate import _
 
 class indent_purchase_report(osv.osv):
     _name = "indent.purchase.report"

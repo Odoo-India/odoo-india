@@ -31,7 +31,7 @@
                     <field name="cess_tax" invisible="context.get('tax',True)"/>
                     <field name="st_tax" invisible="context.get('tax',True)"/>
                     <field name="insurance" invisible="context.get('tax',True)"/>
-                    <field name="pending_value" invisible="context.get('pending_view',True)"/>
+                    <field name="pending_value" sum="Total Pending Value" invisible="context.get('pending_view',True)"/>
                     <field name="puchase_total" sum="Total"/>
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>

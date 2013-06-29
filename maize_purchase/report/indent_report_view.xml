@@ -31,6 +31,12 @@
                     <field name="purpose" invisible="1"/>
                     <field name="price_unit"/>
                     <field name="price_total" sum="Total Price"/>
+                    <field name="pending_qty" sum="Total Pending Quantity" invisible="context.get('pending_view',True)"/>
+                    <field name="pending_value" sum="Total Pending Value" invisible="context.get('pending_view',True)"/>
+                    <field name="purchase_id"/>
+                    <field name="purchase_date"/>
+                    <field name="supplier_id"/>
+                    <field name="remark" invisible="context.get('pending_view',True)"/>
                     <field name="days" invisible="context.get('contract_view',True)"/>
                     <field name="extend_days1" invisible="context.get('extend_view',True)"/>
                     <field name="extend_days2" invisible="context.get('extend_view',True)"/>
@@ -81,6 +87,7 @@
                         <filter name="group_analytic_account_id" string="Project" icon="terp-stock_symbol-selection" context="{'analytic_account_id': False}" groups="analytic.group_analytic_accounting"/>
                         <filter name="group_state" string="Status" icon="terp-stock_symbol-selection" context="{'state': False}"/>
                         <filter name="group_extend" string="Extended Days" icon="terp-stock_symbol-selection" context="{'extend_view':False}"/>
+                        <filter name="group pending" string="Pending calculation" context="{'pending_view': False}"/>
                     </group>
                     <group expand="1" string="Group By...">
                         <filter string="Indent" name="Indent" context="{'group_by':'indent_id','indent_id_view': True}"/>

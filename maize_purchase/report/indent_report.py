@@ -21,11 +21,22 @@
 
 from openerp import tools
 from openerp.osv import fields, osv
+import openerp.addons.decimal_precision as dp
+from openerp.tools.translate import _
 
 class indent_report(osv.osv):
     _name = "indent.report"
     _description = "Indent Statistics"
     _auto = False
+
+    def amount_tax(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = {
+                'pending_value':0.0,
+            }
+            res[order.id]['pending_value'] = ( order.price_unit  *order.pending_qty)
+        return res
 
     _columns = {
         'name': fields.char('Indent #', size=256, readonly=True),
@@ -65,6 +76,12 @@ class indent_report(osv.osv):
         'extend_days1': fields.integer("Extend Days1", help="Calculate Extended number of days 1st time for contracts"),
         'extend_days2': fields.integer("Extend Days2", help="Calculate Extended number of days 2nd time for contracts"),
         'total_days': fields.integer("Total Days", help="Calculate number of days for contracts"),
+        'purchase_date': fields.date('Purchase Date', readonly=True),
+        'supplier_id': fields.many2one('res.partner', 'Supplier', readonly=True),
+        'purchase_id': fields.many2one('purchase.order', 'Purchase Order', readonly=True),
+        'pending_qty': fields.float('Pending Qty', readonly=True),
+        'pending_value': fields.function(amount_tax, digits_compute= dp.get_precision('Account'), string='Pending Value', type="float", multi="tax",help="Pending Value"),
+        'remark': fields.text('Remark', readonly=True),
     }
     _order = 'date desc'
 
@@ -89,7 +106,7 @@ class indent_report(osv.osv):
                     t.uom_id as product_uom,
                     l.product_uom_qty as product_uom_qty,
                     l.price_unit as price_unit,
-                    sum(l.product_uom_qty * l.price_unit) as price_total,
+                    min(l.product_uom_qty * l.price_unit) as price_total,
                     1 as nbr,
                     i.indent_date as date,
                     to_char(i.indent_date, 'YYYY') as year,
@@ -98,6 +115,15 @@ class indent_report(osv.osv):
                     i.indentor_id as indentor_id,
                     i.state,
                     i.analytic_account_id as analytic_account_id,
+                    i.description as remark,
+                    po.date_order as purchase_date,
+                    po.partner_id as supplier_id,
+                    po.id as purchase_id,
+                    CASE WHEN po.state = 'draft' or sm.state != 'done' or po.contract = True THEN
+                        sum(l.product_uom_qty)
+                    ELSE
+                        l.product_uom_qty - sum(sm.product_qty)
+                    END AS pending_qty,
                     po.no_of_days1 as days,
                     po.total_days as total_days,
                     po.no_of_days2 as extend_days1,
@@ -111,6 +137,7 @@ class indent_report(osv.osv):
                     left join product_uom u2 on (u2.id=t.uom_id)
                     left join stock_location sl on (sl.id=i.department_id)
                     left join purchase_order po on (po.indent_id = i.id)
+                    left join stock_move sm on (sm.indent=i.id and sm.type='receipt' and sm.product_id=p.id)
                 where l.product_id is not null
                 group by
                     i.id,
@@ -119,6 +146,7 @@ class indent_report(osv.osv):
                     i.department_id,
                     i.requirement,
                     i.required_date,
+                    i.description,
                     i.type,
                     i.item_for,
                     l.name,
@@ -133,10 +161,16 @@ class indent_report(osv.osv):
                     i.state,
                     i.analytic_account_id,
                     i.maize,
+                    po.date_order,
+                    po.partner_id,
+                    po.id,
                     po.no_of_days1,
                     po.no_of_days2,
                     po.no_of_days3,
-                    po.total_days
+                    po.total_days,
+                    sm.state,
+                    po.contract,
+                    l.product_uom_qty
             )
         """)
 indent_report()

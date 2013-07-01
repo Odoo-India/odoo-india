@@ -137,6 +137,7 @@
         <!--  Purcahse Order Template Form view -->
         <record id="maize_purchase_order_template_form" model="ir.ui.view">
             <field name="name">purchase.order.template.form</field>
+            <field name="priority">20</field>
             <field name="model">purchase.order</field>
             <field name="arch" type="xml">
                 <form string="Purchase Order" version="7.0">

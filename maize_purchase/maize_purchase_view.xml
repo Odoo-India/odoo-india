@@ -70,7 +70,7 @@
                             <field name="excise_amount" attrs="{'invisible': [('contract', '=', True)]}"/>
                             <field name="excise_total" attrs="{'invisible': [('contract', '=', True)]}"/>
                             <label string=""/>
-                            <button name="%(action_update_excise)d" string="Update Excise" type="action" class="oe_edit_only oe_link"/>
+                            <button name="%(action_update_excise)d" string="Update Taxes" type="action" class="oe_edit_only oe_link"/>
                             <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]" attrs="{'invisible': [('contract', '=', True)]}"/>
                             <field name="vat_amount" attrs="{'invisible': [('contract', '=', True)]}"/>
                             <field name="vat_total" attrs="{'invisible': [('contract', '=', True)]}"/>

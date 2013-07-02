@@ -32,7 +32,18 @@ class update_excise(osv.TransientModel):
         return True
 
     _columns = {
-        'excise_ids': fields.many2many('account.tax', 'update_excise_excise', 'excise_id', 'tax_id', 'Excise'),
+        'packing_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('per_unit', 'Per Unit'), ('include', 'Include in price')], 'Packing & Forwarding Type'),
+        'package_and_forwording': fields.float('Packing & Forwarding'),
+        'commission': fields.float('Commission'),
+        'excise_ids': fields.many2many('account.tax', 'update_excise_tax', 'update_tax_id', 'tax_id', 'Excise'),
+        'vat_ids': fields.many2many('account.tax', 'update_vat_tax', 'update_tax_id', 'tax_id', 'VAT'),
+        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('include', 'Include in price')], 'Insurance Type'),
+        'insurance': fields.float('Insurance'),
+        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('per_unit', 'Per Unit'), ('extra', 'EXTRA'),('include', 'Include in price')], 'Freight Type'),
+        'freight': fields.float('Freight'),
+        'other_discount': fields.float('Discount / Round Off'),
+        'discount_percentage':  fields.float('Discount (%)'),
+        'other_tax_ids': fields.many2many('account.tax', 'update_other_tax', 'update_tax_id', 'tax_id', 'Other Tax'),
     }
 
 update_excise()

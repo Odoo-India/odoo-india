@@ -27,12 +27,23 @@ class update_excise(osv.TransientModel):
     def update_excise_amount(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
-        taxes = self.browse(cr, uid, ids[0], context=context)
+        data = self.browse(cr, uid, ids[0], context=context)
         vals = {
-            'excies_ids': [(6, 0, [excise.id for excise in taxes.excise_ids])]
+            'packing_type': data.packing_type,
+            'package_and_forwording': data.package_and_forwording,
+            'commission': data.commission,
+            'excies_ids': [(6, 0, [excise.id for excise in data.excise_ids])],
+            'vat_ids': [(6, 0, [vat.id for vat in data.vat_ids])],
+            'insurance_type': data.insurance_type,
+            'insurance': data.insurance,
+            'freight_type': data.freight_type,
+            'freight': data.freight,
+            'other_discount': data.other_discount,
+            'discount_percentage': data.discount_percentage,
+            'other_tax_ids': [(6, 0, [tax.id for tax in data.other_tax_ids])]
         }
-        self.pool.get('purchase.order').write(cr, uid, context.get('active_ids', []), vals, context=context)
-        return True
+        return self.pool.get('purchase.order').write(cr, uid, context.get('active_ids', []), vals, context=context)
+         
 
     _columns = {
         'packing_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage (%)'), ('per_unit', 'Per Unit'), ('include', 'Include in price')], 'Packing & Forwarding Type'),

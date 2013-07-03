@@ -44,7 +44,7 @@ class purchase_order_information_report(osv.osv):
             res[id] = inward_qty
         return res
     
-    def calc_receipt_qty(self, cr, uid, ids, field_name, arg, context=None):
+    def calc_receipt_pending_qty(self, cr, uid, ids, field_name, arg, context=None):
         stock_move_obj = self.pool.get('stock.move')
         purchase_order_line_obj = self.pool.get('purchase.order.line')
         res = {}
@@ -105,8 +105,8 @@ class purchase_order_information_report(osv.osv):
         'purchase_year': fields.char('Purchase Year', size=10, readonly=True),
         'indent_year': fields.char('Indent Year', size=10, readonly=True),
         'inward_qty_func': fields.function(calc_inward_qty, digits_compute= dp.get_precision('Account'), string='Inward Qty', type="float"),
-        'receipt_qty_func': fields.function(calc_receipt_qty, digits_compute= dp.get_precision('Account'), string='Receipt Qty', type="float", multi='sums'),
-        'pending_qty_func': fields.function(calc_receipt_qty, digits_compute= dp.get_precision('Account'), string='Pending Qty', type="float", multi='sums'),
+        'receipt_qty_func': fields.function(calc_receipt_pending_qty, digits_compute= dp.get_precision('Account'), string='Receipt Qty', type="float", multi='sums'),
+        'pending_qty_func': fields.function(calc_receipt_pending_qty, digits_compute= dp.get_precision('Account'), string='Pending Qty', type="float", multi='sums'),
     }
     _order = 'date desc'
         

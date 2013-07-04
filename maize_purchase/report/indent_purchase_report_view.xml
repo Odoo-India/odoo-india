@@ -37,6 +37,8 @@
                     <field name="year" invisible="1"/>
                     <field name="day" invisible="1"/>
                     <field name="month" invisible="1"/>
+                    <field name="date_planned" invisible="context.get('date_planned',True)"/>
+                    <field name="delivey" invisible="context.get('delivey',True)"/>
                     <field name="department_id" invisible="context.get('department_id',True)"/>
                     <field name="requirement" invisible="context.get('requirement',True)"/>
                     <field name="type" invisible="context.get('type',True)"/>
@@ -93,6 +95,9 @@
                         <filter name="group_payment_term_id" string="Payment Term" icon="terp-stock_symbol-selection" context="{'payment_term_id_view': False}"/>
                         <filter name="group pending" string="Pending calculation" context="{'pending_view': False}"/>
                         <filter name="gorup Excise" string="Excise,cess etc.." context="{'tax': False}"/>
+                        <filter name="gorup Delidate" string="Delivery Date" context="{'date_planned': False}"/>
+                        <filter name="gorup Mill" string="Ex. GoDown / Mill Delivey" context="{'delivey': False}"/>
+
                     </group>
                     
                     <group expand="1" string="Group By...">

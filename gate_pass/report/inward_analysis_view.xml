@@ -91,7 +91,7 @@
         <field name="arch" type="xml">
             <search string="Moves Analysis">
                 <filter string="Done" name="done" icon="terp-dialog-close" domain="[('state','=','done')]" help = "Completed Stock-Moves"/>
-                <filter string="Todo" icon="terp-gtk-go-back-rtl" domain="[('state','in',('assigned','waiting','confirmed'))]" help = "Future Stock-Moves"/>
+                <filter string="Pending" icon="terp-gtk-go-back-rtl" domain="[('state','in',('assigned','waiting','confirmed'))]" help = "Future Stock-Moves"/>
                 <separator/>
                 <filter icon="terp-go-home" name="in" string="Inward" domain="[('type','=','in')]" context="{'inward_view': False}"/>
                 <filter icon="terp-go-home" name="internal" string="Issue" domain="[('type','=','internal')]" context="{'issue_view':False,'issue_new':True}"/>

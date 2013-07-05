@@ -120,7 +120,22 @@ class import_po_contract_data(osv.osv_memory):
                         
                     if data["ISUQTY"]:
                         qty = data["ISUQTY"]
-                        
+                department=False
+                if data["DEPTCODE"].strip():
+                    if len(data["DEPTCODE"].strip()) == 1:
+                        dept = '00'+data["DEPTCODE"].strip()
+                    elif len(data["DEPTCODE"].strip()) == 2:
+                        dept = '0'+data["DEPTCODE"].strip()
+                    elif len(data["DEPTCODE"].strip()) == 3:
+                        dept = data["DEPTCODE"].strip()
+                    department = self.pool.get('stock.location').search(cr, uid,[('code','=',dept)])[0]
+
+                    mach=data["MACHCODE"].strip()
+                    project=False
+                    if mach:
+                        project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0] 
+
+                    
                     ind_name = ''
                     ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',name),('contract','=',True)])
                     
@@ -134,12 +149,15 @@ class import_po_contract_data(osv.osv_memory):
                             'name':'test',
                             'product_qty':qty,
                             'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                            'date_planned':'03/29/2013'
+                            'date_planned':'03/29/2013',
+                            'indentor_id':ind[0],
+                            'department_id':department or False,
+                            'account_analytic_id':project or False,
                            }
                     
                     vals = {'name':name,
                             'maize':old_id,
-                            'origin':ind_name,
+                            #'origin':ind_name,
                             'po_series_id':co_series,
                             'contract_id':po_series,
                             'date_order':podate,

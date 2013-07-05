@@ -44,7 +44,7 @@ class import_res_partner(osv.osv_memory):
         return fields,data_lines
     
     def do_import_partner_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ashvin/Desktop/script/SUPLMST.csv"
+        file_path = "/home/ara/Desktop/script/suppcode.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -117,7 +117,15 @@ class import_res_partner(osv.osv_memory):
                         bank_code_id = self.pool.get('account.journal').search(cr, uid, [('code','=',BANKCODE)], context=context)
                     
                     MDCODE = data.get('MDCODE','')
-                    if MDCODE: MDCODE = MDCODE.strip()
+                    if MDCODE:
+                        MDCODE = MDCODE.strip()
+                        print ">>>>>>>>>>", MDCODE
+                        if MDCODE=='M':
+                            MDCODE = 'manufacture'
+                        elif MDCODE=='D':
+                            MDCODE = 'dealer'
+                        else:
+                            MDCODE = ''
                     PHONE =  data.get('PHONE','')
                     if PHONE: PHONE = PHONE.strip()
                     MOBILE = data.get('MOBILE','')

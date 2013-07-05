@@ -93,8 +93,8 @@
                             <field name="other_discount"/>
                             <field name="discount_percentage"/>
                             <field name="other_tax_ids" widget="many2many_tags"/>
-                           	<label for="amount_total"/>
-                            <field name="amount_total" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                           	<h2><label for="amount_total" style="color: #FF0000;"/></h2>
+                            <h2><field name="amount_total" style="color: #FF0000;" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"/></h2>
                             <group colspan="4">
                             	<button name="button_dummy" states="draft" string="(update)" type="object" class="oe_edit_only oe_link"/>
                             </group>

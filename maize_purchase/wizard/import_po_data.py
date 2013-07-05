@@ -45,7 +45,7 @@ class import_po_data(osv.osv_memory):
     
     def do_import_po_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ashvin/Desktop/script/POHEADERR.csv"
+        file_path = "/home/ara/Desktop/script/po/po_header.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -58,6 +58,8 @@ class import_po_data(osv.osv_memory):
         indent = []
         rejected =[]
         partner = []
+        un_list = []
+        note=''
         for data in data_lines:
             try:
 #                if data['APRVID'] == 'Y':
@@ -67,18 +69,19 @@ class import_po_data(osv.osv_memory):
 #                print "data111111111111111111111111", data["INDENTOR"]
 
                 if data["PONO"]:
-                    name = data["PONO"]
+                    name = data["POSERIES"] + '/' +data["PONO"]
                 if data["PONO"] and data["POSERIES"]:
                     old_id = data["POSERIES"] + '/' +data["PONO"]
 
                 if data["POSERIES"]:
-                    po_series = self.pool.get('product.order.series').search(cr,uid,[('code','=',data["POSERIES"])])[0]
+                    print ">>>>>>>>>>>", data["POSERIES"]
+                    po_series = self.pool.get('product.order.series').search(cr,uid,[('code','=',str(data["POSERIES"]))])[0]
                     
                 if data["PODATE"]:
                     if data["PODATE"] == 'NULL' or data["PODATE"] == '' or data["PODATE"] == '00:00.0' or data["PODATE"] == '  ':
                         value = ''
                     else:
-                        value=datetime.datetime.strptime(data["PODATE"], '%d-%m-%y').strftime("%Y-%m-%d")
+                        value=datetime.datetime.strptime(data["PODATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                     podate = value
                     
                 if data["SUPPCODE"]:
@@ -87,10 +90,16 @@ class import_po_data(osv.osv_memory):
                     if partner:
                         partner = partner[0]
                     else:
+                        un_list.append(data["SUPPCODE"])
                         partner = un_define[0]
 
                 if data["MILDELIV"]:
-                    delivey = data["MILDELIV"]
+                    delv = self.pool.get('purchase.delivery')
+                    delivery = delv.search(cr,uid,[('name','=',data["MILDELIV"])])
+                    if delivery:
+                        delivey = delivery[0]
+                    else:
+                        delivey = delv.create(cr,uid,{'name':data["MILDELIV"],'code':data["MILDELIV"]})
 
                 if data["INSURANCE"]:
                     ins = 0.0
@@ -113,30 +122,30 @@ class import_po_data(osv.osv_memory):
                         excies = self.pool.get("account.tax").search(cr,uid,[('name','=',' Excise @ 12.36% (Edu Cess 2% + H. Edu Cess 1%)')])
                     elif data["EXCISE"] == 3:
                         excies = self.pool.get("account.tax").search(cr,uid,[('name','=',data["EXCISEPER"]+' per unit (Edu.cess 2% + H.Edu cess 1%)')])
-                        if not excies:
-                            excies = [self.pool.get("account.tax").create(cr,uid,
-                                                                          {'name':data["EXCISEPER"]+' per unit (Edu.cess 2% + H.Edu cess 1%)',
-                                                                           'tax_type':'excise',
-                                                                           'sequence':1,
-                                                                           'type':'fixed',
-                                                                           'include_base_amount':True,
-                                                                           'amount':data["EXCISEPER"]})]
-                            self.pool.get("account.tax").create(cr,uid,
-                                                                          {'name':'Edu.cess 2% on '+data["EXCISEPER"],
-                                                                           'tax_type':'excise',
-                                                                           'sequence':10,
-                                                                           'type':'percent',
-                                                                           'amount':0.02,
-                                                                           'include_base_amount':False,
-                                                                           'parent_id':excies[0]})
-                            self.pool.get("account.tax").create(cr,uid,
-                                                                          {'name':'Edu.cess 1% on '+data["EXCISEPER"],
-                                                                           'tax_type':'excise',
-                                                                           'sequence':15,
-                                                                           'type':'percent',
-                                                                           'amount':0.01,
-                                                                           'include_base_amount':False,
-                                                                           'parent_id':excies[0]})
+                    if not excies:
+                        excies = [self.pool.get("account.tax").create(cr,uid,
+                                                                      {'name':data["EXCISEPER"]+' per unit (Edu.cess 2% + H.Edu cess 1%)',
+                                                                       'tax_type':'excise',
+                                                                       'sequence':1,
+                                                                       'type':'fixed',
+                                                                       'include_base_amount':True,
+                                                                       'amount':data["EXCISEPER"]})]
+                        self.pool.get("account.tax").create(cr,uid,
+                                                                      {'name':'Edu.cess 2% on '+data["EXCISEPER"],
+                                                                       'tax_type':'excise',
+                                                                       'sequence':10,
+                                                                       'type':'percent',
+                                                                       'amount':0.02,
+                                                                       'include_base_amount':False,
+                                                                       'parent_id':excies[0]})
+                        self.pool.get("account.tax").create(cr,uid,
+                                                                      {'name':'Edu.cess 1% on '+data["EXCISEPER"],
+                                                                       'tax_type':'excise',
+                                                                       'sequence':15,
+                                                                       'type':'percent',
+                                                                       'amount':0.01,
+                                                                       'include_base_amount':False,
+                                                                       'parent_id':excies[0]})
                             
 #                            child_2per = self.pool.get("account.tax").create(cr,uid,{'name':'Edu Cess 2%',
 #                                                                                     'tax_type':'excise',
@@ -151,22 +160,23 @@ class import_po_data(osv.osv_memory):
                     if data["SALETAX"] == 0:
                         vat = self.pool.get("account.tax").search(cr,uid,[('name','=','VAT Paid')])
                     elif data["SALETAX"] == 1:
-                        if data["SALETAXPER1"] == '4':
-                            vat = self.pool.get("account.tax").search(cr,uid,['|',('name','=',' VAT @ 4%'), ('name','=','Add VAT @ 1%')])
-                        elif data["SALETAXPER1"] == '12.5':
-                            vat = self.pool.get("account.tax").search(cr,uid,['|',('name','=',' VAT @ 12.5%'), ('name','=',' VAT @ 2.5%')])
-                        elif data["SALETAXPER1"] == '15':
-                            vat = self.pool.get("account.tax").search(cr,uid,['|',('name','=',' VAT @ 15%'),('name','=',' VAT @ 2.5%')])
+                        if data["SALETAXPER1"] == '4':#for sales tax 5
+                            vat = self.pool.get("account.tax").search(cr,uid,['|',('name','=','VAT @ 4%'), ('name','=','Add VAT @ 1%')])
+                        elif data["SALETAXPER1"] == '12.5':#for sales tax 15
+                            vat = self.pool.get("account.tax").search(cr,uid,['|',('name','=','VAT @ 12.5%'), ('name','=','VAT @ 2.5%')])
+                        elif data["SALETAXPER1"] == '15':#for sales tax 17.5
+                            vat = self.pool.get("account.tax").search(cr,uid,['|',('name','=','VAT @ 15%'),('name','=','VAT @ 2.5%')])
                     elif data["SALETAX"] == 2:
                         vat = self.pool.get("account.tax").search(cr,uid,[('name','=',"C.S.T")])
                     elif data["SALETAX"] == 3:
-                        vat = self.pool.get("account.tax").search(cr,uid,[('name','=',"'C' form to be Issued")])
+                        vat = self.pool.get("account.tax").search(cr,uid,[('name','=',"2.00 % C Form to be Issued")])
                     elif data["SALETAX"] == 4:
                         vat = self.pool.get("account.tax").search(cr,uid,[('name','=',"Tax Extra")])
                     elif data["SALETAX"] == 5:
                         vat = self.pool.get("account.tax").search(cr,uid,[('name','=',"'H' form to be Issued")])
                     elif data["SALETAX"] == 6:
-                        vat = self.pool.get("account.tax").search(cr,uid,['|',('name','=',' VAT @ 12.5%'), ('name','=',' VAT @ 2.5%')])
+                        if data["SALETAXPER1"] == '12.36':
+                            vat = self.pool.get("account.tax").search(cr,uid,[('name','=','VAT @ 12.36%')])
                     print "vatvatvatvat>>>", vat
                     vat_ids = [(6,0,vat)]
                     
@@ -186,7 +196,6 @@ class import_po_data(osv.osv_memory):
                         payment_term = payment_term[0]
                     else:
                         payment_term = pay_obj.create(cr,uid,{'name':data["PAYTERM"],'note':data["PAYTERM"],'active':True})
-                print "old_id>>>>>>>>>>>>>", old_id
                 vals = {'name':name,
                         'maize':old_id,
                         'po_series_id':po_series,
@@ -205,16 +214,19 @@ class import_po_data(osv.osv_memory):
                         'your_ref':yourref,
                         'our_ref':ourref,
                                                    }
-                po = po_pool.create(cr, uid, vals, context)
+                print "valsvalsvalsvalsvalsvalsvals--------------------------------->", vals
+                exist_po = po_pool.search(cr,uid,[('name','=',name)])
+                if not exist_po:
+                    po_pool.create(cr, uid, vals, context)
                 
             except:
-                rejected.append(data['SUPPCODE'])
+                rejected.append(data["POSERIES"] + '/' +data["PONO"])
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['SUPPCODE']), exc_info=True)
                 continue
-        aaa = self.pool.get('purchase.order').search(cr,uid,[])
-        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
-        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
-        print "rejectedrejectedrejected", rejected
+#         aaa = self.pool.get('purchase.order').search(cr,uid,[])
+#         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
+#         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
+        print "rejectedrejectedrejected", rejected,un_list
         _logger.info("Successfully completed import PO process.")
         return True
     

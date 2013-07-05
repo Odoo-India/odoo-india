@@ -44,7 +44,7 @@ class import_po_line_data(osv.osv_memory):
         return fields,data_lines
     
     def po_line_create(self,cr,uid,ids,context=None):
-        file_path = "/home/ashvin/Desktop/script/POTRANSS.csv"
+        file_path = "/home/ara/Desktop/script/po/po_tra.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -72,10 +72,23 @@ class import_po_line_data(osv.osv_memory):
                     prod_name4 = self.pool.get('product.product').read(cr, uid, product,['desc3'])['desc3']
                 if data["PORATE"]:
                     rate = data["PORATE"]
-                    
+                department=False
+                if data["DEPTCODE"].strip():
+                    print ">>>>>>>>>>departmrt", data["DEPTCODE"].strip()
+                    if len(data["DEPTCODE"].strip()) == 1:
+                        dept = '00'+data["DEPTCODE"].strip()
+                    elif len(data["DEPTCODE"].strip()) == 2:
+                        dept = '0'+data["DEPTCODE"].strip()
+                    elif len(data["DEPTCODE"].strip()) == 3:
+                        dept = data["DEPTCODE"].strip()
+                    department = self.pool.get('stock.location').search(cr, uid,[('code','=',dept)])[0]
+                mach=data["MACHCODE"].strip()
+                project=False
+                if mach:
+                    project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0]                      
                 if data["DISCPER"]:
                     discount = data["DISCPER"]
-                    self.pool.get('purchase.order').write(cr,uid,po[0],{'discount_percentage':discount})
+                    #self.pool.get('purchase.order').write(cr,uid,po[0],{'discount_percentage':discount})
 
                 ind_name = ''
                 ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
@@ -84,7 +97,9 @@ class import_po_line_data(osv.osv_memory):
                 indentor_id=False
                 if data["INDENTNO"]:
                     indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])
-                    indent_id = indent and indent[0] or ''
+                    print "AAAAAAAAAAAAAAAAAAAAAAAAA", indent
+                    indent_id = indent and indent[0] or False
+                    print "BBBBBBBBBBBBBBBBBBBBBBBBBBB", indent_id
                 if data["INDENTOR"]:
                     indentor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])
                     indentor_id = indentor and indentor[0] or ''
@@ -95,25 +110,27 @@ class import_po_line_data(osv.osv_memory):
                     if data["DLVDATE"] == 'NULL' or data["DLVDATE"] == '' or data["DLVDATE"] == '00:00.0' or data["DLVDATE"] == '  ':
                         dlv_date = ''
                     else:
-                        dlv_date=datetime.datetime.strptime(data["DLVDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
-                if indent:
-                    vals = {'order_id':po[0],
-                            'product_id':product,
-                            'price_unit':rate,
-                            #'discount': discount,
-                            'name':prod_name1 or ''+'\n'+prod_name2 or ''+'\n'+prod_name3 or ''+'\n'+prod_name4 or '',
-                            'product_qty':qty,
-                            'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                            'date_planned':dlv_date,
-                            #'freight':freight_rs,
-                            'indent_id':int(indent_id),
-                            'indentor_id':int(indentor_id),
-                           }
-                    print ">>>>>>>>>>>>>>>>>>>>>>>>", vals
-                    exist_line.append(maize_name)
-                    po = pol_pool.create(cr, uid, vals, context)
-                else:
-                    indent_not_found_list.append(data["INDENTNO"])
+                        dlv_date=datetime.datetime.strptime(data["DLVDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
+                vals = {'order_id':po[0],
+                        'product_id':product,
+                        'price_unit':rate,
+                        #'discount': discount,
+                        'name':prod_name1 or ''+'\n'+prod_name2 or ''+'\n'+prod_name3 or ''+'\n'+prod_name4 or '',
+                        'product_qty':qty,
+                        'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
+                        'date_planned':dlv_date,
+                        #'freight':freight_rs,
+                        'indent_id':indent_id and int(indent_id) or '',
+                        'indentor_id':indentor_id and int(indentor_id) or '',
+                        'department_id':department or '',
+                        'account_analytic_id':project or '',
+                        'discount':discount
+                       }
+                print ">>>>>>>>>>>>>>>>>>>>>>>>", vals
+                exist_line.append(maize_name)
+                po = pol_pool.create(cr, uid, vals, context)
+#                 else:
+#                     indent_not_found_list.append(data["INDENTNO"])
                 
 #                else:
 #                    if data["PONO"] and data['POSERIES']:
@@ -177,13 +194,13 @@ class import_po_line_data(osv.osv_memory):
 #                                }
 #                        pop = po_order.create(cr, uid, po_vals, context)
             except:
-                rejected.append(data['PONO'])
+                rejected.append(maize_name)
                 
-                _logger.warning("Skipping Record with Indent code '%s'."%(data['PONO']), exc_info=True)
+                _logger.warning("Skipping Record with Indent code '%s'."%(maize_name), exc_info=True)
                 continue
-        print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.", indent_not_found_list
-        aaa = self.pool.get('purchase.order').search(cr,uid,[])
-        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
-        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
+        print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.", rejected
+        #aaa = self.pool.get('purchase.order').search(cr,uid,[])
+#         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
+#         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
         return True
 import_po_line_data()

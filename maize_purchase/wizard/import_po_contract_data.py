@@ -45,7 +45,7 @@ class import_po_contract_data(osv.osv_memory):
     
     def do_import_po_contract_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ron/Desktop/testfiles/CONTRACT.csv"
+        file_path = "/home/ara/Desktop/script/po/po_contra.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -76,25 +76,25 @@ class import_po_contract_data(osv.osv_memory):
                         if data["JOBDATE"] == 'NULL' or data["JOBDATE"] == '' or data["JOBDATE"] == '00:00.0' or data["JOBDATE"] == '  ':
                             value = ''
                         else:
-                            value=datetime.datetime.strptime(data["JOBDATE"], '%d/%m/%Y').strftime("%Y-%m-%d")
+                            value=datetime.datetime.strptime(data["JOBDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                         podate = value
     
                     if data["FROMDATE"]:
                         if data["FROMDATE"] == 'NULL' or data["FROMDATE"] == '' or data["FROMDATE"] == '00:00.0' or data["FROMDATE"] == '  ':
                             value = ''
                         else:
-                            value=datetime.datetime.strptime(data["FROMDATE"], '%d/%m/%Y').strftime("%Y-%m-%d")
+                            value=datetime.datetime.strptime(data["FROMDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                         fdate = value
                         
                     if data["TODATE"]:
                         if data["TODATE"] == 'NULL' or data["TODATE"] == '' or data["TODATE"] == '00:00.0' or data["TODATE"] == '  ':
                             value = ''
                         else:
-                            value=datetime.datetime.strptime(data["TODATE"], '%d/%m/%Y').strftime("%Y-%m-%d")
+                            value=datetime.datetime.strptime(data["TODATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                         tdate = value
                         
                     if data["SUPPCODE"]:
-                        partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])
+                        partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','ilike',data["SUPPCODE"])])
                         un_define = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])
                         if partner:
                             partner = partner[0]
@@ -187,16 +187,16 @@ class import_po_contract_data(osv.osv_memory):
                 else:
                     nn = data["JOBSERIES"] + '/' +data["JOBNO"]
                     if nn:
-                        po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',nn)])
+                        po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',nn), ('contract','=',True)])
                     if data["ISUQTY"]:
                         qty = data["ISUQTY"]
                     if data["STKRATE"]:
                         rate = data["STKRATE"]
-                    ind_name = ''
-                    ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',name),('contract','=',True)])
-                    
-                    if ind:
-                        ind_name = self.pool.get('indent.indent').read(cr, uid, ind[0],['name'])['name']
+#                     ind_name = ''
+#                     ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',name),('contract','=',True)])
+#                     
+#                     if ind:
+#                         ind_name = self.pool.get('indent.indent').read(cr, uid, ind[0],['name'])['name']
                     if data["ITEMCODE"]:
                         product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
 
@@ -235,7 +235,6 @@ class import_po_contract_data(osv.osv_memory):
                             'department_id':department or False,
                             'account_analytic_id':project or False,
                            }
-
                     po_pool.write(cr, uid,po[0], {'order_line':[(0,0,vals_line)]}, context)
                     #This lines for only update Po's total amount.
                     po_pool.write(cr,uid,po[0],{'other_discount':0.1})

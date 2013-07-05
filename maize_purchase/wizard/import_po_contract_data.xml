@@ -18,7 +18,7 @@
         </field>
     </record>
     <act_window 
-        name="Import Contract"
+        name="Import Contract Header And Lines"
         res_model="import.po.contract.data"
         src_model="purchase.order"
         view_mode="form"

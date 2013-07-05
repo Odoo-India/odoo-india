@@ -45,7 +45,7 @@ class import_po_contract_data(osv.osv_memory):
     
     def do_import_po_contract_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ashvin/Desktop/script/CONTRACT.csv"
+        file_path = "/home/ron/Desktop/testfiles/CONTRACT.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -58,6 +58,7 @@ class import_po_contract_data(osv.osv_memory):
         indent = []
         rejected =[]
         exist = []
+        total_po_for_update = []
         for data in data_lines:
             try:
                 name = data["JOBNO"]
@@ -120,14 +121,17 @@ class import_po_contract_data(osv.osv_memory):
                         
                     if data["ISUQTY"]:
                         qty = data["ISUQTY"]
-                department=False
-                if data["DEPTCODE"].strip():
-                    if len(data["DEPTCODE"].strip()) == 1:
-                        dept = '00'+data["DEPTCODE"].strip()
-                    elif len(data["DEPTCODE"].strip()) == 2:
-                        dept = '0'+data["DEPTCODE"].strip()
-                    elif len(data["DEPTCODE"].strip()) == 3:
-                        dept = data["DEPTCODE"].strip()
+
+                    #To find Department
+                    department=False
+                    departner_name = data["DEPTCODE"].strip()
+                    if departner_name:
+                        if len(departner_name) == 1:
+                            dept = '00'+departner_name
+                        elif len(departner_name) == 2:
+                            dept = '0'+departner_name
+                        elif len(departner_name) == 3:
+                            dept = departner_name
                     department = self.pool.get('stock.location').search(cr, uid,[('code','=',dept)])[0]
 
                     mach=data["MACHCODE"].strip()
@@ -135,12 +139,12 @@ class import_po_contract_data(osv.osv_memory):
                     if mach:
                         project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0] 
 
-                    
-                    ind_name = ''
-                    ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',name),('contract','=',True)])
-                    
-                    if ind:
-                        ind_name = self.pool.get('indent.indent').read(cr, uid, ind[0],['name'])['name']
+                    #To find Indentor
+                    indentor_id = False
+                    if data.get('INDENTOR'):
+                        indentor_ids = self.pool.get('res.users').search(cr,uid,[('user_code','=',data['INDENTOR'])])
+                        if indentor_ids: indentor_id = indentor_ids[0]
+
                     if data["ITEMCODE"]:
                         product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
                     vals_line = {
@@ -150,7 +154,7 @@ class import_po_contract_data(osv.osv_memory):
                             'product_qty':qty,
                             'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
                             'date_planned':'03/29/2013',
-                            'indentor_id':ind[0],
+                            'indentor_id':indentor_id,
                             'department_id':department or False,
                             'account_analytic_id':project or False,
                            }
@@ -177,6 +181,9 @@ class import_po_contract_data(osv.osv_memory):
                             'contract':True
                            }
                     data['po'] = po_pool.create(cr, uid, vals, context)
+                    #This lines for only update Po's total amount.
+                    po_pool.write(cr,uid,data['po'],{'other_discount':0.1})
+                    po_pool.write(cr,uid,data['po'],{'other_discount':0.0})
                 else:
                     nn = data["JOBSERIES"] + '/' +data["JOBNO"]
                     if nn:
@@ -192,16 +199,45 @@ class import_po_contract_data(osv.osv_memory):
                         ind_name = self.pool.get('indent.indent').read(cr, uid, ind[0],['name'])['name']
                     if data["ITEMCODE"]:
                         product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+
+                    #To find Indentor
+                    indentor_id = False
+                    if data.get('INDENTOR'):
+                        indentor_ids = self.pool.get('res.users').search(cr,uid,[('user_code','=',data['INDENTOR'])])
+                        if indentor_ids: indentor_id = indentor_ids[0]
+
+                    #To find Department
+                    department=False
+                    departner_name = data["DEPTCODE"].strip()
+                    if departner_name:
+                        if len(departner_name) == 1:
+                            dept = '00'+departner_name
+                        elif len(departner_name) == 2:
+                            dept = '0'+departner_name
+                        elif len(departner_name) == 3:
+                            dept = departner_name
+                    department = self.pool.get('stock.location').search(cr, uid,[('code','=',dept)])[0]
+
+                    #To find Project
+                    project=False
+                    mach=data["MACHCODE"].strip()
+                    if mach:
+                        project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0] 
+
                     vals_line = {
                             'product_id':product,
                             'price_unit':float(rate),
                             'name':'test',
                             'product_qty':qty,
                             'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                            'date_planned':'03/29/2013'
+                            'date_planned':'03/29/2013',
+                            'indentor_id':indentor_id,
+                            'department_id':department or False,
+                            'account_analytic_id':project or False,
                            }
-                    
-                    po_pool.write(cr, uid,po[0], {'order_line':[(0,0,vals_line)],}, context)
+
+                    po_pool.write(cr, uid,po[0], {'order_line':[(0,0,vals_line)]}, context)
+                    #This lines for only update Po's total amount.
                     po_pool.write(cr,uid,po[0],{'other_discount':0.1})
                     po_pool.write(cr,uid,po[0],{'other_discount':0.0})
                     

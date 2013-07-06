@@ -1178,7 +1178,7 @@ class stock_move(osv.osv):
         }
 
         if tax_cal == 0:
-            tax_main = (line.price_unit* move.product_qty) * base_tax
+            tax_main = (line.price_unit* move.product_qty) * base_tax if tax.type not in ['fixed'] else move.product_qty * base_tax
         else:
             tax_main = (tax_cal * base_tax ) / total_tax
         new_tax.update({'excies':tax_main, 'cenvat':tax_main})

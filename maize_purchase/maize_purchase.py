@@ -875,7 +875,7 @@ class stock_picking(osv.Model):
                 warehouse_dict = warehouse_obj.read(cr, uid, pick.warehouse_id.id, ['lot_input_id','lot_stock_id'], context=context)
                 if pick.state == 'done':
                     for move in pick.move_lines:
-                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
+                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0,0,0, context)
                         dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                         if move.product_id and move.product_id.ex_chapter:
@@ -883,7 +883,7 @@ class stock_picking(osv.Model):
                     vals.update({'inward_id': pick.id or False})
                 else:
                     for move in pick.backorder_id.move_lines:
-                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0, context)
+                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0,0,0, context)
                         dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id',False)[0]})
                         move_line.append(stock_move.copy(cr,uid,move.id, dict['value'],context=context))
                         for move in pick.move_lines:
@@ -1100,7 +1100,8 @@ class stock_move(osv.osv):
             'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type',store=True),
             'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
             'new_rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is calculate after adding all tax"),
-            'diff': fields.float('Diff.', digits_compute= dp.get_precision('Account'), help="Amount to be add or less"),
+            'diff': fields.float('Add (%)', digits_compute= dp.get_precision('Account'), help="Amount to be add"),
+            'less_diff': fields.float('Less (%)', digits_compute= dp.get_precision('Account'), help="Amount to be less"),
             'amount': fields.float('Amount.', digits_compute= dp.get_precision('Account'), help="Total Amount"),
             'bill_no': fields.integer('Bill No'),
             'bill_date': fields.date('Bill Date'),
@@ -1132,7 +1133,7 @@ class stock_move(osv.osv):
             'qty_available': fields.function(_get_stock, string="Stock", type="float")
                 }
 
-    def onchange_amount(self, cr, uid, ids, purchase_id, product_id, diff, import_duty, tax_cal, context=None):
+    def onchange_amount(self, cr, uid, ids, purchase_id, product_id, add_diff, less_diff,rate, import_duty, tax_cal, context=None):
         tax = ''
         child_tax = 0
         if not context:
@@ -1148,6 +1149,8 @@ class stock_move(osv.osv):
         move = [move for move in self.browse(cr, uid, ids,context=context) if move.id][0]
 
         order = purchase_obj.browse(cr, uid, purchase_id, context)
+        amount = rate * move.product_qty if rate != 0.0 else line.new_price * move.product_qty
+        diff_amount =  amount * add_diff / 100 if add_diff != 0.0 else -(amount * less_diff / 100)
         if order.excies_ids:
             tax = order.excies_ids[0]
 #        else:
@@ -1158,7 +1161,7 @@ class stock_move(osv.osv):
 #           tax = tax_obj.browse(cr, uid, tax, context=context)
 
         if not tax:
-            return {'value': {'amount': (line.new_price* move.product_qty),'new_rate': line.new_price,'rate': line.price_unit}}
+            return {'value': {'amount': amount + diff_amount,'rate': line.new_price}}
 
         base_tax = tax.amount
         total_tax = base_tax
@@ -1188,8 +1191,16 @@ class stock_move(osv.osv):
             if ctax.tax_type == 'hedu_cess':
                 new_tax.update({'high_cess':cess, 'c_high_cess':cess})
         if tax_cal == 0:
-            new_tax.update({'amount': (line.new_price* move.product_qty),'new_rate': line.new_price,'rate': line.price_unit})
+            new_tax.update({'amount': amount + diff_amount,'rate': line.price_unit, 'new_rate': rate if rate != 0.0 else line.new_price})
+        new_tax.update({'amount': amount + diff_amount,'rate': line.price_unit, 'new_rate': rate if rate != 0.0 else line.new_price})
         return {'value': new_tax}
+    
+    def onchange_rate(self,cr, uid, ids, product_qty, price, add_diff, less_diff, context=None):
+        amount = (product_qty * price)
+        diff =  amount * add_diff / 100 if add_diff != 0 else -amount * less_diff / 100
+        if not diff:
+            return {'value': {'amount': amount}}
+        return {'value': {'amount': amount + diff}}
     
     def onchange_excise(self, cr, uid, ids, excise, cess, high_cess,import_duty, context=None):
         return {'value': {'excise': excise or 0.0, 'cenvat':excise or 0.0, 'cess': cess or 0.0, 'c_cess': cess or 0.0, 'high_cess': high_cess or 0.0, 'c_high_cess': high_cess or 0.0, 'import_duty': import_duty or 0.0, 'import_duty1': import_duty or 0.0}}

@@ -674,7 +674,7 @@ class purchase_order(osv.Model):
                 contract_name = seq_obj.get(cr, uid, contract_seq)
             voucher_id = False
             totlines = []
-            if po.payment_term_id:
+            if po.payment_term_id and po.payment_term_id.line_ids:
                 totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_untaxed, po.date_order or False, context=context)
             journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'TBNK')], context=context)
             journal_id = journal_ids and journal_ids[0] or False

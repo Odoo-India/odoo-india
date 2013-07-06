@@ -45,16 +45,17 @@ class import_po_contract_data(osv.osv_memory):
     
     def do_import_po_contract_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ara/Desktop/script/po/po_contra.csv"
+        file_path = "/home/ron/Desktop/testfiles/po_contra.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
         except:
             _logger.warning("Can not read source file(csv) '%s', Invalid file path or File not reachable on file system."%(file_path))
-            return True            
+            return True
 
         _logger.info("Starting Import CONTRACT HEADER Process from file '%s'."%(file_path))
         po_pool =self.pool.get('purchase.order')
+        seq_obj = self.pool.get('ir.sequence')
         indent = []
         rejected =[]
         exist = []
@@ -62,11 +63,9 @@ class import_po_contract_data(osv.osv_memory):
         for data in data_lines:
             try:
                 name = data["JOBNO"]
-                if not name in exist:
-                    if data["JOBNO"]:
-                        exist.append(name)
-                    if data["JOBNO"] and data["JOBSERIES"]:
-                        old_id = data["JOBSERIES"] + '/' +data["JOBNO"]
+                search_for_contract = data["JOBSERIES"].strip() + '/' +data["JOBNO"].strip()
+                if not search_for_contract in exist:
+                    exist.append(search_for_contract)
     
                     if data["JOBSERIES"]:
                         po_series = self.pool.get('product.order.series').search(cr,uid,[('code','=',data["JOBSERIES"]),('type','=','indent')])[0]
@@ -158,9 +157,10 @@ class import_po_contract_data(osv.osv_memory):
                             'department_id':department or False,
                             'account_analytic_id':project or False,
                            }
-                    
-                    vals = {'name':name,
-                            'maize':old_id,
+
+                    vals = {
+                            'name':seq_obj.get(cr, uid, 'purchase.order'),
+                            'maize':search_for_contract,
                             #'origin':ind_name,
                             'po_series_id':co_series,
                             'contract_id':po_series,
@@ -178,25 +178,20 @@ class import_po_contract_data(osv.osv_memory):
                             'retention':ret,
                             'order_line':[(0,0,vals_line)],
                             'notes':note,
-                            'contract':True
                            }
                     data['po'] = po_pool.create(cr, uid, vals, context)
+
                     #This lines for only update Po's total amount.
                     po_pool.write(cr,uid,data['po'],{'other_discount':0.1})
                     po_pool.write(cr,uid,data['po'],{'other_discount':0.0})
+                    cr.execute(""" update purchase_order set contract=True WHERE id = %s""" , (data['po'],))
                 else:
-                    nn = data["JOBSERIES"] + '/' +data["JOBNO"]
-                    if nn:
-                        po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',nn), ('contract','=',True)])
+                    po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',search_for_contract), ('contract','=',True)])
                     if data["ISUQTY"]:
                         qty = data["ISUQTY"]
                     if data["STKRATE"]:
                         rate = data["STKRATE"]
-#                     ind_name = ''
-#                     ind = self.pool.get('indent.indent').search(cr,uid,[('maize','=',name),('contract','=',True)])
-#                     
-#                     if ind:
-#                         ind_name = self.pool.get('indent.indent').read(cr, uid, ind[0],['name'])['name']
+
                     if data["ITEMCODE"]:
                         product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
 
@@ -239,8 +234,8 @@ class import_po_contract_data(osv.osv_memory):
                     #This lines for only update Po's total amount.
                     po_pool.write(cr,uid,po[0],{'other_discount':0.1})
                     po_pool.write(cr,uid,po[0],{'other_discount':0.0})
-                    
-                
+                    cr.execute(""" update purchase_order set contract=True WHERE id = %s""" , (po[0],))
+
             except:
                 rejected.append(data['JOBNO'])
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['JOBNO']), exc_info=True)

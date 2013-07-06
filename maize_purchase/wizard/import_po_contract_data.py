@@ -170,7 +170,7 @@ class import_po_contract_data(osv.osv_memory):
                             'name':seq_obj.get(cr, uid, 'purchase.order'),
                             'maize':search_for_contract,
                             'origin':indent_name,
-                            'po_series_id':co_series,
+                            #'po_series_id':co_series,
                             'contract_id':po_series,
                             'date_order':podate,
                             'date_from':fdate,

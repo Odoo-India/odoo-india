@@ -146,21 +146,23 @@ account_tax()
 
 class account_invoice_tax(osv.osv):
     _inherit = 'account.invoice.tax'
-    
+
     _columns = {
         'tax_categ': fields.selection(
         [('excise', 'Excise'),
          ('cess', 'Cess'),
+         ('hedu_cess', 'Higher Education Cess'),
          ('vat', 'VAT'),
          ('cst', 'CST'),
          ('other', 'Other'),
          ('service', 'Service'),
         ], 'Tax Category')
     }
+
     _defaults = {
         'tax_categ': 'other',
     }
-    
+
     def compute(self, cr, uid, invoice_id, context=None):
         tax_grouped = {}
         tax_obj = self.pool.get('account.tax')
@@ -219,13 +221,21 @@ class account_invoice(osv.Model):
             res[invoice.id] = {
                 'amount_untaxed': 0.0,
                 'amount_tax': 0.0,
-                'amount_total': 0.0
+                'amount_total': 0.0,
+                'bill_amount': 0.0,
+                'net_amount': 0.0,
             }
             for line in invoice.invoice_line:
                 res[invoice.id]['amount_untaxed'] += line.price_subtotal
             for line in invoice.tax_line:
                 res[invoice.id]['amount_tax'] += line.amount
             res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + invoice.insurance + invoice.other_charges
+
+            res[invoice.id]['bill_amount'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + \
+                invoice.package_and_forwording + invoice.insurance + invoice.loading_charges + invoice.inspection_charges + invoice.delivery_charges \
+                + invoice.other_charges - invoice.rounding_shortage
+
+            res[invoice.id]['net_amount'] = res[invoice.id]['bill_amount'] - (invoice.debit_note_amount + invoice.advance_amount + invoice.retention_amount) 
         return res
 
     def _get_invoice_line(self, cr, uid, ids, context=None):
@@ -265,6 +275,13 @@ class account_invoice(osv.Model):
                 'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
             },
             multi='all'),
+        'bill_amount': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Bill Amount',
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'package_and_forwording', 'insurance', 'loading_charges', 'inspection_charges', 'delivery_charges', 'other_charges', 'rounding_shortage'], 20),
+                'account.invoice.tax': (_get_invoice_tax, None, 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
+            },
+            multi='all'),
         'carting':fields.selection([('nothing', 'Nothing')], 'Carting'),
         'package_and_forwording': fields.float('Packing'),
         'loading_charges': fields.float('Loading Charges'),
@@ -273,11 +290,16 @@ class account_invoice(osv.Model):
         'rounding_shortage': fields.float('Rounding Shortage'),
         'vat_amount': fields.float('VAT Amount'),
         'additional_amount': fields.float('Additional Tax'),
-        'bill_amount': fields.float('Bill Amount'),
         'debit_note_amount': fields.float('Debit Note Amount'),
         'advance_amount': fields.float('Advance Amount'),
         'retention_amount': fields.float('Retention Amount'),
-        'net_amount': fields.float('Net Amount'),
+        'net_amount': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Net Amount', track_visibility='always',
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'package_and_forwording', 'insurance', 'loading_charges', 'inspection_charges', 'delivery_charges', 'other_charges', 'rounding_shortage', 'debit_note_amount', 'advance_amount', 'retention_amount'], 20),
+                'account.invoice.tax': (_get_invoice_tax, None, 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
+            },
+            multi='all'),
         'account_code': fields.many2one('account.account', 'Account Code'),
         'st_code':fields.selection([('nothing', 'Nothing')], 'S.T. Code'),
         'due_date': fields.date('Due Date'),

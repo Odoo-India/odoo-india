@@ -860,6 +860,12 @@ class stock_picking(osv.Model):
         vals['name'] = False
         return super(stock_picking, self).create(cr, uid, vals, context=context)
 
+    def action_invoice_create(self, cr, uid, ids, journal_id=False,
+            group=False, type='out_invoice', context=None):
+        type = 'in_invoice'
+        res = super(stock_picking, self).action_invoice_create(cr, uid, ids, journal_id=journal_id, group=group, type=type, context=context)
+        return res
+
     def do_partial(self, cr, uid, ids, partial_datas, context=None):
         receipt_obj = self.pool.get('stock.picking.receipt')
         stock_move = self.pool.get('stock.move')
@@ -1264,3 +1270,33 @@ class tr_code(osv.Model):
 
 tr_code()
 
+class stock_invoice_onshipping(osv.osv_memory):
+    _inherit = 'stock.invoice.onshipping'
+
+    def open_invoice(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        invoice_ids = []
+        data_pool = self.pool.get('ir.model.data')
+        res = self.create_invoice(cr, uid, ids, context=context)
+        invoice_ids += res.values()
+        inv_type = 'in_invoice'
+        action_model = False
+        action = {}
+        if not invoice_ids:
+            raise osv.except_osv(_('Error!'), _('Please create Invoices.'))
+        if inv_type == "out_invoice":
+            action_model,action_id = data_pool.get_object_reference(cr, uid, 'account', "action_invoice_tree1")
+        elif inv_type == "in_invoice":
+            action_model,action_id = data_pool.get_object_reference(cr, uid, 'account', "action_invoice_tree2")
+        elif inv_type == "out_refund":
+            action_model,action_id = data_pool.get_object_reference(cr, uid, 'account', "action_invoice_tree3")
+        elif inv_type == "in_refund":
+            action_model,action_id = data_pool.get_object_reference(cr, uid, 'account', "action_invoice_tree4")
+        if action_model:
+            action_pool = self.pool.get(action_model)
+            action = action_pool.read(cr, uid, action_id, context=context)
+            action['domain'] = "[('id','in', ["+','.join(map(str,invoice_ids))+"])]"
+        return action
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

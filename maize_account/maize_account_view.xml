@@ -64,6 +64,15 @@
                         <group>
                             <field name="rounding_shortage" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="amount_untaxed" string="Taxable Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <div>
+                                <label for="amount_tax"/>
+                                <button name="button_reset_taxes" states="draft,proforma2"
+                                    string="(update)" class="oe_link oe_edit_only"
+                                    type="object" help="Recompute taxes and total"/>
+                            </div>
+                            <field name="amount_tax" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="amount_total" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="1"/>
+                            <field name="residual" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="1"/>
                             <field name="vat_amount" string="VAT / Additional Tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="bill_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="debit_note_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>

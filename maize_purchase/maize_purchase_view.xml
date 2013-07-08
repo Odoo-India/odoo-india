@@ -382,6 +382,9 @@
             <field name="model">stock.picking.in</field>
             <field name="inherit_id" ref="stock.view_picking_in_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                        <button name="receipt_tree_view" string="Receipts" class="oe_right" type="object"/>
+                </xpath>
                 <xpath expr="//group" position="after">
                     <group col="12" string="Inward Details">
                 		<group colspan="4">

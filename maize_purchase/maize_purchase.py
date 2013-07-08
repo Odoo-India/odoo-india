@@ -76,6 +76,17 @@ class stock_picking_in(osv.osv):
         'maize_in': fields.char('Maize', size=256, readonly=True),
             
     }
+    
+    def receipt_tree_view(self, cr, uid, ids, context):
+        mod_obj = self.pool.get('ir.model.data')
+        action_model, action_id = tuple(mod_obj.get_object_reference(cr, uid, 'maize_purchase', 'action_picking_tree4_receipt'))
+        action = self.pool.get(action_model).read(cr, uid, action_id, context=context)
+        ctx = eval(action['context'])
+        ctx.update({
+            'search_default_inward_id': ids,
+        })
+        action.update({'context': ctx,})
+        return action
 
     def create(self, cr, uid, vals, context=None):
         vals['name'] = False

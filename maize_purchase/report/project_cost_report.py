@@ -31,6 +31,7 @@ class project_cost_report(osv.osv):
         'indentor_id': fields.many2one('res.users', 'Indentor', readonly=True),
         'project_code': fields.char('Project Code',size=28),
         'project_name': fields.char('Project Name', size=256),
+        'product_id': fields.many2one('product.product', 'Product', readonly=True),
         'nbr': fields.integer('# of Lines', readonly=True),
         'state':fields.selection([
             ('draft','Draft'),
@@ -54,10 +55,11 @@ class project_cost_report(osv.osv):
         cr.execute("""
             create or replace view project_cost_report as (
                 select
-                    min(i.id) as id,
+                    min(product.id) as id,
                     i.indentor_id as indentor_id,
                     i.contract as contract,
-                    sum(po.amount_total) as puchase_total,
+                    product.id as product_id,
+                    po.amount_total as puchase_total,
                     sum(sp.amount_total) as receipt_total,
                     a.name as project_name,
                     a.code as project_code,
@@ -68,7 +70,9 @@ class project_cost_report(osv.osv):
                 from
                     indent_indent i
                     left join purchase_order po on (i.id=po.indent_id)
+                    left join purchase_order_line pol on (pol.order_id = po.id)
                     left join stock_picking sp on (po.id = sp.purchase_id)
+                    left join product_product product on (pol.product_id = product.id)
                     left join account_analytic_account a on (i.analytic_account_id = a.id)
                 where po.indent_id is not null
                 group by
@@ -77,7 +81,9 @@ class project_cost_report(osv.osv):
                     i.state,
                     i.analytic_account_id,
                     a.name,
-                    a.code
+                    a.code,
+                    product.id,
+                    po.amount_total
             )
         """)
 project_cost_report()

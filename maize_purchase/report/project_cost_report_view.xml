@@ -9,10 +9,12 @@
             <field name="model">project.cost.report</field>
             <field name="arch" type="xml">
                 <tree string="Project Cost Analysis" create="false" delete="false">
-                    <field name="project_code"/>
-                    <field name="project_name"/>
+                    <field name="project_code" invisible="True"/>
+                    <field name="project_name" invisible="True"/>
+                    <field name="product_id"/>
                     <field name="puchase_total" sum="PO Total"/>
                     <field name="receipt_total" sum="Receipt Total"/>
+                    <!-- field name="payment"/> -->
                     <field name="difference"/>
                     <field name="nbr" sum="# of Lines" invisible="1"/>
                     <field name="analytic_account_id" groups="analytic.group_analytic_accounting" invisible="context.get('analytic_account_id',True)"/>
@@ -50,6 +52,9 @@
                     <filter string="Rejected" name="state_reject" domain="[('state','=','reject')]"/>
                     <separator/>
                     <filter icon="terp-personal" string="My Indents" help="My Indents" domain="[('indentor_id', '=', uid)]"/>
+                    <group expand="1" string="Group By..." >
+	                    <filter name="project_code" string="Project" icon="terp-accessories-archiver" context="{'group_by':'project_code'}"/>
+	                </group>
                 </search>
             </field>
         </record>
@@ -62,7 +67,7 @@
             <field name="view_mode">tree,graph</field>
             <field name="search_view_id" ref="view_project_cost_report_search"/>
             <field name="view_id" ref="view_project_cost_report_tree"/>
-            <field name="context">{'group_by_no_leaf':0, 'group_by':[]}</field>
+            <field name="context">{'group_by_no_leaf':0, 'group_by':['project_code']}</field>
             <field name="help">This report performs analysis on your project cost.</field>
         </record>
 

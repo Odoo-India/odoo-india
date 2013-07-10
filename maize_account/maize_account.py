@@ -256,7 +256,7 @@ class account_invoice(osv.Model):
         'insurance': fields.float('Insurance'),
         'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Subtotal', track_visibility='always',
             store={
-                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges'], 20),
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges', 'package_and_forwording', 'loading_charges', 'inspection_charges', 'delivery_charges', 'rounding_shortage'], 20),
                 'account.invoice.tax': (_get_invoice_tax, None, 20),
                 'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
             },
@@ -270,7 +270,7 @@ class account_invoice(osv.Model):
             multi='all'),
         'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
             store={
-                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges'], 20),
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges', 'package_and_forwording', 'loading_charges', 'inspection_charges', 'delivery_charges', 'rounding_shortage'], 20),
                 'account.invoice.tax': (_get_invoice_tax, None, 20),
                 'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
             },

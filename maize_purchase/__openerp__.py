@@ -44,6 +44,7 @@ This module inherits the base product module which maintains some product histor
         'wizard/import_reciept_line_data.xml',
         'wizard/import_issue_data.xml',
         'wizard/import_issue_line_data.xml',
+        'wizard/inventory_control_view.xml',
         #'wizard/import_inward_data.xml',
         #'wizard/import_inward_line_data.xml',
         'wizard/update_excise_wizard.xml',

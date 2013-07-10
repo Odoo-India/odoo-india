@@ -10,3 +10,4 @@ import import_issue_data
 import import_issue_line_data
 import update_excise
 import stock_move_split
+import inventory_control

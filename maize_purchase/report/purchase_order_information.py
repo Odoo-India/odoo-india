@@ -32,21 +32,28 @@ class purchase_order_information_report(osv.osv):
     def calc_inward_qty(self, cr, uid, ids, field_name, arg, context=None):
         stock_move_obj = self.pool.get('stock.move')
         purchase_order_line_obj = self.pool.get('purchase.order.line')
+        inward_name = ''
         res = {}
         ids = list(set(ids))
         for id in ids:
             inward_qty = 0.0
-            
+            res[id] = {
+                       'inward_qty_func': 0.0,
+                      }
             move_ids = stock_move_obj.search(cr, uid, [('purchase_line_id', '=', id), ('type', '=', 'in'), ('state','=','done')], context=context)
             for move_id in move_ids:
+                inward_name = stock_move_obj.browse(cr, uid, move_id, context=context).picking_id.name
+                delivery_date = stock_move_obj.browse(cr, uid, move_id, context=context).picking_id.date_done
                 inward_qty += stock_move_obj.browse(cr, uid, move_id, context=context).product_qty
-                
-            res[id] = inward_qty
+                res[id]['delivery_date'] = delivery_date
+                res[id]['inward_name'] = inward_name    
+            res[id]['inward_qty_func'] = inward_qty
         return res
     
     def calc_receipt_pending_qty(self, cr, uid, ids, field_name, arg, context=None):
         stock_move_obj = self.pool.get('stock.move')
         purchase_order_line_obj = self.pool.get('purchase.order.line')
+        receipt_name = ''
         res = {}
         ids = list(set(ids))
         for id in ids:
@@ -58,8 +65,9 @@ class purchase_order_information_report(osv.osv):
             tot_qty = purchase_order_line_obj.browse(cr, uid, id, context=context).product_qty
             move_ids = stock_move_obj.search(cr, uid, [('purchase_line_id', '=', id), ('type', '=', 'receipt'), ('state','=','done')], context=context)
             for move_id in move_ids:
+                receipt_name = stock_move_obj.browse(cr, uid, move_id, context=context).picking_id.name
                 receipt_qty += stock_move_obj.browse(cr, uid, move_id, context=context).product_qty
-                
+                res[id]['receipt_name'] = receipt_name
             res[id]['receipt_qty_func'] = receipt_qty
             res[id]['pending_qty_func'] = tot_qty - receipt_qty
         return res
@@ -84,7 +92,7 @@ class purchase_order_information_report(osv.osv):
         'indentor_id': fields.many2one('res.users', 'Indentor', readonly=True),
         'nbr': fields.integer('# of Lines', readonly=True),
         'product_id': fields.many2one('product.product', 'Product', readonly=True),
-        'po_series_id': fields.char('PO Series', size=64, readonly=True),
+        'po_series_id': fields.many2one('product.order.series', 'PO Series', readonly=True),
         'state':fields.selection([
             ('draft','Draft'),
             ('confirm','Confirm'),
@@ -100,13 +108,19 @@ class purchase_order_information_report(osv.osv):
         'puchase_total': fields.float('Total', readonly=True),
         'product_uom': fields.many2one('product.uom', 'Unit'),
         'partner_id':fields.many2one('res.partner', 'Supplier', readonly=True),
+        'supplier_code':fields.char('Supplier Code', size=10, readonly=True),
         'payment_term_id':fields.many2one('account.payment.term', 'Payment Term'),
         'discount': fields.float('Disc %', readonly=True),
         'purchase_year': fields.char('Purchase Year', size=10, readonly=True),
         'indent_year': fields.char('Indent Year', size=10, readonly=True),
-        'inward_qty_func': fields.function(calc_inward_qty, digits_compute= dp.get_precision('Account'), string='Inward Qty', type="float"),
+        'inward_qty_func': fields.function(calc_inward_qty, digits_compute= dp.get_precision('Account'), string='Inward Qty', type="float", multi='sums1'),
         'receipt_qty_func': fields.function(calc_receipt_pending_qty, digits_compute= dp.get_precision('Account'), string='Receipt Qty', type="float", multi='sums'),
         'pending_qty_func': fields.function(calc_receipt_pending_qty, digits_compute= dp.get_precision('Account'), string='Pending Qty', type="float", multi='sums'),
+        'default_code': fields.char('Indent Year', size=10, readonly=True),
+        'date_order': fields.date('Purchase Date', readonly=True),
+        'inward_name': fields.function(calc_inward_qty, string='Inward Name', type='char', size=10, readonly=True, multi='sums1'),
+        'receipt_name': fields.function(calc_receipt_pending_qty, string='Receipt Name', type='char', size=10, readonly=True, multi='sums'),
+        'delivery_date': fields.function(calc_inward_qty, string='Delivery Date', type='date', readonly=True, multi='sums1')
     }
     _order = 'date desc'
         
@@ -129,6 +143,7 @@ class purchase_order_information_report(osv.osv):
                     al.price_total as price_total,
                     al.purchase_maize_id as purchase_maize_id,
                     al.partner_id as partner_id,
+                    al.supplier_code as supplier_code,
                     al.puchase_total as puchase_total,
                     al.requirement as requirement,
                     al.type as type,
@@ -149,7 +164,9 @@ class purchase_order_information_report(osv.osv):
                     al.purchase_year as purchase_year,
                     al.inward_qty as inward_qty,
                     al.receipt_qty as receipt_qty,
-                    al.pending_qty as pending_qty
+                    al.pending_qty as pending_qty,
+                    al.default_code as default_code,
+                    al.date_order 
                 from
                 (select distinct(l.id) as id,
             l.product_qty as product_uom_qty,
@@ -178,6 +195,7 @@ class purchase_order_information_report(osv.osv):
                     po.amount_untaxed as price_total,
                     po.maize as purchase_maize_id,
                     po.partner_id as partner_id,
+                    po.supplier_code as supplier_code,
                     po.amount_total as puchase_total,
                     i.requirement as requirement,
                     i.type as type,
@@ -189,13 +207,15 @@ class purchase_order_information_report(osv.osv):
                     to_char(i.indent_date, 'MM') as month,
                     to_char(i.indent_date, 'YYYY-MM-DD') as day,
                     i.indentor_id as indentor_id,
-                    ps.name as po_series_id,
+                    ps.id as po_series_id,
                     i.state,
                     i.analytic_account_id as analytic_account_id,
                     po.contract_id as contract_id,
                     po.payment_term_id as payment_term_id,
                     sm.indent_year as indent_year,
-                    sm.puchase_year as purchase_year
+                    sm.puchase_year as purchase_year,
+                    p.default_code as default_code,
+                    po.date_order as date_order
             from indent_indent i
             left join purchase_order po on (i.id=po.indent_id)
                     left join stock_location sl on (sl.id=i.department_id)
@@ -224,12 +244,13 @@ class purchase_order_information_report(osv.osv):
                     i.analytic_account_id,
                     l.id,
                     l.product_id,
-                    ps.name,
+                    ps.id,
                     l.product_qty,
                     l.price_unit,
                     l.product_uom,
                     l.discount,
                     po.partner_id,
+                    po.supplier_code,
                     i.analytic_account_id,
                     po.contract_id,
                     po.contract,
@@ -237,6 +258,8 @@ class purchase_order_information_report(osv.osv):
                     sm.type,
                     sm.indent_year,
                     sm.puchase_year,
+                    p.default_code,
+                    po.date_order,
                     payment_term_id)
                 AS al 
                 group by
@@ -261,6 +284,7 @@ class purchase_order_information_report(osv.osv):
                     al.product_uom,
                     al.discount,
                     al.partner_id,
+                    al.supplier_code,
                     al.analytic_account_id,
                     al.contract_id,
                     al.contract,
@@ -276,7 +300,9 @@ class purchase_order_information_report(osv.osv):
                     al.po_series_id,
                     al.inward_qty,
                     al.receipt_qty,
-                    al.pending_qty
+                    al.pending_qty,
+                    al.default_code,
+                    al.date_order
             )
         """)
         

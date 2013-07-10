@@ -65,6 +65,7 @@ class stock_location(osv.Model):
         'code': fields.char('Code', size=15),
         }
 stock_location()
+
 class account_analytic_account(osv.Model):
     _inherit = 'account.analytic.account'
     _rec_name = 'code'
@@ -136,6 +137,33 @@ product_sub_group()
 class product_product(osv.Model):
     _inherit = 'product.product'
     _order = 'id desc,default_code'
+
+    def _get_product(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('stock.move').browse(cr, uid, ids, context=context):
+            result[line.product_id.id] = True
+        return result.keys()
+
+    def weighted_rate(self, cr, uid, ids, field_name, arg, context=None):
+        stock_move_obj = self.pool.get('stock.move')
+        product_obj = self.pool.get('product.product')
+        res = {}
+        for product in self.browse(cr, uid, ids, context=context):
+            res[product.id]={'weighted_rate': 0.0,'value_total': 0.0}
+            receipt_qty = 0.0
+            amount = 0.0
+            move_ids = stock_move_obj.search(cr, uid, [('product_id', '=', product.id), ('type', '=', 'receipt'), ('state','=','done')], context=context)
+            for move_obj in stock_move_obj.browse(cr, uid, move_ids, context=context):
+                receipt_qty += move_obj.product_qty
+                amount += move_obj.product_qty * move_obj.rate
+
+            if receipt_qty > 0:
+                res[product.id]['weighted_rate'] = amount / receipt_qty
+                res[product.id]['value_total'] = amount
+            else:
+                res[product.id]['weighted_rate'] = 0.0
+                res[product.id]['value_total'] = 0.0
+        return res
 
     def last_supplier_code(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
@@ -232,6 +260,10 @@ class product_product(osv.Model):
         'last_issue_value': fields.float('Last Issue Value', readonly=True),
         'cy_issue_qty': fields.function(cy_issue_qty, type='float', string='Current Year Issue Quantity'),
         'cy_issue_value': fields.function(cy_issue_value, type='float', string='Current Year Issue Value'),
+        'weighted_rate': fields.function(weighted_rate, type="float",multi="report", string='Weighted Rate',store={
+            'stock.move':  (_get_product,['state'],10)},track_visibility='always'),
+        'value_total': fields.function(weighted_rate, type="float",multi="report",string='Total value',store={
+            'stock.move':  (_get_product,['state'],20)},track_visibility='always'),
         'last_po_date': fields.date('Last PO Date',readonly=True),
         'last_po_series': fields.many2one('product.order.series', 'Last PO Series',readonly=True),
         'ex_chapter': fields.char('EXCHAPTER', size=30, translate=True),
@@ -257,6 +289,7 @@ class product_product(osv.Model):
             track_visibility='onchange'),
         'min_qty': fields.related('orderpoint_ids', 'product_min_qty', type="float", relation="stock.warehouse.orderpoint", help="Minimum Qantity for this Product"),
         'max_qty': fields.related('orderpoint_ids', 'product_max_qty', type="float", relation="stock.warehouse.orderpoint", help="Maximum Qantity for this Product"),
+        
         }
 
     _defaults = {

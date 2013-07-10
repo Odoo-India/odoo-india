@@ -33,7 +33,7 @@
         </record>
         
         <record id="action_inventory_control_form" model="ir.actions.act_window">
-            <field name="name">Inventory Control</field>
+            <field name="name">Purchase Order Information</field>
             <field name="res_model">inventory.control</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>

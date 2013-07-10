@@ -560,6 +560,7 @@
                             <field name="department_id"/>
                             <field name="new_rate"/>
                             <field name="rate" invisible="1"/>
+                            <field name="diff_amount" invisible="1"/>
                             <field name="product_qty" sum="Total Quantity"/>
                             <field name="challan_qty" sum="Total Challan Quantity"/>
                             <field name="diff" on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)" sum="Total Diff"/>
@@ -594,6 +595,7 @@
                                     <field name="location_dest_id" groups="stock.group_locations" invisible="1"/>
                                     <field name="product_uom" invisible="1"/>
                                     <field name="product_uos" invisible="1"/>
+                                    <field name="diff_amount" invisible="1"/>
                                     <field name="new_rate"  on_change="onchange_rate(product_qty,new_rate, diff,less_diff)"/>
                                     <field name="rate" invisible="1"/>
                                     <field name="product_qty" on_change="onchange_quantity(product_id, product_qty, product_uom, product_uos)"/>

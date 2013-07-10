@@ -114,7 +114,8 @@ class purchase_order_line(osv.Model):
         val1 = amount_untaxed = packing_and_forwading = total_discount = freight = excise_tax = vat_tax = other_tax = service_tax = other_charge = total_qty = 0.0
         res = dict([(id, {'price_subtotal': 0.0, 'po_excise':0.0,'po_st':0.0,'po_cess':0.0,
                           'line_advance':0.0, 'amount_total': 0.0, 'packing_amount':0.0, 
-                          'insurance_amount':0.0, 'freight_amount':0.0, 'new_price':0.0}) for id in ids])
+                          'insurance_amount':0.0, 'freight_amount':0.0, 'new_price':0.0,
+                          'vat_amount':0.0,'vat_unit':0.0,'packing_unit':0.0,'insurance_unit':0.0,'freight_unit':0.0}) for id in ids])
         for line in self.browse(cr, uid, ids, context=context):
             for old_line in line.order_id.order_line:
                 total_qty += old_line.product_qty
@@ -134,67 +135,93 @@ class purchase_order_line(osv.Model):
             for tax in taxes['taxes']:
                 if not tax.get('parent_tax', False):
                     res[line.id]['po_excise'] += tax.get('amount', 0)
+                    res[line.id]['vat_amount']= tax.get('amount',0)
+                    res[line.id]['vat_unit']= res[line.id]['vat_amount'] / line.product_qty
                 elif tax.get('price_unit') in child:
                     res[line.id]['po_st'] = tax.get('amount', 0)
                 else:
                     res[line.id]['po_cess'] = tax.get('amount', 0)
                     child.append(tax.get('price_unit'))
+            if res[line.id]['po_cess'] != 0.00 and res[line.id]['vat_amount'] == res[line.id]['po_excise']:
+                res[line.id]['vat_amount']= 0.00
+                res[line.id]['vat_unit'] = 0.00
             res[line.id]['amount_total'] = res[line.id]['price_subtotal'] + res[line.id]['po_cess'] + res[line.id]['po_excise'] + res[line.id]['po_st']
+            amount_untaxed = res[line.id]['amount_total']
             if line.order_id.packing_type == 'per_unit':
                 res[line.id]['packing_amount'] = packing_and_forwading  - line.order_id.commission
+                res[line.id]['packing_unit'] = res[line.id]['packing_amount'] / line.product_qty
             elif line.order_id.packing_type == 'percentage':
                 res[line.id]['packing_amount'] = ((line.order_id.package_and_forwording * val1) / 100 -line.order_id.commission)
+                res[line.id]['packing_unit'] = res[line.id]['packing_amount'] / line.product_qty
             elif line.order_id.packing_type == 'include':
                 res[line.id]['packing_amount'] = line.order_id.package_and_forwording  - line.order_id.commission
+                res[line.id]['packing_unit'] = res[line.id]['packing_amount'] / line.product_qty
             else:
                 res[line.id]['packing_amount'] = (line.order_id.package_and_forwording  - line.order_id.commission) / total_qty * line.product_qty
+                res[line.id]['packing_unit'] = res[line.id]['packing_amount'] / line.product_qty
+            
             if line.order_id.insurance_type == line.order_id.freight_type:
                 if line.order_id.insurance_type == 'fix':
                     res[line.id]['insurance_amount'] = line.order_id.insurance / total_qty * line.product_qty
                     res[line.id]['freight_amount'] = line.order_id.freight / total_qty * line.product_qty
+                    res[line.id]['insurance_unit'] = res[line.id]['insurance_amount'] / line.product_qty
+                    res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
                     amount_untaxed += res[line.id]['insurance_amount'] + res[line.id]['freight_amount']
-                else:
-                    if line.order_id.insurance_type == 'fix':
-                        res[line.id]['insurance_amount'] = line.order_id.insurance / total_qty * line.product_qty
-                        amount_untaxed += res[line.id]['insurance_amount']
-                        if line.order_id.freight_type == 'per_unit':
-                            res[line.id]['freight_amount'] = freight
-                            amount_untaxed += res[line.id]['freight_amount']
-                        elif line.order_id.freight != 0:
-                            res[line.id]['freight_amount'] = ((amount_untaxed * line.order_id.freight) / 100) / total_qty * line.product_qty
-                            amount_untaxed += res[line.id]['freight_amount']
-                    elif line.order_id.insurance_type == 'include':
-                        if line.order_id.freight_type == 'percentage':
-                            res[line.id]['freight_amount'] = ((amount_untaxed * line.order_id.freight) / 100)
-                            amount_untaxed += res[line.id]['freight_amount']
-                        elif line.order_id.freight_type == 'per_unit':
-                            res[line.id]['freight_amount'] = freight
-                            amount_untaxed += res[line.id]['freight_amount']
-                        else:
-                            res[line.id]['freight_amount'] = line.order_id.freight / total_qty * line.product_qty
-                            amount_untaxed += res[line.id]['freight_amount']
-                    elif line.order_id.freight_type == 'include' or line.order_id.freight_type == 'extra':
-                        if line.order_id.insurance_type == 'percentage':
-                            res[line.id]['insurance_amount'] = ((amount_untaxed * line.order_id.insurance) / 100)
-                            amount_untaxed += res[line.id]['insurance_amount']
-                        else:
-                            res[line.id]['insurance_amount'] = line.order_id.insurance / total_qty * line.product_qty
-                            amount_untaxed += res[line.id]['insurance_amount']
-                    elif line.order_id.insurance_type == 'percentage' and line.order_id.insurance != 0:
-                        res[line.id]['insurance_amount'] = ((amount_untaxed * line.order_id.insurance) / 100)
-                        amount_untaxed += res[line.id]['insurance_amount']
-                        if line.order_id.freight_type == 'per_unit':
-                            res[line.id]['freight_amount'] = freight
-                            amount_untaxed += res[line.id]['freight_amount']
-                        else:
-                            res[line.id]['freight_amount'] = line.order_id.freight / total_qty * line.product_qty
-                            amount_untaxed += res[line.id]['freight_amount']
-                    else:
-                        if line.order_id.insurance != 0:
-                            res[line.id]['insurance_amount'] = ((amount_untaxed * line.order_id.insurance) / 100) / total_qty * line.product_qty
-                            amount_untaxed += res[line.id]['insurance_amount']
-                        res[line.id]['freight_amount'] = line.order_id.freight / total_qty * line.product_qty
+            else:
+                if line.order_id.insurance_type == 'fix':
+                    res[line.id]['insurance_amount'] = line.order_id.insurance / total_qty * line.product_qty
+                    res[line.id]['insurance_unit'] = res[line.id]['insurance_amount'] / line.product_qty
+                    amount_untaxed += res[line.id]['insurance_amount']
+                    if line.order_id.freight_type == 'per_unit':
+                        res[line.id]['freight_amount'] = freight
+                        res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
                         amount_untaxed += res[line.id]['freight_amount']
+                    elif line.order_id.freight != 0:
+                        res[line.id]['freight_amount'] = ((amount_untaxed * line.order_id.freight) / 100) / total_qty * line.product_qty 
+                        res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
+                        amount_untaxed += res[line.id]['freight_amount']
+                elif line.order_id.insurance_type == 'include':
+                    if line.order_id.freight_type == 'percentage':
+                        res[line.id]['freight_amount'] = ((amount_untaxed * line.order_id.freight) / 100)
+                        res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
+                        amount_untaxed += res[line.id]['freight_amount']
+                    elif line.order_id.freight_type == 'per_unit':
+                        res[line.id]['freight_amount'] = freight
+                        res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
+                        amount_untaxed += res[line.id]['freight_amount']
+                    else:
+                        res[line.id]['freight_amount'] = line.order_id.freight / total_qty * line.product_qty
+                        res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
+                        amount_untaxed += res[line.id]['freight_amount']
+                elif line.order_id.freight_type == 'include' or line.order_id.freight_type == 'extra':
+                    if line.order_id.insurance_type == 'percentage':
+                        res[line.id]['insurance_amount'] = ((amount_untaxed * line.order_id.insurance) / 100)
+                        res[line.id]['insurance_unit'] = res[line.id]['insurance_amount'] / line.product_qty
+                        amount_untaxed += res[line.id]['insurance_amount']
+                    else:
+                        res[line.id]['insurance_amount'] = line.order_id.insurance / total_qty * line.product_qty
+                        res[line.id]['insurance_unit'] = res[line.id]['insurance_amount'] / line.product_qty
+                        amount_untaxed += res[line.id]['insurance_amount']
+                elif line.order_id.insurance_type == 'percentage' and line.order_id.insurance != 0:
+                    res[line.id]['insurance_amount'] = ((amount_untaxed * line.order_id.insurance) / 100)
+                    res[line.id]['insurance_unit'] = res[line.id]['insurance_amount'] / line.product_qty
+                    amount_untaxed += res[line.id]['insurance_amount']
+                    if line.order_id.freight_type == 'per_unit':
+                        res[line.id]['freight_amount'] = freight
+                        res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
+                        amount_untaxed += res[line.id]['freight_amount']
+                    else:
+                        res[line.id]['freight_amount'] = line.order_id.freight / total_qty * line.product_qty
+                        res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
+                        amount_untaxed += res[line.id]['freight_amount']
+                else:
+                    if line.order_id.insurance != 0:
+                        res[line.id]['insurance_amount'] = ((amount_untaxed * line.order_id.insurance) / 100) / total_qty * line.product_qty
+                        res[line.id]['insurance_unit'] = res[line.id]['insurance_amount'] / line.product_qty
+                        amount_untaxed += res[line.id]['insurance_amount']
+                    res[line.id]['freight_amount'] = line.order_id.freight / total_qty * line.product_qty
+                    res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
+                    amount_untaxed += res[line.id]['freight_amount']
                 
                 total_discount = line.order_id.other_discount
                 if line.order_id.discount_percentage != 0:
@@ -304,6 +331,11 @@ class purchase_order_line(osv.Model):
         'insurance_amount': fields.function(_amount_line, multi="tax",string='Insurance Amount', digits_compute= dp.get_precision('Account'),store=True),
         'freight_amount': fields.function(_amount_line, multi="tax",string='Freight Amount', digits_compute= dp.get_precision('Account'),store=True),
         'new_price': fields.function(_amount_line, multi="tax",string='Price (include all tax)', digits_compute= dp.get_precision('Account'),store=True),
+        'vat_amount': fields.function(_amount_line, multi="tax",string='Total VAT Amount', digits_compute= dp.get_precision('Account'),store=True),
+        'vat_unit': fields.function(_amount_line, multi="tax",string='VAT Unit', digits_compute= dp.get_precision('Account'),store=True),
+        'packing_unit': fields.function(_amount_line, multi="tax",string='Packing Unit', digits_compute= dp.get_precision('Account'),store=True),
+        'insurance_unit': fields.function(_amount_line, multi="tax",string='Insurance Unit', digits_compute= dp.get_precision('Account'),store=True),
+        'freight_unit': fields.function(_amount_line, multi="tax",string='Freight Unit', digits_compute= dp.get_precision('Account'),store=True),
       }
 purchase_order_line()
 
@@ -921,9 +953,17 @@ class stock_picking(osv.Model):
             receipt_obj.create(cr, uid, vals, context=context)
         else:
             for pick in self.browse(cr, uid, ids, context=context):
-                if pick.state != 'done' and pick.backorder_id:
+                if context.get('default_type') == 'receipt':
                     for move in pick.move_lines:
-                        stock_move.write(cr, uid, [move.id], {'challan_qty':0.0})
+                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0,0,0, context)
+                        stock_move.write(cr, uid, [move.id], dict['value'])
+                    if res[pick.id]['delivered_picking']:
+                        for new_pick in self.browse(cr, uid, [res[pick.id]['delivered_picking']], context=context):
+                            for move in new_pick.move_lines:
+                                dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0,0,0, context)
+                                stock_move.write(cr, uid, [move.id], dict['value'])
+                        receipt_obj.write(cr,uid,[res[pick.id]['delivered_picking']], {})
+                    receipt_obj.write(cr,uid,ids, {})
         for picking in self.browse(cr, uid, ids, context=context):
             seq_name = 'stock.picking'
             if picking.type == 'in':
@@ -981,7 +1021,7 @@ class stock_picking_receipt(osv.Model):
             import_duty = 0.0
             for line in receipt.move_lines:
                 po_dict = self.purchase_amount(cr, uid, receipt.purchase_id.id, line.product_id.id, context=context)
-                diff += line.diff
+                diff += line.diff_amount
                 total += po_dict['new_price'] * line.product_qty
                 import_duty += line.import_duty
             result[receipt.id]['total_diff'] = diff
@@ -1030,6 +1070,7 @@ class stock_picking_receipt(osv.Model):
         'type': 'receipt',
         'invoice_state': '2binvoiced',
     }
+    
 
 stock_picking_receipt()
 #----------------------------------------------------------
@@ -1119,6 +1160,7 @@ class stock_move(osv.osv):
             'new_rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is calculate after adding all tax"),
             'diff': fields.float('Add (%)', digits_compute= dp.get_precision('Account'), help="Amount to be add"),
             'less_diff': fields.float('Less (%)', digits_compute= dp.get_precision('Account'), help="Amount to be less"),
+            'diff_amount': fields.float('Diff amount',digits_compute= dp.get_precision('Account'), help="Difference Amount"),
             'amount': fields.float('Amount.', digits_compute= dp.get_precision('Account'), help="Total Amount"),
             'bill_no': fields.integer('Bill No'),
             'bill_date': fields.date('Bill Date'),
@@ -1147,7 +1189,11 @@ class stock_move(osv.osv):
             # required=False because we change product on_change in po line so it come black in some case
             'name': fields.char('Description', select=True),
             'challan_qty': fields.float('Challan Quantity', digits_compute=dp.get_precision('Product Unit of Measure'),states={'done': [('readonly', True)]},help="This Quntity is used for backorder and actual received quntity"),
-            'qty_available': fields.function(_get_stock, string="Stock", type="float")
+            'qty_available': fields.function(_get_stock, string="Stock", type="float"),
+            'vat_unit': fields.float('VAT Unit', digits_compute= dp.get_precision('Account')),
+            'packing_unit': fields.float('Packing Unit', digits_compute= dp.get_precision('Account')),
+            'insurance_unit': fields.float('Insurance Unit', digits_compute= dp.get_precision('Account')),
+            'freight_unit': fields.float('Freight Unit', digits_compute= dp.get_precision('Account')),
                 }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, add_diff, less_diff,rate, import_duty, tax_cal, context=None):
@@ -1178,7 +1224,8 @@ class stock_move(osv.osv):
 #           tax = tax_obj.browse(cr, uid, tax, context=context)
 
         if not tax:
-            return {'value': {'amount': amount + diff_amount,'rate': line.new_price}}
+            return {'value': {'amount': amount + diff_amount,'rate': line.new_price,'new_rate': rate if rate != 0.0 else line.new_price,'diff_amount': diff_amount,'vat_unit': line.vat_unit,
+                              'insurance_unit': line.insurance_unit,'freight_unit':line.freight_unit,'packing_unit':line.packing_unit}}
 
         base_tax = tax.amount
         total_tax = base_tax
@@ -1208,8 +1255,10 @@ class stock_move(osv.osv):
             if ctax.tax_type == 'hedu_cess':
                 new_tax.update({'high_cess':cess, 'c_high_cess':cess})
         if tax_cal == 0:
-            new_tax.update({'amount': amount + diff_amount,'rate': line.price_unit, 'new_rate': rate if rate != 0.0 else line.new_price})
-        new_tax.update({'amount': amount + diff_amount,'rate': line.price_unit, 'new_rate': rate if rate != 0.0 else line.new_price})
+            new_tax.update({'amount': amount + diff_amount,'rate': line.price_unit, 'new_rate': rate if rate != 0.0 else line.new_price,'diff_amount': diff_amount,'vat_unit': line.vat_unit,
+                            'insurance_unit': line.insurance_unit,'freight_unit':line.freight_unit,'packing_unit':line.packing_unit})
+        new_tax.update({'amount': amount + diff_amount,'rate': line.price_unit, 'new_rate': rate if rate != 0.0 else line.new_price,'diff_amount': diff_amount,'vat_unit': line.vat_unit,
+                        'insurance_unit': line.insurance_unit,'freight_unit':line.freight_unit,'packing_unit':line.packing_unit})
         return {'value': new_tax}
     
     def onchange_rate(self,cr, uid, ids, product_qty, price, add_diff, less_diff, context=None):

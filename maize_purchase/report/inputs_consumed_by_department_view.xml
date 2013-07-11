@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Inputs Consumed by Department Report Tree View -->
+        <record id="view_inputs_consumed_by_department_report" model="ir.ui.view">
+            <field eval="1" name="priority"/>
+            <field name="name">inputs.consumed.by.department.report.tree</field>
+            <field name="model">inputs.consumed.by.department.report</field>
+            <field name="arch" type="xml">
+                <tree string="Inputs Consumed by Department" create="false" delete="false">
+                	<field name="date"/> 
+                    <field name="product_id"/>
+                    <field name="department_id"/>
+                    <field name="product_uos_qty"/>
+                    <field name="excisable_value"/>
+                    <field name="non_excisable_value"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Inputs Consumed by Department Report Action -->
+        <record id="action_inputs_consumed_by_department_report" model="ir.actions.act_window">
+            <field name="name">Inputs Consumed by Department</field>
+            <field name="res_model">inputs.consumed.by.department.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="help">This report performs analysis for inputs consumed by department</field>
+        </record>
+
+        <!-- Indent Purchase Report Menus -->
+        <menuitem action="action_department_excise_percentage" id="menu_inputs_consumed_by_department_report" parent="stock.next_id_61" sequence="15"/>
+
+    </data>
+</openerp>

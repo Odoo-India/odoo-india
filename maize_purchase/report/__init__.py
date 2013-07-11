@@ -27,5 +27,6 @@ import indentor_wise_indent_report
 import project_cost_report
 import product_major_group_stock
 import purchase_order_information
+import inputs_consumed_by_department
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

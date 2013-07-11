@@ -11,3 +11,4 @@ import import_issue_line_data
 import update_excise
 import stock_move_split
 import inventory_control
+import department_excise_percentage

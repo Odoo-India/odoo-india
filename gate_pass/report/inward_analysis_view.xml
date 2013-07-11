@@ -34,6 +34,11 @@
                 <field name="challan_no" invisible="context.get('challan_no',True)"/>
                 <field name="case_code" invisible="context.get('case_code',True)"/>
                 <field name="product_qty" sum="Total Quantity" invisible="not context.get('inward_view',True)"/>
+                <field name="rejected_qty" sum="Total Rejected Qty"/>
+                <field name="weighted_rate" />
+                <field name="store_value" sum="Store Amount"/>
+                <field name="repairs_value" sum="Repairs Amount"/>
+                <field name="issue_amount" sum="Total Issue Amount."/> 
                 <field name="product_qty_in" sum="Total incoming quantity" invisible="context.get('inward_view',True)"/>
                 <field name="product_qty" string="Received Qty" sum="Total Received" invisible="context.get('inward_view',True)"/>
                 <field name="bill_no" invisible="context.get('bill_no',True)"/>

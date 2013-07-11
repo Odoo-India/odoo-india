@@ -50,7 +50,7 @@ class report_last_receipt_stock_move(osv.osv):
                 receipt_date = stock_move_obj.browse(cr, uid, recipt_ids[-1], context=context).date
                 receipt_date = datetime.strptime(receipt_date,DEFAULT_SERVER_DATETIME_FORMAT)
                 total_months = 12 * (current_date.year-receipt_date.year) + (current_date.month-receipt_date.month)
-                total_months = (total_months - 1 if current_date.day < receipt_date.day else total_month)       
+                total_months = (total_months - 1 if current_date.day < receipt_date.day else total_months)       
             if last_issue_ids:
                 last_isuue_date = stock_move_obj.browse(cr, uid, last_issue_ids[-1], context=context).date
             res[order.id]['last_receipt_date']=str(receipt_date)

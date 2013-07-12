@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_project_launchpad_report" model="ir.ui.view">
+            <field name="name">Project Launchpad Report</field>
+            <field name="model">project.launchpad.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Project Branch">
+                    <field name="project_id" colspan="4"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="Experimental"/>
+                    <field name="Development"/>
+                    <field name="Mature"/>
+                    <field name="Merged"/>
+                    <field name="Abandoned"/>
+                    <separator colspan="4" string=""/>
+                    <button icon='gtk-cancel' special="cancel"
+                        string="Cancel" colspan="2"/>
+                    <button name="print_report" string="Print" colspan="2"
+                        type="object" icon="gtk-ok" />
+                </form>
+            </field>
+        </record>
+
+    <record id="action_project_branch" model="ir.actions.act_window">
+        <field name="name">Project Branch</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.launchpad.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_project_launchpad_report"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="lp_branch_report" name="Launchpad" parent="base.menu_project_report" sequence="50"/>
+    <menuitem name="Project Branch" action="action_project_branch" id="menu_automatic_reconcile" parent="lp_branch_report"/>
+
+    </data>
+</openerp>

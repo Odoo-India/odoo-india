@@ -112,11 +112,11 @@ class purchase_order_line(osv.Model):
         tax_obj = self.pool.get('account.tax')
         child = []
         val1 = amount_untaxed = packing_and_forwading = total_discount = freight = excise_tax = vat_tax = other_tax = service_tax = other_charge = total_qty = 0.0
-        res = dict([(id, {'price_subtotal': 0.0, 'po_excise':0.0,'po_st':0.0,'po_cess':0.0,
+        for line in self.browse(cr, uid, ids, context=context):
+            res [line.id] = {'price_subtotal': 0.0, 'po_excise':0.0,'po_st':0.0,'po_cess':0.0,
                           'line_advance':0.0, 'amount_total': 0.0, 'packing_amount':0.0, 
                           'insurance_amount':0.0, 'freight_amount':0.0, 'new_price':0.0,
-                          'vat_amount':0.0,'vat_unit':0.0,'packing_unit':0.0,'insurance_unit':0.0,'freight_unit':0.0}) for id in ids])
-        for line in self.browse(cr, uid, ids, context=context):
+                          'vat_amount':0.0,'vat_unit':0.0,'packing_unit':0.0,'insurance_unit':0.0,'freight_unit':0.0}
             for old_line in line.order_id.order_line:
                 total_qty += old_line.product_qty
             if line.order_id.packing_type == 'per_unit':
@@ -135,18 +135,15 @@ class purchase_order_line(osv.Model):
             for tax in taxes['taxes']:
                 if not tax.get('parent_tax', False):
                     res[line.id]['po_excise'] += tax.get('amount', 0)
-                    res[line.id]['vat_amount']= tax.get('amount',0)
-                    res[line.id]['vat_unit']= res[line.id]['vat_amount'] / line.product_qty
                 elif tax.get('price_unit') in child:
                     res[line.id]['po_st'] = tax.get('amount', 0)
                 else:
                     res[line.id]['po_cess'] = tax.get('amount', 0)
                     child.append(tax.get('price_unit'))
-            if res[line.id]['po_cess'] != 0.00 and res[line.id]['vat_amount'] == res[line.id]['po_excise']:
-                res[line.id]['vat_amount']= 0.00
-                res[line.id]['vat_unit'] = 0.00
-            res[line.id]['amount_total'] = res[line.id]['price_subtotal'] + res[line.id]['po_cess'] + res[line.id]['po_excise'] + res[line.id]['po_st']
-            amount_untaxed = res[line.id]['amount_total']
+            amount_untaxed += res[line.id]['price_subtotal'] + res[line.id]['po_cess'] + res[line.id]['po_excise'] + res[line.id]['po_st']
+            for vat in tax_obj.compute_all(cr, uid, line.order_id.vat_ids, line.order_id.excise_total, 1, line.product_id, line.order_id.partner_id)['taxes']:
+                res[line.id]['vat_amount'] += vat.get('amount',0) / total_qty * line.product_qty
+            res[line.id]['vat_unit']= res[line.id]['vat_amount'] / line.product_qty
             if line.order_id.packing_type == 'per_unit':
                 res[line.id]['packing_amount'] = packing_and_forwading  - line.order_id.commission
                 res[line.id]['packing_unit'] = res[line.id]['packing_amount'] / line.product_qty
@@ -223,13 +220,14 @@ class purchase_order_line(osv.Model):
                     res[line.id]['freight_unit'] = res[line.id]['freight_amount'] / line.product_qty
                     amount_untaxed += res[line.id]['freight_amount']
                 
-                total_discount = line.order_id.other_discount
-                if line.order_id.discount_percentage != 0:
-                    total_discount += ((amount_untaxed + res[line.id]['packing_amount']) * line.order_id.discount_percentage)/ 100
-                res[line.id]['amount_total'] += amount_untaxed + res[line.id]['packing_amount'] - total_discount
-                for other in self.pool.get('account.tax').compute_all(cr, uid, line.order_id.other_tax_ids, 1, res[line.id]['amount_total'], line.product_id, line.order_id.partner_id)['taxes']:
-                    other_tax += other.get('amount',0.0)
-                res[line.id]['amount_total'] += other_tax
+            total_discount = line.order_id.other_discount
+            if line.order_id.discount_percentage != 0:
+                total_discount += ((amount_untaxed + res[line.id]['packing_amount']) * line.order_id.discount_percentage)/ 100
+            res[line.id]['amount_total'] += amount_untaxed + res[line.id]['packing_amount'] - total_discount
+            print "\n=-=-=- kdjsjjdj =-=-=-",amount_untaxed, res[line.id]['freight_amount'], res[line.id]['amount_total']
+            for other in self.pool.get('account.tax').compute_all(cr, uid, line.order_id.other_tax_ids, 1, res[line.id]['amount_total'], line.product_id, line.order_id.partner_id)['taxes']:
+                other_tax += other.get('amount',0.0)
+            res[line.id]['amount_total'] += other_tax
             res [line.id]['new_price'] = res[line.id]['amount_total'] / line.product_qty
         return res
     
@@ -303,7 +301,11 @@ class purchase_order_line(osv.Model):
 
     _columns = {
         'discount': fields.float('Discount (%)'),
-        'price_subtotal': fields.function(_amount_line, multi="tax", string='Subtotal', digits_compute= dp.get_precision('Account'),store=True),
+        'price_subtotal': fields.function(_amount_line, multi="tax", string='Subtotal', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
         'person': fields.integer('Person',help="Number of Person work for this task"),
         'contract': fields.related('order_id', 'contract', type='boolean', relation='purchase.order', string='Contract', store=True, readonly=True),
         'po_name': fields.related('order_id', 'name', type='char', size=64, relation='purchase.order', string='PO No', store=True, readonly=True),
@@ -318,24 +320,80 @@ class purchase_order_line(osv.Model):
         'po_payment_term_id': fields.related('order_id', 'payment_term_id', type="many2one", relation='account.payment.term', string="Payment Term", store=True),
         'po_delivery': fields.related('order_id', 'delivey', type="many2one", relation="purchase.delivery",string="Mill Delivery/Ex-Godown",store=True),
         'po_indentor_id': fields.related('order_id', 'indentor_id', type="many2one", relation="res.users", string="Indentor",store=True),
-        'po_excise': fields.function(_amount_line, multi="tax", string='Excise', digits_compute= dp.get_precision('Account'),store=True),
-        'po_cess': fields.function(_amount_line, multi="tax",string='Cess', digits_compute= dp.get_precision('Account'),store=True),
-        'po_st': fields.function(_amount_line, multi="tax",string='ST', digits_compute= dp.get_precision('Account'),store=True),
-        'line_advance': fields.function(_amount_line, multi="tax", string="Advance", digits_compute= dp.get_precision('Account'),store=True),
+        'po_excise': fields.function(_amount_line, multi="tax", string='Excise', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'po_cess': fields.function(_amount_line, multi="tax",string='Cess', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'po_st': fields.function(_amount_line, multi="tax",string='ST', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'line_advance': fields.function(_amount_line, multi="tax", string="Advance", digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
         'received_amount': fields.function(_received_amount, multi="amount", string="Received", digits_compute= dp.get_precision('Account'),store=True),
         'pending_amount': fields.function(_received_amount, multi="amount", string="Pending", digits_compute= dp.get_precision('Account'),store=True),
         'last_month_consumption': fields.function(_last_consumption, string="Last Month Consumption", digits_compute= dp.get_precision('Account'),store=True),
         'name': fields.text('Description'),
-        'amount_total': fields.function(_amount_line, multi="tax",string='Total Amount', digits_compute= dp.get_precision('Account'),store = True),
-        'packing_amount': fields.function(_amount_line, multi="tax",string='Packing Amount', digits_compute= dp.get_precision('Account'),store = True),
-        'insurance_amount': fields.function(_amount_line, multi="tax",string='Insurance Amount', digits_compute= dp.get_precision('Account'),store=True),
-        'freight_amount': fields.function(_amount_line, multi="tax",string='Freight Amount', digits_compute= dp.get_precision('Account'),store=True),
-        'new_price': fields.function(_amount_line, multi="tax",string='Price (include all tax)', digits_compute= dp.get_precision('Account'),store=True),
-        'vat_amount': fields.function(_amount_line, multi="tax",string='Total VAT Amount', digits_compute= dp.get_precision('Account'),store=True),
-        'vat_unit': fields.function(_amount_line, multi="tax",string='VAT Unit', digits_compute= dp.get_precision('Account'),store=True),
-        'packing_unit': fields.function(_amount_line, multi="tax",string='Packing Unit', digits_compute= dp.get_precision('Account'),store=True),
-        'insurance_unit': fields.function(_amount_line, multi="tax",string='Insurance Unit', digits_compute= dp.get_precision('Account'),store=True),
-        'freight_unit': fields.function(_amount_line, multi="tax",string='Freight Unit', digits_compute= dp.get_precision('Account'),store=True),
+        'amount_total': fields.function(_amount_line, multi="tax",string='Total Amount', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'packing_amount': fields.function(_amount_line, multi="tax",string='Packing Amount', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'insurance_amount': fields.function(_amount_line, multi="tax",string='Insurance Amount', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'freight_amount': fields.function(_amount_line, multi="tax",string='Freight Amount', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'new_price': fields.function(_amount_line, multi="tax",string='Price (include all tax)', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'vat_amount': fields.function(_amount_line, multi="tax",string='Total VAT Amount', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'vat_unit': fields.function(_amount_line, multi="tax",string='VAT Unit', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'packing_unit': fields.function(_amount_line, multi="tax",string='Packing Unit', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'insurance_unit': fields.function(_amount_line, multi="tax",string='Insurance Unit', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
+        'freight_unit': fields.function(_amount_line, multi="tax",string='Freight Unit', digits_compute= dp.get_precision('Account'),
+            store={
+                'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
+                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
+            }),
       }
 purchase_order_line()
 

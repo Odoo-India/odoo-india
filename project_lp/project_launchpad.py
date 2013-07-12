@@ -84,7 +84,7 @@ LP_API_LINK = "https://api.launchpad.net/1.0/"
 _logger = logging.getLogger(__name__)
 
 def get_launchpad():
-    credentials = Credentials("OpenERP India")
+    credentials = Credentials("OpenERP")
     credentials.load(file('launchpd-access.txt', 'r'))
     launchpad = Launchpad(credentials, None, None, service_root="production", cache=CACHE_PATH)
     return launchpad

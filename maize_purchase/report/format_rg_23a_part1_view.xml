@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Format RG 23 A Part 1 Report Tree View -->
+        <record id="view_format_rg_report" model="ir.ui.view">
+            <field eval="1" name="priority"/>
+            <field name="name">format.rg.report.tree</field>
+            <field name="model">format.rg</field>
+            <field name="arch" type="xml">
+                <tree string="Format RG 23 A Part 1" create="false" delete="false">
+                	<field name="date"/> 
+                    <field name="department_id"/>
+                    <field name="product_qty"/>
+                    <field name="product_uom_id"/>
+                    <field name="partner_id"/>
+                    <field name="city"/>
+                    <field name="product_qty_1"/>
+                    <field name="product_qty_2"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Format RG 23 A Part 1 Report Action -->
+        <record id="action_format_rg_report" model="ir.actions.act_window">
+            <field name="name">Format RG 23 A Part 1</field>
+            <field name="res_model">format.rg</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="help">This report performs analysis for Format RG 23 A Part 1</field>
+        </record>
+
+        <!-- Format RG 23 A Part 1 Report Menu -->
+        <menuitem action="action_format_rg_report" id="menu_format_rg_report" parent="stock.next_id_61" sequence="95"/>
+
+    </data>
+</openerp>

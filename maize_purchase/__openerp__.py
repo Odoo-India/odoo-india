@@ -61,7 +61,8 @@ This module inherits the base product module which maintains some product histor
         'report/project_cost_report_view.xml',
         'report/product_major_group_stock_view.xml',
         'report/purchase_order_information_view.xml',
-        'report/inputs_consumed_by_department_view.xml'
+        'report/inputs_consumed_by_department_view.xml',
+        'report/format_rg_23a_part1_view.xml'
     ],
     'update_xml' : [],
 

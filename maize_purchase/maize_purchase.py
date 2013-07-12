@@ -224,7 +224,6 @@ class purchase_order_line(osv.Model):
             if line.order_id.discount_percentage != 0:
                 total_discount += ((amount_untaxed + res[line.id]['packing_amount']) * line.order_id.discount_percentage)/ 100
             res[line.id]['amount_total'] += amount_untaxed + res[line.id]['packing_amount'] - total_discount
-            print "\n=-=-=- kdjsjjdj =-=-=-",amount_untaxed, res[line.id]['freight_amount'], res[line.id]['amount_total']
             for other in self.pool.get('account.tax').compute_all(cr, uid, line.order_id.other_tax_ids, 1, res[line.id]['amount_total'], line.product_id, line.order_id.partner_id)['taxes']:
                 other_tax += other.get('amount',0.0)
             res[line.id]['amount_total'] += other_tax

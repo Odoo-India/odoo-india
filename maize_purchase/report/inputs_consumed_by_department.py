@@ -39,10 +39,32 @@ class inputs_consumed_by_department_report(osv.osv):
                        'non_excisable_value': 0.0,
                       }
                     excise_percent = obj.browse(cr, uid, active_id, context=context).excise_percentage
+                    
                     product_uos_qty = self.browse(cr, uid, id, context=context).product_uos_qty
                     excise = product_uos_qty * (excise_percent/100)
                     res[id]['excisable_value'] = excise
                     res[id]['non_excisable_value'] = product_uos_qty - excise
+                    
+                    excise_calc = self.browse(cr, uid, id, context=context).excise
+                    claimed_excise = excise_calc * (excise_percent/100)
+                    res[id]['claimed_excise'] = claimed_excise
+                    res[id]['un_claimed_excise'] = excise_calc - claimed_excise
+                    
+                    cess_calc = self.browse(cr, uid, id, context=context).cess
+                    claimed_cess = cess_calc * (excise_percent/100)
+                    res[id]['claimed_cess'] = claimed_cess
+                    res[id]['un_claimed_cess'] = cess_calc - claimed_cess
+                    
+                    higher_education_cess_calc = self.browse(cr, uid, id, context=context).higher_education_cess
+                    claimed_higher_education_cess = higher_education_cess_calc * (excise_percent/100)
+                    res[id]['claimed_higher_education_cess'] = claimed_higher_education_cess
+                    res[id]['un_claimed_higher_education_cess'] = higher_education_cess_calc - claimed_higher_education_cess
+                    
+                    import_duty_calc = self.browse(cr, uid, id, context=context).import_duty
+                    claimed_import_duty = import_duty_calc * (excise_percent/100)
+                    res[id]['claimed_import_duty'] = claimed_import_duty
+                    res[id]['un_claimed_import_duty'] = import_duty_calc - claimed_import_duty
+                    
             return res
     
     _columns = {
@@ -52,6 +74,18 @@ class inputs_consumed_by_department_report(osv.osv):
         'product_uos_qty': fields.float('Total Quantity Consumed'),
         'excisable_value': fields.function(calc_excise, string='For Excisable Goods', type='float', multi='sums'),
         'non_excisable_value': fields.function(calc_excise, string='For Non Excisable Goods', type='float', multi='sums'),
+        'excise': fields.float('Total Excise'),
+        'cess': fields.float('Cess'),
+        'higher_education_cess': fields.float('Higher Education Cess'),
+        'import_duty': fields.float('Import Duty'),
+        'claimed_excise': fields.function(calc_excise, string='Claimed Excise', type='float', multi='sums'),
+        'claimed_cess': fields.function(calc_excise, string='Claimed Cess', type='float', multi='sums'),
+        'claimed_higher_education_cess': fields.function(calc_excise, string='Claimed Higher Education Cess', type='float', multi='sums'),
+        'claimed_import_duty': fields.function(calc_excise, string='Claimed Import Duty', type='float', multi='sums'),
+        'un_claimed_excise': fields.function(calc_excise, string='Unclaimed Excise', type='float', multi='sums'),
+        'un_claimed_cess': fields.function(calc_excise, string='Unclaimed Cess', type='float', multi='sums'),
+        'un_claimed_higher_education_cess': fields.function(calc_excise, string='Unclaimed Higher Education Cess', type='float', multi='sums'),
+        'un_claimed_import_duty': fields.function(calc_excise, string='Unclaimed Import Duty', type='float', multi='sums'),
     }
     
     def init(self, cr):
@@ -64,7 +98,17 @@ class inputs_consumed_by_department_report(osv.osv):
                        sm.product_id as product_id, 
                        sm.product_uos_qty as product_uos_qty,
                        sm.product_uos_qty as excisable_value,
-                       sm.product_uos_qty as non_excisable_value
+                       sm.product_uos_qty as non_excisable_value,
+                       sm.excies as excise,
+                       sm.c_cess as cess,
+                       sm.c_high_cess as higher_education_cess,
+                       sm.import_duty1 as import_duty,
+                       sm.excies as claimed_excise,
+                       sm.excies as un_claimed_excise,
+                       sm.c_cess as claimed_cess,
+                       sm.c_high_cess as claimed_higher_education_cess,
+                       sm.import_duty1 as claimed_import_duty
+                       
                 from stock_move sm 
                 left join indent_indent i on (sm.indent_id = i.id)
                 where sm.type = 'receipt' and sm.state = 'done'

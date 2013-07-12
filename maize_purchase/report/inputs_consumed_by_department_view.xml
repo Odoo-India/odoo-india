@@ -15,7 +15,35 @@
                     <field name="product_uos_qty"/>
                     <field name="excisable_value"/>
                     <field name="non_excisable_value"/>
+                    <field name="excise" invisible="context.get('tax_info',True)"/>
+                    <field name="claimed_excise" invisible="context.get('tax_info',True)"/>
+                    <field name="un_claimed_excise" invisible="context.get('tax_info',True)"/>
+                    <field name="cess" invisible="context.get('tax_info',True)"/>
+                    <field name="claimed_cess" invisible="context.get('tax_info',True)"/>
+                    <field name="un_claimed_cess" invisible="context.get('tax_info',True)"/>
+                    <field name="higher_education_cess" invisible="context.get('tax_info',True)"/>
+                    <field name="claimed_higher_education_cess" invisible="context.get('tax_info',True)"/>
+                    <field name="un_claimed_higher_education_cess" invisible="context.get('tax_info',True)"/>
+                    <field name="import_duty" invisible="context.get('tax_info',True)"/>
+                    <field name="claimed_import_duty" invisible="context.get('tax_info',True)"/>
+                    <field name="un_claimed_import_duty" invisible="context.get('tax_info',True)"/>
                 </tree>
+            </field>
+        </record>
+        
+        <record id="inputs_consumed_by_department_report_search" model="ir.ui.view">
+            <field name="name">inputs.consumed.by.department.report.search</field>
+            <field name="model">inputs.consumed.by.department.report</field>
+            <field name="arch" type="xml">
+                <search string="Maize Purchase Analysis">
+                    <group string="Display">
+                        <filter name="group_tax_info" string="With Tax Information" icon="terp-stock_symbol-selection" context="{'tax_info': False}"/>
+                    </group>
+                    
+                    <group expand="1" string="Group By...">
+                        <filter string="Product" name="Product" context="{'group_by':'product_id'}"/>
+                    </group>
+                </search>
             </field>
         </record>
         

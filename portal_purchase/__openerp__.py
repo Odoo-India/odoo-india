@@ -50,7 +50,7 @@ by default, you simply need to configure a Paypal account in the Accounting/Invo
         'portal_purchase_view.xml',
         'security/ir.model.access.csv',
     ],
-    'auto_install': True,
+    'auto_install': False,
     'category': 'Hidden',
 }
 

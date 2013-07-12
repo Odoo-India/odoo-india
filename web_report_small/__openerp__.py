@@ -11,5 +11,5 @@ OpenERP Web Report Small change.
     'js': ['static/src/js/*.js'],
     'css': ['static/src/css/*.css'],
     'qweb': ['static/src/xml/*.xml'],
-    'auto_install': True,
+    'auto_install': False,
 }

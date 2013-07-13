@@ -982,7 +982,6 @@ class stock_picking(osv.Model):
         receipt_obj = self.pool.get('stock.picking.receipt')
         stock_move = self.pool.get('stock.move')
         warehouse_obj = self.pool.get('stock.warehouse')
-        seq_obj = self.pool.get('ir.sequence')
         res = super(stock_picking,self).do_partial(cr, uid, ids, partial_datas, context=context)
         vals = {}
         if context.get('default_type') == 'in':
@@ -1033,6 +1032,10 @@ class stock_picking(osv.Model):
                                 stock_move.write(cr, uid, [move.id], dict['value'])
                         receipt_obj.write(cr,uid,[res[pick.id]['delivered_picking']], {})
                     receipt_obj.write(cr,uid,ids, {})
+        return res
+
+    def action_done(self, cr, uid, ids, context=None):
+        seq_obj = self.pool.get('ir.sequence')
         for picking in self.browse(cr, uid, ids, context=context):
             seq_name = 'stock.picking'
             if picking.type == 'in':
@@ -1042,8 +1045,9 @@ class stock_picking(osv.Model):
             elif picking.type == 'receipt':
                 seq_name = 'stock.picking.receipt'
             name = seq_obj.get(cr, uid, seq_name)
-            self.write(cr, uid, [picking.id], {'name': name}, context=context)
-        return res
+            self.write(cr, uid, [picking.id], {'name': name, 'state': 'done', 'date_done': time.strftime('%Y-%m-%d %H:%M:%S')}, context=context)
+        return True
+
 stock_picking()
 
 class stock_picking_receipt(osv.Model):

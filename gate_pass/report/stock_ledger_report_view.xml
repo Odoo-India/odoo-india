@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <record id="maize_report_stock_ledger_tree" model="ir.ui.view">
+        <field name="name">report.stock.ledger.tree</field>
+        <field name="model">report.stock.ledger</field>
+        <field name="arch" type="xml">
+            <tree string="Moves Analysis" create="false" delete="false">
+                <field name="product_id" invisible="context.get('product_id_view',False)"/>
+                <field name="picking_id" invisible="context.get('issue_new',False)"/>
+                <field name="date"/>
+                <field name="tr_code_id" invisible="context.get('tr_code_id_view',False)"/>
+                <field name="indent_id" invisible="context.get('indent_id_view',False)"/>
+                <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
+                <field name="po_series_id" invisible="context.get('po_series_id_view',False)"/>
+                <field name="purchase_id" invisible="context.get('purchase_id_view',False)"/>
+                <field name="partner_id" invisible="context.get('partner_id_view',False)"/>
+                <field name="receipt_qty" sum="Total Receipt Quantity"/>
+                <field name="rate"/>
+                <field name="receipt_value" sum="Total Receipt "/>
+                <field name="issue_qty" sum="Total Issue Quantity"/>
+                <field name="issue_amount" sum="Total Issue"/>
+                <field name="closing_qty" sum="Total Closing Quantity"/>
+                <field name="department_id" invisible="context.get('department_id_view',False)"/>
+                <field name="ac_code_id" invisible="context.get('ar_code_id_view',False)"/>
+                <field name="type" invisible="1"/>
+                <field name="state" />
+                <field name="id" string="No" invisible="1"/>
+           </tree>
+        </field>
+    </record>
+
+    <record id="maize_report_stock_ledger_search" model="ir.ui.view">
+        <field name="name">report.stock.ledger.search</field>
+        <field name="model">report.stock.ledger</field>
+        <field name="arch" type="xml">
+            <search string="Moves Analysis">
+                <field name="product_id" default_focus="1"/>
+                <field name="partner_id" context="{'contact_display':'partner'}"/>
+                <group expand="1" string="Group By...">
+                    <filter name="group_partner" string="Supplier" icon="terp-partner" context="{'group_by':'partner_id','partner_id_view':True}"/>
+                    <filter name="group_product" string="Product" icon="terp-accessories-archiver" context="{'group_by':'product_id','product_id_view': True}"/>
+                    <filter name="group_picking" string="No" icon="terp-accessories-archiver" context="{'group_by':'picking_id','issue_new':True}"/>
+                    <filter string="Status" name="group_state" icon="terp-stock_effects-object-colorize" context="{'group_by':'state'}"/>
+                    <filter string="Purchase Order" name="group_oreder" icon="terp-folder-orange" context="{'group_by':'purchase_id','purchase_id_view':True}"/>
+                    <filter string="Purchase Series" name="group_series" icon="terp-folder-orange" context="{'group_by':'po_series_id','po_series_id_view':True}"/>
+                    <filter string="Department" name="group_department" icon="terp-folder-orange" context="{'group_by':'department_id','department_id_view':True}"/>
+                    <filter string="TR Code" name="group_tr_code" icon="terp-folder-orange" context="{'group_by':'tr_code_id','tr_code_id_view':True}"/>
+                    <filter string="AC Code" name="group_ac_code" icon="terp-folder-orange" context="{'group_by':'ac_code_id','ac_code_id_view':True}"/>
+                    <filter string="Indent" name="group_indent" icon="terp-folder-orange" context="{'group_by':'indent_id','indent_id_view':True}"/>
+                    <filter string="Indentor" name="group_indentor" icon="terp-folder-orange" context="{'group_by':'indentor_id','indentor_id_view':True}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="maize_report_stock_ledger_action" model="ir.actions.act_window">
+        <field name="name">Stock Ledger</field>
+        <field name="res_model">report.stock.ledger</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id"  ref="maize_report_stock_ledger_search"/>
+        <field name="context">{'group_by_no_leaf':0}</field>
+        <field name="help">Stock Ledger</field>
+    </record>
+    <menuitem action="maize_report_stock_ledger_action" id="maize_report_stock_ledger" parent="stock.next_id_61" sequence="97"/>
+    
+</data>
+</openerp>

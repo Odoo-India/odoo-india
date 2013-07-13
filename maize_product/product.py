@@ -199,17 +199,17 @@ class product_product(osv.Model):
 #                res[order.id]['last_supplier_rate'] = 0.0
 #        return res
 
-    def cy_opening_qty(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = ''
-        return res
-
-    def cy_opening_value(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = ''
-        return res
+#     def cy_opening_qty(self, cr, uid, ids, field_name, arg, context=None):
+#         res = {}
+#         for order in self.browse(cr, uid, ids, context=context):
+#             res[order.id] = ''
+#         return res
+# 
+#     def cy_opening_value(self, cr, uid, ids, field_name, arg, context=None):
+#         res = {}
+#         for order in self.browse(cr, uid, ids, context=context):
+#             res[order.id] = ''
+#         return res
 
     def cy_issue_qty(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
@@ -252,8 +252,8 @@ class product_product(osv.Model):
         'last_supplier_rate': fields.float('Last Supplier Rate',readonly=True),
         'last_recieve_date': fields.datetime('Last Receieve Date', readonly=True),
         'last_issue_date': fields.datetime('Last Issue Date', readonly=True),
-        'cy_opening_qty': fields.function(cy_opening_qty, type='float', string='Current Year Opening Quantity'),
-        'cy_opening_value': fields.function(cy_opening_value, type='float', string='Current Year Opening Value'),
+        'cy_opening_qty': fields.float('Current Year Opening Quantity'),
+        'cy_opening_value': fields.float('Current Year Opening Value'),
         'last_recieve_qty': fields.float('Last Receieve Quantity', readonly=True),
         'last_recieve_value': fields.float('Last Receieve value', readonly=True),
         'last_issue_qty': fields.float('Last Issue Quantity', readonly=True),
@@ -261,9 +261,9 @@ class product_product(osv.Model):
         'cy_issue_qty': fields.function(cy_issue_qty, type='float', string='Current Year Issue Quantity'),
         'cy_issue_value': fields.function(cy_issue_value, type='float', string='Current Year Issue Value'),
         'weighted_rate': fields.function(weighted_rate, type="float",multi="report", string='Weighted Rate',store={
-            'stock.move':  (_get_product,['state'],10)},track_visibility='always'),
+        'stock.move':  (_get_product,['state'],10)},track_visibility='always'),
         'value_total': fields.function(weighted_rate, type="float",multi="report",string='Total value',store={
-            'stock.move':  (_get_product,['state'],20)},track_visibility='always'),
+        'stock.move':  (_get_product,['state'],20)},track_visibility='always'),
         'last_po_date': fields.date('Last PO Date',readonly=True),
         'last_po_series': fields.many2one('product.order.series', 'Last PO Series',readonly=True),
         'ex_chapter': fields.char('EXCHAPTER', size=30, translate=True),

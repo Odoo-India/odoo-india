@@ -30,7 +30,8 @@ class report_product_major_inventory(osv.osv):
     _columns = {
         'major_name': fields.char('Major Group', size=50),
         'categ_name': fields.char('Category', size=50),
-        'opening_balance': fields.float('Opening_balance', readonly=True),
+        'year_opening_balance': fields.float('Opening_balance', readonly=True),
+        'month_opening_balance': fields.float('Opening_balance', readonly=True),
         'receipt': fields.float('Receipt', readonly=True),
         'consumption': fields.float('Consumption', readonly=True),
         'closing_balance': fields.float('Closing_balance', readonly=True),
@@ -46,11 +47,12 @@ class report_product_major_inventory(osv.osv):
         cr.execute("""
 CREATE OR REPLACE view report_product_major_inventory AS (
     (select min(mo.product_id) as id, pm.name as major_name,c.name as categ_name,mo.state as state,
-sum(case when mo.type like 'receipt' and mo.date <= date_trunc('month', CURRENT_DATE) - interval '1 days' and mo.date >= date_trunc('month', CURRENT_DATE) - interval '1 months' and mo.product_id = p.id then mo.product_qty * po.price_unit else 0 end) as opening_balance,
-sum(case when mo.type like 'receipt' and mo.date <= date_trunc('month', CURRENT_DATE) + interval '1 months' - interval '1 days' and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0.0 end )as receipt,
-sum(case when mo.type like 'internal' and mo.date <= date_trunc('month', CURRENT_DATE) + interval '1 months' - interval '1 days' and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * t.standard_price else 0.0 end ) as consumption,
-sum((case when mo.type like 'receipt' and mo.date <= date_trunc('month', CURRENT_DATE) - interval '1 days' and mo.date >= date_trunc('month', CURRENT_DATE) - interval '1 months' and mo.product_id = p.id then mo.product_qty * po.price_unit else 0 end) + (case when mo.type like 'receipt' and mo.date <= date_trunc('month', CURRENT_DATE) + interval '1 months' - interval '1 days' and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0.0 end ) - (case when mo.type like 'internal' and mo.date <= date_trunc('month', CURRENT_DATE) + interval '1 months' - interval '1 days' and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * t.standard_price else 0.0 end )) as closing_balance,
-sum((case when mo.type like 'receipt' and mo.date <= date_trunc('month', CURRENT_DATE) + interval '1 months' - interval '1 days' and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0.0 end)-(case when mo.type like 'internal' and mo.date <= date_trunc('month', CURRENT_DATE) + interval '1 months' - interval '1 days' and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id  then mo.product_qty * t.standard_price else 0.0 end )) as variance
+sum(p.cy_opening_value) as year_opening_balance,
+sum(p.cy_opening_value + (case when mo.type like 'receipt' and mo.date < date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0 end) - (case when mo.type like 'internal' and mo.date < date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0 end)) as month_opening_balance,
+sum(case when mo.type like 'receipt' and mo.date <= date_trunc('day', CURRENT_DATE) and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0.0 end )as receipt,
+sum(case when mo.type like 'internal' and mo.date <= date_trunc('day', CURRENT_DATE) and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * t.standard_price else 0.0 end ) as consumption,
+sum(p.cy_opening_value + (case when mo.type like 'receipt' and mo.date < date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0 end) - (case when mo.type like 'internal' and mo.date < date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0 end) + (case when mo.type like 'receipt' and mo.date <= date_trunc('day', CURRENT_DATE) and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0.0 end ) - (case when mo.type like 'internal' and mo.date <= date_trunc('day', CURRENT_DATE) and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * t.standard_price else 0.0 end )) as closing_balance,
+sum(p.cy_opening_value + (case when mo.type like 'receipt' and mo.date < date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0 end) - (case when mo.type like 'internal' and mo.date < date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0 end) + (case when mo.type like 'receipt' and mo.date <= date_trunc('day', CURRENT_DATE) and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * po.price_unit else 0.0 end ) - (case when mo.type like 'internal' and mo.date <= date_trunc('day', CURRENT_DATE) and mo.date >= date_trunc('month', CURRENT_DATE) and mo.product_id = p.id then mo.product_qty * t.standard_price else 0.0 end ) - p.cy_opening_value) as variance
 from  product_major_group pm 
  LEFT JOIN product_product p on (p.major_group_id = pm.id )
  LEFT JOIN product_template t ON (p.product_tmpl_id=t.id)
@@ -66,7 +68,7 @@ from  product_major_group pm
         LEFT JOIN product_category pc ON (pt.categ_id = pc.id)
     WHERE m.name is not NULL and pc.name is not NULL
     GROUP BY
-        pt.id) and mo.state != 'cancel' and mo.type  in ('receipt','internal') group by pm.name, c.name, mo.state
+        pt.id) and mo.state = 'done' and mo.type  in ('receipt','internal') group by pm.name, c.name, mo.state
 ) );
         """)
 report_product_major_inventory()

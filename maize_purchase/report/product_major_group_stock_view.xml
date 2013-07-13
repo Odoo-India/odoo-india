@@ -15,7 +15,7 @@
                 <field name="month_opening_balance" sum="Total Op_Balance"/>
                 <field name="receipt" sum="Total Receipt"/>
                 <field name="consumption" sum="Total Consumption"/>
-                <field name="closing_balance" sum="Total Cl_Balance"/>
+                <field name="closing_balance" sum="Total Closing_Balance"/>
                 <field name="variance" sum="Total Variance"/>
                 <field name="state" invisible="1"/>
            </tree>

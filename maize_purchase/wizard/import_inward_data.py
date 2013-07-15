@@ -45,7 +45,7 @@ class import_inward_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ashvin/Desktop/script/INWARDHEADER.csv"
+        file_path = "/home/ara/Desktop/inward20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -65,7 +65,7 @@ class import_inward_data(osv.osv_memory):
                     if data["INWDATE"] == 'NULL' or data["INWDATE"] == '' or data["INWDATE"] == '00:00.0' or data["INWDATE"] == '  ':
                         value = ''
                     else:
-                        value=datetime.datetime.strptime(data["INWDATE"], '%d-%m-%y').strftime("%Y-%m-%d 00:00:00")
+                        value=datetime.datetime.strptime(data["INWDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d 00:00:00")
                     indate = value
                 gpsno = ''
                 gpyr = ''
@@ -78,10 +78,21 @@ class import_inward_data(osv.osv_memory):
                     gpsno = data["GPS_NO"]
                 if data["GPS_YEAR"]:
                     gpyr = data["GPS_YEAR"]
+                gps_ser=''
+                if data["GPS_SER"]:
+                    if data["GPS_SER"] == "REP":
+                        gps_ser = 'repair'
+                    elif data["GPS_SER"] == "PUR":
+                        gps_ser = 'purchase'
                     
+                cashcode = False    
+                if data["CASHCODE"]:
+                    if data["CASHCODE"].strip() == "Y":
+                        cashcode = True
+
                 if data["CHALLAN"]:
                     challan = data["CHALLAN"] 
-                    
+
                 if data["SUPPCODE"]:
                     partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])
                     un_define = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])
@@ -97,7 +108,7 @@ class import_inward_data(osv.osv_memory):
                     if data["LRDATE"] == 'NULL' or data["LRDATE"] == '' or data["LRDATE"] == '00:00.0' or data["LRDATE"] == '  ':
                         value1 = False
                     else:
-                        value1=datetime.datetime.strptime(data["LRDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
+                        value1=datetime.datetime.strptime(data["LRDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                     lrdate = value1
 
                 if data["FRDESTI"]:
@@ -132,14 +143,22 @@ class import_inward_data(osv.osv_memory):
                         despatch = ''
                 if data["LABNO"]:
                     labno = data["LABNO"]
+                transporter = ''
+                if data["TRANSP1"]:
+                    transporter = data["TRANSP2"]
                     
-                if data["REMARK2"]:
-                    note = data["REMARK2"]                     
+                hpressure = ''
+                if data["HYDPRESSURE"]:
+                    hpressure = data["HYDPRESSURE"]
+                if data["TRANSP2"] or data["REMARK2"]:
+                    note = data["TRANSP2"]+'\n'+data["REMARK2"]                     
 #                if data["REMARK1"] or data["REMARK2"] or data["REMARK3"] or data["REMARK4"]:
 #                    note= data["REMARK1"] +'\n'+ data["REMARK2"] +'\n'+ data["REMARK3"] +'\n'+ data["REMARK4"]
                 vals = {
                         'maize_in':name,
-                        'date':indate,
+                        'name':'IN/'+name,
+                        'case_code':cashcode,
+                        'date_done':indate,
                         'partner_id': partner,
                         'gp_year':gpyr,
                         'gp_no':gpsno,
@@ -148,11 +167,15 @@ class import_inward_data(osv.osv_memory):
                         'lr_date':lrdate,
                         'dest_from':frdesti,
                         'dest_to':todesti,
-                        'dest_to':todesti,
                         'despatch_mode':despatch,
                         'note':note,
+                        'lab_no':labno,
+                        'hpressure':hpressure,
+                        'series_id':gps_ser,
+                        'transporter':transporter,
 
                 }
+                print "valsvalsvals", vals
                 ok = inward_pool.create(cr, uid, vals, context)
             except:
                 rejected.append(data['INWARDNO'])

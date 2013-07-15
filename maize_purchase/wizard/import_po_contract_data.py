@@ -45,7 +45,7 @@ class import_po_contract_data(osv.osv_memory):
     
     def do_import_po_contract_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ron/Desktop/testfiles/po_contra.csv"
+        file_path = "/home/ara/Desktop/contract.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -60,17 +60,20 @@ class import_po_contract_data(osv.osv_memory):
         rejected =[]
         exist = []
         total_po_for_update = []
+        project_not_match = []
+        un_define= []
+        product_not_found = []
         for data in data_lines:
             try:
                 name = data["JOBNO"]
-                search_for_contract = data["JOBSERIES"].strip() + '/' +data["JOBNO"].strip()
-                search_for_indent = data["JOBSERIES"].strip()+data["JOBNO"].strip()
+                search_for_contract = data["JOBNO"].strip()
+                search_for_indent = data["JOBNO"].strip()
                 if not search_for_contract in exist:
                     exist.append(search_for_contract)
     
                     if data["JOBSERIES"]:
-                        po_series = self.pool.get('product.order.series').search(cr,uid,[('code','=',data["JOBSERIES"]),('type','=','indent')])[0]
-                        co_series = self.pool.get('product.order.series').search(cr,uid,[('code','=','CO')])[0]
+                        po_series = self.pool.get('product.order.series').search(cr,uid,[('code','=',data["JOBSERIES"].strip()),('type','=','indent')])[0]
+                       #co_series = self.pool.get('product.order.series').search(cr,uid,[('code','=','CO')])[0]
                         
                     if data["JOBDATE"]:
                         if data["JOBDATE"] == 'NULL' or data["JOBDATE"] == '' or data["JOBDATE"] == '00:00.0' or data["JOBDATE"] == '  ':
@@ -95,11 +98,10 @@ class import_po_contract_data(osv.osv_memory):
                         
                     if data["SUPPCODE"]:
                         partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','ilike',data["SUPPCODE"])])
-                        un_define = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])
-                        if partner:
+                        try:
                             partner = partner[0]
-                        else:
-                            partner = un_define[0]
+                        except:
+                            un_define.append(data["SUPPCODE"])
                     delivey = ''
                         
                     if data["DAYS"]:
@@ -134,10 +136,19 @@ class import_po_contract_data(osv.osv_memory):
                             dept = departner_name
                     department = self.pool.get('stock.location').search(cr, uid,[('code','=',dept)])[0]
 
-                    mach=data["MACHCODE"].strip()
+                    mach = False
+                    if len(data["MACHCODE"].strip()) == 1:
+                        mach = '00'+data["MACHCODE"].strip()
+                    elif len(data["MACHCODE"].strip()) == 2:
+                        mach = '0'+data["MACHCODE"].strip()
+                    elif len(data["MACHCODE"].strip()) == 3:
+                        mach = data["MACHCODE"].strip()
                     project=False
                     if mach:
-                        project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0] 
+                        try:
+                            project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0]
+                        except:
+                            project_not_match.append(mach)  
 
                     #To find Indentor
                     indentor_id = False
@@ -148,12 +159,16 @@ class import_po_contract_data(osv.osv_memory):
                     #To find indent
                     indent_name = ''
                     indent_obj = self.pool.get('indent.indent')
+                    print "????", search_for_indent
                     indent = indent_obj.search(cr, uid, [('maize','=',search_for_indent)])
                     if indent:
                         indent_name = indent_obj.browse(cr, uid, indent[0]).name
 
                     if data["ITEMCODE"]:
-                        product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+                        try:
+                            product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+                        except:
+                            product_not_found.append(data["ITEMCODE"])
                     vals_line = {
                             'product_id':product,
                             'price_unit':float(rate),
@@ -162,6 +177,7 @@ class import_po_contract_data(osv.osv_memory):
                             'product_uom':self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
                             'date_planned':'03/29/2013',
                             'indentor_id':indentor_id,
+                            'indent_id':indent[0],
                             'department_id':department or False,
                             'account_analytic_id':project or False,
                            }
@@ -202,7 +218,10 @@ class import_po_contract_data(osv.osv_memory):
                         rate = data["STKRATE"]
 
                     if data["ITEMCODE"]:
-                        product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+                        try:
+                            product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+                        except:
+                            product_not_found.append(data["ITEMCODE"])
 
                     #To find Indentor
                     indentor_id = False
@@ -223,10 +242,19 @@ class import_po_contract_data(osv.osv_memory):
                     department = self.pool.get('stock.location').search(cr, uid,[('code','=',dept)])[0]
 
                     #To find Project
+                    mach=False
+                    if len(data["MACHCODE"].strip()) == 1:
+                        mach = '00'+data["MACHCODE"].strip()
+                    elif len(data["MACHCODE"].strip()) == 2:
+                        mach = '0'+data["MACHCODE"].strip()
+                    elif len(data["MACHCODE"].strip()) == 3:
+                        mach = data["MACHCODE"].strip()
                     project=False
-                    mach=data["MACHCODE"].strip()
                     if mach:
-                        project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0] 
+                        try:
+                            project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0]
+                        except:
+                            project_not_match.append(mach) 
 
                     vals_line = {
                             'product_id':product,
@@ -253,7 +281,10 @@ class import_po_contract_data(osv.osv_memory):
 #        aaa = self.pool.get('purchase.order').search(cr,uid,[])
 #        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
 #        self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
-        print "rejectedrejectedrejected", rejected
+        print "rejectedrejectedrejected>>>>>>>>>>>>>", rejected
+        print "project_not_matchproject_not_match>>>",project_not_match
+        print "partner not found", un_define
+        print "partner not found", un_define
         _logger.info("Successfully completed import journal process.")
         return True
     

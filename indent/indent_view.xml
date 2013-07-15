@@ -93,6 +93,7 @@
                                 <field name="employee_id" groups="indent.group_maize_data" invisible="1"/>
                                 <field name="employee_department_id" groups="indent.group_maize_data" invisible="1"/>
                                 <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view'), ('maize_location', '=', True)]" context="{'default_maize_location': True}"/>
+                                <field name="fiscalyear"/>
                             </group>
                         </group>
                         <notebook>
@@ -183,6 +184,7 @@
                     <field name="requirement"/>
                     <field name="type"/>
                     <field name="amount_total"/>
+                    <field name="fiscalyear"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -212,6 +214,7 @@
                         <filter string="Requirement" context="{'group_by': 'requirement'}"/>
                         <filter string="Indent Type" context="{'group_by': 'type'}"/>
                         <filter string="Date" context="{'group_by': 'indent_date'}"/>
+                        <filter string="Year" context="{'group_by': 'fiscalyear'}"/>
                         <filter string="Status" context="{'group_by': 'state'}"/>
                     </group>
                 </search>

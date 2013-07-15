@@ -45,7 +45,7 @@ class import_indent_data(osv.osv_memory):
     
     def do_import_indent_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ashvin/Desktop/script/INDENTHEADER.csv"
+        file_path = "/home/ara/Desktop/INDENTNOT20132014BUTINWORD20132014.csv"
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")
             return True
@@ -61,69 +61,133 @@ class import_indent_data(osv.osv_memory):
         _logger.info("Starting Import Journal Process from file '%s'."%(file_path))
         indent_pool =self.pool.get('indent.indent')
         indent = []
+        c_po=[]
+        not_po = []
+        cn_po=[]
+        project_not_match = []
+        indent_list = []
         for data in data_lines:
             try:
-                if data['INDENTNO']:
-                    indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])[0]
-                    print "self.pool.get('indent.indent').browse(cr,uid,indent)>>>>>>>>.", self.pool.get('indent.indent').browse(cr,uid,indent)
-                    dd = self.pool.get('indent.indent').browse(cr,uid,indent).description
-                    self.pool.get('indent.indent').write(cr,uid,indent,{'description':dd})
-
-#                if data['APRVID'] == 'Y':
-#                    wf_service = netsvc.LocalService('workflow')
-#                    indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"])])[0]
-#                    wf_service.trg_validate(uid, 'indent.indent', indent, 'indent_confirm', cr)
-#                    wf_service.trg_validate(uid, 'indent.indent', indent, 'indent_inprogress', cr)
-#                print "data111111111111111111111111", data["INDENTOR"]
-#                inderntor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])[0]
-#                print ">>>>>>>>>>>>>>>>>>>>", inderntor
-#                emp_obj = self.pool.get('hr.employee')
-#                emp = emp_obj.search(cr, uid, [('user_id', '=', inderntor)], context=context)[0]
-#                if data["DEPTCODE"]:
-#                    department = self.pool.get('stock.location').search(cr,uid,[('code','=',data["DEPTCODE"])])[0]
-#                else:
-#                    department = False
-#                if data["ITEMREQ"] =='U':
-#                    req = 'urgent'
-#                else:
-#                    req = 'ordinary'
-#                    
-#                if data["INDTYPE"] =='New':
-#                    type = 'new'
-#                else:
-#                    type = 'existing'
-#                if data["ITEMFOR"] =='S':
-#                    item_for = 'store'
-#                else:
-#                    item_for = 'capital'
-#
-#                if data["INDDATE"] == 'NULL' or data["INDDATE"] == '' or data["INDDATE"] == '00:00.0' or data["INDDATE"] == '  ':
-#                    indent_date = ''
-#                else:
-#                    indent_date=datetime.datetime.strptime(data["INDDATE"], '%d/%m/%y').strftime("%Y-%m-%d 00:00:00")
-#
-#                if data["REQDATE"] == 'NULL' or data["REQDATE"] == '' or data["REQDATE"] == '00:00.0' or data["REQDATE"] == '  ':
-#                    req_date = ''
-#                else:
-#                    req_date = datetime.datetime.strptime(data["REQDATE"], '%d/%m/%y').strftime("%Y-%m-%d 00:00:00")
-#
-#                data['indent'] = indent_pool.create(cr, uid, {'name':data["INDENTNO"],
-#                                                              'indentor_id':inderntor,
-#                                                              'employee_id':emp,
-#                                                              'indent_date': indent_date,
-#                                                              'required_date':data["REQDATE"],
-#                                                              'requirement': req,
-#                                                              'type':type,
-#                                                              'department_id': department,
-#                                                              'item_for':item_for,
-#                                                   }, context)
-
-
+                    #+++++++++++++++++++++++++++++++++++++++++++++++++++++=======================#
+                      
+#                 if int(data['PONO'].strip()) != 0:
+#                     wf_service = netsvc.LocalService('workflow')
+#                     indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"]),('fiscalyear','=',data["INDYEAR"])])[0]
+#                     user_indent = self.pool.get('indent.indent').browse(cr,uid,indent).indentor_id.id
+#                     print "indentnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", indent
+#                     wf_service.trg_validate(user_indent, 'indent.indent', indent, 'indent_confirm', cr)
+#                     wf_service.trg_validate(7, 'indent.indent', indent, 'indent_inprogress', cr)
+#                     c_po.append(data["INDENTNO"])
+#                 else:
+#                     not_po.append(data["INDENTNO"])
+#                 print "data111111111111111111111111", data["INDENTNO"]
+#                 
+                  
+                #==============================================================================#
+                fiscalyear = self.pool.get('account.fiscalyear').search(cr,uid,[('name','=',data['INDYEAR'].strip())])[0]
+                exist_indent_list = indent_pool.search(cr,uid,[('name','=', data["INDENTNO"].strip()),('fiscalyear','=',fiscalyear)])
+                exist_indent = []
+                if exist_indent_list:
+                    exist_indent = exist_indent_list[0]
+                if not exist_indent:
+                    emp_obj = self.pool.get('hr.employee')
+                    if data["INDENTNO"]:
+                        name = data["INDENTNO"].strip()
+                    indentor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])[0]
+                    emp = emp_obj.search(cr, uid, [('user_id', '=', indentor)], context=context)[0]
+                      
+                    if data["DEPTCODE"].strip():
+                        if len(data["DEPTCODE"].strip()) == 1:
+                            dept = '00'+data["DEPTCODE"].strip()
+                        elif len(data["DEPTCODE"].strip()) == 2:
+                            dept = '0'+data["DEPTCODE"].strip()
+                        elif len(data["DEPTCODE"].strip()) == 3:
+                            dept = data["DEPTCODE"].strip()
+                        department = self.pool.get('stock.location').search(cr, uid,[('code','=',dept)])[0]
+                          
+                    if data["ITEMREQ"] =='U':
+                        req = 'urgent'
+                    else:
+                        req = 'ordinary'
+                          
+                    if data["INDTYPE"] =='New':
+                        type = 'new'
+                    else:
+                        type = 'existing'
+                    if data["ITEMFOR"] =='S':
+                        item_for = 'store'
+                    else:
+                        item_for = 'capital'
+                    if data["INDDATE"] == 'NULL' or data["INDDATE"] == '' or data["INDDATE"] == '00:00.0' or data["INDDATE"] == '  ':
+                        indent_date = ''
+                    else:
+                        indent_date=datetime.datetime.strptime(data["INDDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
+                    req_date=''
+                    if data["REQDATE"] == 'NULL' or data["REQDATE"] == '' or data["REQDATE"] == '00:00.0' or data["REQDATE"] == '  ':
+                        req_date = ''
+                    else:
+                        req_date = datetime.datetime.strptime(data["REQDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
+                      
+                    mach = False
+                    if len(data["MACHCODE"].strip()) == 1:
+                        mach = '00'+data["MACHCODE"].strip()
+                    elif len(data["MACHCODE"].strip()) == 2:
+                        mach = '0'+data["MACHCODE"].strip()
+                    elif len(data["MACHCODE"].strip()) == 3:
+                        mach = data["MACHCODE"].strip()
+                    project=False
+                    if mach:
+                        try:
+                            project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0]
+                        except:
+                            project_not_match.append(mach)                    
+                          
+                    description=data['REMARK1']+'\n'+data['REMARK2']
+                    data['indent'] = indent_pool.create(cr, uid, {'name':name,
+                                                                  'indentor_id':indentor,
+                                                                  'employee_id':emp,
+                                                                  'indent_date': indent_date,
+                                                                  'requirement': req,
+                                                                  'type':type,
+                                                                  'department_id': department,
+                                                                  'item_for':item_for,
+                                                                  'maize':name,
+                                                                  'required_date':req_date,
+                                                                  'description':description,
+                                                                  'fiscalyear':fiscalyear,
+                                                       }, context)
+                    indent_list.append(name)
+      
+  
             except:
                 print "data['INDENTNO']", data['INDENTNO']
+                cn_po.append(data['INDENTNO'])
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['INDENTNO']), exc_info=True)
                 continue
-        print "indentindentindentindent",indent
+        print "indentindentindentindent>>>>>>>>>>>>>>>>>>>>>>>with po",c_po
+        print "indentindentindentindent>>>>>>>>>>>>>>>>>>>>>>>>>>>with not po",not_po
+        print "indentindentindentindent>>>>>>>>>>>>>>>>>>>>>>>>>>>canvel",cn_po
+        print "project_not_match>>>>>>>>>>>>>>>>>",project_not_match
+        print ">>>>>>>>>>>>>>>>>>>>>>>>>", indent_list
+         
+        
+#        for delete balnt contract indent
+#         con_un = []
+#         indent_pool = self.pool.get('indent.indent')
+#         contracts=indent_pool.search(cr,uid,[('contract','=',True)])
+#         for con in indent_pool.browse(cr,uid,contracts):
+#             if not con.product_lines:
+#                 con_un.append(con.id)
+#         indent_pool.unlink(cr,uid,con_un)
+
+        #validate po contract
+#         wf_service = netsvc.LocalService('workflow')
+#         contracts = self.pool.get('indent.indent').search(cr,uid,[('contract','=',True)])
+#         for co in contracts:
+#             user_indent = self.pool.get('indent.indent').browse(cr,uid,co).indentor_id.id
+#             wf_service.trg_validate(user_indent, 'indent.indent', co, 'indent_confirm', cr)
+#             wf_service.trg_validate(7, 'indent.indent', co, 'indent_inprogress', cr)
+
         
         _logger.info("Successfully completed import journal process.")
         return True

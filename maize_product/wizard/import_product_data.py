@@ -46,7 +46,7 @@ class import_product_data(osv.osv_memory):
 
     #TODO:FIX ME TO FIND INDENT
     def import_product_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ara/Desktop/script/product.csv"
+        file_path = "/home/ara/Desktop/all_item_till14july1.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -109,13 +109,13 @@ class import_product_data(osv.osv_memory):
                         if last_po_date == 'NULL' or last_po_date == '' or last_po_date == '00:00.0' or last_po_date == '  ' or last_po_date == ' ':
                             last_po_date = False
                         else:
-                            last_po_date=datetime.datetime.strptime(last_po_date, '%d-%m-%Y').strftime("%Y-%m-%d")
+                            last_po_date=datetime.datetime.strptime(last_po_date, '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
     
                     if last_issue_date:
                         if last_issue_date == 'NULL' or last_issue_date == '' or last_issue_date == '00:00.0' or last_issue_date == '  ' or last_issue_date == ' ':
                             last_issue_date = False
                         else:
-                            last_issue_date=datetime.datetime.strptime(last_issue_date, '%d-%m-%Y').strftime("%Y-%m-%d")
+                            last_issue_date=datetime.datetime.strptime(last_issue_date, '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
     
     
                     if last_supplier_code:
@@ -190,7 +190,7 @@ class import_product_data(osv.osv_memory):
                         i = i+1
                         print ">>>>>>>>>>>>>>",i
                 else:
-                    product_pool.write(cr, uid, prod[0],{'list_price':last_supplier_rate}, context)
+                    product_pool.write(cr, uid, prod[0],{'standard_price':last_supplier_rate}, context)
                     i = i+1
                     print ">>>>>>>>>>>>>>222222222",i
             except:

@@ -25,6 +25,8 @@
 	                            <field name="grade_id"/>
 	                            <field name="categ_id"/>
 	                            <field name="emp_cost_code"/>
+	                            <field name="group_desc"/>
+	                            <field name="purchase_limit"/>
 	                        </group>
                         </group>
                     </xpath>

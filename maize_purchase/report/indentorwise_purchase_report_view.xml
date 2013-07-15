@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>    
+        
+        <record id="view_indentorwise_purchase_report_tree" model="ir.ui.view">
+            <field eval="1" name="priority"/>
+            <field name="name">indentor.purchase.report.tree</field>
+            <field name="model">indentor.purchase.report</field>
+            <field name="arch" type="xml">
+                <tree string="Indentorwise Purchases" create="false" delete="false">
+                                      <field name="po_series_id" invisible="context.get('po_series_id',True)"/>
+                    <field name="group_desc"/>
+                    <field name="name"/>
+                    <field name="purchase_limit" sum="Limit"/>
+                    <field name="total_amount"/>
+                    <field name="store" sum="Store"/>
+                    <field name="repair" sum="Repair"/>
+                    <field name="misc" sum="Misc"/>
+                    <field name="min_max" sum="Min / Max"/>
+                    <field name="oil_gre" sum="Oil / Grease"/>
+                    <field name="fil_cloth" sum="Fil_cloth"/>
+                    <field name="lab" sum="Lab"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_indentorwise_purchase_report_search" model="ir.ui.view">
+            <field name="name">indentor.purchase.report.search</field>
+            <field name="model">indentor.purchase.report</field>
+            <field name="arch" type="xml">
+                <search string="Maize Purchase Analysis">
+                    <field name="date"/>
+                    <separator/>
+                    <filter string="Draft" name="state_draft" domain="[('state','=','draft')]"/>
+                    <filter string="Waiting For Approval" name="state_waiting_approval" domain="[('state','=','waiting_approval')]"/>
+                    <filter string="Inprogress" name="state_inprogress" domain="[('state','=','inprogress')]"/>
+                    <filter string="Received" name="state_received" domain="[('state','=','received')]"/>
+                    <filter string="Rejected" name="state_reject" domain="[('state','=','reject')]"/>
+                    <separator/>
+
+                   
+                    <field name="purchase_id"/>
+                    <group string="Display">
+                        <filter name="group_department" string="Department" icon="terp-stock_symbol-selection" context="{'department_id': False}"/>
+                        <filter name="group_state" string="Status" icon="terp-stock_symbol-selection" context="{'state': False}"/>
+                        <filter name="group_series" string="Series" icon="terp-stock_symbol-selection" context="{'po_series_id': False}"/>
+                        <filter name="group_date" string="Date of Indent" icon="terp-stock_symbol-selection" context="{'date': False}"/>
+                    </group>
+                    
+                    <group expand="1" string="Group By...">
+                        <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id','purchase_id_view': True}"/>
+                        <filter string="Department" context="{'group_by':'department_id','department_id_view': True}"/>
+                        <filter string="Status" context="{'group_by':'state','state_view': True}"/>
+                        <filter string="Day" context="{'group_by':'day'}"/>
+                        <filter string="Month" name="order_month" context="{'group_by':'month'}"/>
+                        <filter string="Year" context="{'group_by':'year'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_indentorwise_purchase_report" model="ir.actions.act_window">
+            <field name="name">Indentor Wise Purchases</field>
+            <field name="res_model">indentor.purchase.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="search_view_id" ref="view_indentorwise_purchase_report_search"/>
+            <field name="view_id" ref="view_indentorwise_purchase_report_tree"/>
+            <field name="help">This Indentorwise Purchase.</field>
+        </record>
+
+        <menuitem action="action_indentorwise_purchase_report" id="menu_indentorwise_purchase_report" parent="stock.next_id_61" sequence="71"/>
+
+
+    </data>
+</openerp>

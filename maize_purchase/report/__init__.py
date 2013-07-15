@@ -29,5 +29,5 @@ import product_major_group_stock
 import purchase_order_information
 import inputs_consumed_by_department
 import format_rg_23a_part1
-
+import indentorwise_purchase_report
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

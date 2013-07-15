@@ -522,7 +522,7 @@
                     <field name="inward_date"/>
                     <field name="challan_no"/>
                     <field name="tr_code"/>
-                    <field name="party_id"/>
+                    <field name="party_id" domain="[('supp_code', '=like', '309%%')]"/>
 				</xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="excisable_item"/>

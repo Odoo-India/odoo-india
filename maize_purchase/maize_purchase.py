@@ -303,9 +303,9 @@ class purchase_order_line(osv.Model):
     
     def _get_po_order(self, cr, uid, ids, context=None):
         result = {}
-        for line in self.pool.get('purchase.order').browse(cr, uid, ids, context=context):
-            result[line.id] = True
-        return result.keys()
+#         for line in self.pool.get('purchase.order').browse(cr, uid, ids, context=context):
+#             result[line.id] = True
+        return result
 
     _columns = {
         'discount': fields.float('Discount (%)'),

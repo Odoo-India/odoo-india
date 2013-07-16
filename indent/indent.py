@@ -504,7 +504,7 @@ class indent_product_lines(osv.Model):
             raise osv.except_osv(_("Warning !"), _("You must define at least one supplier for this product."))
         result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
         result['product_uom'] = product.uom_id.id
-        result['price_unit'] = product.list_price
+        result['price_unit'] = product.standard_price
         result['qty_available'] = product.qty_available
         result['virtual_available'] = product.virtual_available
         result['delay'] = product.seller_ids[0].delay

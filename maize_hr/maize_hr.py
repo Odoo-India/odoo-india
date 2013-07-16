@@ -68,8 +68,6 @@ class hr_employee(osv.Model):
         'qualification': fields.char('Qualification', size=64, required=False, readonly=False),
         'blood_group': fields.char('Blood Group', size=64, required=False, readonly=False),
         'cost_id': fields.many2one('hr.cost.code', "Cost Code"),
-        'group_desc': fields.char('Group Description', size=64, required=False, readonly=False),
-        'purchase_limit': fields.float('Purchase Limit', required=False, readonly=False),
         'grade_id': fields.many2one('hr.grade.code', "Grade Code"),
         'categ_id': fields.many2one('hr.category.code', "Category Code"),
         'emp_code': fields.char('Code', size=64, required=False, readonly=False),

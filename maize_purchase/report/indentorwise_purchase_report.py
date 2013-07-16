@@ -108,7 +108,7 @@ class indentor_purchase_report(osv.osv):
         'store': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='STORE', type="float", multi="series",help="STORE"),
         'repair': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='REPAIR', type="float", multi="series",help="REPAIR"),
         'misc': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='MISC', type="float", multi="series",help="MISC"),
-        'min_max': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='MIN/MAX', type="float", multi="series",help="MIN/MAX"),
+        'min_max': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='MIN/MAX', type="float", multi="series",help="MIN/MAX"),    
         'fil_cloth': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='FIL_CLOTH', type="float", multi="series",help="FIL_CLOTH"),
         'lab': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='LAB', type="float", multi="series",help="LAB"),
         'oil_gre': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='OIL/GREASE', type="float", multi="series",help="OIL/GREASE"),
@@ -123,7 +123,7 @@ class indentor_purchase_report(osv.osv):
         cr.execute("""
             create or replace view indentor_purchase_report as(
  select
-                    min(emp.resource_id) as id,
+                    (r.user_id) as id,
                     r.name as name, 
                     ps.id as po_series_id,
         		    emp.purchase_limit as purchase_limit,
@@ -142,34 +142,34 @@ class indentor_purchase_report(osv.osv):
                     i.state as state,
                     po.po_series_id as po_series
                 from
-		            hr_employee as emp
-                    left join resource_resource r on (r.id = emp.resource_id)
-                    left join res_users u on (u.id = r.user_id)
-                    left join purchase_order_line l on (u.id=l.indentor_id)
+		    hr_employee as emp
+		    left join resource_resource r on (r.id = emp.resource_id)
+                    left join purchase_order_line l on (l.indentor_id=r.user_id)
                     left join product_product p on (l.product_id=p.id)
                     left join purchase_order po on (l.order_id=po.id)
                     left join product_template t on (p.product_tmpl_id=t.id)
                     left join product_order_series ps on (po.po_series_id = ps.id)
-                    left join indent_indent i on (i.indentor_id = u.id)
+                    left join indent_indent i on (i.indentor_id = r.user_id)
                 where l.indentor_id is not null
-            group by
-                emp.id,
-		        l.date_planned,
-		        l.indentor_id,
-		        l.product_id,
-		        l.amount_total,
-		        emp.purchase_limit,
-		        emp.group_desc,
-		        ps.id,
-		        po.id,
-		        i.state,
-		        l.id,
-		        r.name,
-		        i.indent_date,
-                po.payment_term_id
+		group by
+				r.user_id,
+				emp.id,
+				l.date_planned,
+				l.indentor_id,
+				l.product_id,
+				l.amount_total,
+				i.indent_date,
+				i.state,
+				emp.purchase_limit,
+				emp.group_desc,
+				ps.id,
+				po.id,
+				r.name,
+				l.id
 
 
             )
+
 
         """)
 indentor_purchase_report()

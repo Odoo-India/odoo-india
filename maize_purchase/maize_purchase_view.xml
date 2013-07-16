@@ -34,6 +34,20 @@
                 </xpath>
             </field>
         </record>
+        
+        <record id="maize_hr_extend_form_inherit" model="ir.ui.view">
+            <field name="name">maize.hr.form</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='notes']" position="before">
+                        <field name="group_desc"/>
+                        <field name="purchase_limit"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
 
         <!-- Purchase Order Form Inherit for add field -->
         <record id="maize_view_maize_purchase_order_form" model="ir.ui.view">

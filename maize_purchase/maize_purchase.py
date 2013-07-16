@@ -35,6 +35,15 @@ SERIES = [
     ('purchase', 'Purchase'),
     ('store', 'Store')
 ]
+
+class hr_employee(osv.osv):
+    _inherit = 'hr.employee'
+    _columns = {
+        'group_desc': fields.char('Group Description', size=64, required=False, readonly=False),
+        'purchase_limit': fields.float('Purchase Limit', required=False, readonly=False),
+    }
+hr_employee()
+    
 class stock_picking_in(osv.osv):
     _inherit = "stock.picking.in"
     _order = "id desc"

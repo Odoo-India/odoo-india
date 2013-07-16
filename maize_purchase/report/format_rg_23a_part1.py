@@ -44,7 +44,7 @@ class format_rg(osv.osv):
                 select
                 sm.id, 
                 sm.date as date, 
-                i.department_id as department_id, 
+                sm.department_id as department_id, 
                 sm.product_qty as product_qty, 
                 sm.product_uom as product_uom_id, 
                 sm.partner_id as partner_id, 
@@ -52,7 +52,6 @@ class format_rg(osv.osv):
                 sm.product_qty as product_qty_1, 
                 sm.product_qty as product_qty_2
                 from stock_move sm 
-                left join indent_indent i on (sm.indent_id = i.id)
                 left join res_partner rp on (sm.partner_id = rp.id)
                 left join stock_picking sp on (sm.picking_id = sp.id)
                 where sm.state = 'done' and sp.type = 'receipt'

@@ -21,6 +21,18 @@
             </field>
         </record>
         
+        <record id="view_format_rg_search" model="ir.ui.view">
+            <field name="name">format.rg.search</field>
+            <field name="model">format.rg</field>
+            <field name="arch" type="xml">
+                <search string="Department">
+                    <group expand="0" string="Group By...">
+                        <filter string="Department" context="{'group_by': 'department_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
         <!-- Format RG 23 A Part 1 Report Action -->
         <record id="action_format_rg_report" model="ir.actions.act_window">
             <field name="name">Format RG 23 A Part 1</field>

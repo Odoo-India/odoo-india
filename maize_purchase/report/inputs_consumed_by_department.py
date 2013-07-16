@@ -94,7 +94,7 @@ class inputs_consumed_by_department_report(osv.osv):
             create or replace view inputs_consumed_by_department_report as (
                 select sm.date as date, 
                        sm.id, 
-                       i.department_id as department_id, 
+                       sm.department_id as department_id, 
                        sm.product_id as product_id, 
                        sm.product_uos_qty as product_uos_qty,
                        sm.product_uos_qty as excisable_value,
@@ -108,9 +108,7 @@ class inputs_consumed_by_department_report(osv.osv):
                        sm.c_cess as claimed_cess,
                        sm.c_high_cess as claimed_higher_education_cess,
                        sm.import_duty1 as claimed_import_duty
-                       
                 from stock_move sm 
-                left join indent_indent i on (sm.indent_id = i.id)
                 where sm.type = 'receipt' and sm.state = 'done'
             )
         """)

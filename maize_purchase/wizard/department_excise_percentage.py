@@ -40,7 +40,6 @@ class department_excise_percentage(osv.osv_memory):
         domain = [
                   ('department_id', '=', department_id),
                  ]
-        
         action['domain'] = domain
         return action
 

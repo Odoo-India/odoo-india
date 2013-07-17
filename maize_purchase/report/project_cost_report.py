@@ -74,7 +74,7 @@ class project_cost_report(osv.osv):
                     left join stock_picking sp on (po.id = sp.purchase_id)
                     left join product_product product on (pol.product_id = product.id)
                     left join account_analytic_account a on (i.analytic_account_id = a.id)
-                where po.indent_id is not null
+                where po.indent_id is not null and product.state='done'
                 group by
                     i.contract,
                     i.indentor_id,

@@ -54,7 +54,8 @@
                 <field name="tr_code" invisible="1"/>
                 <field name="major_group_id" invisible="1"/>
                 <field name="sub_group_id" invisible="1"/>
-                <field name="department_id" invisible="context.get('receipt_view',True)"/>
+                <field name="department_id"/>
+                <field name="ex_chapter" invisible="context.get('receipt_view',True)"/>
                 <field name="cess" invisible="context.get('receipt_view',True)"/>
                 <field name="high_cess" invisible="context.get('receipt_view',True)"/>
                 <field name="import_duty" invisible="context.get('tax',True)"/>
@@ -128,7 +129,7 @@
                     <filter name="group_purchase" string="Purchase" icon="terp-stock_symbol-selection" context="{'po': False}"/>
                     <filter name="group_indent" string="Indent" icon="terp-stock_symbol-selection" context="{'indent': False}"/>
                     <filter name="group_lead_time" string="Lead Time" icon="terp-stock_symbol-selection" context="{'lead': False}"/>
-                    <filter name="group_case_code" string="Cash Only" icon="terp-stock_symbol-selection" context="{'case_code': False}"/>
+                    <filter name="group_case_code" string="Cash Code" icon="terp-stock_symbol-selection" context="{'case_code': False}"/>
                     <filter name="group_challan_no" string="Challan No" icon="terp-stock_symbol-selection" context="{'challan_no': False}"/>
                     <filter name="group_tr_code" string="TR Code" icon="terp-stock_symbol-selection" context="{'tr_code_view': False}"/>
                     <filter name="group_ac_code" string="Ac Code" icon="terp-stock_symbol-selection" context="{'ac_code_view': False}"/>

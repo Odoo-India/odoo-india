@@ -78,6 +78,7 @@ class report_stock_move(osv.osv):
         'inward_year': fields.char('Inward Year', size=10, readonly=True),
         'puchase_year': fields.char('Purchase Year', size=10, readonly=True),
         'indent_year': fields.char('Indent Year', size=10, readonly=True),
+        'ex_chapter': fields.char('Ex Chapter', size=64, readonly=True),
         'indentor_id': fields.many2one('res.users', 'Indentor Name'),
         'tr_code': fields.integer('TR Code'),
         'diff': fields.float('Add (%)', digits_compute= dp.get_precision('Account'), help="Amount to be add"),
@@ -158,6 +159,7 @@ class report_stock_move(osv.osv):
                         al.in_qty as product_qty_in,
                         al.partner_id as partner_id,
                         al.product_id as product_id,
+                        al.ex_chapter as ex_chapter,
                         al.state as state ,
                         al.product_uom as product_uom,
                         al.categ_id as categ_id,
@@ -303,6 +305,7 @@ class report_stock_move(osv.osv):
                             pp.major_group_id as major_group_id,
                             pp.sub_group_id as sub_group_id,
                             pp.weighted_rate as weighted_rate,
+                            pp.ex_chapter as ex_chapter,
                             spi.date_done as inward_date,
                             to_char(date_trunc('day',sm.date), 'YYYY-MM-DD') as date
                     FROM
@@ -318,13 +321,13 @@ class report_stock_move(osv.osv):
                     GROUP BY
                         sm.id,sp.type, sm.date,sm.supplier_id,
                         sm.product_id,sm.state,sm.product_uom,sm.date_expected,
-                        sm.product_id,pp.weighted_rate,pt.standard_price, sm.picking_id, sm.product_qty,
+                        sm.product_id,pp.weighted_rate,pp.ex_chapter,pt.standard_price, sm.picking_id, sm.product_qty,
                         sm.company_id,sm.location_id,sm.location_dest_id,pu.factor,pt.categ_id, sp.stock_journal_id,sp.gate_pass_id,sp.gp_date,sp.challan_no, sp.case_code,sp.purchase_id,sp.tr_code,sp.lr_no,sp.lab_no,sp.transporter,sp.lr_date,sp.department_id,ps.name,sm.indent_id,sm.inward_year,sm.puchase_year,sm.indent_year,sm.indentor_id,sm.diff,sm.excies,sm.rate,sm.bill_no,sm.bill_date,sm.cess,sm.high_cess,sm.import_duty,sm.cenvat,sm.payment_id,sp.despatch_mode,sp.tr_code_id,sp.ac_code_id,sp.cylinder,sp.inward_id,spi.date_done,pp.major_group_id,pp.sub_group_id,sm.less_diff)
                     AS al
                     GROUP BY
                         al.out_qty,al.in_qty,al.curr_year,al.curr_month,
                         al.curr_day,al.curr_day_diff,al.curr_day_diff1,al.curr_day_diff2,al.dp,al.location_id,al.location_dest_id,
-                        al.partner_id,al.product_id,al.weighted_rate,al.state,al.product_uom,
+                        al.partner_id,al.product_id,al.weighted_rate,al.ex_chapter,al.state,al.product_uom,
                         al.picking_id,al.company_id,al.type,al.product_qty, al.categ_id, al.stock_journal,al.gate_pass_id,al.gp_date,al.challan_no,al.case_code,al.purchase_id,al.po_series_id,al.indent_id,al.inward_year,al.puchase_year,al.indent_year,al.indentor_id,al.tr_code,al.diff,al.lr_no,al.lab_no,al.transporter,al.lr_date,al.excies,al.rate,al.department_id,al.bill_no,al.bill_date,al.cess,al.high_cess,al.import_duty,al.cenvat,al.half_cess,al.half_high_cess,al.half_import_duty,al.half_cenvat,al.payment_id,al.despatch_mode,al.tr_code_id,al.ac_code_id,al.cylinder,al.inward_id,al.receipt_value,al.issue_amount,al.rejected_qty,al.inward_date,al.major_group_id,al.sub_group_id,al.less_diff)
         """)
 

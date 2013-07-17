@@ -111,7 +111,6 @@ class import_po_line_data(osv.osv_memory):
                 maize_name = data['POSERIES']+'/'+data["PONO"]
                 date_start = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['start']
                 date_end = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['end']
-                print ">>>>>>>>>>>>", maize_name
                 if data["PONO"] and data['POSERIES']:
                     po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name),('date_order','>=',date_start),('date_order','<=',date_end)])
                 if data["ITEMCODE"]:
@@ -185,10 +184,15 @@ class import_po_line_data(osv.osv_memory):
                         'discount':discount
                        }
                 exist_line.append(maize_name)
-                pol_pool.create(cr, uid, vals, context)
+                date_start = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['start']
+                date_end = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['end']
+                exist_po_line = pol_pool.search(cr,uid,[('order_id','=',po[0]),('date_order','>=',date_start),('date_order','<=',date_end)])   
+                if not exist_po_line:             
+                    pol_pool.create(cr, uid, vals, context)
+                    po_order.write(cr,uid,po[0],{'commission':0.01})
+                    po_order.write(cr,uid,po[0],{'commission':0.00})
             except:
                 rejected.append(maize_name)
-                
                 _logger.warning("Skipping Record with Indent code '%s'."%(maize_name), exc_info=True)
                 continue
         print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.", rejected,

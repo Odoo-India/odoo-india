@@ -20,12 +20,15 @@
 ##############################################################################
 {
     'name': 'Launchpad Integration',
-    'version': '1.0',
+    'version': '7.0',
     'category': 'Generic Modules/Project Management',
     'description': """
 Integration with Launchpad
 ======================================================================================
 Provides integration between OpenERP and Launchpad.
+
+Thanks to https://launchpad.net/~nhomar for migrate it to 7.0.
+
     """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

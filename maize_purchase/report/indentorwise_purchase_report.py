@@ -104,7 +104,7 @@ class indentor_purchase_report(osv.osv):
             ('received','Received'),
             ('reject','Rejected')
             ], 'State', readonly=True),
-        'purchase_total': fields.float('Total', readonly=True),
+        'purchase_total': fields.float('TOTAL', readonly=True),
         'store': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='STORE', type="float", multi="series",help="STORE"),
         'repair': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='REPAIR', type="float", multi="series",help="REPAIR"),
         'misc': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='MISC', type="float", multi="series",help="MISC"),

@@ -104,6 +104,7 @@ class indent_indent(osv.Model):
             },
             ),
         'maize': fields.char('Maize', size=256, readonly=True),
+        'fiscalyear': fields.many2one('account.fiscalyear', 'Year', readonly=True, states={'draft': [('readonly', False)]}),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting For Approval'), ('inprogress', 'Inprogress'), ('received', 'Received'), ('reject', 'Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 

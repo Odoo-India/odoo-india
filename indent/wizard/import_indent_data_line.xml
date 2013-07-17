@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      <record id="view_import_indent_data_line_form" model="ir.ui.view">
+        <field name="name">import_indent_data_line_form</field>
+        <field name="model">import.indent.data.line</field>
+        <field name="arch" type="xml">
+            <form string="Import indent" version="7.0">
+               <group>
+                    <separator string="Import Indent data_line"/>
+               </group>
+               <footer>
+                    <button name="do_import_indent_data_line" string="Import Line" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+               </footer>
+           </form>
+        </field>
+    </record>
+    <act_window 
+        name="Import Indent Line"
+        res_model="import.indent.data.line"
+        src_model="indent.indent"
+        view_mode="form"
+        target="new"
+        key2="client_action_multi"
+        id="action_indent_data_line_import" />
+
+
+    </data>
+</openerp>

@@ -27,7 +27,7 @@ class branch_merge_report(osv.osv):
     _name = "branch.merge.report"
     _description = "Sales Orders Statistics"
     _auto = False
-    _rec_name = 'date'
+    _rec_name = 'date_created'
     _columns = {
         'name': fields.char('Branch', size=512, readonly=True),
         'date_created': fields.datetime('Created', readonly=True),

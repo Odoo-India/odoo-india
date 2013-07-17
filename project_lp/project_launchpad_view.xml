@@ -10,11 +10,15 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="project.edit_project"/>
             <field name="arch" type="xml">
-                <xpath expr="/form/notebook/page/group[@name='misc']" position="after">
-                    <group col="2" colspan="2">
-                        <separator colspan="2" string="Notification"/>
-                        <field name="action_id" domain="[('state','=','email')]" context="{'state':'email'}"/>
-                    </group>
+                <xpath expr="//page[@string='Other Info']" position="before">
+                    <page string="Launchpad Information">
+                        <group col="2" colspan="2">
+                            <separator colspan="2" string="Notification"/>
+                            <field name="action_id"
+                                domain="[('state','=','email')]"
+                                context="{'state':'email'}"/>
+                        </group>
+                    </page>
                 </xpath>
             </field>
         </record>

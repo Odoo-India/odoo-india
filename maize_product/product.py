@@ -155,7 +155,7 @@ class product_product(osv.Model):
             move_ids = stock_move_obj.search(cr, uid, [('product_id', '=', product.id), ('type', '=', 'receipt'), ('state','=','done')], context=context)
             for move_obj in stock_move_obj.browse(cr, uid, move_ids, context=context):
                 receipt_qty += move_obj.product_qty
-                amount += move_obj.product_qty * move_obj.rate
+                amount += move_obj.amount
 
             if receipt_qty > 0:
                 res[product.id]['weighted_rate'] = amount / receipt_qty

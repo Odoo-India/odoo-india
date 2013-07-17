@@ -89,6 +89,24 @@
                         </group>
                     </group>
                 </xpath>
+                <xpath expr="//page[@string='Invoice']" position="after">
+                    <page string="Taxes">
+                        <field name="tax_line">
+                            <tree editable="bottom" string="Taxes">
+                                <field name="name"/>
+                                <field name="account_id" groups="account.group_account_invoice"/>
+                                <field name="account_analytic_id" domain="[('type','&lt;&gt;','view'), ('company_id', '=', parent.company_id)]" groups="analytic.group_analytic_accounting"/>
+                                <field name="base" on_change="base_change(base,parent.currency_id,parent.company_id,parent.date_invoice)" readonly="1"/>
+                                <field name="amount" on_change="amount_change(amount,parent.currency_id,parent.company_id,parent.date_invoice)"/>
+
+                                <field invisible="True" name="base_amount"/>
+                                <field invisible="True" name="tax_amount"/>
+                                <field name="factor_base" invisible="True"/>
+                                <field name="factor_tax" invisible="True"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
             </field>
         </record>
 

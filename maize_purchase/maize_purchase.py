@@ -980,13 +980,15 @@ class stock_picking(osv.Model):
 
     def _prepare_invoice(self, cr, uid, picking, partner, inv_type, journal_id, context=None):
         res = super(stock_picking, self)._prepare_invoice(cr, uid, picking=picking, partner=partner, inv_type=inv_type, journal_id=journal_id, context=context)
-        freight = insurance = package_and_forwording = vat_amount = 0.0
+        freight = insurance = package_and_forwording = vat_amount = advance_amount = 0.0
+        if picking.voucher_id and picking.voucher_id.state == 'posted':
+            advance_amount = picking.voucher_id and picking.voucher_id.amount or 0.0
         for move in picking.move_lines:
             freight += move.freight_unit * move.product_qty
             insurance += move.insurance_unit * move.product_qty
             package_and_forwording += move.packing_unit * move.product_qty
             vat_amount += move.vat_unit * move.product_qty
-        res = dict(res, freight = freight, insurance = insurance, package_and_forwording = package_and_forwording, vat_amount = vat_amount, voucher_id = picking.voucher_id.id)
+        res = dict(res, freight = freight, insurance = insurance, package_and_forwording = package_and_forwording, vat_amount = vat_amount, voucher_id = picking.voucher_id.id, advance_amount = advance_amount)
         return res
 
     def action_invoice_create(self, cr, uid, ids, journal_id=False,

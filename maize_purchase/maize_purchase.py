@@ -507,6 +507,12 @@ class purchase_order(osv.Model):
     _inherit = 'purchase.order'
     _order = 'id desc'
 
+    def copy(self, cr, uid, id, default=None, context=None):
+        if default is None:
+            default = {}
+        default.update({'is_template':False})
+        return super(purchase_order, self).copy(cr, uid, id, default, context=context)
+
     def action_cancel(self, cr, uid, ids, context=None):
         wf_service = netsvc.LocalService("workflow")
         for purchase in self.browse(cr, uid, ids, context=context):

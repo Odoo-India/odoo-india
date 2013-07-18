@@ -871,7 +871,23 @@ class purchase_order(osv.Model):
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
         'maize': fields.char('Maize PO Number', size=256, readonly=True),
         'contract_name': fields.char('Contract Name', size=256, readonly=True),
+        'voucher_id': fields.many2one('account.voucher', 'Payment'), 
     }
+
+    def _prepare_order_picking(self, cr, uid, order, context=None):
+        return {
+            'name': False,
+            'origin': order.name + ((order.origin and (':' + order.origin)) or ''),
+            'date': self.date_to_datetime(cr, uid, order.date_order, context),
+            'partner_id': order.dest_address_id.id or order.partner_id.id,
+            'invoice_state': '2binvoiced' if order.invoice_method == 'picking' else 'none',
+            'type': 'in',
+            'partner_id': order.dest_address_id.id or order.partner_id.id,
+            'purchase_id': order.id,
+            'company_id': order.company_id.id,
+            'move_lines' : [],
+            'voucher_id': order.voucher_id.id,
+        }
 
 purchase_order()
 

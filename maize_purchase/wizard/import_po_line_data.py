@@ -89,7 +89,7 @@ class import_po_line_data(osv.osv_memory):
         return fields,data_lines
     
     def po_line_create(self,cr,uid,ids,context=None):
-        file_path = "/home/kuldeep/Desktop/inwardtr20132014butnotpo20132014.csv"
+        file_path = "/home/kuldeep/Desktop/po_18_july/po_detail14july.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -108,11 +108,11 @@ class import_po_line_data(osv.osv_memory):
         project_not_match = []
         for data in data_lines:
             try:
-                maize_name = data['POSERIES']+'/'+data["PONO"]
+                maize_name = data["POSERIES"] +'/'+ data["PONO"]+'/'+data['POYEAR']
                 date_start = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['start']
                 date_end = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['end']
                 if data["PONO"] and data['POSERIES']:
-                    po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name),('date_order','>=',date_start),('date_order','<=',date_end)])
+                    po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
                 if data["ITEMCODE"]:
                     try:
                         product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
@@ -186,11 +186,14 @@ class import_po_line_data(osv.osv_memory):
                 exist_line.append(maize_name)
                 date_start = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['start']
                 date_end = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['end']
-                exist_po_line = pol_pool.search(cr,uid,[('order_id','=',po[0]),('date_order','>=',date_start),('date_order','<=',date_end)])   
-                if not exist_po_line:             
-                    pol_pool.create(cr, uid, vals, context)
-                    po_order.write(cr,uid,po[0],{'commission':0.01})
-                    po_order.write(cr,uid,po[0],{'commission':0.00})
+                #exist_po_line = pol_pool.search(cr,uid,[('order_id','=',po[0]),('indent_id', '=', data['INDENTNO']), ('product_id', '=', product])   
+                #if not exist_po_line:
+                po_line = pol_pool.create(cr, uid, vals, context)
+                print "=----po_line-newwwwww-->>", po_line
+                po_order.write(cr,uid,po[0],{'commission':0.01})
+                po_order.write(cr,uid,po[0],{'commission':0.00})
+#                else:
+#                    print "=----exist_po_line--->>", exist_po_line,maize_name
             except:
                 rejected.append(maize_name)
                 _logger.warning("Skipping Record with Indent code '%s'."%(maize_name), exc_info=True)

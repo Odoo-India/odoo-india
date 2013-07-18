@@ -2,6 +2,12 @@
 <openerp>
     <data noupdate="1">
 
+        <record id="product_cm" model="product.order.series">
+            <field name="code">CM</field>
+            <field name="name">CM</field>
+            <field name="type">purchase</field>
+        </record>
+
         <record id="product_ch" model="product.order.series">
             <field name="code">CH</field>
             <field name="name">Chemical</field>

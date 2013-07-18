@@ -44,7 +44,7 @@ class import_receipt_data(osv.osv_memory):
         return fields,data_lines
     
     def import_receipt_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ashvin/Desktop/script/RECEIPTHEADER.csv"
+        file_path = "/home/kuldeep/Desktop/receipt20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -93,17 +93,17 @@ class import_receipt_data(osv.osv_memory):
                     if data["RCVDATE"] == 'NULL' or data["RCVDATE"] == '' or data["RCVDATE"] == '00:00.0' or data["RCVDATE"] == '  ':
                         grn_r_date = ''
                     else:
-                        grn_r_date=datetime.datetime.strptime(data["RCVDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
+                        grn_r_date=datetime.datetime.strptime(data["RCVDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                 if data["INWDATE"]:
                     if data["INWDATE"] == 'NULL' or data["INWDATE"] == '' or data["INWDATE"] == '00:00.0' or data["INWDATE"] == '  ':
                         inword_date = ''
                     else:
-                        inword_date=datetime.datetime.strptime(data["INWDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
+                        inword_date=datetime.datetime.strptime(data["INWDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                 if data["GPDATE"]:
                     if data["GPDATE"] == 'NULL' or data["GPDATE"] == '' or data["GPDATE"] == '00:00.0' or data["GPDATE"] == '  ':
                         gpdate = ''
                     else:
-                        gpdate=datetime.datetime.strptime(data["GPDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
+                        gpdate=datetime.datetime.strptime(data["GPDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
 
                 vals = {
                         'maize_receipt':str(reciept_number),

@@ -44,7 +44,7 @@ class import_receipt_line_data(osv.osv_memory):
         return fields,data_lines
 
     def import_receipt_line_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ashvin/Desktop/script/RECEIPTTRANS.csv"
+        file_path = "/home/kuldeep/Desktop/recepttr20132014 butnotpo&inward20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -73,18 +73,23 @@ class import_receipt_line_data(osv.osv_memory):
                 vat_cess = data['CENVATCESS'] or 0.0
                 high_vat_cess = data['CENVATHCESS'] or 0.0
                 imp_duty = data['IMPDUTY'] or 0.0
+                add_diff = float(data['ADDPER'])
+                less_diff = float(data['LESSPER'])
+                amount = float(price_unit) * float(rec_qty)
+                #department_id = data['DEPTCODE']
+                diff_amount =  amount * add_diff / 100 if add_diff != 0.0 else -(amount * less_diff / 100)
                 if data["ITEMCODE"]:
                     product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
                 if data["BILLDATE"]:
                     if data["BILLDATE"] == 'NULL' or data["BILLDATE"] == '' or data["BILLDATE"] == '00:00.0' or data["BILLDATE"] == '  ':
                         bill_date = False
                     else:
-                        bill_date=datetime.datetime.strptime(data["BILLDATE"], '%d-%m-%y').strftime("%Y-%m-%d")
+                        bill_date=datetime.datetime.strptime(data["BILLDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                 # Create dictionary at once.
                 product_data = self.pool.get('product.product').browse(cr,uid,product)
                 vals = {
                         'name':product_data.uom_id.name,
-                        'rate': price_unit,
+                        'new_rate': price_unit,
                         'product_id': product,
                         'product_qty': rec_qty,
                         'product_uom': product_data.uom_id.id,
@@ -102,7 +107,13 @@ class import_receipt_line_data(osv.osv_memory):
                         'import_duty': imp_duty,
                         'cenvat': cenvat,
                         'c_cess': vat_cess,
-                        'c_high_cess': high_vat_cess
+                        'c_high_cess': high_vat_cess,
+                        'diff': add_diff,
+                        'less_diff': less_diff,
+                        'import_duty1': imp_duty,
+                        'amount': amount + diff_amount,
+                        'challan_qty':rec_qty,
+                        #'department_id': department_id
                 }
                 #First time go into the not exist loop because of Header already Imported ;)
                 if not maze_name in exist_picking:
@@ -110,6 +121,7 @@ class import_receipt_line_data(osv.osv_memory):
                     vals.update({'picking_id':receipt_id})
                     move_pool.create(cr, uid, vals, context)
                     exist_picking.append(maze_name)
+                    #reciept_pool.write(cr, 1, [receipt_id], {})
                 #Otherwise create new receipt and attached vals with it.
                 else:
                     picking_id = self.pool.get('stock.picking').search(cr,1,[('maize_receipt','=',maze_name)])[0]
@@ -131,6 +143,7 @@ class import_receipt_line_data(osv.osv_memory):
                     new_receipt = reciept_pool.create(cr, uid, pick_vals, context)
                     vals.update({'picking_id':new_receipt})
                     move_pool.create(cr, uid, vals, context)
+                    #reciept_pool.write(cr, 1, [new_receipt], {})
             except:
                 rejected.append(data['RECPTNO'])
                 _logger.warning("Skipping Record with reciept code '%s'."%(data['RECPTNO']), exc_info=True)

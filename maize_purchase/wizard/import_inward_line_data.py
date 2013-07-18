@@ -94,7 +94,7 @@ class import_inward_line_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ara/Desktop/inwardtr20132014.csv"
+        file_path = "/home/kuldeep/Desktop/inwardtr20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -172,7 +172,7 @@ class import_inward_line_data(osv.osv_memory):
                             purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',data["POSERIES"]+'/'+data["PONO"]),('date_order','>=',date_start_po),('date_order','<=',date_end_po)])[0]
                             if purchase_id:
                                 purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
-                                new_picking_id = self.pool.get('stock.picking.in').search(cr,uid,[('maize_in', '=', maize_name),('date_done','>=',date_start_po),('date_done','<=',date_end_po)])[0]
+                                new_picking_id = self.pool.get('stock.picking.in').search(cr,uid,[('maize_in', '=', maize_name),('date_done','>=',date_start),('date_done','<=',date_end)])[0]
                                 self.pool.get('stock.picking.in').write(cr,uid,new_picking_id,{'purchase_id':purchase_id})
                                 new_vals = {
                                         'product_id': product,
@@ -196,7 +196,10 @@ class import_inward_line_data(osv.osv_memory):
                         
                     else:
                         try:
-                            purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',data["POSERIES"]+'/'+data["PONO"]),('date_order','>=',date_start_po),('date_order','<=',date_end_po)])[0]
+                            if data['PONO'] == '99999':
+                                purchase_id = 17970
+                            else:
+                                purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',data["POSERIES"]+'/'+data["PONO"]),('date_order','>=',date_start_po),('date_order','<=',date_end_po)])[0]
                             purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
                             if purchase_id != exist_picking_po1.purchase_id.id:
                                 pp = self.pool.get('stock.picking.in').create(cr,uid,
@@ -236,7 +239,6 @@ class import_inward_line_data(osv.osv_memory):
                                        'indentor':indentor_id,
                                 }
                             else:
-                                print "\n-=- =-=-=-", purchase_id, exist_picking_po1.purchase_id.id,purchase_date
                                 new_vals = {
                                         'product_id': product,
                                         'name':po_name,
@@ -260,7 +262,7 @@ class import_inward_line_data(osv.osv_memory):
                 rejected.append(data['INWARDNO'])
                 _logger.warning("Skipping Record with Inward code '%s'."%(data['INWARDNO']), exc_info=True)
                 continue
-        print "rejectedrejectedrejected", rejected, po_not_found
+        print "rejectedrejectedrejected", rejected
         print "po_not_foundpo_not_foundpo_not_foundpo_not_found>>>>>>>>>>", po_not_found
         print "po_not_foundpo_not_foundpo_not_foundpo_not_found>>>>>>>>>>", indent_not_found
         _logger.info("Successfully completed import Inward process.")

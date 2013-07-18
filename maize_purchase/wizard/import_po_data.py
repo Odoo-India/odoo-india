@@ -93,7 +93,7 @@ class import_po_data(osv.osv_memory):
 #         po_pool.write(cr,uid,all_po,{'commission':0.01})
 #         po_pool.write(cr,uid,all_po,{'commission':0.00})
         po_pool = self.pool.get('purchase.order') 
-        file_path = "/home/ara/Desktop/poheader.csv"
+        file_path = "/home/kuldeep/Desktop/inward20132014butnotpo20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -244,7 +244,7 @@ class import_po_data(osv.osv_memory):
                         payment_term = payment_term[0]
                     else:
                         payment_term = pay_obj.create(cr,uid,{'name':data["PAYTERM"],'note':data["PAYTERM"],'active':True})
-                vals = {'name':name,
+                vals = {'name':name+data['POYEAR'],
                         'maize':old_id,
                         'po_series_id':po_series,
                         'date_order':podate,

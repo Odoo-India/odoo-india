@@ -304,5 +304,6 @@ class account_invoice(osv.Model):
         'st_code':fields.selection([('nothing', 'Nothing')], 'S.T. Code'),
         'due_date': fields.date('Due Date'),
         'c_form':fields.selection([('nothing', 'Nothing')], 'C Form'),
+        'voucher_id': fields.many2one('account.voucher', 'Payment'),
     }
 account_invoice()

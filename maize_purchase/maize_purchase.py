@@ -986,7 +986,7 @@ class stock_picking(osv.Model):
             insurance += move.insurance_unit * move.product_qty
             package_and_forwording += move.packing_unit * move.product_qty
             vat_amount += move.vat_unit * move.product_qty
-        res = dict(res, freight = freight, insurance = insurance, package_and_forwording = package_and_forwording, vat_amount = vat_amount)
+        res = dict(res, freight = freight, insurance = insurance, package_and_forwording = package_and_forwording, vat_amount = vat_amount, voucher_id = picking.voucher_id.id)
         return res
 
     def action_invoice_create(self, cr, uid, ids, journal_id=False,

@@ -86,6 +86,7 @@
                             <field name="st_code"/>
                             <field name="due_date"/>
                             <field name="c_form"/>
+                            <field name="voucher_id"/>
                         </group>
                     </group>
                 </xpath>

@@ -871,7 +871,7 @@ class purchase_order(osv.Model):
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
         'maize': fields.char('Maize PO Number', size=256, readonly=True),
         'contract_name': fields.char('Contract Name', size=256, readonly=True),
-        'voucher_id': fields.many2one('account.voucher', 'Payment'), 
+        'voucher_id': fields.many2one('account.voucher', 'Payment'),
     }
 
     def _prepare_order_picking(self, cr, uid, order, context=None):

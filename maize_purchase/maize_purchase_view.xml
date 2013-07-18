@@ -544,6 +544,7 @@
                     <field name="gp_date"/>
                     <field name="purchase_id"/>
                     <field name="maize_receipt" groups="indent.group_maize_data"/>
+                    <field name="voucher_id"/>
                 </xpath>
 
                 <xpath expr="/form/header//button[@name='%(stock.act_stock_return_picking)d']" position="replace">

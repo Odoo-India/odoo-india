@@ -971,6 +971,7 @@ class stock_picking(osv.Model):
             'cylinder': fields.char('Cylinder Number', size=50),
             'excisable_item': fields.boolean('Excisable Item'),
             'warehouse_id': fields.related('purchase_id', 'warehouse_id', type='many2one', relation='stock.warehouse', string='Destination Warehouse'),
+            'voucher_id': fields.many2one('account.voucher', 'Payment'),
                 }
 
     def create(self, cr, uid, vals, context=None):
@@ -1031,6 +1032,7 @@ class stock_picking(osv.Model):
                         'type': 'receipt',
                         'inward_date': datetime.today().strftime('%m-%d-%Y'),
                         'purchase_id': pick.purchase_id.id or False,
+                        'voucher_id': pick.voucher_id.id,
                         'move_lines': [(6,0, move_line)]
 
                         })
@@ -1154,6 +1156,7 @@ class stock_picking_receipt(osv.Model):
         'department_id': fields.related('purchase_id', 'indent_id', 'department_id', type="many2one", relation="stock.location", store=True),
         'maize_receipt': fields.char('Maize', size=256, readonly=True),
         'import_duty': fields.function(_total_amount, multi="cal", type="float", string='Import Duty', help="Total Import Duty", store=True),
+        'voucher_id': fields.many2one('account.voucher', 'Payment'),
     }
     _defaults = {
         'type': 'receipt',

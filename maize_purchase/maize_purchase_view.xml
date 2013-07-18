@@ -119,7 +119,7 @@
                     <field name="discount"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_ref']" position='after'>
-                    <field name='po_series_id' string="PO Series" attrs="{'invisible': [('contract', '!=', False)]}" domain="[('type', '=', 'purchase')]" widget="selection"/>
+                    <field name='po_series_id' string="PO Series" attrs="{'invisible': [('contract', '=', True)]}" domain="[('type', '=', 'purchase')]" widget="selection"/>
                     <field name='contract_id' string="Contract Series" attrs="{'invisible': [('contract', '=', False)]}" domain="[('type', '=', 'indent')]" widget="selection"/>
                     <field name="our_ref"/>
                     <field name="is_copy" invisible="1"/>

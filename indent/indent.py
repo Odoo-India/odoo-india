@@ -1102,6 +1102,7 @@ class product_order_series(osv.Model):
             'name': name,
             'implementation':'no_gap',
             'prefix': prefix + "/",
+            'suffix': '/%(year)s',
             'padding': 4,
             'number_increment': 1,
             'code': code

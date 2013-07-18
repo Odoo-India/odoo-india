@@ -784,6 +784,8 @@ class purchase_order(osv.Model):
                 sequence = seq_obj.get(cr, uid, seq)
             voucher_id = False
             totlines = []
+            total_amt = 0.0
+            flag = False
             if po.payment_term_id and po.payment_term_id.line_ids:
                 totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_untaxed, po.date_order or False, context=context)
             journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'TBNK')], context=context)
@@ -795,8 +797,13 @@ class purchase_order(osv.Model):
             if not account_id:
                 raise osv.except_osv(_("Warning !"),_('You must define a default debit and credit account for a journal.'))
             for line in totlines:
-                note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(line[1], sequence or '', po.indent_id.name or '',)
-                voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': line[0], 'amount': line[1], 'reference': sequence, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
+                today = fields.date.context_today(self, cr, uid, context=context)
+                if line[0] == today:
+                    total_amt += line[1]
+                    flag = True
+            if flag:
+                note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, sequence, po.indent_id.name or '',)
+                voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': sequence, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
             self.write(cr, uid, [po.id], {'name': sequence, 'voucher_id': voucher_id}, context=context)
             for pp in po.requisition_ids:
                 if pp.exclusive=='exclusive':

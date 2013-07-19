@@ -1107,6 +1107,9 @@ class stock_picking_receipt(osv.Model):
         line_price = 0.0
         purchase_line_obj = self.pool.get('purchase.order.line')
         line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])
+        if not line_id:
+            res.update({'new_price':0.0})
+            return res
         for line in purchase_line_obj.browse(cr, uid, line_id, context=context):
             line_price  = line.new_price
             res.update({'new_price': line_price,'order': line.order_id})
@@ -1307,7 +1310,8 @@ class stock_move(osv.osv):
         line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])
         line_id = line_id and line_id[0] or False
         if not line_id:
-            raise osv.except_osv(_('Configuration Error!'), _('Puchase Order don\'t  have line'))
+            return {'value':{}}
+            #raise osv.except_osv(_('Configuration Error!'), _('Puchase Order don\'t  have line'))
         line = purchase_line_obj.browse(cr, uid, line_id, context=context)
         move = [move for move in self.browse(cr, uid, ids,context=context) if move.id][0]
 

@@ -44,7 +44,7 @@ class stock_picking_in(osv.Model):
                         move_obj.write(cr, uid, [move.id], {'manage_container': True}, context=context)
                         default = dict(product_id = move.product_id.product_container_id.id)
                         new_prodlot = prodlot_obj.copy(cr, uid, move.prodlot_id.id, default, context=context)
-                        default = dict(product_id = move.product_id.product_container_id.id, product_uom = move.product_id.product_container_id.uom_id.id, product_qty = 1, prodlot_id = new_prodlot, state = 'assigned')
+                        default = dict(product_id = move.product_id.product_container_id.id, product_uom = move.product_id.product_container_id.uom_id.id, product_qty = move.challan_qty, prodlot_id = new_prodlot, state = 'assigned')
                         move_obj.copy(cr, uid, move.id, default, context=context)
         return super(stock_picking_in, self).action_process(cr, uid, ids, context=context)
 

@@ -165,7 +165,7 @@ class split_in_production_lot(osv.osv_memory):
                         update_val['product_qty'] = quantity_rest
                         update_val['product_uos_qty'] = uos_qty_rest
                         update_val['state'] = move.state
-                        update_val['challan_qty'] = 0.0
+                        update_val['challan_qty'] = quantity_rest
                         move_obj.write(cr, uid, [move.id], update_val)
 
         return new_move

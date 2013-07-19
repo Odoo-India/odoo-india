@@ -301,6 +301,7 @@ class account_invoice(osv.Model):
             },
             multi='all'),
         'account_code': fields.many2one('account.account', 'Account Code'),
+        'book_series_id': fields.many2one('product.order.series', 'Book Series'),
         'st_code':fields.selection([('nothing', 'Nothing')], 'S.T. Code'),
         'due_date': fields.date('Due Date'),
         'c_form':fields.boolean('C Form'),

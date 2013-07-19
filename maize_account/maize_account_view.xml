@@ -83,6 +83,7 @@
                         </group>
                         <group>
                             <field name="account_code"/>
+                            <field name="book_series_id" widget="selection"/>
                             <field name="st_code"/>
                             <field name="due_date"/>
                             <field name="c_form"/>

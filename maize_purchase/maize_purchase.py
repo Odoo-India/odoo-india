@@ -794,7 +794,7 @@ class purchase_order(osv.Model):
             flag = False
             if po.payment_term_id and po.payment_term_id.line_ids:
                 totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_untaxed, po.date_order or False, context=context)
-            journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'TBNK')], context=context)
+            journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
             journal_id = journal_ids and journal_ids[0] or False
             if not journal_id:
                 raise osv.except_osv(_("Warning !"),_('You must define a journal related to an advance payment.'))

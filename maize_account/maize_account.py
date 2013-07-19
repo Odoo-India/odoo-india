@@ -303,7 +303,12 @@ class account_invoice(osv.Model):
         'account_code': fields.many2one('account.account', 'Account Code'),
         'st_code':fields.selection([('nothing', 'Nothing')], 'S.T. Code'),
         'due_date': fields.date('Due Date'),
-        'c_form':fields.selection([('nothing', 'Nothing')], 'C Form'),
+        'c_form':fields.boolean('C Form'),
+        'state_id': fields.many2one('res.country.state', 'State'),
         'voucher_id': fields.many2one('account.voucher', 'Payment'),
+        'tds_ac_code': fields.selection([('nothing', 'Nothing')], 'TDS A/C Code'),
+        'tds_amount': fields.float('TDS Amount'),
+        'other_ac_code': fields.selection([('nothing', 'Nothing')], 'Other Deduction A/C Code'),
+        'other_amount': fields.float('Other Deduction Amount'),
     }
 account_invoice()

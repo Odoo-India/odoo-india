@@ -86,7 +86,14 @@
                             <field name="st_code"/>
                             <field name="due_date"/>
                             <field name="c_form"/>
-                            <field name="voucher_id"/>
+                            <field name="state_id"/>
+                            <field name="voucher_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="tds_ac_code"/>
+                            <field name="tds_amount"/>
+                            <field name="other_ac_code"/>
+                            <field name="other_amount"/>
                         </group>
                     </group>
                 </xpath>

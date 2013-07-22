@@ -94,7 +94,7 @@ class import_inward_line_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/kuldeep/Desktop/inwardtr20132014.csv"
+        file_path = "/home/kuldeep/Desktop/po_18_july/inward_line.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -126,9 +126,9 @@ class import_inward_line_data(osv.osv_memory):
                     inwrd_num = data["INDENTOR"]
                 if data["INDENTNO"]:
                     maize_no = data["INDENTNO"]
-                if data["INWARDNO"]:
-                    search_picking = data["INWARDNO"]
-                    picking_id = self.pool.get('stock.picking').search(cr,1,[('maize_in','=',search_picking)])[0]
+                #if data["INWARDNO"]:
+                    #search_picking = data["INWARDNO"]
+                    #picking_id = self.pool.get('stock.picking').search(cr,1,[('maize_in','=',search_picking)])[0]
                 if data["RECVQTY"]:
                     rqty = data["RECVQTY"]
                 if data["INWRATE"]:
@@ -140,7 +140,7 @@ class import_inward_line_data(osv.osv_memory):
                 if data["INWYEAR"]:
                     indyear = data["INWYEAR"] 
                 
-                po_name = data["POSERIES"]+'/'+data["PONO"]
+                po_name = data["POSERIES"] +'/'+ data["PONO"]+'/'+data['POYEAR']
                 maize_name = data["INWARDNO"]
                 new_picking_id = False
                 purchase_date = ''
@@ -165,19 +165,27 @@ class import_inward_line_data(osv.osv_memory):
 
                 
                 if po_name:
-                    exist_picking_po = self.pool.get('stock.picking.in').search(cr,uid,[('maize_in','=',maize_name),('date_done','>=',date_start),('date_done','<=',date_end)])
-                    exist_picking_po1 = self.pool.get('stock.picking.in').browse(cr,uid,exist_picking_po[0])
-                    if not  exist_picking_po1.purchase_id:
+                    #exist_picking_po = self.pool.get('stock.picking.in').search(cr,uid,[('maize_in','=',maize_name),('date_done','>=',date_start),('date_done','<=',date_end)])
+                    #exist_picking_po1 = self.pool.get('stock.picking.in').browse(cr,uid,exist_picking_po[0])
+                    purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',po_name)])[0]
+                    if purchase_id:
                         try:
-                            purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',data["POSERIES"]+'/'+data["PONO"]),('date_order','>=',date_start_po),('date_order','<=',date_end_po)])[0]
-                            if purchase_id:
+                            #purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',data["POSERIES"]+'/'+data["PONO"]),('date_order','>=',date_start_po),('date_order','<=',date_end_po)])[0]
+                            #if purchase_id:
+                                #purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
+                                #new_picking_id = self.pool.get('stock.picking.in').search(cr,uid,[('maize_in', '=', maize_name),('date_done','>=',date_start),('date_done','<=',date_end)])[0]
+                                #self.pool.get('stock.picking.in').write(cr,uid,new_picking_id,{'purchase_id':purchase_id})
+                            wf_service = netsvc.LocalService('workflow')
+                            wf_service.trg_validate(uid, 'purchase.order', purchase_id, 'purchase_confirm', cr)
+                            inward_id = self.pool.get('stock.picking.in').search(cr,uid,[('purchase_id','=',purchase_id)])
+                            if inward_id:
+                                move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[0]), ('type', '=', 'in'),('indent', '=', indent_id),('indentor', '=', indentor_id),('product_id', '=', product)])
                                 purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
-                                new_picking_id = self.pool.get('stock.picking.in').search(cr,uid,[('maize_in', '=', maize_name),('date_done','>=',date_start),('date_done','<=',date_end)])[0]
-                                self.pool.get('stock.picking.in').write(cr,uid,new_picking_id,{'purchase_id':purchase_id})
+                                print "\n -==- in idd ==->>>>", move_ids,indentor_id, product,inwrd_num
                                 new_vals = {
                                         'product_id': product,
                                         'name':po_name,
-                                        'picking_id': new_picking_id,
+                                        'picking_id': inward_id[0],
                                         'challan_qty':chlnqty,
                                         'product_qty': rqty,
                                         'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
@@ -190,7 +198,10 @@ class import_inward_line_data(osv.osv_memory):
                                         'indent':indent_id,
                                         'indentor':indentor_id,
                                         }
-                                move_pool.create(cr, uid, new_vals, context)                                
+                                move_pool.write(cr, uid, move_ids,new_vals, context)
+                            else:
+                                print "\nn=-=-=- not found line"
+                                rejected.append(data['INWARDNO'])
                         except:
                             po_not_found.append(data["POSERIES"]+'/'+data["PONO"]+'/'+data["POYEAR"])
                         

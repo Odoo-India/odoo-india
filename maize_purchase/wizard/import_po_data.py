@@ -42,6 +42,7 @@ class import_po_data(osv.osv_memory):
             items = dict(zip(fields, row))
             data_lines.append(items)
         return fields,data_lines
+    
     def _get_start_end_date_from_year(self,cr,uid,year):
         po_year_start=''
         po_year_end=''
@@ -93,7 +94,7 @@ class import_po_data(osv.osv_memory):
 #         po_pool.write(cr,uid,all_po,{'commission':0.01})
 #         po_pool.write(cr,uid,all_po,{'commission':0.00})
         po_pool = self.pool.get('purchase.order') 
-        file_path = "/home/kuldeep/Desktop/inward20132014butnotpo20132014.csv"
+        file_path = "/home/ara/Desktop/po_14july.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -106,7 +107,7 @@ class import_po_data(osv.osv_memory):
         indent = []
         rejected =[]
         partner = []
-        un_list = []
+        un_define = []
         note=''
         for data in data_lines:
             try:
@@ -117,9 +118,9 @@ class import_po_data(osv.osv_memory):
 #                print "data111111111111111111111111", data["INDENTOR"]
   
                 if data["PONO"]:
-                    name = data["POSERIES"] + data["PONO"]
-                if data["PONO"] and data["POSERIES"]:
-                    old_id = data["POSERIES"] + '/' +data["PONO"]
+                    name = data["POSERIES"]+'/'+ data["PONO"]+'/'+data["POYEAR"]
+#                 if data["PONO"] and data["POSERIES"]:
+#                     old_id = name
   
                 if data["POSERIES"]:
                     print ">>>>>>>>>>>", data["POSERIES"]
@@ -134,13 +135,13 @@ class import_po_data(osv.osv_memory):
                       
                 if data["SUPPCODE"]:
                     partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])
-                    un_define = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])
-                    if partner:
-                        partner = partner[0]
-                    else:
-                        un_list.append(data["SUPPCODE"])
-                        partner = un_define[0]
-  
+                    #un_define = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])
+                    try:
+                        if partner:
+                            partner = partner[0]
+                    except:
+                        un_define.append(data["SUPPCODE"])
+                        
                 if data["MILDELIV"]:
                     delv = self.pool.get('purchase.delivery')
                     delivery = delv.search(cr,uid,[('name','=',data["MILDELIV"])])
@@ -225,7 +226,6 @@ class import_po_data(osv.osv_memory):
                     elif data["SALETAX"] == 6:
                         if data["SALETAXPER1"] == '12.36':
                             vat = self.pool.get("account.tax").search(cr,uid,[('name','=','VAT @ 12.36%')])
-                    print "vatvatvatvat>>>", vat
                     vat_ids = [(6,0,vat)]
                       
                 if data["REMARK1"] or data["REMARK2"] or data["REMARK3"] or data["REMARK4"]:
@@ -244,8 +244,8 @@ class import_po_data(osv.osv_memory):
                         payment_term = payment_term[0]
                     else:
                         payment_term = pay_obj.create(cr,uid,{'name':data["PAYTERM"],'note':data["PAYTERM"],'active':True})
-                vals = {'name':name+data['POYEAR'],
-                        'maize':old_id,
+                vals = {'name':name,
+                        'maize':name,
                         'po_series_id':po_series,
                         'date_order':podate,
                         'partner_id': partner,
@@ -262,9 +262,9 @@ class import_po_data(osv.osv_memory):
                         'your_ref':yourref,
                         'our_ref':ourref,
                                                    }
-                date_start = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['start']
-                date_end = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['end']
-                exist_po = po_pool.search(cr,uid,[('name','=',name),('date_order','>=',date_start),('date_order','<=',date_end)])
+                #date_start = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['start']
+                # date_end = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['end']
+                exist_po = po_pool.search(cr,uid,[('maize','=',name)])
                 if not exist_po:
                     po_pool.create(cr, uid, vals, context)
                   
@@ -272,7 +272,7 @@ class import_po_data(osv.osv_memory):
                 rejected.append(data["POSERIES"] + '/' +data["PONO"])
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['SUPPCODE']), exc_info=True)
                 continue
-        print "rejectedrejectedrejected>> supplier not found", rejected,un_list
+        print "rejectedrejectedrejected>> supplier not found", rejected,un_define
         _logger.info("Successfully completed import PO process.")
         return True
    

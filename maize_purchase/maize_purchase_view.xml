@@ -1128,7 +1128,7 @@
             id="menu_action_maize_advance_note_report"
             parent="stock.next_id_61" sequence="7"/>
 
-        <!-- Override the menus to change products to items -->
+        <!-- Override the menus to change products to items in warehouse module-->
         <menuitem id="stock.menu_stock_product" name="Items" parent="stock.menu_stock_root" sequence="6"/>
         <menuitem name="Items by Category" id="stock.menu_product_by_category_stock_form" action="product.product_category_action"
             parent="stock.menu_stock_product" sequence="0"/>
@@ -1138,6 +1138,19 @@
             parent="stock.menu_stock_configuration" sequence="45" groups="base.group_no_one"/>
         <menuitem name="Item Categories" action="product.product_category_action_form" id="stock.menu_product_category_config_stock"
             parent="stock.menu_product_in_config_stock" sequence="0"/>
+
+        <!-- Override the menus to change products to items in purchase module-->
+        <menuitem id="purchase.menu_procurement_management_product" name="Items"
+            parent="base.menu_purchase_root" sequence="8"/>
+        <menuitem name="Items by Category" id="purchase.menu_product_by_category_purchase_form" action="product.product_category_action"
+            parent="purchase.menu_procurement_management_product" sequence="10"/>
+        <menuitem name="Items" id="purchase.menu_procurement_partner_contact_form" action="product.product_normal_action_puchased"
+            parent="purchase.menu_procurement_management_product"/>
+
+        <menuitem id="purchase.menu_product_in_config_purchase" name="Items"
+            parent="purchase.menu_purchase_config_purchase" sequence="30" groups="base.group_no_one"/>
+        <menuitem name="Item Categories" action="product.product_category_action_form" id="purchase.menu_product_category_config_purchase"
+            parent="purchase.menu_product_in_config_purchase" sequence="1" />
 
     </data>
 </openerp>

@@ -777,13 +777,13 @@ class purchase_order(osv.Model):
         payment_term_obj = self.pool.get('account.payment.term')
         voucher_obj = self.pool.get('account.voucher')
         for po in self.browse(cr, uid, ids, context=context):
-            sequence = False
-            if po.indent_id and po.indent_id.contract:
+            sequence = po.name
+            if po.indent_id and po.indent_id.contract and not po.maize:
                 if not po.contract_id:
                     raise osv.except_osv(_("Warning !"),_('Please select a contract series.'))
                 contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
                 sequence = seq_obj.get(cr, uid, contract_seq)
-            else:
+            elif not po.maize:
                 if not po.po_series_id:
                     raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
                 seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code

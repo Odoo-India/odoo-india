@@ -45,7 +45,7 @@ class import_indent_data(osv.osv_memory):
     
     def do_import_indent_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ara/Desktop/INDENTNOT20132014BUTINWORD20132014.csv"
+        file_path = "/home/ara/Desktop/IDENTNOT20132014BUTPO20132014.csv"
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")
             return True
@@ -84,7 +84,7 @@ class import_indent_data(osv.osv_memory):
 #                 
                   
                 #==============================================================================#
-                fiscalyear = self.pool.get('account.fiscalyear').search(cr,uid,[('name','=',data['INDYEAR'].strip())])[0]
+                fiscalyear = data['INDYEAR'].strip()
                 exist_indent_list = indent_pool.search(cr,uid,[('name','=', data["INDENTNO"].strip()),('fiscalyear','=',fiscalyear)])
                 exist_indent = []
                 if exist_indent_list:

@@ -94,7 +94,7 @@ class import_po_data(osv.osv_memory):
 #         po_pool.write(cr,uid,all_po,{'commission':0.01})
 #         po_pool.write(cr,uid,all_po,{'commission':0.00})
         po_pool = self.pool.get('purchase.order') 
-        file_path = "/home/ara/Desktop/po_14july.csv"
+        file_path = "/home/ara/Desktop/ponot20132014butinward20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -250,7 +250,7 @@ class import_po_data(osv.osv_memory):
                         'date_order':podate,
                         'partner_id': partner,
                         'delivey':delivey,
-                        'location_id':12,
+                        'location_id':299,
                         'pricelist_id':2,
                         'insurance':ins,
                         'insurance_type':ins_type,

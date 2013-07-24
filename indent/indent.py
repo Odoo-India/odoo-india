@@ -104,7 +104,7 @@ class indent_indent(osv.Model):
             },
             ),
         'maize': fields.char('Maize', size=256, readonly=True),
-        'fiscalyear': fields.many2one('account.fiscalyear', 'Year', readonly=True, states={'draft': [('readonly', False)]}),
+        'fiscalyear': fields.char('Year', readonly=True),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting For Approval'), ('inprogress', 'Inprogress'), ('received', 'Received'), ('reject', 'Rejected')], 'State', readonly=True, track_visibility='onchange'),
     }
 
@@ -131,12 +131,13 @@ class indent_indent(osv.Model):
         'type': 'new',
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c),
         'active': True,
+        'fiscalyear': str(time.strptime(time.strftime('%Y', time.localtime()),'%Y').tm_year)+str(time.strptime(time.strftime('%Y', time.localtime()),'%Y').tm_year+1)
     }
 
     def create(self, cr, uid, vals, context=None):
         if vals.get('department_id'):
             location = self.pool.get('stock.location').browse(cr, uid, vals.get('department_id'), context=context).location_id
-            if location and location.seq_id:
+            if location and location.seq_id and not vals.get('maize'):
                 seq = location.seq_id.code
                 vals['name'] = self.pool.get('ir.sequence').get(cr, uid, seq)
         return super(indent_indent, self).create(cr, uid, vals, context=context)
@@ -144,7 +145,7 @@ class indent_indent(osv.Model):
     def write(self, cr, uid, ids, vals, context=None):
         if vals.get('department_id'):
             location = self.pool.get('stock.location').browse(cr, uid, vals.get('department_id'), context=context).location_id
-            if location and location.seq_id:
+            if location and location.seq_id and not vals['maize']:
                 seq = location.seq_id.code
                 vals['name'] = self.pool.get('ir.sequence').get(cr, uid, seq)
         return super(indent_indent, self).write(cr, uid, ids, vals, context=context)

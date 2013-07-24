@@ -89,21 +89,19 @@ class import_po_line_data(osv.osv_memory):
         return fields,data_lines
     
     def po_line_create(self,cr,uid,ids,context=None):
-        file_path = "/home/ara/Desktop/po_detail14july.csv"
+        file_path = "/home/ara/Desktop/potrnot20132014butinward20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
         except:
             _logger.warning("Can not read source file(csv) '%s', Invalid file path or File not reachable on file system."%(file_path))
             return True            
-
+ 
         _logger.info("Starting Import PO LINE Process from file '%s'."%(file_path))
         pol_pool =self.pool.get('purchase.order.line')
-        po_order = self.pool.get('purchase.order')
         indent = []
         rejected =[]
         exist_line=[]
-        indent_not_found_list = []
         item_not_found = []
         project_not_match = []
         for data in data_lines:
@@ -133,7 +131,7 @@ class import_po_line_data(osv.osv_memory):
                     elif len(data["DEPTCODE"].strip()) == 3:
                         dept = data["DEPTCODE"].strip()
                     department = self.pool.get('stock.location').search(cr, uid,[('code','=',dept)])[0]
-                    
+                     
                 mach = False
                 if len(data["MACHCODE"].strip()) == 1:
                     mach = '00'+data["MACHCODE"].strip()
@@ -150,7 +148,7 @@ class import_po_line_data(osv.osv_memory):
                 if data["DISCPER"]:
                     discount = data["DISCPER"]
                     #self.pool.get('purchase.order').write(cr,uid,po[0],{'discount_percentage':discount})
-
+ 
                 indent_id=False
                 indentor_id=False
                 fiscalyear = self.pool.get('account.fiscalyear').search(cr,uid,[('name','=',data['INDYEAR'].strip())])
@@ -162,7 +160,7 @@ class import_po_line_data(osv.osv_memory):
                     indentor_id = indentor and indentor[0] or ''
                 if data["SQTY"]:
                     qty = data["SQTY"]
-                    
+                     
                 if data["DLVDATE"]:
                     if data["DLVDATE"] == 'NULL' or data["DLVDATE"] == '' or data["DLVDATE"] == '00:00.0' or data["DLVDATE"] == '  ':
                         dlv_date = ''
@@ -202,8 +200,12 @@ class import_po_line_data(osv.osv_memory):
         print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.", rejected,
         print "project_not_matchproject_not_matchproject_not_match", project_not_match
         print ">>>>item_not_founditem_not_founditem_not_found", item_not_found
-        #aaa = self.pool.get('purchase.order').search(cr,uid,[])
-#         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
-#         self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
+#         aaa = self.pool.get('purchase.order').search(cr,uid,[])
+#         j=0
+#         for i in aaa:
+#             j=j+1
+#             print ">>>>", j
+#             self.pool.get('purchase.order').write(cr,uid,i,{'commission':0.01})
+#             self.pool.get('purchase.order').write(cr,uid,i,{'commission':0.00})
         return True
 import_po_line_data()

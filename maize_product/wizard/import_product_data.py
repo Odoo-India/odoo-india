@@ -20,13 +20,13 @@
 ##############################################################################
 
 import time
-import datetime
+from datetime import datetime
 from openerp.osv import fields, osv
 import csv
 import logging
+import os
 from openerp import netsvc
 _logger = logging.getLogger("Product product")
-import datetime
 
 class import_product_data(osv.osv_memory):
     _name = "import.product.data"
@@ -44,9 +44,27 @@ class import_product_data(osv.osv_memory):
             data_lines.append(items)
         return fields,data_lines
 
+    def _write_bounced_product(self, cr, uid, file_head, bounced_detail, context):
+        if not file_head:
+            _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
+            return False
+        try:
+            dtm = datetime.today().strftime("%Y%m%d%H%M%S")
+            fname = "BOUNCED_PRODUCT"+dtm+".csv"
+            _logger.info("Opening file '%s' for logging the bounced partner detail."%(fname))
+            fl= csv.writer(open(file_head+"/"+fname, 'wb'))
+            for ln in  bounced_detail:
+                fl.writerow(ln)
+            _logger.info("Successfully exported the bounced partner detail to the file %s."%(fname))
+            return True
+        except Exception, e:
+            print e
+            _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
+            return False
+
     #TODO:FIX ME TO FIND INDENT
     def import_product_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ara/Desktop/all_item_till14july1.csv"
+        file_path = "/home/ara/Desktop/odt/Itemmast/itemmast.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -58,6 +76,7 @@ class import_product_data(osv.osv_memory):
         product_pool =self.pool.get('product.product')
         indent = []
         rejected =[]
+        bounced_product = [tuple(fields)]
         i = 0
         for data in data_lines:
             try:
@@ -109,13 +128,13 @@ class import_product_data(osv.osv_memory):
                         if last_po_date == 'NULL' or last_po_date == '' or last_po_date == '00:00.0' or last_po_date == '  ' or last_po_date == ' ':
                             last_po_date = False
                         else:
-                            last_po_date=datetime.datetime.strptime(last_po_date, '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
+                            last_po_date=datetime.strptime(last_po_date, '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
     
                     if last_issue_date:
                         if last_issue_date == 'NULL' or last_issue_date == '' or last_issue_date == '00:00.0' or last_issue_date == '  ' or last_issue_date == ' ':
                             last_issue_date = False
                         else:
-                            last_issue_date=datetime.datetime.strptime(last_issue_date, '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
+                            last_issue_date=datetime.strptime(last_issue_date, '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
     
     
                     if last_supplier_code:
@@ -195,9 +214,13 @@ class import_product_data(osv.osv_memory):
                     print ">>>>>>>>>>>>>>222222222",i
             except:
                 rejected.append(data['ITEMCODE'])
+                reject = [ data.get(f, '') for f in fields]
+                bounced_product.append(reject)
                 _logger.warning("Skipping Record with Itemcode code '%s'."%(data['ITEMCODE']), exc_info=True)
                 continue
         print "REJECTED Product", rejected
+        head, tail = os.path.split(file_path)
+        self._write_bounced_product(cr, uid, head, bounced_product, context)         
 #        ppr = self.pool.get('product.product').search(cr,uid,[])
 #        self.pool.get('product.product').write(cr,uid,ppr,{'state':'done'})
         _logger.info("Successfully completed import RECIEPT HEADER process.")

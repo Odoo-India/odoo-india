@@ -2,6 +2,19 @@
 <openerp>
     <data noupdate="1">
 
+        <!-- Sequence for Gate Pass -->
+        <record id="seq_contract_maize_type" model="ir.sequence.type">
+            <field name="name">Maize Contract</field>
+            <field name="code">contract.maize</field>
+        </record>
+
+        <record id="seq_contract_maize" model="ir.sequence">
+            <field name="name">Maize Contract</field>
+            <field name="code">contract.maize</field>
+            <field name="padding">4</field>
+            <field name="suffix">/%(year)s</field>
+        </record>
+
         <record id="product_order_series_1" model="product.order.series">
             <field name="code">MS</field>
             <field name="name">MISC.SALARY</field>

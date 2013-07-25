@@ -20,7 +20,8 @@
 ##############################################################################
 
 import time
-import datetime
+import os
+from datetime import datetime
 from openerp.osv import fields, osv
 import csv
 import logging
@@ -42,10 +43,28 @@ class import_indent_data(osv.osv_memory):
             items = dict(zip(fields, row))
             data_lines.append(items)
         return fields,data_lines
-    
+
+    def _write_bounced_indent(self, cr, uid, file_head, bounced_detail, context):
+        if not file_head:
+            _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
+            return False
+        try:
+            dtm = datetime.today().strftime("%Y%m%d%H%M%S")
+            fname = "BOUNCED_INDENT"+dtm+".csv"
+            _logger.info("Opening file '%s' for logging the bounced partner detail."%(fname))
+            fl= csv.writer(open(file_head+"/"+fname, 'wb'))
+            for ln in  bounced_detail:
+                fl.writerow(ln)
+            _logger.info("Successfully exported the bounced partner detail to the file %s."%(fname))
+            return True
+        except Exception, e:
+            print e
+            _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
+            return False
+
     def do_import_indent_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ara/Desktop/IDENTNOT20132014BUTPO20132014.csv"
+        file_path = "/home/ara/Desktop/odt/indent/INDENTNOT20132014BUTINWORD20132014.csv"
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")
             return True
@@ -58,7 +77,7 @@ class import_indent_data(osv.osv_memory):
         if not data_lines:
             _logger.info("File '%s' has not data or it has been already imported, please update the file."%(file_path))
             return True
-        _logger.info("Starting Import Journal Process from file '%s'."%(file_path))
+        _logger.info("Starting Import Indent Process from file '%s'."%(file_path))
         indent_pool =self.pool.get('indent.indent')
         indent = []
         c_po=[]
@@ -66,36 +85,36 @@ class import_indent_data(osv.osv_memory):
         cn_po=[]
         project_not_match = []
         indent_list = []
+        bounced_indent = [tuple(fields)]
         for data in data_lines:
             try:
                     #+++++++++++++++++++++++++++++++++++++++++++++++++++++=======================#
-                      
+                       
 #                 if int(data['PONO'].strip()) != 0:
 #                     wf_service = netsvc.LocalService('workflow')
-#                     indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"]),('fiscalyear','=',data["INDYEAR"])])[0]
+#                     indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"]+'/'+data["INDYEAR"])])[0]
 #                     user_indent = self.pool.get('indent.indent').browse(cr,uid,indent).indentor_id.id
-#                     print "indentnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", indent
 #                     wf_service.trg_validate(user_indent, 'indent.indent', indent, 'indent_confirm', cr)
 #                     wf_service.trg_validate(7, 'indent.indent', indent, 'indent_inprogress', cr)
 #                     c_po.append(data["INDENTNO"])
 #                 else:
-#                     not_po.append(data["INDENTNO"])
-#                 print "data111111111111111111111111", data["INDENTNO"]
+#                     not_po.append(data["INDENTNO"]+'/'+data["INDYEAR"])
+#                 print ">>>>>>>>>>>>>>>>>>>>>.", not_po            
 #                 
-                  
+                   
                 #==============================================================================#
                 fiscalyear = data['INDYEAR'].strip()
-                exist_indent_list = indent_pool.search(cr,uid,[('name','=', data["INDENTNO"].strip()),('fiscalyear','=',fiscalyear)])
+                exist_indent_list = indent_pool.search(cr,uid,[('name','=', data["INDENTNO"].strip()+'/'+data["INDYEAR"])])
                 exist_indent = []
                 if exist_indent_list:
                     exist_indent = exist_indent_list[0]
                 if not exist_indent:
                     emp_obj = self.pool.get('hr.employee')
                     if data["INDENTNO"]:
-                        name = data["INDENTNO"].strip()
+                        name = data["INDENTNO"].strip()+'/'+data["INDYEAR"]
                     indentor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])[0]
                     emp = emp_obj.search(cr, uid, [('user_id', '=', indentor)], context=context)[0]
-                      
+                       
                     if data["DEPTCODE"].strip():
                         if len(data["DEPTCODE"].strip()) == 1:
                             dept = '00'+data["DEPTCODE"].strip()
@@ -104,12 +123,12 @@ class import_indent_data(osv.osv_memory):
                         elif len(data["DEPTCODE"].strip()) == 3:
                             dept = data["DEPTCODE"].strip()
                         department = self.pool.get('stock.location').search(cr, uid,[('code','=',dept)])[0]
-                          
+                           
                     if data["ITEMREQ"] =='U':
                         req = 'urgent'
                     else:
                         req = 'ordinary'
-                          
+                           
                     if data["INDTYPE"] =='New':
                         type = 'new'
                     else:
@@ -121,13 +140,13 @@ class import_indent_data(osv.osv_memory):
                     if data["INDDATE"] == 'NULL' or data["INDDATE"] == '' or data["INDDATE"] == '00:00.0' or data["INDDATE"] == '  ':
                         indent_date = ''
                     else:
-                        indent_date=datetime.datetime.strptime(data["INDDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
+                        indent_date=datetime.strptime(data["INDDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                     req_date=''
                     if data["REQDATE"] == 'NULL' or data["REQDATE"] == '' or data["REQDATE"] == '00:00.0' or data["REQDATE"] == '  ':
                         req_date = ''
                     else:
-                        req_date = datetime.datetime.strptime(data["REQDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
-                      
+                        req_date = datetime.strptime(data["REQDATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
+                       
                     mach = False
                     if len(data["MACHCODE"].strip()) == 1:
                         mach = '00'+data["MACHCODE"].strip()
@@ -141,7 +160,7 @@ class import_indent_data(osv.osv_memory):
                             project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0]
                         except:
                             project_not_match.append(mach)                    
-                          
+                           
                     description=data['REMARK1']+'\n'+data['REMARK2']
                     data['indent'] = indent_pool.create(cr, uid, {'name':name,
                                                                   'indentor_id':indentor,
@@ -157,21 +176,24 @@ class import_indent_data(osv.osv_memory):
                                                                   'fiscalyear':fiscalyear,
                                                        }, context)
                     indent_list.append(name)
-      
-  
+       
+   
             except:
                 print "data['INDENTNO']", data['INDENTNO']
                 cn_po.append(data['INDENTNO'])
+                reject = [ data.get(f, '') for f in fields]
+                bounced_indent.append(reject)                
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['INDENTNO']), exc_info=True)
                 continue
         print "indentindentindentindent>>>>>>>>>>>>>>>>>>>>>>>with po",c_po
         print "indentindentindentindent>>>>>>>>>>>>>>>>>>>>>>>>>>>with not po",not_po
         print "indentindentindentindent>>>>>>>>>>>>>>>>>>>>>>>>>>>canvel",cn_po
         print "project_not_match>>>>>>>>>>>>>>>>>",project_not_match
-        print ">>>>>>>>>>>>>>>>>>>>>>>>>", indent_list
-         
+        head, tail = os.path.split(file_path)
+        self._write_bounced_indent(cr, uid, head, bounced_indent, context)
+        _logger.info("Successfully completed import journal process.")
         
-#        for delete balnt contract indent
+#        for delete blank contract indent
 #         con_un = []
 #         indent_pool = self.pool.get('indent.indent')
 #         contracts=indent_pool.search(cr,uid,[('contract','=',True)])
@@ -188,7 +210,7 @@ class import_indent_data(osv.osv_memory):
 #             wf_service.trg_validate(user_indent, 'indent.indent', co, 'indent_confirm', cr)
 #             wf_service.trg_validate(7, 'indent.indent', co, 'indent_inprogress', cr)
 
+         
         
-        _logger.info("Successfully completed import journal process.")
         return True
 import_indent_data()

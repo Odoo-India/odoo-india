@@ -19,14 +19,13 @@
 #
 ##############################################################################
 
-import time
-import datetime
+from datetime import datetime
 from openerp.osv import fields, osv
 import csv
+import os
 import logging
 from openerp import netsvc
 _logger = logging.getLogger("Product product")
-import datetime
 
 class import_product_supp_data(osv.osv_memory):
     _name = "import.product.supp.data"
@@ -43,10 +42,28 @@ class import_product_supp_data(osv.osv_memory):
             items = dict(zip(fields, row))
             data_lines.append(items)
         return fields,data_lines
+    
+    def _write_bounced_product_supplier(self, cr, uid, file_head, bounced_detail, context):
+        if not file_head:
+            _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
+            return False
+        try:
+            dtm = datetime.today().strftime("%Y%m%d%H%M%S")
+            fname = "BOUNCED_PRODUCT_SUPPLIER"+dtm+".csv"
+            _logger.info("Opening file '%s' for logging the bounced partner detail."%(fname))
+            fl= csv.writer(open(file_head+"/"+fname, 'wb'))
+            for ln in  bounced_detail:
+                fl.writerow(ln)
+            _logger.info("Successfully exported the bounced partner detail to the file %s."%(fname))
+            return True
+        except Exception, e:
+            print e
+            _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
+            return False
 
     #TODO:FIX ME TO FIND INDENT
     def import_product_supp_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ara/Desktop/script/ITEM_MASTER_SUPPLIERWISE.csv"
+        file_path = "/home/ara/Desktop/odt/Itemmast/itemsupp.csv"
         
         fields = data_lines = False
         try:
@@ -55,10 +72,11 @@ class import_product_supp_data(osv.osv_memory):
             _logger.warning("Can not read source file(csv) '%s', Invalid file path or File not reachable on file system."%(file_path))
             return True
 
-        _logger.info("Starting Import Product Process from file '%s'."%(file_path))
+        _logger.info("Starting Import Product Supplier Process from file '%s'."%(file_path))
         product_pool =self.pool.get('product.supplierinfo')
         indent = []
         rejected =[]
+        bounced_product_supplier = [tuple(fields)]
 #        self.pool.get('product.product').write(cr,uid,pr,{'state':'done'})
         #set undefine supplier on all product where seller is none
 #         prod = self.pool.get('product.product').search(cr,uid,[])
@@ -77,7 +95,7 @@ class import_product_supp_data(osv.osv_memory):
         for data in data_lines:
             try:
                 default_code = data["ITEMCODE"].strip()
-                name=data["LSUPPCODE"].strip()
+                name=data["SUPPCODE"].strip()
                 if default_code:
                     default_code = '0'+default_code
                     product_lst = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
@@ -86,8 +104,8 @@ class import_product_supp_data(osv.osv_memory):
                         product = product_lst[0]
                 if name:
                     print "name", name
-                    sp = name[1:]
-                    supplier_lst = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',sp)])
+                    #sp = name[1:]
+                    supplier_lst = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',name)])
                     print "supplier_lstsupplier_lst", supplier_lst
                     if supplier_lst:
                         supplier = supplier_lst[0]
@@ -106,9 +124,13 @@ class import_product_supp_data(osv.osv_memory):
                         p = product_pool.create(cr, uid, vals, context)
             except:
                 rejected.append(data['ITEMCODE'])
+                reject = [ data.get(f, '') for f in fields]
+                bounced_product_supplier.append(reject)
                 _logger.warning("Skipping Record with reciept code '%s'."%(data['ITEMCODE']), exc_info=True)
                 continue
         print "REJECTED Suppler product", rejected
+        head, tail = os.path.split(file_path)
+        self._write_bounced_product_supplier(cr, uid, head, bounced_product_supplier, context) 
         _logger.info("Successfully completed import RECIEPT HEADER process.")
         return True
 

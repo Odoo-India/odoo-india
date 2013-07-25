@@ -60,8 +60,10 @@
                     <sheet>
                         <div class="oe_title">
                             <h1>
-                                <label string="Draft Indent" attrs="{'invisible': [('state','&lt;&gt;','draft')]}"/>
-                                <label string="Indent" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                                <label string="Draft Indent" attrs="{'invisible': ['|',('contract','=',True),('state','&lt;&gt;','draft')]}"/>
+                                <label string="Draft Contract" attrs="{'invisible': ['|',('contract','=',False),('state','&lt;&gt;','draft')]}"/>
+                                <label string="Indent" attrs="{'invisible': ['|',('contract','=',True),('state', '=', 'draft')]}"/>
+                                <label string="Contract" attrs="{'invisible': ['|',('contract','=',False),('state', '=', 'draft')]}"/>
                                 <field name="name" class="oe_inline"/>
 	                        </h1>
                         </div>

@@ -137,15 +137,18 @@ class indent_indent(osv.Model):
     def create(self, cr, uid, vals, context=None):
         if vals.get('department_id'):
             location = self.pool.get('stock.location').browse(cr, uid, vals.get('department_id'), context=context).location_id
-            if location and location.seq_id and not vals.get('maize'):
+            if location and location.seq_id and not vals.get('maize') and not vals.get('contract'):
                 seq = location.seq_id.code
                 vals['name'] = self.pool.get('ir.sequence').get(cr, uid, seq)
+            elif vals.get('contract'):
+                vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'contract.maize')
         return super(indent_indent, self).create(cr, uid, vals, context=context)
 
     def write(self, cr, uid, ids, vals, context=None):
-        if vals.get('department_id'):
+        con = self.browse(cr,uid,ids)[0].contract
+        if vals.get('department_id') and not con:
             location = self.pool.get('stock.location').browse(cr, uid, vals.get('department_id'), context=context).location_id
-            if location and location.seq_id and not vals['maize']:
+            if location and location.seq_id:
                 seq = location.seq_id.code
                 vals['name'] = self.pool.get('ir.sequence').get(cr, uid, seq)
         return super(indent_indent, self).write(cr, uid, ids, vals, context=context)
@@ -1178,6 +1181,7 @@ class stock_location(osv.Model):
                 'name': name,
                 'implementation':'no_gap',
                 'prefix': prefix,
+                'suffix' : '/%(year)s',
                 'padding': padding,
                 'number_increment': 1,
                 'code': code

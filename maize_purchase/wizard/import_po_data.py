@@ -20,7 +20,8 @@
 ##############################################################################
 
 import time
-import datetime
+import os
+from datetime import datetime
 from openerp.osv import fields, osv
 import csv
 import logging
@@ -43,58 +44,30 @@ class import_po_data(osv.osv_memory):
             data_lines.append(items)
         return fields,data_lines
     
-    def _get_start_end_date_from_year(self,cr,uid,year):
-        po_year_start=''
-        po_year_end=''
-        if year =='20132014':
-            po_year_start = '2013-04-01'
-            po_year_end = '2014-03-31'
-        elif year =='20122013':
-            po_year_start = '2012-04-01'
-            po_year_end = '2013-03-31'
-        elif year =='20112012':
-            po_year_start = '2011-04-01'
-            po_year_end = '2012-03-31'
-        elif year =='20102011':
-            po_year_start = '2010-04-01'
-            po_year_end = '2011-03-31'
-        elif year =='20092010':
-            po_year_start = '2009-04-01'
-            po_year_end = '2010-03-31'
-        elif year =='20082009':
-            po_year_start = '2008-04-01'
-            po_year_end = '2009-03-31'
-        elif year =='20072008':
-            po_year_start = '2007-04-01'
-            po_year_end = '2008-03-31'
-        elif year =='20062007':
-            po_year_start = '2006-04-01'
-            po_year_end = '2007-03-31'                                
-        elif year =='20052006':
-            po_year_start = '2005-04-01'
-            po_year_end = '2006-03-31'
-        elif year =='20042005':
-            po_year_start = '2004-04-01'
-            po_year_end = '2005-03-31'
-        elif year =='20032004':
-            po_year_start = '2003-04-01'
-            po_year_end = '2004-03-31'
-        elif year =='20022003':
-            po_year_start = '2002-04-01'
-            po_year_end = '2003-03-31'
-        elif year =='20012002':
-            po_year_start = '2001-04-01'
-            po_year_end = '2002-03-31'
-        elif year =='20002001':
-            po_year_start = '2000-04-01'
-            po_year_end = '2001-03-31'
-        return {'start':po_year_start,'end':po_year_end}      
+    def _write_bounced_po(self, cr, uid, file_head, bounced_detail, context):
+        if not file_head:
+            _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
+            return False
+        try:
+            dtm = datetime.today().strftime("%Y%m%d%H%M%S")
+            fname = "BOUNCED_PO"+dtm+".csv"
+            _logger.info("Opening file '%s' for logging the bounced partner detail."%(fname))
+            fl= csv.writer(open(file_head+"/"+fname, 'wb'))
+            for ln in  bounced_detail:
+                fl.writerow(ln)
+            _logger.info("Successfully exported the bounced partner detail to the file %s."%(fname))
+            return True
+        except Exception, e:
+            print e
+            _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
+            return False
+
     def do_import_po_data(self, cr, uid,ids, context=None):
 #         all_po = po_pool.search(cr,uid,[])
 #         po_pool.write(cr,uid,all_po,{'commission':0.01})
 #         po_pool.write(cr,uid,all_po,{'commission':0.00})
         po_pool = self.pool.get('purchase.order') 
-        file_path = "/home/ara/Desktop/ponot20132014butinward20132014.csv"
+        file_path = "/home/ara/Desktop/odt/PO/poheader.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -109,6 +82,7 @@ class import_po_data(osv.osv_memory):
         partner = []
         un_define = []
         note=''
+        bounced_po = [tuple(fields)]
         for data in data_lines:
             try:
 #                if data['APRVID'] == 'Y':
@@ -123,14 +97,13 @@ class import_po_data(osv.osv_memory):
 #                     old_id = name
   
                 if data["POSERIES"]:
-                    print ">>>>>>>>>>>", data["POSERIES"]
                     po_series = self.pool.get('product.order.series').search(cr,uid,[('code','=',str(data["POSERIES"]))])[0]
                       
                 if data["PODATE"]:
                     if data["PODATE"] == 'NULL' or data["PODATE"] == '' or data["PODATE"] == '00:00.0' or data["PODATE"] == '  ':
                         value = ''
                     else:
-                        value=datetime.datetime.strptime(data["PODATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
+                        value=datetime.strptime(data["PODATE"], '%Y-%m-%d 00:00:00.000').strftime("%Y-%m-%d")
                     podate = value
                       
                 if data["SUPPCODE"]:
@@ -262,16 +235,20 @@ class import_po_data(osv.osv_memory):
                         'your_ref':yourref,
                         'our_ref':ourref,
                                                    }
-                #date_start = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['start']
-                # date_end = self._get_start_end_date_from_year(cr,uid,data['POYEAR'])['end']
                 exist_po = po_pool.search(cr,uid,[('maize','=',name)])
                 if not exist_po:
                     po_pool.create(cr, uid, vals, context)
                   
             except:
                 rejected.append(data["POSERIES"] + '/' +data["PONO"])
+                reject = [ data.get(f, '') for f in fields]
+                bounced_po.append(reject)
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['SUPPCODE']), exc_info=True)
                 continue
+            
+        head, tail = os.path.split(file_path)
+        self._write_bounced_po(cr, uid, head, bounced_po, context)
+                    
         print "rejectedrejectedrejected>> supplier not found", rejected,un_define
         _logger.info("Successfully completed import PO process.")
         return True

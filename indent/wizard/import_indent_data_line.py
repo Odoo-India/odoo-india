@@ -20,7 +20,8 @@
 ##############################################################################
 
 import time
-import datetime
+import os
+from datetime import datetime
 from openerp.osv import fields, osv
 import csv
 import logging
@@ -42,14 +43,14 @@ class import_indent_data_line(osv.osv_memory):
             items = dict(zip(fields, row))
             data_lines.append(items)
         return fields,data_lines
-    
-    def _write_bounced_pos(self, cr, uid, file_head, bounced_detail, context):
+
+    def _write_bounced_indent_line(self, cr, uid, file_head, bounced_detail, context):
         if not file_head:
             _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
             return False
         try:
-            dtm = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
-            fname = "BOUNCED_POS_NOT_FOUND"+dtm+".csv"
+            dtm = datetime.today().strftime("%Y%m%d%H%M%S")
+            fname = "BOUNCED_INDENT_LINE"+dtm+".csv"
             _logger.info("Opening file '%s' for logging the bounced partner detail."%(fname))
             fl= csv.writer(open(file_head+"/"+fname, 'wb'))
             for ln in  bounced_detail:
@@ -59,10 +60,9 @@ class import_indent_data_line(osv.osv_memory):
         except Exception, e:
             print e
             _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
-            return False
         
     def do_import_indent_data_line(self, cr, uid,ids, context=None):
-        file_path = "/home/ara/Desktop/intest.csv"
+        file_path = "/home/ara/Desktop/odt/indent/INDENTTRANSACTIONNOT20132014BUTINWORD20132014.csv"
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")
             return True
@@ -84,17 +84,18 @@ class import_indent_data_line(osv.osv_memory):
         not_po = []
         cn_po=[]
         item_list= []
+        bounced_indent_line = [tuple(fields)]
 # "product_uom": "ITEMCODE",
         
         for data in data_lines:
-            fiscalyear = self.pool.get('account.fiscalyear').search(cr,uid,[('name','=',data['INDYEAR'])])[0]
+            fiscalyear = data['INDYEAR'].strip()
             try:
-                indent = indent_pool.search(cr,uid,[('name','=', data["INDENTNO"].strip()),('fiscalyear','=',fiscalyear)])[0]
-                indent_line = indent_line_pool.search(cr,uid,[('indent_id','=',indent)])
+                indent = indent_pool.search(cr,uid,[('maize','=', data["INDENTNO"].strip()+'/'+fiscalyear)])[0]
+                product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
+                indent_line = indent_line_pool.search(cr,uid,[('indent_id','=',indent),('product_id','=',product)])
                 
                 if data["ITEMCODE"] and not indent_line:
                     try:
-                        product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
                         product_uom = self.pool.get('product.product').browse(cr,uid,product).uom_id.id
                         sqty = data['SQTY']
                         name = data['PURPOSE']
@@ -117,12 +118,15 @@ class import_indent_data_line(osv.osv_memory):
             except:
                 print "data['INDENTNO']", data['INDENTNO']
                 cn_po.append(data['INDENTNO'])
+                reject = [ data.get(f, '') for f in fields]
+                bounced_indent_line.append(reject) 
                 _logger.warning("Skipping Record with Indent code '%s'."%(data['INDENTNO']), exc_info=True)
                 continue
         print "indentindentindentindent>>>>>>>>>>>>>>>>>>>>>>>with po",c_po
         print "indentindentindentindent>>>>>>>>>>>>>>>>>>>>>>>>>>>with not po",not_po
         print "indentindentindentindent>>>>>>>>>>>>>>>>>>>>>>>>>>>canvel",item_list
-        
+        head, tail = os.path.split(file_path)
+        self._write_bounced_indent_line(cr, uid, head, bounced_indent_line, context)  
         _logger.info("Successfully completed import journal process.")
         return True
 import_indent_data_line()

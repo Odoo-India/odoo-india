@@ -1,127 +1,176 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-    <data>
-    
-        <!-- Account Tax Form Inherit for add field -->
-        <record id="view_maize_account_tax_form" model="ir.ui.view">
-            <field name="name">inherit.account.tax.form</field>
-            <field name="model">account.tax</field>
-            <field name="inherit_id" ref="account.view_tax_form" />
-            <field name="arch" type="xml">
-                <xpath expr="//form/group/group/field[@name='description']" position='after'>
-                    <field name="tax_type" on_change="onchange_tax_type(name,tax_type)"/>
-                </xpath>
-            </field>
-        </record>
-        
-        <!-- Account Tax tree Inherit for add field -->
-        <record id="view_maize_account_tax_tree" model="ir.ui.view">
-            <field name="name">inherit.account.tax.tree</field>
-            <field name="model">account.tax</field>
-            <field name="inherit_id" ref="account.view_tax_tree" />
-            <field name="arch" type="xml">
-                <xpath expr="//tree/field[@name='description']" position='attributes'>
-                    <attribute name="invisible">True</attribute>
-                </xpath>
-                <xpath expr="//tree/field[@name='name']" position='replace'>
-                    <field name="description"/>
-                    <field name="name"/>
-                    <field name="type"/>
-                    <field name="amount"/>
-                </xpath>
-                <xpath expr="//tree/field[@name='price_include']" position='after'>
-                    <field name="tax_type"/>
-                </xpath>
-            </field>
-        </record>
+	<data>
 
-        <!-- Account Invoice Form View -->
-        <record id="view_maize_account_invoice_form" model="ir.ui.view">
-            <field name="name">maize.account.invoice.form</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="account.invoice_supplier_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//page[@string='Invoice']/group/field[@name='amount_tax']" position='after'>
-                    <field name="insurance"/>
-                    <field name="freight"/>
-                    <field name="other_charges"/>
-                </xpath>
-                <xpath expr="//page[@string='Invoice']/div/field[@name='tax_line']" position='replace'>
-                </xpath>
-                <xpath expr="//page[@string='Invoice']/group" position="replace">
-                    <separator string="Other Charges"/>
-                    <group>
-                        <group>
-                             <field name="carting"/>
-                             <field name="freight" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                             <field name="package_and_forwording" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                             <field name="insurance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="loading_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="inspection_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="delivery_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="other_charges" string="Others" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                        </group>
-                        <group>
-                            <field name="rounding_shortage" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="amount_untaxed" string="Taxable Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <div>
-                                <label for="amount_tax"/>
-                                <button name="button_reset_taxes" states="draft,proforma2"
-                                    string="(update)" class="oe_link oe_edit_only"
-                                    type="object" help="Recompute taxes and total"/>
-                            </div>
-                            <field name="amount_tax" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="amount_total" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="1"/>
-                            <field name="residual" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="1"/>
-                            <field name="vat_amount" string="VAT / Additional Tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="bill_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="debit_note_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="advance_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="retention_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="net_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="reconciled" invisible="1"/>
-                        </group>
-                        <group>
-                            <field name="account_code"/>
-                            <field name="book_series_id" widget="selection"/>
-                            <field name="st_code"/>
-                            <field name="due_date"/>
-                            <field name="c_form"/>
-                            <field name="state_id"/>
-                            <field name="voucher_id" readonly="1"/>
-                        </group>
-                        <group>
-                            <field name="tds_ac_code"/>
-                            <field name="tds_amount"/>
-                            <field name="other_ac_code"/>
-                            <field name="other_amount"/>
-                        </group>
-                    </group>
-                </xpath>
-                <xpath expr="//page[@string='Invoice']" position="after">
-                    <page string="Taxes">
-                        <field name="tax_line">
-                            <tree editable="bottom" string="Taxes">
-                                <field name="name"/>
-                                <field name="account_id" groups="account.group_account_invoice"/>
-                                <field name="account_analytic_id" domain="[('type','&lt;&gt;','view'), ('company_id', '=', parent.company_id)]" groups="analytic.group_analytic_accounting"/>
-                                <field name="base" on_change="base_change(base,parent.currency_id,parent.company_id,parent.date_invoice)" readonly="1"/>
-                                <field name="amount" on_change="amount_change(amount,parent.currency_id,parent.company_id,parent.date_invoice)"/>
+		<!-- Account Tax Form Inherit for add field -->
+		<record id="view_maize_account_tax_form" model="ir.ui.view">
+			<field name="name">inherit.account.tax.form</field>
+			<field name="model">account.tax</field>
+			<field name="inherit_id" ref="account.view_tax_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//form/group/group/field[@name='description']"
+					position='after'>
+					<field name="tax_type" on_change="onchange_tax_type(name,tax_type)" />
+				</xpath>
+			</field>
+		</record>
 
-                                <field invisible="True" name="base_amount"/>
-                                <field invisible="True" name="tax_amount"/>
-                                <field name="factor_base" invisible="True"/>
-                                <field name="factor_tax" invisible="True"/>
-                            </tree>
-                        </field>
-                    </page>
-                </xpath>
-            </field>
-        </record>
+		<!-- Account Tax tree Inherit for add field -->
+		<record id="view_maize_account_tax_tree" model="ir.ui.view">
+			<field name="name">inherit.account.tax.tree</field>
+			<field name="model">account.tax</field>
+			<field name="inherit_id" ref="account.view_tax_tree" />
+			<field name="arch" type="xml">
+				<xpath expr="//tree/field[@name='description']" position='attributes'>
+					<attribute name="invisible">True</attribute>
+				</xpath>
+				<xpath expr="//tree/field[@name='name']" position='replace'>
+					<field name="description" />
+					<field name="name" />
+					<field name="type" />
+					<field name="amount" />
+				</xpath>
+				<xpath expr="//tree/field[@name='price_include']" position='after'>
+					<field name="tax_type" />
+				</xpath>
+			</field>
+		</record>
 
-        <!--  Advance Payment Report -->
-        <report auto="False" id="report_advance_payment" model="account.voucher"
-                name="maize.advance.payment" rml="addons/maize_account/report/advance_payment_report.rml"
-                usage="default" string="Advance Payment Report"/>
-    </data>
+		<!-- Account Invoice Form View -->
+		<record id="view_maize_account_invoice_form" model="ir.ui.view">
+			<field name="name">maize.account.invoice.form</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_supplier_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//page[@string='Invoice']/group/field[@name='amount_tax']"
+					position='after'>
+					<field name="insurance" />
+					<field name="freight" />
+					<field name="other_charges" />
+				</xpath>
+				<xpath expr="//page[@string='Invoice']/div/field[@name='tax_line']"
+					position='replace'>
+				</xpath>
+				<xpath expr="//page[@string='Invoice']/group" position="replace">
+					<group>
+						<group>
+							<separator string="Other Charges" colspan="2" />
+							<field name="package_and_forwording" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="other_charges" string="Others" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+
+							<field name="carting" />
+							<field name="freight" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+
+							<field name="insurance" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="loading_charges" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="inspection_charges" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="delivery_charges" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+
+						</group>
+						<group>
+							<separator string="Taxable Abount" colspan="2" />
+							<field name="amount_untaxed" string="Taxable Amount"
+								widget="monetary" options="{'currency_field': 'currency_id'}" />
+
+
+
+							<separator string="Taxes and Others" colspan="2" />
+							<div>
+								<label for="amount_tax" />
+								<button name="button_reset_taxes" states="draft,proforma2"
+									string="(update)" class="oe_link oe_edit_only" type="object"
+									help="Recompute taxes and total" />
+							</div>
+							<field name="amount_tax" nolabel="1" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="amount_total" class="oe_subtotal_footer_separator"
+								widget="monetary" options="{'currency_field': 'currency_id'}"
+								invisible="1" />
+							<field name="residual" widget="monetary"
+								options="{'currency_field': 'currency_id'}" invisible="1" />
+							<field name="vat_amount" string="VAT / Additional Tax"
+								widget="monetary" options="{'currency_field': 'currency_id'}" />
+
+							<separator string="Advances and Debit Notes" colspan="2" />
+							<field name="debit_note_amount" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="voucher_id" readonly="1" />
+							<field name="advance_amount" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="retention_amount" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+
+							<separator string="Rouding and Total" colspan="2" />
+							<field name="bill_amount" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="rounding_shortage" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+
+							<field name="net_amount" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="reconciled" invisible="1" />
+						</group>
+
+					</group>
+				</xpath>
+				<xpath expr="//page[@string='Invoice']" position="after">
+					<page string="Taxes">
+						<field name="tax_line">
+							<tree editable="bottom" string="Taxes">
+								<field name="name" />
+								<field name="account_id" groups="account.group_account_invoice" />
+								<field name="account_analytic_id"
+									domain="[('type','&lt;&gt;','view'), ('company_id', '=', parent.company_id)]"
+									groups="analytic.group_analytic_accounting" />
+								<field name="base"
+									on_change="base_change(base,parent.currency_id,parent.company_id,parent.date_invoice)"
+									readonly="1" />
+								<field name="amount"
+									on_change="amount_change(amount,parent.currency_id,parent.company_id,parent.date_invoice)" />
+
+								<field invisible="True" name="base_amount" />
+								<field invisible="True" name="tax_amount" />
+								<field name="factor_base" invisible="True" />
+								<field name="factor_tax" invisible="True" />
+							</tree>
+						</field>
+					</page>
+				</xpath>
+				<xpath expr="//page[@string='Other Info']" position="inside">
+					<group>
+						<group>
+							<separator string="Other Options" colspan="2" />
+							<field name="account_code" invisible="1" />
+							<field name="book_series_id" widget="selection" />
+							<field name="st_code" />
+							<field name="due_date" invisible="1" />
+							<field name="c_form" />
+							<field name="state_id" invisible="1" />
+
+						</group>
+						<group>
+							<separator string="Tax deduction at Payment" colspan="2" />
+							<field name="tds_ac_code" />
+							<field name="tds_amount" />
+							<field name="other_ac_code" />
+							<field name="other_amount" />
+						</group>
+					</group>
+				</xpath>
+			</field>
+		</record>
+
+		<!--  Advance Payment Report -->
+		<report auto="False" id="report_advance_payment" model="account.voucher"
+			name="maize.advance.payment" rml="addons/maize_account/report/advance_payment_report.rml"
+			usage="default" string="Advance Payment Report" />
+	</data>
 </openerp>
+

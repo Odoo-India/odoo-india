@@ -312,4 +312,105 @@ class account_invoice(osv.Model):
         'other_ac_code': fields.selection([('nothing', 'Nothing')], 'Other Deduction A/C Code'),
         'other_amount': fields.float('Other Deduction Amount'),
     }
+    
+    def invoice_validate(self, cr, uid, ids, context=None):
+        super(account_invoice, self).invoice_validate(cr, uid, ids, context)
+        invoice = self.browse(cr, uid, ids)[0]
+        maizeSQL = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], 
+                [TAXAMT], [GSTAMT], [STAMT], [SURAMT], [USERID], [ACTION], [PRTFLG], [ADVAMT], [DEDACCODE1], [DEDAMT1], [DEDACCODE2], [DEDAMT2], [RETAMT], 
+                [DEBAMT], [DEBVOUNO], [DEBVATAMT], [RSNCODE], [STAMT1], [STAMT2], [DEBVATAMT1], [DEBVATAMT2], [EXCISE], [EXCISECESS], [EXCISEHCESS], [RATE], 
+                [CFORMIND], [STATE], [REASON], [CONRETAMT], [DEDACCODE3], [DEBTAXABLEAMT], [AHDFLG], [DEDACCODE4], [DEDAMT4])
+         VALUES
+               ("%(COCODE)s",  "%(FINYEAR)s",  "%(BKTYPE)s",  "%(VOUNO)s",  "%(VOUSRL)s",  "%(SERIES)s",  "%(RMQTY)s",  "%(PAYDUE)s",  "%(STCODE)s",  "%(TAXAMT)s",  "%(GSTAMT)s",  "%(STAMT)s",  "%(SURAMT)s",  "%(USERID)s",  "%(ACTION)s",  
+               "%(PRTFLG)s",  "%(ADVAMT)s",  "%(DEDACCODE1)s",  "%(DEDAMT1)s",  "%(DEDACCODE2)s",  "%(DEDAMT2)s",  "%(RETAMT)s",  "%(DEBAMT)s",  "%(DEBVOUNO)s",  "%(DEBVATAMT)s",  "%(RSNCODE)s",  "%(STAMT1)s",  "%(STAMT2)s",  "%(DEBVATAMT1)s",  
+               "%(DEBVATAMT2)s",  "%(EXCISE)s",  "%(EXCISECESS)s",  "%(EXCISEHCESS)s",  "%(RATE)s",  "%(CFORMIND)s",  "%(STATE)s",  "%(REASON)s",  "%(CONRETAMT)s",  "%(DEDACCODE3)s",  "%(DEBTAXABLEAMT)s",  "%(AHDFLG)s",  "%(DEDACCODE4)s",  
+               "%(DEDAMT4)s")"""
+        maizeSQL = maizeSQL % {
+            'COCODE': 1,  
+            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name,  
+            'BKTYPE': invoice.move_id.journal_id.code,  
+            'VOUNO': invoice.move_id.ref,  
+            'VOUSRL': '/',  
+            'SERIES': 'BA',  
+            'RMQTY': 0,  
+            'PAYDUE': invoice.due_date,  
+            'STCODE': 91,  
+            'TAXAMT': invoice.amount_untaxed,  
+            'GSTAMT': 0,  
+            'STAMT': invoice.amount_tax + invoice.vat_amount,  
+            'SURAMT': 0,  
+            'USERID': invoice.user_id.name,  
+            'ACTION': invoice.id,      
+            'PRTFLG': 'P',  
+            'ADVAMT': invoice.advance_amount,  
+            'DEDACCODE1': 0,  
+            'DEDAMT1': 0,  
+            'DEDACCODE2': 0,  
+            'DEDAMT2': 0,  
+            'RETAMT': 0,  
+            'DEBAMT': 0,  
+            'DEBVOUNO': 0,  
+            'DEBVATAMT': 0,  
+            'RSNCODE': 0,  
+            'STAMT1': 0,  
+            'STAMT2': 0,  
+            'DEBVATAMT1': 0,  
+            'DEBVATAMT2': 0,  
+            'EXCISE': 0,  
+            'EXCISECESS': 0,  
+            'EXCISEHCESS': 0,  
+            'RATE': 0,  
+            'CFORMIND': 0,  
+            'STATE': invoice.partner_id.state_id.name,  
+            'REASON': '/',  
+            'CONRETAMT': 0,  
+            'DEDACCODE3': 0,  
+            'DEBTAXABLEAMT': 0,  
+            'AHDFLG': 0,  
+            'DEDACCODE4': 0,    
+            'DEDAMT4' : 0,
+        }
+        print 'XXXXXXXXXXXXXXXX maizeSQL : ', maizeSQL
+        
+        count = 0
+        for line in invoice.move_id.line_id:
+            lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
+                [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
+                [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
+                VALUES (
+                "%(COCODE)s", "%(FINYEAR)s", "%(BKTYPE)s", "%(BKSRS)s", "%(VOUNO)s", "%(VOUSRL)s", 
+                "%(VOUDATE)s", "%(VOUSTS)s", "%(FASCODE)s", "%(CRDBID)s", "%(VOUAMT)s", "%(SUBCODE)s", 
+                "%(REFNO)s", "%(REFDAT)s", "%(REMK01)s", "%(REMK02)s", "%(REMK03)s", "%(REMK04)s",
+                "%(USERID)s", "%(ACTION)s", "%(CVOUNO)s")
+            """
+            res = {
+                'COCODE': 1, 
+                'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name, 
+                'BKTYPE': invoice.move_id.journal_id.code, 
+                'BKSRS': 'BA', 
+                'VOUNO': invoice.move_id.ref, 
+                'VOUSRL': count, 
+                'VOUDATE': line.date_created, 
+                'VOUSTS': 'P', 
+                'FASCODE': line.account_id.code, 
+                'SUBCODE': '/', 
+                'REFNO': line.ref,
+                'REFDAT': line.date, 
+                'REMK01': line.name, 
+                'REMK02': '/', 
+                'REMK03': '/', 
+                'REMK04': '/',
+                'USERID': invoice.user_id.name, 
+                'ACTION': invoice.id, 
+                'CVOUNO': 0
+            }
+            if line.debit > 0:
+                res.update({'CRDBID':'D', 'VOUAMT':line.debit})
+            else:
+                res.update({'CRDBID':'C', 'VOUAMT':line.credit})
+            count += 1
+            lineSQL = lineSQL % res
+            print 'XXXXXXXXXXXXXXXXXX : line ', lineSQL
+        return True
+
 account_invoice()

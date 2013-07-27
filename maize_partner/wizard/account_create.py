@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from osv import fields, osv
+from osv import osv
 
 class account_create(osv.TransientModel):
     _name = "account.create"
@@ -29,8 +29,8 @@ class account_create(osv.TransientModel):
         account_type_obj = self.pool.get('account.account.type')
         partner_obj =self.pool.get('res.partner')
 
-        lia_ids = account_type_obj.search(cr, uid, [('code','=','receivable')], context=context)
-        ass_ids = account_type_obj.search(cr, uid, [('code','=','payable')], context=context)
+        receivable_ids = account_type_obj.search(cr, uid, [('code','=','receivable')], context=context)
+        payable_ids = account_type_obj.search(cr, uid, [('code','=','payable')], context=context)
 
         if context is None:
             context = {}
@@ -40,20 +40,18 @@ class account_create(osv.TransientModel):
             debit_id = account_obj.create(cr, uid, {
                 'code': str(partner.name[0:3]) + 'dr',
                 'name':'Debtors - (%s)' % (partner.name),
-#                'parent_id':7,
                 'type':'receivable',
                 'reconcile':True,
-                'user_type': lia_ids and lia_ids[0] or False,
+                'user_type': receivable_ids and receivable_ids[0] or False,
                 'company_id': 1,
             }, context=context)
 
             credit_id = account_obj.create(cr, uid, {
                 'code': str(partner.name[0:3]) + 'cr',
                 'name': 'Creditors - (%s)' % (partner.name),
-#                'parent_id':16,
                 'type': 'payable',
                 'reconcile': True,
-                'user_type': ass_ids and ass_ids[0] or False,
+                'user_type': payable_ids and payable_ids[0] or False,
                 'company_id': 1,
             }, context=context)
 

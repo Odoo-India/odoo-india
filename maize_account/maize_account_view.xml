@@ -2,6 +2,21 @@
 <openerp>
 	<data>
 
+        <!-- Account Tax Form Inherit for add field -->
+        <record id="res_company_maize_proeucts" model="ir.ui.view">
+            <field name="name">inherit.res_company.form</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form" />
+            <field name="arch" type="xml">
+                <field name="currency_id"
+                    position='after'>
+                    <separator string="Maize Account Server" colspan="2" />
+                    <field name="account_ip"/>
+                    <field name="account_port"/>
+                </field>
+            </field>
+        </record>
+        
 		<!-- Account Tax Form Inherit for add field -->
 		<record id="view_maize_account_tax_form" model="ir.ui.view">
 			<field name="name">inherit.account.tax.form</field>
@@ -14,6 +29,19 @@
 				</xpath>
 			</field>
 		</record>
+		
+		<!-- Account Tax Form Inherit for add field -->
+        <record id="view_journal_inherit_form" model="ir.ui.view">
+            <field name="name">inherit.account.journal.form</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form" />
+            <field name="arch" type="xml">
+                <field name="sequence_id"
+                    position='after'>
+                    <field name="series" />
+                </field>
+            </field>
+        </record>
 
 		<!-- Account Tax tree Inherit for add field -->
 		<record id="view_maize_account_tax_tree" model="ir.ui.view">
@@ -57,9 +85,7 @@
 							<separator string="Other Charges" colspan="2" />
 							<field name="package_and_forwording" widget="monetary"
 								options="{'currency_field': 'currency_id'}" />
-							<field name="other_charges" string="Others" widget="monetary"
-								options="{'currency_field': 'currency_id'}" />
-
+							
 							<field name="carting" />
 							<field name="freight" widget="monetary"
 								options="{'currency_field': 'currency_id'}" />
@@ -72,15 +98,15 @@
 								options="{'currency_field': 'currency_id'}" />
 							<field name="delivery_charges" widget="monetary"
 								options="{'currency_field': 'currency_id'}" />
+							<field name="other_charges" string="Other charges" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
 
 						</group>
 						<group>
 							<separator string="Taxable Abount" colspan="2" />
 							<field name="amount_untaxed" string="Taxable Amount"
 								widget="monetary" options="{'currency_field': 'currency_id'}" />
-
-
-
+								
 							<separator string="Taxes and Others" colspan="2" />
 							<div>
 								<label for="amount_tax" />
@@ -90,14 +116,14 @@
 							</div>
 							<field name="amount_tax" nolabel="1" widget="monetary"
 								options="{'currency_field': 'currency_id'}" />
-							<field name="amount_total" class="oe_subtotal_footer_separator"
-								widget="monetary" options="{'currency_field': 'currency_id'}"
-								invisible="1" />
-							<field name="residual" widget="monetary"
-								options="{'currency_field': 'currency_id'}" invisible="1" />
-							<field name="vat_amount" string="VAT / Additional Tax"
-								widget="monetary" options="{'currency_field': 'currency_id'}" />
 
+							
+							<field name="vat_amount" string="VAT"
+								widget="monetary" options="{'currency_field': 'currency_id'}" />
+                            <field name="additional_vat" string="Additional VAT"
+                                widget="monetary" options="{'currency_field': 'currency_id'}" />
+                               
+                               
 							<separator string="Advances and Debit Notes" colspan="2" />
 							<field name="debit_note_amount" widget="monetary"
 								options="{'currency_field': 'currency_id'}" />
@@ -108,14 +134,18 @@
 								options="{'currency_field': 'currency_id'}" />
 
 							<separator string="Rouding and Total" colspan="2" />
-							<field name="bill_amount" widget="monetary"
-								options="{'currency_field': 'currency_id'}" />
-							<field name="rounding_shortage" widget="monetary"
-								options="{'currency_field': 'currency_id'}" />
 
+                            <field name="amount_total" class="oe_subtotal_footer_separator"
+                                widget="monetary" options="{'currency_field': 'currency_id'}"
+                                string="Bill Total"/>
+                            <field name="rounding_shortage" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+                            
 							<field name="net_amount" widget="monetary"
 								options="{'currency_field': 'currency_id'}" />
-							<field name="reconciled" invisible="1" />
+							<field name="residual" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+							<field name="reconciled"/>
 						</group>
 
 					</group>

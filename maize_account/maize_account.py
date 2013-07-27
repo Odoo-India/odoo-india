@@ -23,6 +23,8 @@ import time
 
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
+from openerp.tools.translate import _
+from bsddb.dbtables import _columns
 
 class account_tax(osv.Model):
     _name = 'account.tax'
@@ -212,6 +214,25 @@ class account_invoice_tax(osv.osv):
             t['tax_amount'] = cur_obj.round(cr, uid, cur, t['tax_amount'])
         return tax_grouped
 
+class res_company(osv.Model):
+    _inherit = 'res.company'
+    _columns = {
+        'account_ip':fields.char('Account Server', size=64),
+        'account_port':fields.integer('Port'),
+    }
+
+class account_move(osv.osv):
+    _inherit = "account.move"
+    _columns = {
+        'maize_id':fields.char("Maize Voucher Code", size=64, help="Maize voucher code allocated by maize accounting server")
+    }
+
+class account_journal(osv.osv):
+    _inherit = "account.journal"
+    _columns = {
+        'series':fields.char("Series", size=64, help="Maize series that used to generate the next number for the accounting vouchers")
+    }
+
 class account_invoice(osv.Model):
     _inherit = "account.invoice"
 
@@ -222,20 +243,20 @@ class account_invoice(osv.Model):
                 'amount_untaxed': 0.0,
                 'amount_tax': 0.0,
                 'amount_total': 0.0,
-                'bill_amount': 0.0,
                 'net_amount': 0.0,
             }
             for line in invoice.invoice_line:
                 res[invoice.id]['amount_untaxed'] += line.price_subtotal
             for line in invoice.tax_line:
                 res[invoice.id]['amount_tax'] += line.amount
+            
             res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + invoice.insurance + invoice.other_charges
 
-            res[invoice.id]['bill_amount'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + \
+            res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + \
                 invoice.package_and_forwording + invoice.insurance + invoice.loading_charges + invoice.inspection_charges + invoice.delivery_charges \
                 + invoice.other_charges - invoice.rounding_shortage
 
-            res[invoice.id]['net_amount'] = res[invoice.id]['bill_amount'] - (invoice.debit_note_amount + invoice.advance_amount + invoice.retention_amount) 
+            res[invoice.id]['net_amount'] = res[invoice.id]['amount_total'] - (invoice.debit_note_amount + invoice.advance_amount + invoice.retention_amount) 
         return res
 
     def _get_invoice_line(self, cr, uid, ids, context=None):
@@ -275,13 +296,6 @@ class account_invoice(osv.Model):
                 'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
             },
             multi='all'),
-        'bill_amount': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Bill Amount',
-            store={
-                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'package_and_forwording', 'insurance', 'loading_charges', 'inspection_charges', 'delivery_charges', 'other_charges', 'rounding_shortage'], 20),
-                'account.invoice.tax': (_get_invoice_tax, None, 20),
-                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
-            },
-            multi='all'),
         'carting':fields.selection([('nothing', 'Nothing')], 'Carting'),
         'package_and_forwording': fields.float('Packing'),
         'loading_charges': fields.float('Loading Charges'),
@@ -289,7 +303,7 @@ class account_invoice(osv.Model):
         'delivery_charges': fields.float('Delivery Charges'),
         'rounding_shortage': fields.float('Rounding Shortage'),
         'vat_amount': fields.float('VAT Amount'),
-        'additional_amount': fields.float('Additional Tax'),
+        'additional_vat': fields.float('Additional Tax'),
         'debit_note_amount': fields.float('Debit Note Amount'),
         'advance_amount': fields.float('Advance Amount'),
         'retention_amount': fields.float('Retention Amount'),
@@ -311,35 +325,65 @@ class account_invoice(osv.Model):
         'tds_amount': fields.float('TDS Amount'),
         'other_ac_code': fields.selection([('nothing', 'Nothing')], 'Other Deduction A/C Code'),
         'other_amount': fields.float('Other Deduction Amount'),
+        'maize_voucher_no':fields.char('Voucher No', size=16)
     }
     
-    def invoice_validate(self, cr, uid, ids, context=None):
-        super(account_invoice, self).invoice_validate(cr, uid, ids, context)
-        invoice = self.browse(cr, uid, ids)[0]
+    def create_maize_voucher(self, cr, uid, invoice, context=None):
+        import httplib
+        import json
+        
+        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
+        url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
+        conn = httplib.HTTPConnection(url)
+        voucher_no = invoice.maize_voucher_no
+        
+        if not invoice.maize_voucher_no:
+            try:
+                vounoSQL = "SELECT [VOUNO] FROM [MZFAS].[dbo].[FASPARM] where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (invoice.move_id.period_id.fiscalyear_id.name, invoice.move_id.journal_id.code,  invoice.move_id.journal_id.series)
+    
+                conn.request("GET", "/cgi-bin/query", vounoSQL, headers)
+                rsp = conn.getresponse()
+                data_received = rsp.read()
+                data = json.loads(data_received)
+                voucher_no = int(data[0]['VOUNO'])
+                
+                vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [VOUNO]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (voucher_no+1, invoice.move_id.period_id.fiscalyear_id.name, invoice.move_id.journal_id.code,  invoice.move_id.journal_id.series)
+                conn.request("GET", "/cgi-bin/query", vounoSQL, headers)
+                rsp = conn.getresponse()
+                data_received = rsp.read()
+                data = json.loads(data_received)
+                
+            except Exception, e:
+                raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
+            
+            self.write(cr, uid, ids, {'maize_voucher_no':voucher_no})
+            cr.commit()
+            invoice = self.browse(cr, uid, ids)[0]
+        
         maizeSQL = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], 
                 [TAXAMT], [GSTAMT], [STAMT], [SURAMT], [USERID], [ACTION], [PRTFLG], [ADVAMT], [DEDACCODE1], [DEDAMT1], [DEDACCODE2], [DEDAMT2], [RETAMT], 
                 [DEBAMT], [DEBVOUNO], [DEBVATAMT], [RSNCODE], [STAMT1], [STAMT2], [DEBVATAMT1], [DEBVATAMT2], [EXCISE], [EXCISECESS], [EXCISEHCESS], [RATE], 
                 [CFORMIND], [STATE], [REASON], [CONRETAMT], [DEDACCODE3], [DEBTAXABLEAMT], [AHDFLG], [DEDACCODE4], [DEDAMT4])
          VALUES
-               ("%(COCODE)s",  "%(FINYEAR)s",  "%(BKTYPE)s",  "%(VOUNO)s",  "%(VOUSRL)s",  "%(SERIES)s",  "%(RMQTY)s",  "%(PAYDUE)s",  "%(STCODE)s",  "%(TAXAMT)s",  "%(GSTAMT)s",  "%(STAMT)s",  "%(SURAMT)s",  "%(USERID)s",  "%(ACTION)s",  
-               "%(PRTFLG)s",  "%(ADVAMT)s",  "%(DEDACCODE1)s",  "%(DEDAMT1)s",  "%(DEDACCODE2)s",  "%(DEDAMT2)s",  "%(RETAMT)s",  "%(DEBAMT)s",  "%(DEBVOUNO)s",  "%(DEBVATAMT)s",  "%(RSNCODE)s",  "%(STAMT1)s",  "%(STAMT2)s",  "%(DEBVATAMT1)s",  
-               "%(DEBVATAMT2)s",  "%(EXCISE)s",  "%(EXCISECESS)s",  "%(EXCISEHCESS)s",  "%(RATE)s",  "%(CFORMIND)s",  "%(STATE)s",  "%(REASON)s",  "%(CONRETAMT)s",  "%(DEDACCODE3)s",  "%(DEBTAXABLEAMT)s",  "%(AHDFLG)s",  "%(DEDACCODE4)s",  
-               "%(DEDAMT4)s")"""
+               ('%(COCODE)s',  '%(FINYEAR)s',  '%(BKTYPE)s',  '%(VOUNO)s',  '%(VOUSRL)s',  '%(SERIES)s',  '%(RMQTY)s',  '%(PAYDUE)s',  '%(STCODE)s',  '%(TAXAMT)s',  '%(GSTAMT)s',  '%(STAMT)s',  '%(SURAMT)s',  '%(USERID)s',  '%(ACTION)s',  
+               '%(PRTFLG)s',  '%(ADVAMT)s',  '%(DEDACCODE1)s',  '%(DEDAMT1)s',  '%(DEDACCODE2)s',  '%(DEDAMT2)s',  '%(RETAMT)s',  '%(DEBAMT)s',  '%(DEBVOUNO)s',  '%(DEBVATAMT)s',  '%(RSNCODE)s',  '%(STAMT1)s',  '%(STAMT2)s',  '%(DEBVATAMT1)s',  
+               '%(DEBVATAMT2)s',  '%(EXCISE)s',  '%(EXCISECESS)s',  '%(EXCISEHCESS)s',  '%(RATE)s',  '%(CFORMIND)s',  '%(STATE)s',  '%(REASON)s',  '%(CONRETAMT)s',  '%(DEDACCODE3)s',  '%(DEBTAXABLEAMT)s',  '%(AHDFLG)s',  '%(DEDACCODE4)s',  
+               '%(DEDAMT4)s')"""
         maizeSQL = maizeSQL % {
             'COCODE': 1,  
-            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name,  
+            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name,
             'BKTYPE': invoice.move_id.journal_id.code,  
-            'VOUNO': invoice.move_id.ref,  
-            'VOUSRL': '/',  
-            'SERIES': 'BA',  
+            'VOUNO': voucher_no,  
+            'VOUSRL': 0,  
+            'SERIES': invoice.move_id.journal_id.series,  
             'RMQTY': 0,  
-            'PAYDUE': invoice.due_date,  
+            'PAYDUE': invoice.date_due,  
             'STCODE': 91,  
             'TAXAMT': invoice.amount_untaxed,  
             'GSTAMT': 0,  
             'STAMT': invoice.amount_tax + invoice.vat_amount,  
             'SURAMT': 0,  
-            'USERID': invoice.user_id.name,  
+            'USERID': invoice.user_id.user_code,
             'ACTION': invoice.id,      
             'PRTFLG': 'P',  
             'ADVAMT': invoice.advance_amount,  
@@ -360,7 +404,7 @@ class account_invoice(osv.Model):
             'EXCISECESS': 0,  
             'EXCISEHCESS': 0,  
             'RATE': 0,  
-            'CFORMIND': 0,  
+            'CFORMIND': invoice.c_form and 'Y' or 'F',
             'STATE': invoice.partner_id.state_id.name,  
             'REASON': '/',  
             'CONRETAMT': 0,  
@@ -370,47 +414,76 @@ class account_invoice(osv.Model):
             'DEDACCODE4': 0,    
             'DEDAMT4' : 0,
         }
-        print 'XXXXXXXXXXXXXXXX maizeSQL : ', maizeSQL
         
+        try:
+            conn.request("GET", "/cgi-bin/query", maizeSQL, headers)
+        except Exception, e:
+            raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
+
+        rsp = conn.getresponse()
+        
+        data_received = rsp.read()
+        data = json.loads(data_received)
+
         count = 0
         for line in invoice.move_id.line_id:
             lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
                 [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
                 [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
                 VALUES (
-                "%(COCODE)s", "%(FINYEAR)s", "%(BKTYPE)s", "%(BKSRS)s", "%(VOUNO)s", "%(VOUSRL)s", 
-                "%(VOUDATE)s", "%(VOUSTS)s", "%(FASCODE)s", "%(CRDBID)s", "%(VOUAMT)s", "%(SUBCODE)s", 
-                "%(REFNO)s", "%(REFDAT)s", "%(REMK01)s", "%(REMK02)s", "%(REMK03)s", "%(REMK04)s",
-                "%(USERID)s", "%(ACTION)s", "%(CVOUNO)s")
-            """
+                '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
+                '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
+                '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
+                '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
             res = {
                 'COCODE': 1, 
                 'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name, 
                 'BKTYPE': invoice.move_id.journal_id.code, 
-                'BKSRS': 'BA', 
-                'VOUNO': invoice.move_id.ref, 
+                'BKSRS': invoice.move_id.journal_id.series, 
+                'VOUNO': voucher_no, 
                 'VOUSRL': count, 
                 'VOUDATE': line.date_created, 
                 'VOUSTS': 'P', 
                 'FASCODE': line.account_id.code, 
                 'SUBCODE': '/', 
-                'REFNO': line.ref,
+                'REFNO': invoice.move_id.id,
                 'REFDAT': line.date, 
-                'REMK01': line.name, 
+                'REMK01': line.name[0:35], 
                 'REMK02': '/', 
                 'REMK03': '/', 
                 'REMK04': '/',
-                'USERID': invoice.user_id.name, 
+                'USERID': invoice.user_id.user_code, 
                 'ACTION': invoice.id, 
                 'CVOUNO': 0
             }
+            
             if line.debit > 0:
                 res.update({'CRDBID':'D', 'VOUAMT':line.debit})
             else:
                 res.update({'CRDBID':'C', 'VOUAMT':line.credit})
             count += 1
             lineSQL = lineSQL % res
-            print 'XXXXXXXXXXXXXXXXXX : line ', lineSQL
+            
+            conn.request("GET", "/cgi-bin/query", lineSQL, headers)
+            rsp = conn.getresponse()
+            
+            data_received = rsp.read()
+            data = json.loads(data_received)
+
+        conn.close()
+    
+    def invoice_validate(self, cr, uid, ids, context=None):
+        super(account_invoice, self).invoice_validate(cr, uid, ids, context)
+        invoice = self.browse(cr, uid, ids)[0]
+        self.create_maize_voucher(cr, uid, invoice, context)
+        
         return True
+    
+    def copy(self, cr, uid, id, default=None, context=None):
+        default = default or {}
+        default.update({
+            'maize_voucher_no':0
+        })
+        return super(account_invoice, self).copy(cr, uid, id, default, context)
 
 account_invoice()

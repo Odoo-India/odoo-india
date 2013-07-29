@@ -62,7 +62,9 @@ class import_po_line_data(osv.osv_memory):
             return False
 
     def po_line_create(self,cr,uid,ids,context=None):
-        file_path = "/home/ara/Desktop/odt/PO/podetail1.csv"
+        #file_path = "/home/ara/Desktop/odt/PO/podetail1.csv"
+        file_path = "/home/ara/Desktop/odt/PO/potrnot20132014butinward20132014.csv"
+        
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -80,7 +82,7 @@ class import_po_line_data(osv.osv_memory):
         bounced_po_line = [tuple(fields)]
         for data in data_lines:
             try:
-                maize_name = data["POSERIES"] +'/'+ data["PONO"]+'/'+data['POYEAR']
+                maize_name = data['POYEAR']+'/'+data["POSERIES"] +'/'+ data["PONO"]
                 if maize_name:
                     po = self.pool.get('purchase.order').search(cr,uid,[('maize','=',maize_name)])
                 if data["ITEMCODE"]:

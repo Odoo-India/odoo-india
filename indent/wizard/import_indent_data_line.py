@@ -62,7 +62,11 @@ class import_indent_data_line(osv.osv_memory):
             _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
         
     def do_import_indent_data_line(self, cr, uid,ids, context=None):
-        file_path = "/home/ara/Desktop/odt/indent/INDENTTRANSACTIONNOT20132014BUTINWORD20132014.csv"
+        #file_path = "/home/ara/Desktop/odt/indent/indenttr20132014.csv"
+        #file_path = "/home/ara/Desktop/odt/indent/IDENTTRANSACTIONNOT20132014BUTPO20132014.csv"
+        #file_path = "/home/ara/Desktop/odt/indent/INDENTTRANSACTIONNOT20132014BUTINWORD20132014.csv"
+        file_path = "/home/ara/Desktop/odt/indent/missing_indenttr.csv"
+        
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")
             return True
@@ -90,7 +94,7 @@ class import_indent_data_line(osv.osv_memory):
         for data in data_lines:
             fiscalyear = data['INDYEAR'].strip()
             try:
-                indent = indent_pool.search(cr,uid,[('maize','=', data["INDENTNO"].strip()+'/'+fiscalyear)])[0]
+                indent = indent_pool.search(cr,uid,[('maize','=', fiscalyear+'/'+data["INDENTNO"].strip())])[0]
                 product = self.pool.get('product.product').search(cr,uid,[('default_code','=','0'+data["ITEMCODE"])])[0]
                 indent_line = indent_line_pool.search(cr,uid,[('indent_id','=',indent),('product_id','=',product)])
                 

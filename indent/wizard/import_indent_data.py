@@ -64,7 +64,11 @@ class import_indent_data(osv.osv_memory):
 
     def do_import_indent_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/ara/Desktop/odt/indent/INDENTNOT20132014BUTINWORD20132014.csv"
+        #file_path = "/home/ara/Desktop/odt/indent/indent20132014.csv"
+        #file_path = "/home/ara/Desktop/odt/indent/IDENTNOT20132014BUTPO20132014.csv"
+        #file_path = "/home/ara/Desktop/odt/indent/INDENTNOT20132014BUTINWORD20132014.csv"
+        
+        file_path = "/home/ara/Desktop/odt/indent/missing_indent.csv"
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")
             return True
@@ -99,19 +103,20 @@ class import_indent_data(osv.osv_memory):
 #                     c_po.append(data["INDENTNO"])
 #                 else:
 #                     not_po.append(data["INDENTNO"]+'/'+data["INDYEAR"])
-#                 print ">>>>>>>>>>>>>>>>>>>>>.", not_po            
-#                 
+#           except:
+#                print "data['INDENTNO']", data['INDENTNO']
+#        print ">>>>>>>>>>>>>>>>>>>>>.", not_po
                    
                 #==============================================================================#
                 fiscalyear = data['INDYEAR'].strip()
-                exist_indent_list = indent_pool.search(cr,uid,[('name','=', data["INDENTNO"].strip()+'/'+data["INDYEAR"])])
+                exist_indent_list = indent_pool.search(cr,uid,[('name','=', data["INDYEAR"]+'/'+data["INDENTNO"].strip())])
                 exist_indent = []
                 if exist_indent_list:
                     exist_indent = exist_indent_list[0]
                 if not exist_indent:
                     emp_obj = self.pool.get('hr.employee')
                     if data["INDENTNO"]:
-                        name = data["INDENTNO"].strip()+'/'+data["INDYEAR"]
+                        name = data["INDYEAR"]+'/'+data["INDENTNO"].strip()
                     indentor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])[0]
                     emp = emp_obj.search(cr, uid, [('user_id', '=', indentor)], context=context)[0]
                        

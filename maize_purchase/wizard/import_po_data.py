@@ -67,7 +67,8 @@ class import_po_data(osv.osv_memory):
 #         po_pool.write(cr,uid,all_po,{'commission':0.01})
 #         po_pool.write(cr,uid,all_po,{'commission':0.00})
         po_pool = self.pool.get('purchase.order') 
-        file_path = "/home/ara/Desktop/odt/PO/poheader.csv"
+        #file_path = "/home/ara/Desktop/odt/PO/poheader.csv"
+        file_path = "/home/ara/Desktop/odt/PO/ponot20132014butinward20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -92,7 +93,7 @@ class import_po_data(osv.osv_memory):
 #                print "data111111111111111111111111", data["INDENTOR"]
   
                 if data["PONO"]:
-                    name = data["POSERIES"]+'/'+ data["PONO"]+'/'+data["POYEAR"]
+                    name = data["POYEAR"]+'/'+data["POSERIES"]+'/'+ data["PONO"]
 #                 if data["PONO"] and data["POSERIES"]:
 #                     old_id = name
   
@@ -145,16 +146,23 @@ class import_po_data(osv.osv_memory):
                     elif data["EXCISE"] == 3:
                         excies = self.pool.get("account.tax").search(cr,uid,[('name','=',data["EXCISEPER"]+' per unit (Edu.cess 2% + H.Edu cess 1%)')])
                     if not excies:
+                        tax_code_data = self.pool.get('account.tax.code').search(cr,uid,[('name','=',data["EXCISEPER"]+' per unit (Edu.cess 2% + H.Edu cess 1%)')])
+                        if tax_code_data:
+                            tax_code = tax_code_data[0]
+                        else:
+                            tax_code = self.pool.get('account.tax.code').create(cr,uid,{'name':data["EXCISEPER"]+' per unit (Edu.cess 2% + H.Edu cess 1%)','sign':1.00})
                         excies = [self.pool.get("account.tax").create(cr,uid,
                                                                       {'name':data["EXCISEPER"]+' per unit (Edu.cess 2% + H.Edu cess 1%)',
                                                                        'tax_type':'excise',
                                                                        'sequence':1,
                                                                        'type':'fixed',
                                                                        'include_base_amount':True,
-                                                                       'amount':data["EXCISEPER"]})]
+                                                                       'amount':data["EXCISEPER"],
+                                                                       'base_code_id':tax_code,
+                                                                       'tax_code_id':tax_code,})]
                         self.pool.get("account.tax").create(cr,uid,
                                                                       {'name':'Edu.cess 2% on '+data["EXCISEPER"],
-                                                                       'tax_type':'excise',
+                                                                       'tax_type':'cess',
                                                                        'sequence':10,
                                                                        'type':'percent',
                                                                        'amount':0.02,
@@ -162,7 +170,7 @@ class import_po_data(osv.osv_memory):
                                                                        'parent_id':excies[0]})
                         self.pool.get("account.tax").create(cr,uid,
                                                                       {'name':'Edu.cess 1% on '+data["EXCISEPER"],
-                                                                       'tax_type':'excise',
+                                                                       'tax_type':'hedu_cess',
                                                                        'sequence':15,
                                                                        'type':'percent',
                                                                        'amount':0.01,

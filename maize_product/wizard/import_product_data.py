@@ -100,6 +100,7 @@ class import_product_data(osv.osv_memory):
                 last_supplier_rate=data["LSUPPRATE"].strip()
                 last_po_series=data["LPOSERIES"].strip()
                 last_issue_date = data["LISSUDATE"].strip()
+                qty_avail = data['STKQTY']
                 if default_code:
                     default_code = '0'+default_code
                 prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
@@ -201,7 +202,8 @@ class import_product_data(osv.osv_memory):
                             'major_group_id':major_group_id,
                             'sub_group_id':sub_group_id,
                             'state':'done',
-                            'last_issue_date':last_issue_date
+                            'last_issue_date':last_issue_date,
+                            'qty_available':qty_avail,
                             }
                     prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
                     if not prod:
@@ -209,9 +211,9 @@ class import_product_data(osv.osv_memory):
                         i = i+1
                         print ">>>>>>>>>>>>>>",i
                 else:
-                    product_pool.write(cr, uid, prod[0],{'standard_price':last_supplier_rate}, context)
+                    product_pool.write(cr, uid, prod[0],{'standard_price':last_supplier_rate,'qty_available':qty_avail}, context)
                     i = i+1
-                    print ">>>>>>>>>>>>>>222222222",i
+                    print ">>>>>>>>>>>>>>222222222",i,prod[0], qty_avail
             except:
                 rejected.append(data['ITEMCODE'])
                 reject = [ data.get(f, '') for f in fields]

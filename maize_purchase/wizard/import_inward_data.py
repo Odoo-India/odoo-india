@@ -45,7 +45,7 @@ class import_inward_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/kuldeep/Desktop/inward20132014.csv"
+        file_path = "/home/kuldeep/Desktop/po_18_july/inward20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -154,29 +154,35 @@ class import_inward_data(osv.osv_memory):
                     note = data["TRANSP2"]+'\n'+data["REMARK2"]                     
 #                if data["REMARK1"] or data["REMARK2"] or data["REMARK3"] or data["REMARK4"]:
 #                    note= data["REMARK1"] +'\n'+ data["REMARK2"] +'\n'+ data["REMARK3"] +'\n'+ data["REMARK4"]
-                vals = {
-                        'maize_in':name,
-                        'name':'IN/'+name,
-                        'case_code':cashcode,
-                        'date_done':indate,
-                        'partner_id': partner,
-                        'gp_year':gpyr,
-                        'gp_no':gpsno,
-                        'challan_no':challan,
-                        'lr_no':lrno,
-                        'lr_date':lrdate,
-                        'dest_from':frdesti,
-                        'dest_to':todesti,
-                        'despatch_mode':despatch,
-                        'note':note,
-                        'lab_no':labno,
-                        'hpressure':hpressure,
-                        'series_id':gps_ser,
-                        'transporter':transporter,
-
-                }
-                print "valsvalsvals", vals
-                ok = inward_pool.create(cr, uid, vals, context)
+                if data['INWYEAR'] and data['INWARDNO']:
+                    maize_in = data['INWARDNO'] +'/'+ data['INWYEAR']
+                if maize_in:
+                    inward_no = inward_pool.search(cr, uid, [('maize_in', '=', maize_in)])
+                    vals = {
+                            'maize_in':maize_in,
+                            #'name':'IN/'+ maize_in,
+                            'case_code':cashcode,
+                            'date_done':indate,
+                            'partner_id': partner,
+                            'gp_year':gpyr,
+                            'gp_no':gpsno,
+                            'challan_no':challan,
+                            'lr_no':lrno,
+                            'lr_date':lrdate,
+                            'dest_from':frdesti,
+                            'dest_to':todesti,
+                            'despatch_mode':despatch,
+                            'note':note,
+                            'lab_no':labno,
+                            'hpressure':hpressure,
+                            'series_id':gps_ser,
+                            'transporter':transporter,
+    
+                    }
+                    ok = inward_pool.write(cr, uid,inward_no, vals, context)
+                    print "valsvalsvals", ok
+                else:
+                    rejected.append(data['INWARDNO'])
             except:
                 rejected.append(data['INWARDNO'])
                 _logger.warning("Skipping Record with Inward code '%s'."%(data['INWARDNO']), exc_info=True)

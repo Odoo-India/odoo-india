@@ -117,8 +117,8 @@ class import_gatepass_line_data(osv.osv_memory):
         po_not_found = []
         indent_not_found = []
         reject = []
+        print "Script Executed...."
         for data in data_lines:
-            print "CALLED LINES", data["GPS_SER"],data["GPS_ITEM_CODE"]
             name = inwrd_num = ''
             gps_ser=''
             gps_type = ''
@@ -150,22 +150,13 @@ class import_gatepass_line_data(osv.osv_memory):
                 gpsyr = data["GPS_YEAR"]
             if data["GPS_NO"] and gps_ser:
                 search = data["GPS_NO"]+'/'+gpsyr
-                print "\nSearch",search
-                print "\nSeries",gps_ser
-                print "\nType",gps_type
                 picking_id = self.pool.get('stock.picking.out').search(cr,uid,[('maize_out','=',search),('series','=',gps_ser),('gate_pass_type','=',gps_type)])
-                print picking_id
                 picking_id = picking_id[0]
             if data["INWARDNO"] and data["INWYEAR"]:
                 search = data["INWARDNO"]+'/'+data["INWYEAR"]
                 inward_id = self.pool.get('stock.picking.in').search(cr,uid,[('maize_in','=',search)])
-                print "inward",inward_id
-                print "\n"
             if data["GPS_IND_YEAR"]:
                 indent_year = data["GPS_IND_YEAR"]
-                print "INDENT YEAR"
-                print indent_year
-                print type(indent_year)
             if data["GPS_IND_QTY"]:
                 rqty = data["GPS_IND_QTY"]
             if data["GPS_APP_RATE"]:
@@ -174,7 +165,6 @@ class import_gatepass_line_data(osv.osv_memory):
                 poyear = data["POYEAR"]
             if data["GPS_IND_PURPOSE"] or data["GPS_IND_REMARK"]:
                 note= data["GPS_IND_PURPOSE"] +'\n'+ data["GPS_IND_REMARK"]
-                print "NOTES", note 
             new_vals = {
                     'product_id': product,
                     'picking_id': picking_id,

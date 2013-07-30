@@ -64,7 +64,7 @@
         <field name="context">{'group_by_no_leaf':0}</field>
         <field name="help">Stock Ledger</field>
     </record>
-    <menuitem action="maize_report_stock_ledger_action" id="maize_report_stock_ledger" parent="stock.next_id_61" sequence="97"/>
+    <menuitem action="indent.action_stock_ledger_datestart_from" id="maize_report_stock_ledger" parent="stock.next_id_61" sequence="97"/>
     
 </data>
 </openerp>

@@ -78,7 +78,7 @@
         </record>
 
         <!-- Indentor Wise Indent Report Menus -->
-        <menuitem action="action_indentor_wise_indent_report" id="menu_indentor_wise_indent_report" parent="stock.next_id_61" sequence="6"/>
+        <menuitem action="indent.action_indentor_wise_indent_datestart_from" id="menu_indentor_wise_indent_report" parent="stock.next_id_61" sequence="6"/>
 
     </data>
 </openerp>

@@ -37,7 +37,6 @@ Managing Gate Passes.
         'gate_pass_workflow.xml',
         'gate_pass_sequence.xml',
         'gate_pass_report.xml',
-        'wizard/move_analyis_datestart_from_view.xml',
         'report/inward_analysis_view.xml',
         'report/last_receipt_report_view.xml',
         'report/stock_ledger_report_view.xml'

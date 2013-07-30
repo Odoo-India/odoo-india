@@ -43,7 +43,7 @@
         </record>
 
         <!-- Format RG 23 A Part 1 Report Menu -->
-        <menuitem action="action_format_rg_report" id="menu_format_rg_report" parent="stock.next_id_61" sequence="95"/>
+        <menuitem action="indent.action_format_rg_datestart_from" id="menu_format_rg_report" parent="stock.next_id_61" sequence="95"/>
 
     </data>
 </openerp>

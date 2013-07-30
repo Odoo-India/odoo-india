@@ -78,6 +78,7 @@ class inventory_control(osv.osv_memory):
             raise osv.except_osv(_("Warning !"), _("Date To should be greater than Date From."))
         
         action_model, action_id = tuple(mod_obj.get_object_reference(cr, uid, 'maize_purchase', 'action_purchase_order_info_report'))
+        
         action = self.pool.get(action_model).read(cr, uid, action_id, context=context)
         
         domain = [

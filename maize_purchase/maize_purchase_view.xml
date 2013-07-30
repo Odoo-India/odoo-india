@@ -1361,6 +1361,7 @@
 			<field name="search_view_id" eval="maize_advance_note_search_report" />
 			<field name="help">Advance Note Register</field>
 		</record>
+		
 
 		<record id="maize_action_advance_note_view" model="ir.actions.act_window.view">
 			<field eval="1" name="sequence" />
@@ -1368,7 +1369,7 @@
 			<field name="view_id" ref="view_maize_purchase_order_line_tree" />
 			<field name="act_window_id" ref="maize_advance_note_report" />
 		</record>
-		<menuitem action="maize_advance_note_report" id="menu_action_maize_advance_note_report"
+		<menuitem action="indent.action_advance_note_datestart_from" id="menu_action_maize_advance_note_report"
 			parent="stock.next_id_61" sequence="7" />
 
 		<!--

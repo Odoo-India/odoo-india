@@ -122,7 +122,7 @@
         </record>
 
         <!-- Indent Report Menus -->
-        <menuitem action="action_indent_report" id="menu_indent_report" parent="stock.next_id_61" sequence="5"/>
+        <menuitem action="indent.action_indent_analysis_datestart_from" id="menu_indent_report" parent="stock.next_id_61" sequence="5"/>
 
     </data>
 </openerp>

@@ -18,36 +18,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-{
-    'name' : 'Gate Pass',
-    'version' : '0.1',
-    'author' : 'OpenERP S.A.',
-    'sequence': 110,
-    'category': 'Warehouse Management',
-    'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Gate Passes',
-    'description' : """
-Managing Gate Passes.
-===================== 
-""",
-    'depends' : ['maize_purchase'],
-    'data' : [
-        'gate_pass_view.xml',
-        'gate_pass_workflow.xml',
-        'gate_pass_sequence.xml',
-        'gate_pass_report.xml',
-        'wizard/move_analyis_datestart_from_view.xml',
-        'report/inward_analysis_view.xml',
-        'report/last_receipt_report_view.xml',
-        'report/stock_ledger_report_view.xml'
-    ],
-    'update_xml' : ['security/ir.model.access.csv'],
-
-    'demo': [],
-
-    'installable' : True,
-    'application' : True,
-}
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+import move_analysis_datestart_from

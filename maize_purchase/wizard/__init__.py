@@ -12,3 +12,5 @@ import update_excise
 import stock_move_split
 import inventory_control
 import department_excise_percentage
+import import_gatepass_data
+import import_gatepass_line_data

@@ -1,24 +1,134 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-        
-        <record id="inherit_indetn_form_view" model="ir.ui.view">
-            <field name="name">inherit.indent.indent.form</field>
+
+        <!-- Indent Form View -->
+        <record id='indent.view_indent_indent_form' model='ir.ui.view'>
+            <field name="name">indent.indent.form</field>
             <field name="model">indent.indent</field>
-            <field name="inherit_id" ref="indent.view_indent_indent_form" />
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='name']" position='after'>
-                    <field name="contract" invisible="1"/>
-                </xpath>
-                <xpath expr="//div[@name='buttons']/button[@string='Enquiry']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', '|', ('contract', '=', True),('type', '=', 'existing'), ('state', '!=', 'inprogress')]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='company_id']" position='after'>
-                    <field name="indent_equipment_id"/>
-                </xpath>
-                <xpath expr="//field[@name='department_id']" position="after">
-                    <field name="indent_section_id"/>
-                </xpath>
+                <form string="Indents" version="7.0">
+                    <header>
+                        <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight"/>
+                        <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight"/>
+                        <button name="indent_reject" string="Reject" states="waiting_approval"/>
+                        <button name="action_receive_products" string="Receive Product(s)" states="inprogress" type="object" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <label string="Draft Indent" attrs="{'invisible': ['|',('contract','=',True),('state','&lt;&gt;','draft')]}"/>
+                                <label string="Draft Contract" attrs="{'invisible': ['|',('contract','=',False),('state','&lt;&gt;','draft')]}"/>
+                                <label string="Indent" attrs="{'invisible': ['|',('contract','=',True),('state', '=', 'draft')]}"/>
+                                <label string="Contract" attrs="{'invisible': ['|',('contract','=',False),('state', '=', 'draft')]}"/>
+                                <field name="name" class="oe_inline"/>
+                            </h1>
+                        </div>
+                        <div class="oe_right oe_inline" name="buttons">
+                            <button name="%(indent.action_purchase_requisition_indent_view)d" string="Enquiry" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': ['|', '|', ('contract', '=', True),('type', '=', 'existing'), ('state', '!=', 'inprogress')]}"/>
+                            <button name="%(indent.action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('state', '!=', 'inprogress'),'|',('type', '!=', 'existing'),]}"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="indent_date" />
+                                <field name="maize" groups="indent.group_maize_data"/>
+                                <field name="contract" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="required_date"/>
+                                <field name="attachment_id" invisible="1"/>
+                                <field name="print_report" readonly="1" attrs="{'invisible': [('print_report', '=', False)]}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Details">
+                                <field name="item_for" on_change="onchange_item(item_for)"/>
+                                <field name="analytic_account_id" attrs="{'invisible': [('item_for', '!=', 'capital')], 'required': [('item_for', '=', 'capital')]}"/>
+                                <field name="requirement"/>
+                                <field name="type"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="indent_equipment_id"/>
+                            </group>
+                            <group string="Indentor">
+                                <field name="indentor_id" readonly="1"/>
+                                <field name="employee_id" groups="indent.group_maize_data" invisible="1"/>
+                                <field name="employee_department_id" groups="indent.group_maize_data" invisible="1"/>
+                                <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view'), ('maize_location', '=', True)]" context="{'default_maize_location': True}"/>
+                                <field name="indent_section_id"/>
+                                <field name="fiscalyear"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="product_lines">
+                                    <form string="Products" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field name="product_id"
+                                                    groups="base.group_user"
+                                                    on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field
+                                                        name="product_uom_qty" class="oe_inline"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
+                                                        on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
+                                                </div>
+                                                 <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
+                                            </group>
+                                            <group>
+                                                <field name="original_product_id"/>
+                                                <field name="type"/>
+                                                <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
+                                                <field name="virtual_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
+                                                <field name="delay"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                        <label for="specification"/>
+                                        <field name="specification"/>
+                                    </form>
+                                    <tree string="Products">
+                                        <field name="product_id"
+                                            groups="base.group_user"
+                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
+                                        <field name="product_uom" string="Unit"
+                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"
+                                            groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="name"/>
+                                        <field name="specification"/>
+                                        <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type)"/>
+                                        <field name="price_subtotal"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total"/>
+                                </group>
+                            </page>
+                            <page string="Status">
+                                <field name="indent_authority_ids" readonly="1">
+                                    <tree string="Status" editable="bottom">
+                                        <field name="date"/>
+                                        <field name="name"/>
+                                        <field name="priority"/>
+                                        <field name="description"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                        <label for="description"/>
+                        <field name="description"/>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
             </field>
         </record>
 
@@ -77,7 +187,7 @@
         <record id="action_contract_form_view1" model="ir.actions.act_window.view">
             <field eval="3" name="sequence"/>
             <field name="view_mode">form</field>
-            <field name="view_id" ref="inherit_indetn_form_view"/>
+            <field name="view_id" ref="indent.view_indent_indent_form"/>
             <field name="act_window_id" ref="action_contract_view"/>
         </record>
         <!-- override search view for add default search -->

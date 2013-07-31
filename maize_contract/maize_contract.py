@@ -59,6 +59,33 @@ class indent_indent(osv.Model):
 
 indent_indent()
 
+class indent_product_lines(osv.Model):
+    _inherit = 'indent.product.lines'
+
+    def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', analytic_account_id=False, indent_type=False, context=None):
+        result = {}
+        product_obj = self.pool.get('product.product')
+        if not product_id:
+            return {'value': {'product_uom_qty': 1.0, 'product_uom': False, 'price_unit': 0.0, 'qty_available': 0.0, 'virtual_available': 0.0, 'name': '', 'delay': 0.0}}
+        if analytic_account_id:
+            prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0152')], context=context)
+            if product_id not in prod_ids:
+                raise osv.except_osv(_("Warning !"), _("You must select a product whose code start with '0152'."))
+        product = product_obj.browse(cr, uid, product_id, context=context)
+        if indent_type and indent_type == 'existing' and product.type != 'service':
+            raise osv.except_osv(_("Warning !"), _("You must select a service type product."))
+        if not product.seller_ids:
+            raise osv.except_osv(_("Warning !"), _("You must define at least one supplier for this product."))
+        result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
+        result['product_uom'] = product.uom_id.id
+        result['price_unit'] = product.standard_price
+        result['qty_available'] = product.qty_available
+        result['virtual_available'] = product.virtual_available
+        result['delay'] = product.seller_ids[0].delay
+        return {'value': result}
+
+indent_product_lines()
+
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
 

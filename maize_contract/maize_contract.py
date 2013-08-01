@@ -62,6 +62,10 @@ indent_indent()
 class indent_product_lines(osv.Model):
     _inherit = 'indent.product.lines'
 
+    _columns = {
+        'person': fields.integer('Person'),
+    }
+
     def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', analytic_account_id=False, indent_type=False, contract=False, context=None):
         result = {}
         product_obj = self.pool.get('product.product')

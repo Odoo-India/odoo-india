@@ -447,6 +447,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//group[@string='Localization']" position="after">
                     <group string="Maize">
+                        <field name="manager_id"/>
                         <field name="seq_id" readonly="1"/>
                         <field name="seq_type_id" readonly="1"/>
                         <field name="maize_location"/>

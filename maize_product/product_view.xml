@@ -129,7 +129,7 @@
 		                        <field name="code"/>
 		                        <field name="name"/>
 		                        <field name="type"/>
-		                        <field name="seq_id" invisible="1"/>
+		                        <field name="seq_id"/>
 	                        </group>
 	                    </group>
                     </sheet>

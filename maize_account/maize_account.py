@@ -54,7 +54,6 @@ class account_tax(osv.Model):
                     'type':'percent',
                     'amount':0.02,
                     'include_base_amount':False,
-                    'tax_type':'cess',
                     'type_tax_use':'all',
                    },{'name':'Edu.cess 1% on '+name,
                     'tax_type':'hedu_cess',
@@ -63,7 +62,6 @@ class account_tax(osv.Model):
                     'amount':0.01,
                     'include_base_amount':False,
                     'type_tax_use':'all',
-                    'tax_type':'cess',
                     }]
         result['child_ids'] = vals
         result['include_base_amount'] = True

@@ -268,7 +268,7 @@ class product_product(osv.Model):
         'last_po_series': fields.many2one('product.order.series', 'Last PO Series',readonly=True),
         'ex_chapter': fields.char('EXCHAPTER', size=30, translate=True),
         'ex_chapter_desc': fields.text('EXCHAPTERDESCR',translate=True),
-        'variance': fields.integer('Variance', help='Percentage that shows the actual difference between the ordered quantity and received one'),
+        'variance': fields.float('Variance', help='Percentage that shows the actual difference between the ordered quantity and received one'),
         'item_type': fields.selection([('gp', 'GP')], 'Item Type'),
         'description': fields.char('Description', size=256),
         'desc2': fields.char('Description2', size=256),

@@ -63,12 +63,23 @@ class import_po_data(osv.osv_memory):
             return False
 
     def do_import_po_data(self, cr, uid,ids, context=None):
-#         all_po = po_pool.search(cr,uid,[])
-#         po_pool.write(cr,uid,all_po,{'commission':0.01})
-#         po_pool.write(cr,uid,all_po,{'commission':0.00})
-        po_pool = self.pool.get('purchase.order') 
+        po_pool = self.pool.get('purchase.order')
+        all_po = po_pool.search(cr,uid,[('maize','!=','')])
+        print ">>>>>>>>>>>>>>>>>>>>>>", all_po
+        po_pool = self.pool.get('purchase.order')
+        i=0
+        for p in all_po:
+            print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",p
+            po_pool.write(cr,uid,p,{'commission':0.01})
+            po_pool.write(cr,uid,p,{'commission':0.00})
+            wf_service = netsvc.LocalService('workflow')
+            wf_service.trg_validate(4, 'purchase.order', p, 'purchase_confirm', cr)
+        return True
+
+    def do_import_po_data1(self, cr, uid,ids, context=None):
+        po_pool = self.pool.get('purchase.order')
         #file_path = "/home/ara/Desktop/odt/PO/poheader.csv"
-        file_path = "/home/ara/Desktop/odt/PO/ponot20132014butinward20132014.csv"
+        file_path = "/home/maize/data/1_aug/1_aug_po.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -108,13 +119,8 @@ class import_po_data(osv.osv_memory):
                     podate = value
                       
                 if data["SUPPCODE"]:
-                    partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])
+                    partner = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',data["SUPPCODE"])])[0]
                     #un_define = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])
-                    try:
-                        if partner:
-                            partner = partner[0]
-                    except:
-                        un_define.append(data["SUPPCODE"])
                         
                 if data["MILDELIV"]:
                     delv = self.pool.get('purchase.delivery')

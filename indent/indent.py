@@ -1180,7 +1180,7 @@ class stock_location(osv.Model):
             seq = {
                 'name': name,
                 'implementation':'no_gap',
-                'prefix': '/%(year)s'+prefix,
+                'prefix': '%(year)s/'+prefix,
                 'padding': padding,
                 'number_increment': 1,
                 'code': code
@@ -1206,7 +1206,7 @@ class stock_location(osv.Model):
                 if location.seq_type_id:
                     seq_type_obj.write(cr, uid, [location.seq_type_id.id], {'code': vals.get('code')}, context=context)
                 if location.seq_id:
-                    seq_obj.write(cr, uid, [location.seq_id.id], {'code': vals.get('code'), 'prefix': '/%(year)s'+prefix, 'padding': padding}, context=context)
+                    seq_obj.write(cr, uid, [location.seq_id.id], {'code': vals.get('code'), 'prefix': '%(year)s/'+prefix, 'padding': padding}, context=context)
         return super(stock_location, self).write(cr, uid, ids, vals, context=context)
 
     def unlink(self, cr, uid, ids, context=None):

@@ -68,7 +68,7 @@ class import_indent_data(osv.osv_memory):
         #file_path = "/home/ara/Desktop/odt/indent/IDENTNOT20132014BUTPO20132014.csv"
         #file_path = "/home/ara/Desktop/odt/indent/INDENTNOT20132014BUTINWORD20132014.csv"
         
-        file_path = "/home/ara/Desktop/odt/indent/missing_indent.csv"
+        file_path = "/home/maize/data/2_aug/indent_special.csv"
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")
             return True
@@ -161,10 +161,7 @@ class import_indent_data(osv.osv_memory):
                         mach = data["MACHCODE"].strip()
                     project=False
                     if mach:
-                        try:
-                            project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0]
-                        except:
-                            project_not_match.append(mach)                    
+                        project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0]
                            
                     description=data['REMARK1']+'\n'+data['REMARK2']
                     data['indent'] = indent_pool.create(cr, uid, {'name':name,
@@ -179,6 +176,7 @@ class import_indent_data(osv.osv_memory):
                                                                   'required_date':req_date,
                                                                   'description':description,
                                                                   'fiscalyear':fiscalyear,
+                                                                  'analytic_account_id':project
                                                        }, context)
                     indent_list.append(name)
        

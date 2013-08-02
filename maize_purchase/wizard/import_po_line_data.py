@@ -63,7 +63,7 @@ class import_po_line_data(osv.osv_memory):
 
     def po_line_create(self,cr,uid,ids,context=None):
         #file_path = "/home/ara/Desktop/odt/PO/podetail1.csv"
-        file_path = "/home/ara/Desktop/odt/PO/potrnot20132014butinward20132014.csv"
+        file_path = "/home/maize/data/1_aug/1_aug_po_line.csv"
         
         fields = data_lines = False
         try:
@@ -127,7 +127,7 @@ class import_po_line_data(osv.osv_memory):
                 indentor_id=False
                 fiscalyear = self.pool.get('account.fiscalyear').search(cr,uid,[('name','=',data['INDYEAR'].strip())])
                 if data["INDENTNO"] and fiscalyear:
-                    indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"]+'/'+data["INDYEAR"])])
+                    indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDYEAR"]+'/'+data["INDENTNO"])])
                     indent_id = indent and indent[0] or False
                 if data["INDENTOR"]:
                     indentor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])

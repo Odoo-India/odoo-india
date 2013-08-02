@@ -233,20 +233,23 @@
                 <xpath expr="//notebook" position="before">
                     <group attrs="{'invisible': [('contract', '=', False)]}" col="6"  string="Number Of Days For Contract">
                         <group>
-                            <field name="date_from" on_change="onchange_compute_days1(date_from, date_to,no_of_days2,no_of_days3)"/>
-                            <field name="extended_date_from1" on_change="onchange_compute_days2(extended_date_from1, extended_date_to1, no_of_days1,no_of_days3)"/>
-                            <field name="extended_date_from2" on_change="onchange_compute_days3(extended_date_from2, extended_date_to2, no_of_days1,no_of_days2)"/>
+                            <field name="date_from" on_change="onchange_compute_days1(date_from, date_to,no_of_days2,no_of_days3,no_of_days4)"/>
+                            <field name="extended_date_from1" on_change="onchange_compute_days2(extended_date_from1, extended_date_to1, no_of_days1, no_of_days3, no_of_days4)"/>
+                            <field name="extended_date_from2" on_change="onchange_compute_days3(extended_date_from2, extended_date_to2, no_of_days1, no_of_days2, no_of_days4)"/>
+                            <field name="extended_date_from3" on_change="onchange_compute_days4(extended_date_from3, extended_date_to3, no_of_days1, no_of_days2, no_of_days3)"/>
                         </group>
                         <group>
-                            <field name="date_to" on_change="onchange_compute_days1(date_from, date_to,no_of_days2,no_of_days3)"/>
-                            <field name="extended_date_to1" on_change="onchange_compute_days2(extended_date_from1, extended_date_to1, no_of_days1,no_of_days3)"/>
-                            <field name="extended_date_to2" on_change="onchange_compute_days3(extended_date_from2, extended_date_to2, no_of_days1,no_of_days2)"/>
+                            <field name="date_to" on_change="onchange_compute_days1(date_from, date_to,no_of_days2,no_of_days3,no_of_days4)"/>
+                            <field name="extended_date_to1" on_change="onchange_compute_days2(extended_date_from1, extended_date_to1, no_of_days1,no_of_days3,no_of_days4)"/>
+                            <field name="extended_date_to2" on_change="onchange_compute_days3(extended_date_from2, extended_date_to2, no_of_days1,no_of_days2,no_of_days4)"/>
+                            <field name="extended_date_to3" on_change="onchange_compute_days4(extended_date_from3, extended_date_to3, no_of_days1,no_of_days2,no_of_days3)"/>
                         </group>
                         <group>
                             <field name="contract" invisible="1"/>
                             <field name="no_of_days1"/>
                             <field name="no_of_days2"/>
                             <field name="no_of_days3"/>
+                            <field name="no_of_days4"/>
                             <field name="total_days"/>
                         </group>
                     </group>

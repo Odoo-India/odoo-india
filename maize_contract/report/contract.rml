@@ -124,15 +124,15 @@
         </td>
         <td>
             <para style="terp_default_2"> :  [[ order.indentor_id.name]] [[ order.indentor_id.user_code or '']]</para>
-            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]]</para>
+            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]] [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.code]] </para>
         </td>
         <td>
             <para style="terp_default_2">PERMISSION NO </para>
             <para style="terp_default_2">PERMISSION DATE </para>
         </td>
         <td>
-            <para style="terp_default_2"> : [[ order.indent_id.name or ' ']]</para>
-            <para style="terp_default_2"> : [[ formatLang(order.date_approve, date = True) or '']]</para>
+            <para style="terp_default_2"> : [[ order.name or ' ']]</para>
+            <para style="terp_default_2"> : [[ formatLang(order.date_order, date = True) or '']]</para>
         </td>
     </tr>
     </blockTable>
@@ -168,14 +168,17 @@
             <para style="terp_default_2">FROM DATE </para>
             <para style="terp_default_2">EXTENDED FROM </para>
             <para style="terp_default_2">EXTENDED FROM </para>
+            <para style="terp_default_2">EXTENDED FROM </para>
         </td>
         <td>
             <para style="terp_default_2"> :  [[ formatLang(order.date_from, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from1, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from2, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from3, date = True)]]</para>
         </td>
         <td>
             <para style="terp_default_2">TO DATE </para>
+            <para style="terp_default_2">EXTENDED UPTO</para>
             <para style="terp_default_2">EXTENDED UPTO</para>
             <para style="terp_default_2">EXTENDED UPTO</para>
         </td>
@@ -183,6 +186,7 @@
             <para style="terp_default_2"> :  [[ formatLang(order.date_to, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to1, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to2, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to3, date = True)]]</para>
         </td>
     </tr>
     </blockTable>

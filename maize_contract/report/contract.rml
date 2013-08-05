@@ -106,8 +106,9 @@
     <paraStyle name="Space bet user and signature" fontName="Helvetica" fontSize="4.0" leading="5" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <images/>
   </stylesheet>
+
     <story>
-    <para style="terp_tblheader_General_Right"> 1st copy </para>
+    <para style="terp_tblheader_General_Right"> Security Copy </para>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="Index"> [[ order.company_id.name or removeParentNode('para')]] </para>
     <para style="Index"> [[ order.company_id.street or removeParentNode('para')]] </para>
@@ -336,7 +337,7 @@
     </story>
     <!-- 2 nd copy -->
     <story>
-    <para style="terp_tblheader_General_Right"> 2nd copy </para>
+    <para style="terp_tblheader_General_Right"> Purchase | Bill Passing Copy </para>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="Index"> [[ order.company_id.name or removeParentNode('para')]] </para>
     <para style="Index"> [[ order.company_id.street or removeParentNode('para')]] </para>
@@ -562,7 +563,7 @@
     
     <!-- 3 rd copy -->
     <story>
-    <para style="terp_tblheader_General_Right"> 3rd copy </para>
+    <para style="terp_tblheader_General_Right"> Engineer copy </para>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="Index"> [[ order.company_id.name or removeParentNode('para')]] </para>
     <para style="Index"> [[ order.company_id.street or removeParentNode('para')]] </para>
@@ -785,5 +786,232 @@
         </tr>
     </blockTable>
     </story>
+
+    <!-- 4th copy -->
+    <story>
+    <para style="terp_tblheader_General_Right"> Contractor Copy </para>
+    <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
+    <para style="Index"> [[ order.company_id.name or removeParentNode('para')]] </para>
+    <para style="Index"> [[ order.company_id.street or removeParentNode('para')]] </para>
+    <para style="Index"> [[ order.company_id.street2 or '']] </para>
+    <para style="Index"> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or '']]  </para>
+    <para style="P1"> <font color="white"> </font> </para>
+    <para style="Index"> CONTRACT PERMISSION </para>
+    <para style="Index"> ================= </para>
+    <blockTable colWidths="80.0,180.0,110.0,160.0" style="Table1">
+    <tr>
+        <td>
+            <para style="terp_default_2">INDENTOR </para>
+            <para style="terp_default_2">DEPARTMENT </para>
+        </td>
+        <td>
+            <para style="terp_default_2"> :  [[ order.indentor_id.name]] [[ order.indentor_id.user_code or '']]</para>
+            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]]</para>
+        </td>
+        <td>
+            <para style="terp_default_2">PERMISSION NO </para>
+            <para style="terp_default_2">PERMISSION DATE </para>
+        </td>
+        <td>
+            <para style="terp_default_2"> : [[ order.indent_id.name or ' ']]</para>
+            <para style="terp_default_2"> : [[ formatLang(order.date_approve, date = True) or '']]</para>
+        </td>
+    </tr>
+    </blockTable>
+    <para style="P1"> <font color="white"> </font> </para>
+    <blockTable colWidths="120.0,390.0,10.0,10.0" style="Table1">
+        <tr>
+            <td>
+                <para style="terp_default_2">CONTRACTOR CODE </para>
+                <para style="terp_default_2">CONTRACTOR'S NAME </para>
+             </td>
+             <td>
+                <para style="terp_default_2"> :  [[ order.partner_id.supp_code or '']]</para>
+                <para style="terp_default_2"> :  [[ order.partner_id.name or '']]</para>
+             </td>
+             <td>
+             </td>
+             <td>
+             </td>
+        </tr>
+    </blockTable>
+    <para style="P1"> <font color="white"> </font> </para>
+    <para style="terp_default_2">PROJECT : [[ order.indent_id and order.indent_id.analytic_account_id and order.indent_id.analytic_account_id.name]]</para>
+    <para style="P1"> <font color="white"> </font> </para>
+    <blockTable colWidths="70.0,70.0,120.0,90.0,90.0,90.0" style="Table1">
+    <tr>
+        <td>
+            <para style="terp_default_2">NO OF DAYS </para>
+        </td>
+        <td>
+            <para style="terp_default_2"> : [[ order.total_days]]</para>
+        </td>
+        <td>
+            <para style="terp_default_2">FROM DATE </para>
+            <para style="terp_default_2">EXTENDED FROM </para>
+            <para style="terp_default_2">EXTENDED FROM </para>
+        </td>
+        <td>
+            <para style="terp_default_2"> :  [[ formatLang(order.date_from, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from1, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from2, date = True)]]</para>
+        </td>
+        <td>
+            <para style="terp_default_2">TO DATE </para>
+            <para style="terp_default_2">EXTENDED UPTO</para>
+            <para style="terp_default_2">EXTENDED UPTO</para>
+        </td>
+        <td>
+            <para style="terp_default_2"> :  [[ formatLang(order.date_to, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to1, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to2, date = True)]]</para>
+        </td>
+    </tr>
+    </blockTable>
+    <para style="terp_default_2"> <font color="white"> </font> </para>
+    <para style="terp_default_2"> <font color="white"> </font> </para>
+    <blockTable colWidths="330.0,50.0,50.0,50.0,50.0" repeatRows="1" style="Table_Product_Header_Title">
+        <tr>
+            <td>
+              <para style="terp_default_Bold_8">DESCRIPTION</para>
+            </td>
+            <td>
+              <para style="terp_tblheader_General_Centre">PERSON</para>
+            </td>
+            <td>
+              <para style="terp_tblheader_General_Centre">QTY UOM</para>
+            </td>
+            <td>
+              <para style="terp_tblheader_General_Centre">RATE</para>
+            </td>
+            <td>
+              <para style="terp_tblheader_Details_Centre">AMOUNT</para>
+            </td>
+        </tr>
+    </blockTable>
+    <section>
+    <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]] </para>
+    <blockTable colWidths="330.0,50.0,50.0,50.0,50.0" style="Table_Product_Line">
+        <tr>
+            <td>
+                <para style="terp_default_2">[[ (order_line.product_id and order_line.product_id.default_code) or ' ' ]] [[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
+                <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> [[ (order.notes or '')]] </para>
+                <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
+            </td>
+            <td>
+                <para style="terp_default_Centre_8"> [[ (order_line.person) or ' ' ]]</para>
+            </td>
+            <td>
+                <para style="Table Heading"> [[ formatLang(order_line.product_qty )]]
+                <i>[[ (order_line.product_uom and order_line.product_uom.name) or '' ]]</i> </para>
+            </td>
+            <td>
+                <para style="Table Heading"> [[ formatLang(order_line.price_unit ) ]] </para>
+            </td>
+            <td>
+                <para style="Table Heading"> [[ order_line.price_subtotal or 0.0]]</para>
+            </td>
+        </tr>
+    </blockTable>
+    </section>
+    <blockTable colWidths="480.0,50.0" style="Table9">
+        <tr>
+            <td>
+                <para style="terp_default_Right_9"> TOTAL :</para>
+                <para style="terp_default_Right_9"> TOTAL COST :</para>
+            </td>
+            <td>
+                <para style="terp_default_Right_9">[[ order.amount_untaxed or 0.0]]</para>
+                <para style="terp_default_Right_9">[[ order.amount_untaxed or 0.0]]</para>
+            </td>
+        </tr>
+    </blockTable>
+    <para style="terp_default_2">[[ type(order,order.retention)]]</para>
+    <para style="terp_header_Right"> <font color="white"> </font> </para>
+    <para style="terp_header_Right"> <font color="white"> </font> </para>
+    <para style="terp_header_Right"> <font color="white"> </font> </para>
+    <blockTable colWidths="130.0,400.0" repeatRows="1" style="Table_Product_Header_Title">
+        <tr>
+            <td>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> CONTRACTORS SIGN :  </para>
+            </td>
+            <td>
+                <para style="Table Heading"> SAFETY &amp; ACCIDENT ON CONTRACTORS SCOPE </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+            </td>
+        </tr>
+    </blockTable>
+    <para style="terp_default_2"> ENGINEERS REMARK &amp; SIGN :  </para>
+    <para style="terp_default_2"> <font color="white"> </font> </para>
+    <para style="terp_default_2"> <font color="white"> </font> </para>
+    <para style="terp_default_9"> <font color="white"> [[ authority_sign( order.indent_id.indent_authority_ids, order.indent_id) ]]  </font> </para>
+    <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table9">
+        <tr>
+            <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id,order.indent_id)]]</image>
+                <para style="terp_default_2"> ENGINEER SIGN </para>
+            </td>
+            <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
+                <para style="terp_default_2"> DEPT HEAD</para>
+            </td>
+            <td>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
+                <para style="terp_default_2"> ENGG HEAD </para>
+            </td>
+            <td>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_Centre"> MD </para>
+            </td>
+        </tr>
+    </blockTable>
+    <para style="terp_default_2"> <font color="white"> </font> </para>
+    <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
+        <tr>
+            <td>
+                <para style="terp_default_2"> WORK COMPLETED &amp; SIGN</para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> ENGINEER SIGN </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+            </td>
+            <td>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> DEPT HEAD</para>
+            </td>
+            <td>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> ENGG HEAD </para>
+            </td>
+            <td>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_Centre"> MD </para>
+            </td>
+        </tr>
+    </blockTable>
+    </story>
+
 </document>
   

@@ -179,7 +179,7 @@ class indent(report_sxw.rml_parse):
     def _project_code_name(self, project_id):
         code = ''
         if project_id:
-            code = (project_id.code or '') +'  '+ project_id.name or ''
+            code =  project_id.name+'  '+'('+ project_id.code +')' or ''
         return code
     
     def _last_supplier_code_name(self, id):

@@ -104,6 +104,7 @@
     <paraStyle name="terp_default_8_italic" rightIndent="0.0" leftIndent="20.0" fontName="Helvetica-Oblique" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="terp_default_Centre" fontName="Helvetica" fontSize="9.0" leading="3" alignment="CENTER" spaceBefore="4.0" spaceAfter="4.0"/>
     <paraStyle name="Space bet user and signature" fontName="Helvetica" fontSize="4.0" leading="5" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Left_9" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <images/>
   </stylesheet>
 
@@ -117,15 +118,15 @@
     <para style="P1"> <font color="white"> </font> </para>
     <para style="Index"> CONTRACT PERMISSION </para>
     <para style="Index"> ================= </para>
-    <blockTable colWidths="80.0,180.0,110.0,160.0" style="Table1">
+    <blockTable colWidths="80.0,220.0,110.0,120.0" style="Table1">
     <tr>
         <td>
             <para style="terp_default_2">INDENTOR </para>
             <para style="terp_default_2">DEPARTMENT </para>
         </td>
         <td>
-            <para style="terp_default_2"> :  [[ order.indentor_id.name]] [[ order.indentor_id.user_code or '']]</para>
-            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]] [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.code]] </para>
+            <para style="terp_default_2"> :  [[ order.indentor_id.name]] ([[ order.indentor_id.user_code or '']])</para>
+            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]] ([[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.code]]) </para>
         </td>
         <td>
             <para style="terp_default_2">PERMISSION NO </para>
@@ -273,27 +274,37 @@
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table9">
         <tr>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id,order.indent_id)]]</image>
-                <para style="terp_default_2"> ENGINEER SIGN </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indentor_id and order.indentor_id.name or False ]]</para>
+                <para style="terp_default_Left_9"> Indentor </para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
-                <para style="terp_default_2"> DEPT HEAD</para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.job_id and order.indent_id.employee_id.coach_id.job_id.name or False ]]</para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
-                <para style="terp_default_2"> ENGG HEAD </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.epartment_id.manager_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.job_id and order.indent_id.department_id.manager_id.job_id.name or False ]]</para>
             </td>
             <td>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_Centre"> MD </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order)]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.indent_authority_ids[0].name.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ authority_sign(order.indent_id.indent_authority_ids,order)]] [[ get_value().get(0) or False ]]</para>
             </td>
         </tr>
     </blockTable>
     <para style="terp_default_2"> <font color="white"> </font> </para>
-    <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
+    <!--blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
         <tr>
             <td>
                 <para style="terp_default_2"> WORK COMPLETED &amp; SIGN</para>
@@ -333,7 +344,7 @@
                 <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
-    </blockTable>
+    </blockTable-->
     </story>
     <!-- 2 nd copy -->
     <story>
@@ -346,7 +357,7 @@
     <para style="P1"> <font color="white"> </font> </para>
     <para style="Index"> CONTRACT PERMISSION </para>
     <para style="Index"> ================= </para>
-    <blockTable colWidths="80.0,180.0,110.0,160.0" style="Table1">
+    <blockTable colWidths="80.0,220.0,110.0,120.0" style="Table1">
     <tr>
         <td>
             <para style="terp_default_2">INDENTOR </para>
@@ -354,7 +365,7 @@
         </td>
         <td>
             <para style="terp_default_2"> :  [[ order.indentor_id.name]] [[ order.indentor_id.user_code or '']]</para>
-            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]]</para>
+            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]] ([[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.code]]) </para>
         </td>
         <td>
             <para style="terp_default_2">PERMISSION NO </para>
@@ -498,27 +509,37 @@
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table9">
         <tr>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id,order.indent_id)]]</image>
-                <para style="terp_default_2"> ENGINEER SIGN </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indentor_id and order.indentor_id.name or False ]]</para>
+                <para style="terp_default_Left_9"> Indentor </para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
-                <para style="terp_default_2"> DEPT HEAD</para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.job_id and order.indent_id.employee_id.coach_id.job_id.name or False ]]</para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
-                <para style="terp_default_2"> ENGG HEAD </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.epartment_id.manager_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.job_id and order.indent_id.department_id.manager_id.job_id.name or False ]]</para>
             </td>
             <td>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_Centre"> MD </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order)]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.indent_authority_ids[0].name.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ authority_sign(order.indent_id.indent_authority_ids,order)]] [[ get_value().get(0) or False ]]</para>
             </td>
         </tr>
     </blockTable>
     <para style="terp_default_2"> <font color="white"> </font> </para>
-    <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
+    <!--blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
         <tr>
             <td>
                 <para style="terp_default_2"> WORK COMPLETED &amp; SIGN</para>
@@ -558,7 +579,7 @@
                 <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
-    </blockTable>
+    </blockTable-->
     </story>
     
     <!-- 3 rd copy -->
@@ -572,7 +593,7 @@
     <para style="P1"> <font color="white"> </font> </para>
     <para style="Index"> CONTRACT PERMISSION </para>
     <para style="Index"> ================= </para>
-    <blockTable colWidths="80.0,180.0,110.0,160.0" style="Table1">
+    <blockTable colWidths="80.0,220.0,110.0,120.0" style="Table1">
     <tr>
         <td>
             <para style="terp_default_2">INDENTOR </para>
@@ -580,7 +601,7 @@
         </td>
         <td>
             <para style="terp_default_2"> :  [[ order.indentor_id.name]] [[ order.indentor_id.user_code or '']]</para>
-            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]]</para>
+            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]] ([[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.code]]) </para>
         </td>
         <td>
             <para style="terp_default_2">PERMISSION NO </para>
@@ -724,27 +745,37 @@
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table9">
         <tr>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id,order.indent_id)]]</image>
-                <para style="terp_default_2"> ENGINEER SIGN </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indentor_id and order.indentor_id.name or False ]]</para>
+                <para style="terp_default_Left_9"> Indentor </para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
-                <para style="terp_default_2"> DEPT HEAD</para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.job_id and order.indent_id.employee_id.coach_id.job_id.name or False ]]</para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
-                <para style="terp_default_2"> ENGG HEAD </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.epartment_id.manager_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.job_id and order.indent_id.department_id.manager_id.job_id.name or False ]]</para>
             </td>
             <td>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_Centre"> MD </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order)]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.indent_authority_ids[0].name.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ authority_sign(order.indent_id.indent_authority_ids,order)]] [[ get_value().get(0) or False ]]</para>
             </td>
         </tr>
     </blockTable>
     <para style="terp_default_2"> <font color="white"> </font> </para>
-    <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
+    <!--blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
         <tr>
             <td>
                 <para style="terp_default_2"> WORK COMPLETED &amp; SIGN</para>
@@ -784,7 +815,7 @@
                 <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
-    </blockTable>
+    </blockTable-->
     </story>
 
     <!-- 4th copy -->
@@ -798,15 +829,15 @@
     <para style="P1"> <font color="white"> </font> </para>
     <para style="Index"> CONTRACT PERMISSION </para>
     <para style="Index"> ================= </para>
-    <blockTable colWidths="80.0,180.0,110.0,160.0" style="Table1">
+    <blockTable colWidths="80.0,220.0,110.0,120.0" style="Table1">
     <tr>
         <td>
             <para style="terp_default_2">INDENTOR </para>
             <para style="terp_default_2">DEPARTMENT </para>
         </td>
         <td>
-            <para style="terp_default_2"> :  [[ order.indentor_id.name]] [[ order.indentor_id.user_code or '']]</para>
-            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]]</para>
+            <para style="terp_default_2"> :  [[ order.indentor_id.name]] ([[ order.indentor_id.user_code or '']])</para>
+            <para style="terp_default_2"> :  [[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.name]] ([[ order.indent_id and order.indent_id.department_id and order.indent_id.department_id.code]]) </para>
         </td>
         <td>
             <para style="terp_default_2">PERMISSION NO </para>
@@ -950,27 +981,37 @@
     <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table9">
         <tr>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id,order.indent_id)]]</image>
-                <para style="terp_default_2"> ENGINEER SIGN </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indentor_id and order.indentor_id.name or False ]]</para>
+                <para style="terp_default_Left_9"> Indentor </para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id)]]</image>
-                <para style="terp_default_2"> DEPT HEAD</para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.job_id and order.indent_id.employee_id.coach_id.job_id.name or False ]]</para>
             </td>
             <td>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id and order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.coach_id and order.indent_id.employee_id.coach_id.coach_id.user_id, order.indent_id)]]</image>
-                <para style="terp_default_2"> ENGG HEAD </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.epartment_id.manager_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.job_id and order.indent_id.department_id.manager_id.job_id.name or False ]]</para>
             </td>
             <td>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
-                <para style="terp_default_Centre"> MD </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order)]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_id.indent_authority_ids[0].name.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ authority_sign(order.indent_id.indent_authority_ids,order)]] [[ get_value().get(0) or False ]]</para>
             </td>
         </tr>
     </blockTable>
     <para style="terp_default_2"> <font color="white"> </font> </para>
-    <blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
+    <!--blockTable colWidths="155.0,125.0,125.0,125.0" style="Table_Product_Header_Title">
         <tr>
             <td>
                 <para style="terp_default_2"> WORK COMPLETED &amp; SIGN</para>
@@ -1010,7 +1051,7 @@
                 <para style="terp_default_Centre"> MD </para>
             </td>
         </tr>
-    </blockTable>
+    </blockTable-->
     </story>
 
 </document>

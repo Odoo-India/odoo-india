@@ -488,9 +488,9 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.employee_id.department_id and order.employee_id.department_id.manager_id and order.employee_id.department_id.manager_id.user_id, order) ]]</image>
-                <para style="terp_default_Left_9">[[ order.employee_id.department_id and order.employee_id.department_id.manager_id.name or False ]]</para>
-                <para style="terp_default_Left_9">[[ order.employee_id.department_id and order.employee_id.department_id.manager_id.job_id.name or False ]]</para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.department_id and order.department_id.manager_id and order.department_id.manager_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.department_id and order.department_id.manager_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.department_id and order.department_id.manager_id.job_id.name or False ]]</para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
             </td>

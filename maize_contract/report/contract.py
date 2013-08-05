@@ -59,20 +59,20 @@ class contract(report_sxw.rml_parse):
         if line != None and len(line) != 0 :
             number = 0
             authority_obj = self.pool.get('document.authority.instance')
+            emp_obj = self.pool.get('hr.employee')
             for authority in line:
                 authority_id = authority_obj.search(self.cr, self.uid, [('name', '=', authority.name.name),('indent_id', '=', indent.id),('state', '=', 'approve')])
-                if authority_id:
-                    self.get_value.update({number: authority.name.sign or image})
-                    number+=1
-                else:
-                    self.get_value.update({number: image})
+                emp_id = emp_obj.search(self.cr, self.uid, [('user_id','=', authority.name.id)])
+                emp = emp_obj.browse(self.cr, self.uid, emp_id)[0]
+                if emp:
+                    self.get_value.update({number: emp.job_id and emp.job_id.name or ''})
                     number+=1
         return ''
     
     def _type(self, order, retenstion_type):
-        text = 'CONTRACTOR\'S RETENTION NOT TO BE LEIVED'
+        text = 'CONTRACTOR\'S RETENTION NOT TO BE LEVIED'
         if str(retenstion_type) == 'leived':
-            text = 'CONTRACTOR\'S RETENTION TO BE LEIVED'
+            text = 'CONTRACTOR\'S RETENTION TO BE LEVIED'
         return text
     
     def _get_value(self):

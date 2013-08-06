@@ -276,28 +276,28 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indentor_id and order.indentor_id.name or False ]]</para>
                 <para style="terp_default_Left_9"> Indentor </para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.job_id and order.indent_id.employee_id.coach_id.job_id.name or False ]]</para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.epartment_id.manager_id.user_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.department_id.manager_id.user_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.job_id and order.indent_id.department_id.manager_id.job_id.name or False ]]</para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order.indent_id)]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.indent_authority_ids[0].name.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ authority_sign(order.indent_id.indent_authority_ids,order)]] [[ get_value().get(0) or False ]]</para>
             </td>
@@ -409,14 +409,17 @@
             <para style="terp_default_2">FROM DATE </para>
             <para style="terp_default_2">EXTENDED FROM </para>
             <para style="terp_default_2">EXTENDED FROM </para>
+            <para style="terp_default_2">EXTENDED FROM </para>
         </td>
         <td>
             <para style="terp_default_2"> :  [[ formatLang(order.date_from, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from1, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from2, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from3, date = True)]]</para>
         </td>
         <td>
             <para style="terp_default_2">TO DATE </para>
+            <para style="terp_default_2">EXTENDED UPTO</para>
             <para style="terp_default_2">EXTENDED UPTO</para>
             <para style="terp_default_2">EXTENDED UPTO</para>
         </td>
@@ -424,6 +427,7 @@
             <para style="terp_default_2"> :  [[ formatLang(order.date_to, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to1, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to2, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to3, date = True)]]</para>
         </td>
     </tr>
     </blockTable>
@@ -511,28 +515,28 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indentor_id and order.indentor_id.name or False ]]</para>
                 <para style="terp_default_Left_9"> Indentor </para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.job_id and order.indent_id.employee_id.coach_id.job_id.name or False ]]</para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.epartment_id.manager_id.user_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.department_id.manager_id.user_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.job_id and order.indent_id.department_id.manager_id.job_id.name or False ]]</para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order.indent_id)]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.indent_authority_ids[0].name.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ authority_sign(order.indent_id.indent_authority_ids,order)]] [[ get_value().get(0) or False ]]</para>
             </td>
@@ -645,14 +649,17 @@
             <para style="terp_default_2">FROM DATE </para>
             <para style="terp_default_2">EXTENDED FROM </para>
             <para style="terp_default_2">EXTENDED FROM </para>
+            <para style="terp_default_2">EXTENDED FROM </para>
         </td>
         <td>
             <para style="terp_default_2"> :  [[ formatLang(order.date_from, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from1, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from2, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from3, date = True)]]</para>
         </td>
         <td>
             <para style="terp_default_2">TO DATE </para>
+            <para style="terp_default_2">EXTENDED UPTO</para>
             <para style="terp_default_2">EXTENDED UPTO</para>
             <para style="terp_default_2">EXTENDED UPTO</para>
         </td>
@@ -660,6 +667,7 @@
             <para style="terp_default_2"> :  [[ formatLang(order.date_to, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to1, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to2, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to3, date = True)]]</para>
         </td>
     </tr>
     </blockTable>
@@ -747,28 +755,28 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indentor_id and order.indentor_id.name or False ]]</para>
                 <para style="terp_default_Left_9"> Indentor </para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.job_id and order.indent_id.employee_id.coach_id.job_id.name or False ]]</para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.epartment_id.manager_id.user_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.department_id.manager_id.user_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.job_id and order.indent_id.department_id.manager_id.job_id.name or False ]]</para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name, order.indent_id)]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.indent_authority_ids[0].name.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ authority_sign(order.indent_id.indent_authority_ids,order)]] [[ get_value().get(0) or False ]]</para>
             </td>
@@ -881,14 +889,17 @@
             <para style="terp_default_2">FROM DATE </para>
             <para style="terp_default_2">EXTENDED FROM </para>
             <para style="terp_default_2">EXTENDED FROM </para>
+            <para style="terp_default_2">EXTENDED FROM </para>
         </td>
         <td>
             <para style="terp_default_2"> :  [[ formatLang(order.date_from, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from1, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from2, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_from3, date = True)]]</para>
         </td>
         <td>
             <para style="terp_default_2">TO DATE </para>
+            <para style="terp_default_2">EXTENDED UPTO</para>
             <para style="terp_default_2">EXTENDED UPTO</para>
             <para style="terp_default_2">EXTENDED UPTO</para>
         </td>
@@ -896,6 +907,7 @@
             <para style="terp_default_2"> :  [[ formatLang(order.date_to, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to1, date = True)]]</para>
             <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to2, date = True)]]</para>
+            <para style="terp_default_2"> :  [[ formatLang(order.extended_date_to3, date = True)]]</para>
         </td>
     </tr>
     </blockTable>
@@ -983,28 +995,28 @@
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indentor_id and order.indentor_id.name or False ]]</para>
                 <para style="terp_default_Left_9"> Indentor </para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.user_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ order.indent_id.employee_id.coach_id and order.indent_id.employee_id.coach_id.job_id and order.indent_id.employee_id.coach_id.job_id.name or False ]]</para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.epartment_id.manager_id.user_id, order) ]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indent_id.department_id and order.indent_id.department_id.manager_id and order.indent_id.department_id.manager_id.user_id, order.indent_id) ]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ order.indent_id.department_id and order.indent_id.department_id.manager_id.job_id and order.indent_id.department_id.manager_id.job_id.name or False ]]</para>
             </td>
             <td>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
                 <para style="terp_default_9"> <font color="white"> </font> </para>
-                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order)]]</image>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_id.indent_authority_ids[0].name,order.indent_id)]]</image>
                 <para style="terp_default_Left_9">[[ order.indent_id.indent_authority_ids[0].name.name or False ]]</para>
                 <para style="terp_default_Left_9">[[ authority_sign(order.indent_id.indent_authority_ids,order)]] [[ get_value().get(0) or False ]]</para>
             </td>

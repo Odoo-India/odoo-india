@@ -37,11 +37,13 @@ class gate_pass(report_sxw.rml_parse):
               'sequence': self._serial_no,
               'get_value': self._get_value,
               'type': self._type,
+              'gate_pass_type': self._get_gate_pass_type,
+              'return_type':self._return_type
               })
         self.context = context
 
     def _serial_no(self, line):
-        self.sr_no += 1
+        self.sr_no += 1 
         return self.sr_no
     
     def _type(self, order, retenstion_type):
@@ -49,7 +51,20 @@ class gate_pass(report_sxw.rml_parse):
         if str(retenstion_type) == 'leived':
             text = 'CONTRACTOR\'S RETENTION TO BE LEIVED'
         return text
+
+    def _return_type(self, return_type):
+        text = 'Returnable'
+        if str(return_type) == 'Return':
+            return text
+        return return_type
     
+    def _get_gate_pass_type(self, gate_pass_type):
+        text = 'Chargeable'
+        if str(gate_pass_type) == 'chargeable':
+            return text
+        return gate_pass_type
+
+
     def _get_value(self):
         return self.get_value
 

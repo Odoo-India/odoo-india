@@ -85,6 +85,9 @@ class stock_picking_in(osv.osv):
         'maize_in': fields.char('Maize', size=256, readonly=True),
             
     }
+    _defaults = {
+        'dest_to' : 'Kathwada'
+    }
     
     def receipt_tree_view(self, cr, uid, ids, context):
         mod_obj = self.pool.get('ir.model.data')

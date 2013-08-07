@@ -678,6 +678,8 @@
 					<field name="purchase_id" />
 					<field name="maize_receipt" groups="indent.group_maize_data" />
 					<field name="voucher_id" />
+					<field name="bill_no" />
+					<field name="bill_date" on_change="onchange_bill_date(bill_date2)"/>
 				</xpath>
 
 				<xpath

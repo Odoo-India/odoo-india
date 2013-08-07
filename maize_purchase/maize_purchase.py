@@ -1138,6 +1138,13 @@ class stock_picking_receipt(osv.Model):
     def button_dummy(self, cr, uid, ids, context=None):
         return True
 
+    def onchange_bill_date(self, cr, uid, ids, bill_date=False,context=None):
+        stock_move = self.pool.get('stock.move')
+        picking = self.browse(cr,uid,ids,context=context)[0]
+        for move in picking.move_lines:
+            stock_move.write(cr,uid,move.id,{'bill_date':bill_date})
+        return True
+
     _columns = {
         'purchase_id': fields.many2one('purchase.order', 'Purchase Order',ondelete='set null', select=True),
         'inward_id': fields.many2one('stock.picking.in', 'Inward',ondelete='set null'),
@@ -1171,6 +1178,8 @@ class stock_picking_receipt(osv.Model):
         'maize_receipt': fields.char('Maize', size=256, readonly=True),
         'import_duty': fields.function(_total_amount, multi="cal", type="float", string='Import Duty', help="Total Import Duty", store=True),
         'voucher_id': fields.many2one('account.voucher', 'Payment'),
+        'bill_no': fields.integer('Bill No'),
+        'bill_date': fields.date('Bill Date'),
     }
     _defaults = {
         'type': 'receipt',

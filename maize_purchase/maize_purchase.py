@@ -926,7 +926,7 @@ class purchase_order(osv.Model):
                     order_infos['origin'] = (order_infos['origin'] or '')# + ' ' + porder.origin
 
             for order_line in porder.order_line:
-                line_key = make_key(order_line, ('name', 'date_planned', 'taxes_id', 'price_unit', 'product_id', 'move_dest_id', 'account_analytic_id', 'indent_id', 'indentor_id', 'department_id'))
+                line_key = make_key(order_line, ('name', 'date_planned', 'taxes_id', 'price_unit', 'product_id', 'move_dest_id', 'account_analytic_id', 'indent_id', 'indentor_id', 'department_id', 'analytic_account_id'))
                 o_line = order_infos['order_line'].setdefault(line_key, {})
                 if o_line:
                     # merge the line with an existing line

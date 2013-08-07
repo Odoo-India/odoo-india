@@ -383,6 +383,7 @@ class indent_indent(osv.Model):
             'indent_id': indent.id,
             'indentor_id': indent.indentor_id.id,
             'department_id': indent.department_id.id,
+            'account_analytic_id': indent.account_analytic_id.id,
             'date_planned': date_planned,
             'product_id': line.product_id.id,
             'product_qty': line.product_uom_qty,
@@ -984,6 +985,7 @@ class procurement_order(osv.osv):
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'indentor_id': fields.many2one('res.users', 'Indentor'),
         'department_id': fields.many2one('stock.location', 'Department'),
+        'analytic_account_id': fields.many2one('account.analytic.account', 'Project'),
     }
 
     def make_po(self, cr, uid, ids, context=None):
@@ -1035,6 +1037,7 @@ class procurement_order(osv.osv):
                 'indent_id': procurement.indent_id and procurement.indent_id.id or False,
                 'indentor_id': procurement.indentor_id and procurement.indentor_id.id or False,
                 'department_id': procurement.department_id and procurement.department_id.id or False,
+                'analytic_account_id': procurement.analytic_account_id and procurement.analytic_account_id.id or False,
                 'product_qty': qty,
                 'product_id': procurement.product_id.id,
                 'product_uom': uom_id,

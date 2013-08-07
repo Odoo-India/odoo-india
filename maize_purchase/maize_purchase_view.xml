@@ -865,6 +865,7 @@
 					<separator />
 					<filter icon="terp-dolar" name="to_invoice" string="To Invoice"
 						domain="[('invoice_state','=','2binvoiced')]" help="Delivery orders to invoice" />
+					<field name="partner_id"/>
 					<field name="stock_journal_id" />
 					<field name="inward_id" />
 					<field name="company_id" groups="base.group_multi_company" />

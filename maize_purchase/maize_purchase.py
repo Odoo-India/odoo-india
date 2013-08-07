@@ -1138,12 +1138,25 @@ class stock_picking_receipt(osv.Model):
     def button_dummy(self, cr, uid, ids, context=None):
         return True
 
-    def onchange_bill_date(self, cr, uid, ids, bill_date=False,context=None):
+    def onchange_bill_date(self, cr, uid, ids, bill_date2=False,context=None):
+        res = {}
+        last = []
+        print context
+        datas = []
+        result = {'move_lines': []}
         stock_move = self.pool.get('stock.move')
         picking = self.browse(cr,uid,ids,context=context)[0]
         for move in picking.move_lines:
-            stock_move.write(cr,uid,move.id,{'bill_date':bill_date})
-        return True
+            read = stock_move.read(cr,uid,move.id)
+            for val in read.keys():
+                if type(read[val]) == tuple:
+                    read[val] = read[val][0]
+            read['bill_date'] = bill_date2
+            datas.append(read)
+        result['move_lines'] = datas
+        print result
+        return {'value':result}
+
 
     _columns = {
         'purchase_id': fields.many2one('purchase.order', 'Purchase Order',ondelete='set null', select=True),

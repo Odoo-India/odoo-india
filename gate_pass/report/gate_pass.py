@@ -53,16 +53,25 @@ class gate_pass(report_sxw.rml_parse):
         return text
 
     def _return_type(self, return_type):
-        text = 'Returnable'
         if str(return_type) == 'Return':
-            return text
-        return return_type
+            return 'Returnable'
+        else:
+            return 'Non Returnable'
     
     def _get_gate_pass_type(self, gate_pass_type):
-        text = 'Chargeable'
         if str(gate_pass_type) == 'chargeable':
-            return text
-        return gate_pass_type
+            return 'Chargeable'
+        if str(gate_pass_type) == 'sample':
+            return 'Sample'
+        if str(gate_pass_type) == 'foc':
+            return 'Free Of Cost'
+        if str(gate_pass_type) == 'cash':
+            return 'Cash'
+        if str(gate_pass_type) == 'contract':
+            return 'Contract'
+        if str(gate_pass_type) == 'loan':
+            return 'Loan'
+        return gate_pass_type 
 
 
     def _get_value(self):

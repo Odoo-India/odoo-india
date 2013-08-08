@@ -265,7 +265,7 @@ class product_product(osv.Model):
         'value_total': fields.function(weighted_rate, type="float",multi="report",string='Total value',store={
         'stock.move':  (_get_product,['state'],20)},track_visibility='always'),
         'last_po_date': fields.related('last_po_no', 'date_approve', type='date', string="Last PO Date",readonly=True),
-        'last_po_series': fields.related('last_po_no','po_series_id',type='many2one',relation='product.order.series', 'Last PO Series',readonly=True),
+        'last_po_series': fields.related('last_po_no','po_series_id',type='many2one',relation='product.order.series', string='Last PO Series',readonly=True),
         'ex_chapter': fields.char('EXCHAPTER', size=30, translate=True),
         'ex_chapter_desc': fields.text('EXCHAPTERDESCR',translate=True),
         'variance': fields.float('Variance', help='Percentage that shows the actual difference between the ordered quantity and received one'),

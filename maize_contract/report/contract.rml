@@ -372,8 +372,8 @@
             <para style="terp_default_2">PERMISSION DATE </para>
         </td>
         <td>
-            <para style="terp_default_2"> : [[ order.indent_id.name or ' ']]</para>
-            <para style="terp_default_2"> : [[ formatLang(order.date_approve, date = True) or '']]</para>
+            <para style="terp_default_2"> : [[ order.name or ' ']]</para>
+            <para style="terp_default_2"> : [[ formatLang(order.date_order, date = True) or '']]</para>
         </td>
     </tr>
     </blockTable>
@@ -612,8 +612,8 @@
             <para style="terp_default_2">PERMISSION DATE </para>
         </td>
         <td>
-            <para style="terp_default_2"> : [[ order.indent_id.name or ' ']]</para>
-            <para style="terp_default_2"> : [[ formatLang(order.date_approve, date = True) or '']]</para>
+            <para style="terp_default_2"> : [[ order.name or ' ']]</para>
+            <para style="terp_default_2"> : [[ formatLang(order.date_order, date = True) or '']]</para>
         </td>
     </tr>
     </blockTable>
@@ -852,8 +852,8 @@
             <para style="terp_default_2">PERMISSION DATE </para>
         </td>
         <td>
-            <para style="terp_default_2"> : [[ order.indent_id.name or ' ']]</para>
-            <para style="terp_default_2"> : [[ formatLang(order.date_approve, date = True) or '']]</para>
+            <para style="terp_default_2"> : [[ order.name or ' ']]</para>
+            <para style="terp_default_2"> : [[ formatLang(order.date_order, date = True) or '']]</para>
         </td>
     </tr>
     </blockTable>

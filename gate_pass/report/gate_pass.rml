@@ -186,6 +186,9 @@
             </td>
             <td>
                 <para style="terp_default_2">[[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
+                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.desc2 or '')]] </para>
+                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.desc3 or '')]] </para>
+                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.desc4 or '')]] </para>
                 <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.description or '')]] </para>
             </td>
             <td>
@@ -321,6 +324,9 @@
             </td>
             <td>
                 <para style="terp_default_2">[[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
+                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.desc2 or '')]] </para>
+                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.desc3 or '')]] </para>
+                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.desc4 or '')]] </para>
                 <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.description or '')]] </para>
             </td>
             <td>
@@ -456,6 +462,9 @@
             </td>
             <td>
                 <para style="terp_default_2">[[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
+                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.desc2 or '')]] </para>
+                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.desc3 or '')]] </para>
+                <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.desc4 or '')]] </para>
                 <para style="terp_default_2"> [[ (order_line.product_id and order_line.product_id.description or '')]] </para>
             </td>
             <td>

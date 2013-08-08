@@ -406,6 +406,15 @@ class purchase_order_line(osv.Model):
                 'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
             }),
       }
+      
+    def action_confirm(self, cr, uid, ids, context=None):
+        product_obj = self.pool.get('product.product')
+        current_year = str(datetime.now()).split('-')[0]
+        next_year = str(datetime.now() + relativedelta(years=1)).split('-')[0]
+        res = super(purchase_order_line,self).action_confirm(cr, uid, ids,context)
+        for order in self.browse(cr, uid, ids, context):
+            product = product_obj.write(cr, uid, order.product_id.id, {'last_po_no': order.order_id and order.order_id.id, 'last_supplier_rate': order.price_unit,'last_po_year':current_year+next_year})
+        return res
 purchase_order_line()
 
 class purchase_requisition(osv.osv):

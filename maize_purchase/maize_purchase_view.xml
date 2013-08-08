@@ -524,29 +524,32 @@
 					<button name="receipt_tree_view" string="Receipts" class="oe_right"
 						type="object" />
 				</xpath>
+				<xpath expr="//field[@name='purchase_id']" position="attributes">
+				    <attribute name="attrs">{'readonly':[('state','=','done')]}</attribute>
+			    </xpath> 
 				<xpath expr="//group" position="after">
-					<group col="12" string="Inward Details">
-						<group colspan="4">
-							<field name="lr_no" />
-							<field name="lr_date" />
-							<field name="hpressure" />
-							<field name="transporter" />
-							<field name="gp_year" />
+					<group col="12" string="Inward Details"  >
+						<group colspan="4" >
+							<field name="lr_no" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="lr_date" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="hpressure" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="transporter" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="gp_year" attrs="{'readonly':[('state','=','done')]}"/>
 						</group>
-						<group colspan="4">
-							<field name="lab_no" />
-							<field name="dest_from" />
-							<field name="despatch_mode" />
-							<field name="maize_in" groups="indent.group_maize_data" />
-							<field name="series_id" />
+						<group colspan="4" >
+							<field name="lab_no" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="dest_from" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="despatch_mode" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="maize_in" groups="indent.group_maize_data" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="series_id" attrs="{'readonly':[('state','=','done')]}"/>
 						</group>
-						<group colspan="4">
-							<field name="case_code" />
-							<field name="challan_no" />
-							<field name="dest_to" />
+						<group colspan="4" >
+							<field name="case_code" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="challan_no" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="dest_to" attrs="{'readonly':[('state','=','done')]}"/>
 							<field name="other_dispatch"
-								attrs="{'invisible': [('despatch_mode','=','others')]}" />
-							<field name="gp_no" />
+								attrs="{'invisible': [('despatch_mode','=','others')],'readonly':[('state','=','done')]}"/>
+							<field name="gp_no" attrs="{'readonly':[('state','=','done')]}"/>
 						</group>
 					</group>
 				</xpath>
@@ -665,21 +668,21 @@
 			<field name="arch" type="xml">
 
 				<xpath expr="//field[@name='stock_journal_id']" position="after">
-					<field name="inward_id" />
-					<field name="inward_date" />
-					<field name="challan_no" />
-					<field name="tr_code" />
-					<field name="party_id" domain="[('supp_code', '=like', '309%%')]" />
+					<field name="inward_id" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="inward_date" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="challan_no" attrs="{'readonly':[('state','=','done')]}" />
+					<field name="tr_code" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="party_id" domain="[('supp_code', '=like', '309%%')]" attrs="{'readonly':[('state','=','done')]}"/>
 				</xpath>
 				<xpath expr="//field[@name='origin']" position="after">
-					<field name="excisable_item" />
-					<field name="gp_received" />
-					<field name="gp_date" />
-					<field name="purchase_id" />
-					<field name="maize_receipt" groups="indent.group_maize_data" />
-					<field name="voucher_id" />
-					<field name="bill_no" />
-					<field name="bill_date" on_change="onchange_bill_date(bill_date)"/>
+					<field name="excisable_item" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="gp_received" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="gp_date" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="purchase_id" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="maize_receipt" groups="indent.group_maize_data" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="voucher_id" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="bill_no" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="bill_date" on_change="onchange_bill_date(bill_date)" attrs="{'readonly':[('state','=','done')]}"/>
 				</xpath>
 
 				<xpath
@@ -701,7 +704,7 @@
 						string="Supplier" />
 				</xpath>
 				<xpath expr="//field[@name='move_lines']" position="replace">
-					<field name="move_lines"
+					<field name="move_lines" 
 						context="{'address_in_id': partner_id, 'picking_type': 'receipt', 'form_view_ref':'view_move_picking_form', 'tree_view_ref':'view_move_picking_tree'}" />
 				</xpath>
 				<xpath expr="/form/sheet" position="after">

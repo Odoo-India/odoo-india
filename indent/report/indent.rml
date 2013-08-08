@@ -265,7 +265,7 @@
           <para style="terp_tblheader_Details_Centre">AMOUNT</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">LAST SUPPLIER</para>
+          <para style="terp_tblheader_Details_Centre">LAST SUPPLIER AND PAYMENT TERM</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">LAST YR. CONS CURR. YR. CONS</para>
@@ -367,7 +367,7 @@
           <para style="terp_tblheader_Details_Centre">AMOUNT</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">LAST SUPPLIER</para>
+          <para style="terp_tblheader_Details_Centre">LAST SUPPLIER AND PAYMENT TERM</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">LAST YR. CONS CURR. YR. CONS</para>
@@ -423,6 +423,7 @@
           </td>
           <td>
             <para style="terp_default_Centre_9">[[  last_supplier((order_line.product_id and (order_line.product_id.last_supplier_code))) or '']]</para>
+            <para style="terp_default_Centre_9">[[  order_line.product_id and order_line.product_id.last_po_no and order_line.product_id.last_po_no.payment_term_id and order_line.product_id.last_po_no.payment_term_id.name or '']]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9"> [[ last_consumption_qty(order_line.product_id).get('last_year_qty') or '0']] </para>

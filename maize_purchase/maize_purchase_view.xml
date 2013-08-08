@@ -163,6 +163,8 @@
 				<xpath
 					expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']"
 					position="before">
+					<field name="contract" invisible="1"/>
+					<field name="person" attrs="{'readonly':[('contract','!=',True)]}" />
 					<field name="discount" />
 				</xpath>
 				<xpath expr="//field[@name='partner_ref']" position='after'>
@@ -682,7 +684,7 @@
 					<field name="maize_receipt" groups="indent.group_maize_data" attrs="{'readonly':[('state','=','done')]}"/>
 					<field name="voucher_id" attrs="{'readonly':[('state','=','done')]}"/>
 					<field name="bill_no" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="bill_date" on_change="onchange_bill_date(bill_date)" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="bill_date" on_change="onchange_bill_date(bill_no,bill_date)" attrs="{'readonly':[('state','=','done')]}"/>
 				</xpath>
 
 				<xpath

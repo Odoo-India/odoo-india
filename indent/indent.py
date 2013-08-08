@@ -988,6 +988,25 @@ class procurement_order(osv.osv):
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project'),
     }
 
+
+    def _prepare_line_purchase(self, cr, uid, name, procurement, qty, uom_id, price, schedule_date, taxes):
+        line_vals = {
+            'name': name,
+            'indent_id': procurement.indent_id and procurement.indent_id.id or False,
+            'indentor_id': procurement.indentor_id and procurement.indentor_id.id or False,
+            'department_id': procurement.department_id and procurement.department_id.id or False,
+            'account_analytic_id': procurement.analytic_account_id and procurement.analytic_account_id.id or False,
+            'product_qty': qty,
+            'product_id': procurement.product_id.id,
+            'product_uom': uom_id,
+            'price_unit': price or 0.0,
+            'date_planned': schedule_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'move_dest_id': False,
+            'taxes_id': [(6,0,taxes)],
+        }
+        return line_vals
+
+
     def make_po(self, cr, uid, ids, context=None):
         """ Make purchase order from procurement
         @return: New created Purchase Orders procurement wise
@@ -1032,20 +1051,7 @@ class procurement_order(osv.osv):
             name = ''
             if product.description_purchase:
                 name = product.description_purchase
-            line_vals = {
-                'name': name,
-                'indent_id': procurement.indent_id and procurement.indent_id.id or False,
-                'indentor_id': procurement.indentor_id and procurement.indentor_id.id or False,
-                'department_id': procurement.department_id and procurement.department_id.id or False,
-                'account_analytic_id': procurement.analytic_account_id and procurement.analytic_account_id.id or False,
-                'product_qty': qty,
-                'product_id': procurement.product_id.id,
-                'product_uom': uom_id,
-                'price_unit': price or 0.0,
-                'date_planned': schedule_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                'move_dest_id': False,
-                'taxes_id': [(6,0,taxes)],
-            }
+            line_vals = self._prepare_line_purchase(cr, uid, name, procurement, qty, uom_id, price, schedule_date, taxes)
             name = seq_obj.get(cr, uid, 'purchase.order') or _('PO: %s') % procurement.name
             po_vals = {
                 'name': name,

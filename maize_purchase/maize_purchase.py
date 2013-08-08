@@ -1147,11 +1147,12 @@ class stock_picking_receipt(osv.Model):
     def button_dummy(self, cr, uid, ids, context=None):
         return True
 
-    def onchange_bill_date(self, cr, uid, ids, bill_date=False,context=None):
+    def onchange_bill_date(self, cr, uid, ids, bill_no, bill_date=False, context=None):
         stock_move = self.pool.get('stock.move')
-        picking = self.browse(cr,uid,ids,context=context)[0]
-        for move in picking.move_lines:
-            stock_move.write(cr,uid,move.id,{'bill_date':bill_date})
+        picking = self.browse(cr,uid,ids,context=context)
+        if picking:
+            for move in picking[0].move_lines:
+                stock_move.write(cr,uid,move.id,{'bill_no':bill_no,'bill_date':bill_date})
         return True
 
     _columns = {

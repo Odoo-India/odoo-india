@@ -28,6 +28,18 @@ from openerp.tools.translate import _
 from openerp import tools
 from lxml import etree
 
+class procurement_order(osv.osv):
+    _inherit = 'procurement.order'
+    _columns = {
+        'person' : fields.integer('Person'),
+    }
+    
+    def _prepare_line_purchase(self,cr,uid,name,procurement, qty, uom_id,price,schedule_date,taxes):
+        res = super(procurement_order, self)._prepare_line_purchase(cr, uid, name,procurement, qty, uom_id,price,schedule_date,taxes)
+        res.update({'person':procurement.person})
+        return res
+        
+procurement_order()
 class indent_indent(osv.Model):
     _inherit = 'indent.indent'
     _columns = {
@@ -35,6 +47,13 @@ class indent_indent(osv.Model):
         'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
         'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
         }
+
+    def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
+        res = super(indent_indent, self)._prepare_indent_line_procurement(cr, uid, indent, line, move_id, date_planned, context=context)
+        res.update({'person':line.person})
+        print res   
+        return res
+        
 
     def fields_view_get(self, cr, user, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
         if context is None: 

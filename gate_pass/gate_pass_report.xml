@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
-        <report auto="False" id="report_gate_pass_new" model="gate.pass"
-                name="gate_pass.new" rml="gate_pass/report/gate_pass.rml"
-                usage="default" string="Gate Pass Report"/>
-    </data>
-</openerp>

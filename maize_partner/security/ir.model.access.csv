@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_supplier_series,supplier.series,model_supplier_series,stock.group_stock_user,1,1,1,1
-access_tax_code,tax.code,model_tax_code,stock.group_stock_user,1,1,1,1
-access_row_code,row.code,model_row_code,stock.group_stock_user,1,1,1,1

@@ -1,2 +1,0 @@
-import comparison_report
-import issue_report

@@ -200,8 +200,8 @@ class import_inward_line_data(osv.osv_memory):
                             wf_service = netsvc.LocalService('workflow')
                             wf_service.trg_validate(uid, 'purchase.order', purchase_id, 'purchase_confirm', cr)
                             inward_id = picking_in_obj.search(cr,uid,[('purchase_id','=',purchase_id), ('state','=','assigned')])
-                            inwrite = picking_in_obj.write(cr,uid,inward_id[-1],{'maize_in':maize_name})
                             if inward_id[0] not in i:
+                                inwrite = picking_in_obj.write(cr,uid,inward_id[-1],{'maize_in':maize_name})
                                 i.append(inward_id[0])
                             if maize_name not in in_name:
                                 in_name.append(maize_name)

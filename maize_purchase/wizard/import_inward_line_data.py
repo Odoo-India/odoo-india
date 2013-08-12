@@ -111,7 +111,7 @@ class import_inward_line_data(osv.osv_memory):
             return False
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
-        
+
         file_path = "/home/maize/data/inward/inward_line_after_1_8_2013.csv"
         fields = data_lines = False
         try:
@@ -138,7 +138,12 @@ class import_inward_line_data(osv.osv_memory):
         po_not_found = []
         indent_not_found = []
         bounced_inward = [tuple(fields)]
+        i=[]
+        m_v=[]
+        in_name = []        
         for data in data_lines:
+            pp=0
+            m=''
             try:
                 name = inwrd_num = fiscalyear=''
                 if data["ITEMCODE"]:
@@ -165,7 +170,7 @@ class import_inward_line_data(osv.osv_memory):
                 if data['INWYEAR'] and data['INWARDNO']:
                     maize_in = data['INDYEAR']+'/'+data["INDENTNO"]
                 po_name = data['POYEAR']+'/'+data["POSERIES"] +'/'+ data["PONO"]
-                maize_name = data["INWARDNO"]
+                maize_name = data['INDYEAR']+'/'+data["INWARDNO"]
                 new_picking_id = False
                 purchase_date = ''
                 date_start = self._get_start_end_date_from_year(cr,uid,indyear)['start']
@@ -179,7 +184,7 @@ class import_inward_line_data(osv.osv_memory):
                 if data["INDENTNO"] and fiscalyear:
                     try:
                         indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data['INDYEAR']+'/'+data["INDENTNO"])])
-                        indent_id = indent[0]
+                        indent_id = indent and indent[0] or False 
                     except:
                         indent_not_found.append(data['INDYEAR']+'/'+data["INDENTNO"])
                     
@@ -189,50 +194,65 @@ class import_inward_line_data(osv.osv_memory):
 
                 
                 if po_name:
-                    #exist_picking_po = self.pool.get('stock.picking.in').search(cr,uid,[('maize_in','=',maize_name),('date_done','>=',date_start),('date_done','<=',date_end)])
-                    #exist_picking_po1 = self.pool.get('stock.picking.in').browse(cr,uid,exist_picking_po[0])
                     purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',po_name)])[0]
                     if purchase_id:
                         try:
-                            #purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',data["POSERIES"]+'/'+data["PONO"]),('date_order','>=',date_start_po),('date_order','<=',date_end_po)])[0]
-                            #if purchase_id:
-                                #purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
-                                #new_picking_id = self.pool.get('stock.picking.in').search(cr,uid,[('maize_in', '=', maize_name),('date_done','>=',date_start),('date_done','<=',date_end)])[0]
-                                #self.pool.get('stock.picking.in').write(cr,uid,new_picking_id,{'purchase_id':purchase_id})
                             wf_service = netsvc.LocalService('workflow')
                             wf_service.trg_validate(uid, 'purchase.order', purchase_id, 'purchase_confirm', cr)
-                            inward_id = picking_in_obj.search(cr,uid,[('purchase_id','=',purchase_id)])
-                            if inward_id:
-                                move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[-1]), ('type', '=', 'in'),('product_id', '=', product),('indent', '=', indent_id)])
-                                purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
-                                new_vals = {
+                            inward_id = picking_in_obj.search(cr,uid,[('purchase_id','=',purchase_id), ('state','=','assigned')])
+                            inwrite = picking_in_obj.write(cr,uid,inward_id[-1],{'maize_in':maize_name})
+                            if inward_id[0] not in i:
+                                i.append(inward_id[0])
+                            if maize_name not in in_name:
+                                in_name.append(maize_name)
+                            department_id = False
+                            if indent_id:
+                                department_id = self.pool.get('indent.indent').read(cr,uid,indent_id,['department_id'])['department_id'][0]
+                            move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[-1]), ('type', '=', 'in'),('product_id', '=', product),('indent', '=', indent_id),('indentor', '=', indentor_id)])
+                            m_v.append((0,0,{
                                         'product_id': product,
-                                        #'name':po_name,
-                                        #'picking_id': inward_id[0],
                                         'quantity':float(chlnqty),
-                                        #'product_qty': float(rqty),
                                         'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
                                         'location_id': supplier_location[0],
                                         'location_dest_id': 299,#input location fix
-                                        'move_id':move_ids[0]
-                                        #'state': 'draft',
-                                        #'price_unit':float(rate),
-                                        #'company_id':1,
-                                        #'date':purchase_date or '',
-                                        #'indent':indent_id,
-                                        #'indentor':indentor_id,
-                                        }
-                                move_pool.write(cr, uid, move_ids[0],{'challan_qty': float(chlnqty)}, context)
-                                #wf_service.trg_validate(uid, 'stock.picking', inward_id[-1], 'button_confirm', cr)
-                                context.update({'active_model': 'stock.picking', 'active_id': inward_id[-1], 'active_ids': [inward_id[-1]],'default_type':'in'})
-                                partial_id = partial_picking_obj.create(cr, uid, {'date': datetime.today(), 'picking_id': inward_id[-1], 'move_ids': [(0,0,new_vals)]})
+                                        'move_id':move_ids[0],
+                                        }))
+                            print "ward data in", in_name, in_name[0], in_name[-1]
+                            if i[0] != i[-1] or len(i)!=1 or in_name[0]!=in_name[-1] or len(in_name)!=1:
+                                context.update({'active_model': 'stock.picking', 'active_id':i[0], 'active_ids': [i[0]],'default_type':'in'})
+                                if len(i)!=0:
+                                    m_v.pop()
+                                print "\n>>>>>>>>>>> new picking create>>>>>>>>>>>", m_v, i[0]
+                                partial_id = partial_picking_obj.create(cr, uid, {'date': datetime.today(), 'picking_id': i[0], 'move_ids': m_v})
                                 res = partial_picking_obj.do_partial(cr, uid,[partial_id],context)
-                                if inward_id[-1] != res[inward_id[-1]]['delivered_picking']:
-                                    write_inward = picking_in_obj.write(cr, uid, [res[inward_id[-1]]['delivered_picking']],{'maize_in': maize_in})
-                                else:
-                                    write_inward = picking_in_obj.write(cr, uid, [inward_id[-1]],{'maize_in': po_name})
+                                i.remove(i[0])
+                                in_name.remove(in_name[0])
+                                m_v=[]
+                                pp=1
+                            if inward_id:
+                                if pp==1 or len(i)!=1:
+                                    #move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[-1]), ('type', '=', 'in'),('product_id', '=', product),('indentor_id', '=', indentor_id)])
+                                    m_v.append((0,0,{
+                                            'product_id': product,
+                                            'quantity':float(chlnqty),
+                                            'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
+                                            'location_id': supplier_location[0],
+                                            'location_dest_id': 299,#input location fix
+                                            'move_id':move_ids[0],
+                                            }))                                  
+                                purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
+                                new_vals = {
+                                        'product_id': product,
+                                        'quantity':float(chlnqty),
+                                        'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
+                                        'location_id': supplier_location[0],
+                                        'location_dest_id': 299,#input location fix
+                                        'move_id':move_ids[0],
+                                        }
+                                print ">>>>>>>>>>>>>>>>move>>>>>>>>>>>>>>>>>", move_ids
+                                move_pool.write(cr, uid, move_ids[0],{'challan_qty': float(chlnqty)}, context)
                             else:
-                                print "\nn=-=-=- not found line"
+                                print "\n\n=-=-=- not found line"
                                 rejected.append(data['INWARDNO'])
                                 reject = [ data.get(f, '') for f in fields]
                                 bounced_inward.append(reject)
@@ -241,77 +261,13 @@ class import_inward_line_data(osv.osv_memory):
                             rejected.append(data['INWARDNO'])
                             reject = [ data.get(f, '') for f in fields]
                             bounced_inward.append(reject)
-#                         
-#                     else:
-#                         try:
-#                             if data['PONO'] == '99999':
-#                                 purchase_id = 17970
-#                             else:
-#                                 purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',data["POSERIES"]+'/'+data["PONO"]),('date_order','>=',date_start_po),('date_order','<=',date_end_po)])[0]
-#                             purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
-#                             if purchase_id != exist_picking_po1.purchase_id.id:
-#                                 pp = self.pool.get('stock.picking.in').create(cr,uid,
-#                                                                               {'partner_id':exist_picking_po1.partner_id.id,
-#                                                                                'purchase_id':purchase_id,
-#                                                                                'date_done':exist_picking_po1.date_done,
-#                                                                                'lr_no':exist_picking_po1.lr_no,
-#                                                                                'lab_no':exist_picking_po1.lab_no,
-#                                                                                'case_code':exist_picking_po1.case_code,
-#                                                                                'lr_date':exist_picking_po1.lr_date,
-#                                                                                'dest_from':exist_picking_po1.dest_from,
-#                                                                                'challan_no':exist_picking_po1.challan_no,
-#                                                                                'hpressure':exist_picking_po1.hpressure,
-#                                                                                'despatch_mode':exist_picking_po1.despatch_mode,
-#                                                                                'dest_to':exist_picking_po1.dest_to,
-#                                                                                'transporter':exist_picking_po1.transporter,
-#                                                                                'maize_in':exist_picking_po1.maize_in,
-#                                                                                'other_dispatch':exist_picking_po1.other_dispatch,
-#                                                                                'gp_year':exist_picking_po1.gp_year,
-#                                                                                'series_id':exist_picking_po1.series_id,
-#                                                                                'gate_pass_id':exist_picking_po1.gate_pass_id.id,
-#                                                                                })
-#                                 new_vals = {
-#                                         'product_id': product,
-#                                         'name':po_name,
-#                                         'picking_id': pp,
-#                                         'challan_qty':chlnqty,
-#                                         'product_qty': rqty,
-#                                         'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-#                                         'location_id': supplier_location[0],
-#                                         'location_dest_id': 299,#input location fix
-#                                         'state': 'draft',
-#                                         'price_unit':float(rate),
-#                                         'company_id':1,
-#                                         'date':purchase_date or '',
-#                                         'indent':indent_id,
-#                                        'indentor':indentor_id,
-#                                 }
-#                             else:
-#                                 new_vals = {
-#                                         'product_id': product,
-#                                         'name':po_name,
-#                                         'picking_id': exist_picking_po1.id,
-#                                         'challan_qty':chlnqty,
-#                                         'product_qty': rqty,
-#                                         'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-#                                         'location_id': supplier_location[0],
-#                                         'location_dest_id': 299,#input location fix
-#                                         'state': 'draft',
-#                                         'price_unit':float(rate),
-#                                         'company_id':1,
-#                                         'date':purchase_date or '',
-#                                         'indent':indent_id,
-#                                        'indentor':indentor_id,
-#                                 }
-#                             move_pool.create(cr, uid, new_vals, context)
-#                         except:
-#                             po_not_found.append(data["POSERIES"]+'/'+data["PONO"]+'/'+data["POYEAR"])
             except:
                 rejected.append(data['INWARDNO'])
                 reject = [ data.get(f, '') for f in fields]
                 bounced_inward.append(reject)
                 _logger.warning("Skipping Record with Inward code '%s'."%(data['INWARDNO']), exc_info=True)
                 continue
+        print "inward_idinward_id>>>", inward_id,maize_name
         print "rejectedrejectedrejected", rejected
         print "po_not_foundpo_not_foundpo_not_foundpo_not_found>>>>>>>>>>", po_not_found
         #print "po_not_foundpo_not_foundpo_not_foundpo_not_found>>>>>>>>>>", indent_not_found

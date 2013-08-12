@@ -71,6 +71,7 @@
     </initialize>
     <paraStyle name="P1" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="Standard" fontName="Helvetica" fontSize="9.0" spaceBefore="0.0" spaceAfter="0.0" alignment="LEFT"/>
+    <paraStyle name="Standard_bold" fontName="Helvetica-Bold" fontSize="9.0" spaceBefore="0.0" spaceAfter="0.0" alignment="LEFT"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="2.0" alignment="CENTER"/>
     <paraStyle name="List" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
@@ -134,15 +135,15 @@
         <tr>
             <td>
                 <para style="P1"> <font color="white"> </font> </para>
-                <para style="Standard"> G.P. NO : [[ (gate.gate_pass_no or '')]] </para>
+                <para style="Standard_bold"> G.P. NO : [[ (gate.gate_pass_no or '')]] </para>
             </td>
             <td>
                 <para style="P1"> <font color="white"> </font> </para>
-                <para style="Standard"> INDENT/ORDER NO :  [[ gate.indent_id and gate.indent_id.name]]</para>
+                <para style="Standard_bold"> INDENT/ORDER NO :  [[ gate.indent_id and gate.indent_id.name]]</para>
             </td>
             <td>
                 <para style="P1"> <font color="white"> </font> </para>
-                <para style="Standard"> Date : [[ formatLang(gate.date, date = True)]] </para>
+                <para style="Standard_bold"> Date : [[ formatLang(gate.date, date = True)]] </para>
             </td>
         </tr>
     </blockTable>
@@ -150,6 +151,8 @@
     <para style="terp_default_address"> [[ (gate.partner_id.supp_code)]] </para>
     <para style="terp_default_address">[[ (gate.partner_id and gate.partner_id.title and gate.partner_id.title.name) or '' ]] [[ (gate .partner_id and gate.partner_id.name) or '' ]] </para>
     <para style="terp_default_address">[[ gate.partner_id and display_address(gate.partner_id) ]] </para>
+    <para style="terp_default_address"> E-MAIL OF PARTY : [[ gate.partner_id and gate.partner_id.email or removeParentNode('para')]] </para>
+    <para style="terp_default_address"> PHONE : [[ gate.partner_id and gate.partner_id.phone or removeParentNode('para')]] </para>
     <para style="terp_default_2"> Gate Keeper </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
@@ -272,15 +275,15 @@
         <tr>
             <td>
                 <para style="P1"> <font color="white"> </font> </para>
-                <para style="Standard"> G.P. NO : [[ (gate.gate_pass_no or '')]] </para>
+                <para style="Standard_bold"> G.P. NO : [[ (gate.gate_pass_no or '')]] </para>
             </td>
             <td>
                 <para style="P1"> <font color="white"> </font> </para>
-                <para style="Standard"> INDENT/ORDER NO :  [[ gate.indent_id and gate.indent_id.name]]</para>
+                <para style="Standard_bold"> INDENT/ORDER NO :  [[ gate.indent_id and gate.indent_id.name]]</para>
             </td>
             <td>
                 <para style="P1"> <font color="white"> </font> </para>
-                <para style="Standard"> Date : [[ formatLang(gate.date, date = True)]] </para>
+                <para style="Standard_bold"> Date : [[ formatLang(gate.date, date = True)]] </para>
             </td>
         </tr>
     </blockTable>
@@ -288,6 +291,8 @@
     <para style="terp_default_address"> [[ (gate.partner_id.supp_code)]] </para>
     <para style="terp_default_address">[[ (gate.partner_id and gate.partner_id.title and gate.partner_id.title.name) or '' ]] [[ (gate .partner_id and gate.partner_id.name) or '' ]] </para>
     <para style="terp_default_address">[[ gate.partner_id and display_address(gate.partner_id) ]] </para>
+    <para style="terp_default_address"> E-MAIL OF PARTY : [[ gate.partner_id and gate.partner_id.email or removeParentNode('para')]] </para>
+    <para style="terp_default_address"> PHONE : [[ gate.partner_id and gate.partner_id.phone or removeParentNode('para')]] </para>
     <para style="terp_default_2"> Gate Keeper </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
@@ -410,15 +415,15 @@
         <tr>
             <td>
                 <para style="P1"> <font color="white"> </font> </para>
-                <para style="Standard"> G.P. NO : [[ (gate.gate_pass_no or '')]] </para>
+                <para style="Standard_bold"> G.P. NO : [[ (gate.gate_pass_no or '')]] </para>
             </td>
             <td>
                 <para style="P1"> <font color="white"> </font> </para>
-                <para style="Standard"> INDENT/ORDER NO :  [[ gate.indent_id and gate.indent_id.name]]</para>
+                <para style="Standard_bold"> INDENT/ORDER NO :  [[ gate.indent_id and gate.indent_id.name]]</para>
             </td>
             <td>
                 <para style="P1"> <font color="white"> </font> </para>
-                <para style="Standard"> Date : [[ formatLang(gate.date, date = True)]] </para>
+                <para style="Standard_bold"> Date : [[ formatLang(gate.date, date = True)]] </para>
             </td>
         </tr>
     </blockTable>
@@ -426,6 +431,8 @@
     <para style="terp_default_address"> [[ (gate.partner_id.supp_code)]] </para>
     <para style="terp_default_address">[[ (gate.partner_id and gate.partner_id.title and gate.partner_id.title.name) or '' ]] [[ (gate .partner_id and gate.partner_id.name) or '' ]] </para>
     <para style="terp_default_address">[[ gate.partner_id and display_address(gate.partner_id) ]] </para>
+    <para style="terp_default_address"> E-MAIL OF PARTY : [[ gate.partner_id and gate.partner_id.email or removeParentNode('para')]] </para>
+    <para style="terp_default_address"> PHONE : [[ gate.partner_id and gate.partner_id.phone or removeParentNode('para')]] </para>
     <para style="terp_default_2"> Gate Keeper </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>
     <para style="terp_default_2"> <font color="white"> </font> </para>

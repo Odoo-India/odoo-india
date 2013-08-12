@@ -63,7 +63,7 @@ class import_po_line_data(osv.osv_memory):
 
     def po_line_create(self,cr,uid,ids,context=None):
         #file_path = "/home/ara/Desktop/odt/PO/podetail1.csv"
-        file_path = "/home/maize/data/1_aug/1_aug_po_line.csv"
+        file_path = "/home/maize/data/PO/BOUNCED_PO_LINE20130808062638.csv"
         
         fields = data_lines = False
         try:
@@ -126,8 +126,10 @@ class import_po_line_data(osv.osv_memory):
                 indent_id=False
                 indentor_id=False
                 fiscalyear = self.pool.get('account.fiscalyear').search(cr,uid,[('name','=',data['INDYEAR'].strip())])
-                if data["INDENTNO"] and fiscalyear:
+                if int(data["INDENTNO"]):
+                    print ">>>>>>>>>>>>SSS", data["INDYEAR"]+'/'+data["INDENTNO"]
                     indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDYEAR"]+'/'+data["INDENTNO"])])
+                    print ">>>>>>>>>>>>>>>>>>>>>qqqqqqqq", indent
                     indent_id = indent and indent[0] or False
                 if data["INDENTOR"]:
                     indentor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])
@@ -156,12 +158,15 @@ class import_po_line_data(osv.osv_memory):
                         'discount':discount
                        }
                 exist_line.append(maize_name)
+                print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", int(data['INDENTNO'])
                 if int(data['INDENTNO']) == 0:
                     exist_po_line = pol_pool.search(cr,uid,[('order_id','=',po[0]), ('product_id', '=', product)])
                 else:
-                    exist_po_line = pol_pool.search(cr,uid,[('order_id','=',po[0]),('indent_id', '=', data['INDENTNO']), ('product_id', '=', product)])  
+                    print ">>>>>>>>>>>", po[0], indent, product
+                    exist_po_line = pol_pool.search(cr,uid,[('order_id','=',po[0]),('indent_id', '=', indent[0]), ('product_id', '=', product)])  
                 if not exist_po_line:
                     po_line = pol_pool.create(cr, uid, vals, context)
+                    print "po line", po_line
                 #po_order.write(cr,uid,po[0],{'commission':0.01})
                 #po_order.write(cr,uid,po[0],{'commission':0.00})
             except:
@@ -175,12 +180,8 @@ class import_po_line_data(osv.osv_memory):
         print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.", rejected,
         print "project_not_matchproject_not_matchproject_not_match", project_not_match
         print ">>>>item_not_founditem_not_founditem_not_found", item_not_found
-#         aaa = self.pool.get('purchase.order').search(cr,uid,[])
-#         j=0
-#         for i in aaa:
-#             j=j+1
-#             print ">>>>", j
-#             self.pool.get('purchase.order').write(cr,uid,i,{'commission':0.01})
-#             self.pool.get('purchase.order').write(cr,uid,i,{'commission':0.00})
+        #aaa = self.pool.get('purchase.order').search(cr,uid,[])
+        #self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.01})
+        #self.pool.get('purchase.order').write(cr,uid,aaa,{'commission':0.00})
         return True
 import_po_line_data()

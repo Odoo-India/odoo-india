@@ -62,7 +62,7 @@ class import_po_data(osv.osv_memory):
             _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
             return False
 
-    def do_import_po_data(self, cr, uid,ids, context=None):
+    def do_import_po_data1(self, cr, uid,ids, context=None):
         po_pool = self.pool.get('purchase.order')
         all_po = po_pool.search(cr,uid,[('maize','!=','')])
         print ">>>>>>>>>>>>>>>>>>>>>>", all_po
@@ -76,10 +76,10 @@ class import_po_data(osv.osv_memory):
             wf_service.trg_validate(4, 'purchase.order', p, 'purchase_confirm', cr)
         return True
 
-    def do_import_po_data1(self, cr, uid,ids, context=None):
+    def do_import_po_data(self, cr, uid,ids, context=None):
         po_pool = self.pool.get('purchase.order')
         #file_path = "/home/ara/Desktop/odt/PO/poheader.csv"
-        file_path = "/home/maize/data/1_aug/1_aug_po.csv"
+        file_path = "/home/maize/data/PO/po_header.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

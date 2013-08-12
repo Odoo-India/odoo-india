@@ -68,7 +68,7 @@ class import_indent_data(osv.osv_memory):
         #file_path = "/home/ara/Desktop/odt/indent/IDENTNOT20132014BUTPO20132014.csv"
         #file_path = "/home/ara/Desktop/odt/indent/INDENTNOT20132014BUTINWORD20132014.csv"
         
-        file_path = "/home/maize/data/2_aug/indent_special.csv"
+        file_path = "/home/maize/data/8_aug/indent_upto_8_aug.csv"
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")
             return True
@@ -111,8 +111,7 @@ class import_indent_data(osv.osv_memory):
                 fiscalyear = data['INDYEAR'].strip()
                 exist_indent_list = indent_pool.search(cr,uid,[('name','=', data["INDYEAR"]+'/'+data["INDENTNO"].strip())])
                 exist_indent = []
-                if exist_indent_list:
-                    exist_indent = exist_indent_list[0]
+
                 if not exist_indent:
                     emp_obj = self.pool.get('hr.employee')
                     if data["INDENTNO"]:
@@ -179,7 +178,8 @@ class import_indent_data(osv.osv_memory):
                                                                   'analytic_account_id':project
                                                        }, context)
                     indent_list.append(name)
-       
+                else:
+                    print "exist indent"
    
             except:
                 print "data['INDENTNO']", data['INDENTNO']

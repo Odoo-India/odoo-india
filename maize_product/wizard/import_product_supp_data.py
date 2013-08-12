@@ -63,7 +63,7 @@ class import_product_supp_data(osv.osv_memory):
 
     #TODO:FIX ME TO FIND INDENT
     def import_product_supp_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ara/Desktop/odt/Itemmast/itemsupp.csv"
+        file_path = "/home/maize/data/item_8aug/product_supplier_upto_7_aug.csv"
         
         fields = data_lines = False
         try:
@@ -78,20 +78,7 @@ class import_product_supp_data(osv.osv_memory):
         rejected =[]
         bounced_product_supplier = [tuple(fields)]
 #        self.pool.get('product.product').write(cr,uid,pr,{'state':'done'})
-        #set undefine supplier on all product where seller is none
-#         prod = self.pool.get('product.product').search(cr,uid,[])
-#         for p in prod:
-#             seller = self.pool.get('product.product').browse(cr,uid,p).seller_ids
-#             if seller == []:
-#                 s = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])[0]
-#                 vals = {
-#                         'product_id':p,
-#                         'name':s,
-#                         'min_qty':0,
-#                         'delay':1,
-#                         }
-#                 product_pool.create(cr, uid, vals, context)
-
+        
         for data in data_lines:
             try:
                 default_code = data["ITEMCODE"].strip()
@@ -99,14 +86,10 @@ class import_product_supp_data(osv.osv_memory):
                 if default_code:
                     default_code = '0'+default_code
                     product_lst = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
-                    print "product_lstproduct_lstproduct_lst", product_lst
                     if product_lst:
                         product = product_lst[0]
                 if name:
-                    print "name", name
-                    #sp = name[1:]
                     supplier_lst = self.pool.get('res.partner').search(cr,uid,[('supp_code','=',name)])
-                    print "supplier_lstsupplier_lst", supplier_lst
                     if supplier_lst:
                         supplier = supplier_lst[0]
                 if product and supplier:
@@ -114,14 +97,16 @@ class import_product_supp_data(osv.osv_memory):
                             'product_id':product,
                             'name':supplier,
                             'min_qty':0,
-                            'delay':1,
+                            'delay':0,
                             }
                     prod = self.pool.get('product.product').search(cr,uid,[('id','=',product)])[0]
                     seller = self.pool.get('product.product').browse(cr,uid,prod).seller_ids
-                    seller_lst = [i.id for i in seller]
-                    print ">>>>>>", seller_lst
+                    seller_lst = [i.name.id for i in seller]
                     if supplier not in seller_lst:
                         p = product_pool.create(cr, uid, vals, context)
+                        print "new creted parnter", p
+                    else:
+                        print "partner allready exist in this product"
             except:
                 rejected.append(data['ITEMCODE'])
                 reject = [ data.get(f, '') for f in fields]
@@ -132,6 +117,21 @@ class import_product_supp_data(osv.osv_memory):
         head, tail = os.path.split(file_path)
         self._write_bounced_product_supplier(cr, uid, head, bounced_product_supplier, context) 
         _logger.info("Successfully completed import RECIEPT HEADER process.")
+        #set undefine supplier on all product where seller is none
+        #prod = self.pool.get('product.product').search(cr,uid,[])
+        #for p in prod:
+         #   seller = self.pool.get('product.product').browse(cr,uid,p).seller_ids
+          #  print "sellersellerseller", seller
+          #  if not seller:
+          #      s = self.pool.get('res.partner').search(cr,uid,[('supp_code','=','1111111')])[0]
+          #      vals = {
+          #           'product_id':p,
+          #           'name':s,
+          #           'min_qty':0,
+          #           'delay':0,
+          #           }
+          #      new_created=product_pool.create(cr, uid, vals, context)
+          #      print "new_creatednew_created",new_created        
         return True
 
 import_product_supp_data()

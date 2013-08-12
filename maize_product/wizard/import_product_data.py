@@ -64,7 +64,7 @@ class import_product_data(osv.osv_memory):
 
     #TODO:FIX ME TO FIND INDENT
     def import_product_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ara/Desktop/odt/Itemmast/itemmast.csv"
+        file_path = "/home/maize/data/item_8aug/all_item.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -101,6 +101,7 @@ class import_product_data(osv.osv_memory):
                 last_po_series=data["LPOSERIES"].strip()
                 last_issue_date = data["LISSUDATE"].strip()
                 qty_avail = data['STKQTY']
+                active = data['ACTIVE']
                 if default_code:
                     default_code = '0'+default_code
                 prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
@@ -125,6 +126,12 @@ class import_product_data(osv.osv_memory):
                         if item_type == '  ':
                             item_type = ''
                         item_type = item_type.lower()
+                    print "activeactiveactiveactive", active
+                    if active:
+                        if active == 't':
+                            active=True
+                        else:
+                            active = False
                     if last_po_date:
                         if last_po_date == 'NULL' or last_po_date == '' or last_po_date == '00:00.0' or last_po_date == '  ' or last_po_date == ' ':
                             last_po_date = False
@@ -174,7 +181,7 @@ class import_product_data(osv.osv_memory):
                         sub_group_id = sub[0]
                     if last_supplier_rate == 'NULL':
                         last_supplier_rate=''
-    
+                    print "acive>>>>>>>>>>", active
                     vals = {
                             'default_code':default_code,
                             'name':name,
@@ -204,16 +211,17 @@ class import_product_data(osv.osv_memory):
                             'state':'done',
                             'last_issue_date':last_issue_date,
                             'qty_available':qty_avail,
+                            'active':active
                             }
                     prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
                     if not prod:
                         product_pool.create(cr, uid, vals, context)
                         i = i+1
-                        print ">>>>>>>>>>>>>>",i
+                        print ">>>>>>>>>>>>>> new created",i
                 else:
                     product_pool.write(cr, uid, prod[0],{'standard_price':last_supplier_rate,'qty_available':qty_avail}, context)
                     i = i+1
-                    print ">>>>>>>>>>>>>>222222222",i,prod[0], qty_avail
+                    print ">>>>>>>>>>>>>>exist",i,prod[0], qty_avail
             except:
                 rejected.append(data['ITEMCODE'])
                 reject = [ data.get(f, '') for f in fields]

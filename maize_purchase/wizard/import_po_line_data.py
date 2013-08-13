@@ -63,7 +63,7 @@ class import_po_line_data(osv.osv_memory):
 
     def po_line_create(self,cr,uid,ids,context=None):
         #file_path = "/home/ara/Desktop/odt/PO/podetail1.csv"
-        file_path = "/home/maize/data/PO/BOUNCED_PO_LINE20130808062638.csv"
+        file_path = "/home/maize/data/PO/BOUNCED_PO_LINE20130813083451.csv"
         
         fields = data_lines = False
         try:

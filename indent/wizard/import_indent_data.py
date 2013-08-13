@@ -68,7 +68,7 @@ class import_indent_data(osv.osv_memory):
         #file_path = "/home/ara/Desktop/odt/indent/IDENTNOT20132014BUTPO20132014.csv"
         #file_path = "/home/ara/Desktop/odt/indent/INDENTNOT20132014BUTINWORD20132014.csv"
         
-        file_path = "/home/maize/data/8_aug/indent_upto_8_aug.csv"
+        file_path = "/home/maize/data/indent/indent_not_20102011.csv"
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")
             return True
@@ -109,10 +109,9 @@ class import_indent_data(osv.osv_memory):
                    
                 #==============================================================================#
                 fiscalyear = data['INDYEAR'].strip()
-                exist_indent_list = indent_pool.search(cr,uid,[('name','=', data["INDYEAR"]+'/'+data["INDENTNO"].strip())])
-                exist_indent = []
-
-                if not exist_indent:
+                exist_indent_list = indent_pool.search(cr,uid,[('maize','=', str(data["INDYEAR"]+'/'+data["INDENTNO"].strip()))])
+                if not exist_indent_list:
+                    print "AAAAAAAAAAAAAABBBBBBB"
                     emp_obj = self.pool.get('hr.employee')
                     if data["INDENTNO"]:
                         name = data["INDYEAR"]+'/'+data["INDENTNO"].strip()
@@ -160,7 +159,7 @@ class import_indent_data(osv.osv_memory):
                         mach = data["MACHCODE"].strip()
                     project=False
                     if mach:
-                        project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach)])[0]
+                        project = self.pool.get('account.analytic.account').search(cr,uid,[('code','=',mach.upper())])[0]
                            
                     description=data['REMARK1']+'\n'+data['REMARK2']
                     data['indent'] = indent_pool.create(cr, uid, {'name':name,

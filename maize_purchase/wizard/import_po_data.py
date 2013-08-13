@@ -79,7 +79,7 @@ class import_po_data(osv.osv_memory):
     def do_import_po_data(self, cr, uid,ids, context=None):
         po_pool = self.pool.get('purchase.order')
         #file_path = "/home/ara/Desktop/odt/PO/poheader.csv"
-        file_path = "/home/maize/data/PO/po_header.csv"
+        file_path = "/home/maize/data/PO/po_header_upto_13_aug.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

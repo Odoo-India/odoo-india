@@ -65,7 +65,7 @@ class import_indent_data_line(osv.osv_memory):
         #file_path = "/home/ara/Desktop/odt/indent/indenttr20132014.csv"
         #file_path = "/home/ara/Desktop/odt/indent/IDENTTRANSACTIONNOT20132014BUTPO20132014.csv"
         #file_path = "/home/ara/Desktop/odt/indent/INDENTTRANSACTIONNOT20132014BUTINWORD20132014.csv"
-        file_path = "/home/maize/data/8_aug/indent_line_upto_8_aug.csv"
+        file_path = "/home/maize/data/indent/indent_line_not_20102011.csv"
         
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")

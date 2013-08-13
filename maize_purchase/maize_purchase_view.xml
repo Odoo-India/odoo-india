@@ -526,9 +526,9 @@
 					<button name="receipt_tree_view" string="Receipts" class="oe_right"
 						type="object" />
 				</xpath>
-				<xpath expr="//field[@name='purchase_id']" position="attributes">
+				<!--xpath expr="//field[@name='purchase_id']" position="attributes">
 				    <attribute name="attrs">{'readonly':[('state','=','done')]}</attribute>
-			    </xpath> 
+			    </xpath--> 
 				<xpath expr="//group" position="after">
 					<group col="12" string="Inward Details"  >
 						<group colspan="4" >

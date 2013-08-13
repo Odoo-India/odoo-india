@@ -26,7 +26,6 @@ import httplib
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
-from bsddb.dbtables import _columns
 
 class account_tax(osv.Model):
     _name = 'account.tax'
@@ -336,32 +335,60 @@ class account_invoice(osv.Model):
         conn = httplib.HTTPConnection(url)
         voucher_no = invoice.maize_voucher_no
         
-        if not invoice.maize_voucher_no:
+        if not debit_note and voucher_no:
+            return voucher_no
+        
+        current_month = time.strptime(invoice.date_invoice,'%Y-%m-%d').tm_mon
+        cls_dict = {'1':'01', '2':'02', '3':'03', '4':'04', '5':'05', '6':'06', '7':'07', '8':'08', '9':'09', '10':'10', '11':'11', '12':'12'}
+        month_dict = {'1':'01', '2':'02', '3':'03', '4':'04', '5':'05', '6':'06', '7':'07', '8':'08', '9':'09', '10':'10', '11':'11', '12':'12'}
+        close_column = "CLS%s" % (cls_dict.get(str(current_month-3)))
+        month_column = "VOUNO%s" % (month_dict.get(str(current_month)))
+
+        if not voucher_no:
+            journal = invoice.move_id.journal_id.code
+            vounoSQL = ""
+            if debit_note:
+                journal = 'DBN'
+                vounoSQL = "SELECT [%s] as IS_OPEN, [%s] as VOUNO FROM [MZFAS].[dbo].[FASPARM] where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s'  and SERIES='ZZ'" % (close_column, 'VOUNO', invoice.move_id.period_id.fiscalyear_id.name, journal)
+            else:
+                vounoSQL = "SELECT [%s] as IS_OPEN, [%s] as VOUNO  FROM [MZFAS].[dbo].[FASPARM] where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (close_column, month_column, invoice.move_id.period_id.fiscalyear_id.name, journal, invoice.move_id.journal_id.series)
+
             try:
-                vounoSQL = "SELECT [VOUNO] FROM [MZFAS].[dbo].[FASPARM] where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (invoice.move_id.period_id.fiscalyear_id.name, invoice.move_id.journal_id.code,  invoice.move_id.journal_id.series)
-    
                 conn.request("GET", "/cgi-bin/query", vounoSQL, headers)
                 rsp = conn.getresponse()
                 data_received = rsp.read()
                 data = json.loads(data_received)
-                voucher_no = int(data[0]['VOUNO'])
-                
-                vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [VOUNO]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (voucher_no+1, invoice.move_id.period_id.fiscalyear_id.name, invoice.move_id.journal_id.code,  invoice.move_id.journal_id.series)
+                is_open = data[0]['IS_OPEN']
+                voucher_no = int(data[0]['VOUNO']) + 1
+            except Exception:
+                raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
+      
+            if not debit_note and is_open == 'Y':
+                raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
+            
+            if debit_note:
+                journal = 'DBN'
+                vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [VOUNO]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='ZZ'" % (voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal)
+            else:
+                vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [%s]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (month_column, voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal, invoice.move_id.journal_id.series)
+            
+            try:
                 conn.request("GET", "/cgi-bin/query", vounoSQL, headers)
                 rsp = conn.getresponse()
                 data_received = rsp.read()
                 data = json.loads(data_received)
-                
             except Exception:
                 raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
             
         return voucher_no
 
-    def create_debit_note(self, cr, uid, invoice, voucher_no, context=None):
+    def create_debit_note(self, cr, uid, invoice, context=None):
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
         url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
         conn = httplib.HTTPConnection(url)
-
+        
+        voucher_no = self.get_voucher_number(cr, uid, invoice, True, context=context)
+        
         tax_exist = False
         tax_amount = 0
         for tax in invoice.tax_line:
@@ -512,7 +539,7 @@ class account_invoice(osv.Model):
 
         debit_note_id = False
         if invoice.debit_note_amount > 0:
-            debit_note_id = self.create_debit_note(cr, uid, invoice, voucher_no, context=context)
+            debit_note_id = self.create_debit_note(cr, uid, invoice, context=context)
         
         maizeSQL = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], 
                 [TAXAMT], [GSTAMT], [STAMT], [SURAMT], [USERID], [ACTION], [PRTFLG], [ADVAMT], [DEDACCODE1], [DEDAMT1], [DEDACCODE2], [DEDAMT2], [RETAMT], 
@@ -524,11 +551,11 @@ class account_invoice(osv.Model):
                '%(DEBVATAMT2)s',  '%(EXCISE)s',  '%(EXCISECESS)s',  '%(EXCISEHCESS)s',  '%(RATE)s',  '%(CFORMIND)s',  '%(STATE)s',  '%(REASON)s',  '%(CONRETAMT)s',  '%(DEDACCODE3)s',  '%(DEBTAXABLEAMT)s',  '%(AHDFLG)s',  '%(DEDACCODE4)s',  
                '%(DEDAMT4)s')"""
         maizeSQL = maizeSQL % {
-            'COCODE': 1,  
+            'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name,
-            'BKTYPE': invoice.move_id.journal_id.code,  
-            'VOUNO': voucher_no,  
-            'VOUSRL': 0,  
+            'BKTYPE': invoice.move_id.journal_id.code,
+            'VOUNO': voucher_no,
+            'VOUSRL': 0,
             'SERIES': invoice.move_id.journal_id.series,  
             'RMQTY': 0,  
             'PAYDUE': invoice.date_due,  

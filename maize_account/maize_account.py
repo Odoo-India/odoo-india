@@ -20,7 +20,9 @@
 ##############################################################################
 
 import time
-
+import json
+import httplib
+        
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -328,15 +330,11 @@ class account_invoice(osv.Model):
         'maize_voucher_no':fields.char('Voucher No', size=16)
     }
     
-    def create_maize_voucher(self, cr, uid, invoice, context=None):
-        import httplib
-        import json
-        
+    def get_voucher_number(self, cr, uid, invoice, debit_note, context):
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
         url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
         conn = httplib.HTTPConnection(url)
         voucher_no = invoice.maize_voucher_no
-        
         
         if not invoice.maize_voucher_no:
             try:
@@ -357,9 +355,25 @@ class account_invoice(osv.Model):
             except Exception, e:
                 raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
             
-            self.write(cr, uid, ids, {'maize_voucher_no':voucher_no})
-            cr.commit()
-            invoice = self.browse(cr, uid, ids)[0]
+        return voucher_no
+    
+    def create_debit_note(self, cr, uid, invoice, context):
+        voucher_no = False
+        
+        
+        return voucher_no
+    
+    def create_maize_voucher(self, cr, uid, invoice, context=None):
+        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
+        url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
+        conn = httplib.HTTPConnection(url)
+        
+        voucher_no = self.get_voucher_number(cr, uid, invoice, False, context)
+        self.write(cr, uid, [invoice.id], {'maize_voucher_no':voucher_no})
+        cr.commit()
+        invoice = self.browse(cr, uid, invoice.id)
+        
+        debit_note_id = self.create_debit_note(cr, uid, invoice, context)
         
         maizeSQL = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], 
                 [TAXAMT], [GSTAMT], [STAMT], [SURAMT], [USERID], [ACTION], [PRTFLG], [ADVAMT], [DEDACCODE1], [DEDAMT1], [DEDACCODE2], [DEDAMT2], [RETAMT], 
@@ -392,12 +406,12 @@ class account_invoice(osv.Model):
             'DEDAMT1': 0,  
             'DEDACCODE2': 0,  
             'DEDAMT2': 0,  
-            'RETAMT': 0,  
-            'DEBAMT': 0,  
-            'DEBVOUNO': 0,  
-            'DEBVATAMT': 0,  
-            'RSNCODE': 0,  
-            'STAMT1': 0,  
+            'RETAMT': 0,
+            'DEBAMT': 0,
+            'DEBVOUNO': debit_note_id,
+            'DEBVATAMT': 0,
+            'RSNCODE': 0,
+            'STAMT1': 0,
             'STAMT2': 0,  
             'DEBVATAMT1': 0,  
             'DEBVATAMT2': 0,  

@@ -640,6 +640,17 @@
 				</xpath>
 			</field>
 		</record>
+		
+		<record id="view_stock_picking_in_search_inherit" model="ir.ui.view">
+			<field name="name">maize.inherit.stock.picking.in.search</field>
+			<field name="model">stock.picking.in</field>
+			<field name="inherit_id" ref="stock.view_picking_in_search" />
+			<field name="arch" type="xml">
+				<field name="partner_id" position="replace">
+					<field name="partner_id"/>
+				</field>
+			</field>
+		</record>
 		<!-- RECEIPT FORM -->
 		<record id="view_picking_receipt_tree" model="ir.ui.view">
 			<field name="name">stock.picking.receipt.tree</field>
@@ -912,7 +923,7 @@
 					list of
 					products to be received according to the original
 					purchase order.
-				</p>
+					</p>    
 			</field>
 		</record>
 
@@ -999,6 +1010,17 @@
 				</xpath>
 			</field>
 		</record>
+		
+		<record id="view_picking_out_search_inherit" model="ir.ui.view">
+			<field name="name">maize.inherit.stock.picking.out.search</field>
+			<field name="model">stock.picking.out</field>
+			<field name="inherit_id" ref="stock.view_picking_out_search" />
+			<field name="arch" type="xml">
+			    <field name="partner_id" position="replace">
+			        <field name="partner_id"/>
+			    </field>
+			</field>
+		</record>
 
 		<!--  Stock Move Search View Inherit -->
 		<record id="view_stock_move_search_inherit" model="ir.ui.view">
@@ -1047,16 +1069,16 @@
 			<field name="search_view_id" ref="view_stock_move_search_inherit" />
 			<field name="context">{}</field>
 			<field name="help" type="html">
-				<p class="oe_view_nocontent_create">
-					Click to create a stock movement.
-              </p>
-				<p>
-					This menu gives you the full traceability of inventory
-					operations
-					on a specific product. You can filter on the product
-					to see all the
-					past or future movements for the product.
-              </p>
+                <p class="oe_view_nocontent_create">
+                    Click to create a stock movement.
+                </p>
+                <p>
+                    This menu gives you the full traceability of inventory
+                    operations
+                    on a specific product. You can filter on the product
+                    to see all the
+                    past or future movements for the product.
+                </p>
 			</field>
 		</record>
 
@@ -1257,6 +1279,9 @@
 					<field name="name" string="Purchase Order"
 						filter_domain="['|', '|', ('name', 'ilike', self), ('indentor_code', 'ilike', self), ('supplier_code', 'ilike', self)]" />
 				</field>
+				<field name="partner_id" position="replace">
+				    <field name="partner_id"/>
+			    </field>
 				<field name="partner_id" position="after">
 					<field name="po_series_id" />
 					<field name="product_id" />

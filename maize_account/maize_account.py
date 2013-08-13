@@ -352,28 +352,167 @@ class account_invoice(osv.Model):
                 data_received = rsp.read()
                 data = json.loads(data_received)
                 
-            except Exception, e:
+            except Exception:
                 raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
             
         return voucher_no
-    
-    def create_debit_note(self, cr, uid, invoice, context):
-        voucher_no = False
-        
-        
+
+    def create_debit_note(self, cr, uid, invoice, voucher_no, context=None):
+        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
+        url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
+        conn = httplib.HTTPConnection(url)
+
+        tax_exist = False
+        tax_amount = 0
+        for tax in invoice.tax_line:
+            if tax.tax_categ in ('vat', 'add_vat'):
+                tax_amount += tax.amount
+                tax_exist = True
+
+        lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
+            [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
+            [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
+            VALUES (
+            '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
+            '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
+            '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
+            '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
+        res = {
+            'COCODE': 1, 
+            'FINYEAR': '20132014', 
+            'BKTYPE': 'DBP', 
+            'BKSRS': 'CH', 
+            'VOUNO': voucher_no, 
+            'VOUSRL': 0, 
+            'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'), 
+            'VOUSTS': 'P', 
+            'FASCODE': '302K060', 
+            'SUBCODE': '/', 
+            'REFNO': invoice.number,
+            'REFDAT': invoice.date_invoice, 
+            'REMK01': '/', 
+            'REMK02': '/', 
+            'REMK03': '/', 
+            'REMK04': '/',
+            'USERID': 'STORE', 
+            'ACTION': invoice.id, 
+            'CVOUNO': 0,
+            'CRDBID':'D',
+            'VOUAMT':invoice.debit_note_amount,
+        }
+
+        lineSQL = lineSQL % res
+
+        conn.request("GET", "/cgi-bin/query", lineSQL, headers)
+        rsp = conn.getresponse()
+
+        data_received = rsp.read()
+        data = json.loads(data_received)
+
+
+        lineSQL1 = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
+            [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
+            [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
+            VALUES (
+            '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
+            '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
+            '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
+            '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
+        res1 = {
+            'COCODE': 1, 
+            'FINYEAR': '20132014', 
+            'BKTYPE': 'DBP', 
+            'BKSRS': 'CH', 
+            'VOUNO': voucher_no, 
+            'VOUSRL': 1, 
+            'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'), 
+            'VOUSTS': 'P', 
+            'FASCODE': '6102002', 
+            'SUBCODE': '/', 
+            'REFNO': invoice.number,
+            'REFDAT': invoice.date_invoice, 
+            'REMK01': '/', 
+            'REMK02': '/', 
+            'REMK03': '/', 
+            'REMK04': '/',
+            'USERID': 'STORE', 
+            'ACTION': invoice.id, 
+            'CVOUNO': 0,
+            'CRDBID':'C',
+            'VOUAMT':invoice.debit_note_amount,
+        }
+
+        if tax_exist:
+            res1.update({'VOUAMT': invoice.debit_note_amount - tax_amount})
+        else:
+            res1.update({'VOUAMT': invoice.debit_note_amount})
+
+        lineSQL1 = lineSQL1 % res1
+
+        conn.request("GET", "/cgi-bin/query", lineSQL1, headers)
+        rsp = conn.getresponse()
+
+        data_received = rsp.read()
+        data = json.loads(data_received)
+
+
+        if tax_exist:
+            lineSQL2 = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
+                [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
+                [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
+                VALUES (
+                '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
+                '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
+                '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
+                '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
+            res2 = {
+                'COCODE': 1, 
+                'FINYEAR': '20132014', 
+                'BKTYPE': 'DBP', 
+                'BKSRS': 'CH', 
+                'VOUNO': voucher_no, 
+                'VOUSRL': 2, 
+                'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'), 
+                'VOUSTS': 'P', 
+                'FASCODE': '6102002', 
+                'SUBCODE': '/', 
+                'REFNO': invoice.number,
+                'REFDAT': invoice.date_invoice, 
+                'REMK01': '/', 
+                'REMK02': '/', 
+                'REMK03': '/', 
+                'REMK04': '/',
+                'USERID': 'STORE', 
+                'ACTION': invoice.id, 
+                'CVOUNO': 0,
+                'CRDBID':'C',
+                'VOUAMT': tax_amount,
+            }
+
+            lineSQL2 = lineSQL2 % res2
+
+            conn.request("GET", "/cgi-bin/query", lineSQL2, headers)
+            rsp = conn.getresponse()
+
+            data_received = rsp.read()
+            data = json.loads(data_received)
+
+        conn.close()
+
         return voucher_no
     
     def create_maize_voucher(self, cr, uid, invoice, context=None):
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
         url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
         conn = httplib.HTTPConnection(url)
-        
-        voucher_no = self.get_voucher_number(cr, uid, invoice, False, context)
-        self.write(cr, uid, [invoice.id], {'maize_voucher_no':voucher_no})
+        voucher_no = self.get_voucher_number(cr, uid, invoice, False, context=context)
+        self.write(cr, uid, [invoice.id], {'maize_voucher_no': voucher_no}, context=context)
         cr.commit()
         invoice = self.browse(cr, uid, invoice.id)
-        
-        debit_note_id = self.create_debit_note(cr, uid, invoice, context)
+
+        debit_note_id = False
+        if invoice.debit_note_amount > 0:
+            debit_note_id = self.create_debit_note(cr, uid, invoice, voucher_no, context=context)
         
         maizeSQL = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], 
                 [TAXAMT], [GSTAMT], [STAMT], [SURAMT], [USERID], [ACTION], [PRTFLG], [ADVAMT], [DEDACCODE1], [DEDAMT1], [DEDACCODE2], [DEDAMT2], [RETAMT], 

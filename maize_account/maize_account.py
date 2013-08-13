@@ -406,9 +406,9 @@ class account_invoice(osv.Model):
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         res = {
             'COCODE': 1, 
-            'FINYEAR': '20132014', 
+            'FINYEAR': invoice.period_id.fiscalyear_id.name, 
             'BKTYPE': 'DBP', 
-            'BKSRS': 'CH', 
+            'BKSRS': invoice.journal_id.series, 
             'VOUNO': voucher_no, 
             'VOUSRL': 0, 
             'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'), 
@@ -447,9 +447,9 @@ class account_invoice(osv.Model):
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         res1 = {
             'COCODE': 1, 
-            'FINYEAR': '20132014', 
+            'FINYEAR': invoice.period_id.fiscalyear_id.name, 
             'BKTYPE': 'DBP', 
-            'BKSRS': 'CH', 
+            'BKSRS': invoice.journal_id.series, 
             'VOUNO': voucher_no, 
             'VOUSRL': 1, 
             'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'), 
@@ -494,9 +494,9 @@ class account_invoice(osv.Model):
                 '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
             res2 = {
                 'COCODE': 1, 
-                'FINYEAR': '20132014', 
+                'FINYEAR': invoice.period_id.fiscalyear_id.name, 
                 'BKTYPE': 'DBP', 
-                'BKSRS': 'CH', 
+                'BKSRS': invoice.journal_id.series, 
                 'VOUNO': voucher_no, 
                 'VOUSRL': 2, 
                 'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'), 
@@ -526,7 +526,7 @@ class account_invoice(osv.Model):
 
         conn.close()
 
-        return voucher_no
+        return voucher_no, tax_amount
     
     def create_maize_voucher(self, cr, uid, invoice, context=None):
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}

@@ -337,6 +337,7 @@ class account_invoice(osv.Model):
         conn = httplib.HTTPConnection(url)
         voucher_no = invoice.maize_voucher_no
         
+        
         if not invoice.maize_voucher_no:
             try:
                 vounoSQL = "SELECT [VOUNO] FROM [MZFAS].[dbo].[FASPARM] where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (invoice.move_id.period_id.fiscalyear_id.name, invoice.move_id.journal_id.code,  invoice.move_id.journal_id.series)

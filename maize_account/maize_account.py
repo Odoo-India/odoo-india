@@ -470,7 +470,6 @@ class account_invoice(osv.Model):
             'ACTION': invoice.id, 
             'CVOUNO': 0,
             'CRDBID':'C',
-            'VOUAMT':invoice.debit_note_amount,
         }
 
         if tax_exist:
@@ -555,8 +554,8 @@ class account_invoice(osv.Model):
         add_vat_debit = 0.0
         debit_note_id = 0
         if invoice.debit_note_amount:
-            vat_debit = (invoice.debit_note_amount *  vat) / invoice.amount_untaxed
-            add_vat_debit = (invoice.debit_note_amount *  add_vat) / invoice.amount_untaxed
+            vat_debit = (invoice.debit_note_amount *  vat) / (invoice.amount_untaxed + excise + cess + hedu)
+            add_vat_debit = (invoice.debit_note_amount *  add_vat) / (invoice.amount_untaxed + excise + cess + hedu)
             debit_note_id = self.create_debit_note(cr, uid, invoice, context=context)
 
         maizeSQL = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], 

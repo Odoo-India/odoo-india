@@ -104,7 +104,10 @@ class import_product_data(osv.osv_memory):
                 active = data['ACTIVE']
                 if default_code:
                     default_code = '0'+default_code
-                prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code)])
+                if active =='t':
+                    prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code),('active','=',True)])
+                else:
+                    prod = self.pool.get('product.product').search(cr,uid,[('default_code','=',default_code),('active','=',False)])
                 if not prod:                    
                     if last_po_series:
                         if last_po_series == ' ':
@@ -119,14 +122,12 @@ class import_product_data(osv.osv_memory):
                         uom = self.pool.get('product.uom').search(cr,uid,[('name','=',uom_id)])
                         if uom:
                             uom_id = uom_po_id = uom[0]
-                            
                         else:
                             uom_id = uom_po_id = ''
                     if item_type:
                         if item_type == '  ':
                             item_type = ''
                         item_type = item_type.lower()
-                    print "activeactiveactiveactive", active
                     if active:
                         if active == 't':
                             active=True
@@ -146,14 +147,8 @@ class import_product_data(osv.osv_memory):
     
     
                     if last_supplier_code:
-                        last_supplier_code = last_supplier_code[1:]
                         supplier = self.pool.get("res.partner").search(cr,uid,[('supp_code','=',last_supplier_code)])
-                        if supplier == [] or supplier == False:
-                            un_sup = self.pool.get("res.partner").search(cr,uid,[('supp_code','=','1111111'),('name','=','Undefine Supplier')])
-                            if not un_sup:
-                                un_sup = [self.pool.get("res.partner").create({'name':'Undefine Supplier','supp_code':'1111111','supplier':True,'active':True})]
-                            last_supplier_code=un_sup[0]
-                        else:
+                        if supplier:
                             last_supplier_code=supplier[0]
     
                     if default_code:
@@ -181,7 +176,6 @@ class import_product_data(osv.osv_memory):
                         sub_group_id = sub[0]
                     if last_supplier_rate == 'NULL':
                         last_supplier_rate=''
-                    print "acive>>>>>>>>>>", active
                     vals = {
                             'default_code':default_code,
                             'name':name,
@@ -219,9 +213,17 @@ class import_product_data(osv.osv_memory):
                         i = i+1
                         print ">>>>>>>>>>>>>> new created",i
                 else:
-                    product_pool.write(cr, uid, prod[0],{'standard_price':last_supplier_rate,'qty_available':qty_avail}, context)
+                    if last_supplier_code:
+                        supplier = self.pool.get("res.partner").search(cr,uid,[('supp_code','=',last_supplier_code)])
+                        last_supplier=''
+                        if supplier:
+                            last_supplier=supplier[0]      
+                    if data["LPONUMBER"].strip() != '0':
+                        po_no = self.pool.get('purchase.order').search(cr,uid,[('maize','=',data["LPOYEAR"]+'/'+data["LPOSERIES"]+'/'+data["LPONUMBER"])])
+                        if po_no:
+                            oo = product_pool.write(cr, uid, prod[0],{'standard_price':last_supplier_rate,'last_po_no':po_no[0],'last_supplier_code':last_supplier,}, context)
+                            print "ooooo", oo
                     i = i+1
-                    print ">>>>>>>>>>>>>>exist",i,prod[0], qty_avail
             except:
                 rejected.append(data['ITEMCODE'])
                 reject = [ data.get(f, '') for f in fields]

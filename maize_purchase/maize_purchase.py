@@ -518,6 +518,17 @@ purchase_requisition_partner()
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
     _order = 'id desc'
+    
+    def wkf_send_rfq(self, cr, uid, ids, context=None):
+        ir_model_data = self.pool.get('ir.model.data')
+        res = super(purchase_order, self).wkf_send_rfq(cr, uid, ids, context=context)
+        try:
+            template_id = ir_model_data.get_object_reference(cr, uid, 'maize_purchase', 'email_template_edi_purchase')[1]
+            if template_id:
+                res['context']['default_template_id'] = template_id
+        except ValueError:
+            template_id = False
+        return res
 
     def copy(self, cr, uid, id, default=None, context=None):
         if default is None:

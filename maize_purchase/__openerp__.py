@@ -57,6 +57,7 @@ This module inherits the base product module which maintains some product histor
         'code_data.xml',
         'purchase_dispatch_data.xml',
         'maize_report.xml',
+        'email_template_data.xml',
         'report/indent_report_view.xml',
         'report/indent_purchase_report_view.xml',
         'report/indentor_wise_indent_report_view.xml',

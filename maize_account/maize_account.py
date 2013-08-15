@@ -248,19 +248,22 @@ class account_invoice(osv.Model):
                 'amount_tax': 0.0,
                 'amount_total': 0.0,
                 'net_amount': 0.0,
+                'debit_note_amount_total':0.0
             }
             for line in invoice.invoice_line:
                 res[invoice.id]['amount_untaxed'] += line.price_subtotal
+                res[invoice.id]['debit_note_amount_total'] += (line.price_subtotal / line.quantity) * line.debit_note_qty
+                
             for line in invoice.tax_line:
                 res[invoice.id]['amount_tax'] += line.amount
-            
-            res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + invoice.insurance + invoice.other_charges
 
+            res[invoice.id]['debit_note_amount_total'] += invoice.debit_note_amount
+            res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + invoice.insurance + invoice.other_charges
             res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + invoice.freight + \
                 invoice.package_and_forwording + invoice.insurance + invoice.loading_charges + invoice.inspection_charges + invoice.delivery_charges \
                 + invoice.other_charges - invoice.rounding_shortage
 
-            res[invoice.id]['net_amount'] = res[invoice.id]['amount_total'] - (invoice.debit_note_amount + invoice.advance_amount + invoice.retention_amount) 
+            res[invoice.id]['net_amount'] = res[invoice.id]['amount_total'] - (res[invoice.id]['debit_note_amount_total'] + invoice.advance_amount + invoice.retention_amount) 
         return res
 
     def _get_invoice_line(self, cr, uid, ids, context=None):
@@ -308,7 +311,14 @@ class account_invoice(osv.Model):
         'rounding_shortage': fields.float('Rounding Shortage'),
         'vat_amount': fields.float('VAT Amount'),
         'additional_vat': fields.float('Additional Tax'),
-        'debit_note_amount': fields.float('Debit Note Amount'),
+        'debit_note_amount': fields.float('Additional Debit Note'),
+        'debit_note_amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Debit Note Total',
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges', 'package_and_forwording', 'loading_charges', 'inspection_charges', 'delivery_charges', 'rounding_shortage', 'debit_note_amount'], 20),
+                'account.invoice.tax': (_get_invoice_tax, None, 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
+            },
+            multi='all'),
         'advance_amount': fields.float('Advance Amount'),
         'retention_amount': fields.float('Retention Amount'),
         'net_amount': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Net Amount', track_visibility='always',
@@ -795,3 +805,12 @@ class account_invoice(osv.Model):
         return super(account_invoice, self).copy(cr, uid, id, default, context)
 
 account_invoice()
+
+class account_invoice_line(osv.Model):
+    _inherit = "account.invoice.line"
+    
+    _columns = {
+        'debit_note_qty':fields.float('Debit Quantity')
+    }
+
+account_invoice_line()

@@ -112,7 +112,7 @@ class import_inward_line_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
 
-        file_path = "/home/maize/data/inward/inward_line_after_1_8_2013.csv"
+        file_path = "/home/ara/Desktop/inward_16aug.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -168,8 +168,8 @@ class import_inward_line_data(osv.osv_memory):
                 if data['INDYEAR']:
                     fiscalyear = data['INDYEAR']
                 if data['INWYEAR'] and data['INWARDNO']:
-                    maize_in = data['INDYEAR']+'/'+data["INDENTNO"]
-                po_name = data['POYEAR']+'/'+data["POSERIES"] +'/'+ data["PONO"]
+                    maize_in = data['INWYEAR']+'/'+data["INDENTNO"]
+                po_name = data['INWYEAR']+'/'+data["POSERIES"] +'/'+ data["PONO"]
                 maize_name = data['INDYEAR']+'/'+data["INWARDNO"]
                 new_picking_id = False
                 purchase_date = ''
@@ -208,7 +208,7 @@ class import_inward_line_data(osv.osv_memory):
                             department_id = False
                             if indent_id:
                                 department_id = self.pool.get('indent.indent').read(cr,uid,indent_id,['department_id'])['department_id'][0]
-                            move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[-1]), ('type', '=', 'in'),('product_id', '=', product),('indent', '=', indent_id),('indentor', '=', indentor_id)])
+                            move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[-1]), ('type', '=', 'in'),('product_id', '=', product),('indent', '=', indent_id)])
                             m_v.append((0,0,{
                                         'product_id': product,
                                         'quantity':float(chlnqty),

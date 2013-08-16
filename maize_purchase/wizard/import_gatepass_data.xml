@@ -24,7 +24,7 @@
         view_mode="form"
         target="new"
         key2="client_action_multi"
-        id="action_inward_import" />
+        id="action_gate_pass_import" />
 
     </data>
 </openerp>

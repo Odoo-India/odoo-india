@@ -45,7 +45,7 @@ class import_inward_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
         
-        file_path = "/home/kuldeep/Desktop/po_18_july/inward20132014.csv"
+        file_path = "/home/ara/Desktop/inward_header_test.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -155,7 +155,7 @@ class import_inward_data(osv.osv_memory):
 #                if data["REMARK1"] or data["REMARK2"] or data["REMARK3"] or data["REMARK4"]:
 #                    note= data["REMARK1"] +'\n'+ data["REMARK2"] +'\n'+ data["REMARK3"] +'\n'+ data["REMARK4"]
                 if data['INWYEAR'] and data['INWARDNO']:
-                    maize_in = data['INWARDNO'] +'/'+ data['INWYEAR']
+                    maize_in = data['INWYEAR'] +'/'+data['INWARDNO']
                 if maize_in:
                     inward_no = inward_pool.search(cr, uid, [('maize_in', '=', maize_in)])
                     vals = {
@@ -179,6 +179,7 @@ class import_inward_data(osv.osv_memory):
                             'transporter':transporter,
     
                     }
+                    print "vals", vals
                     ok = inward_pool.write(cr, uid,inward_no, vals, context)
                     print "valsvalsvals", ok
                 else:

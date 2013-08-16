@@ -106,7 +106,7 @@ class gate_pass(report_sxw.rml_parse):
         if emp_id:
             emp_obj = hr_emp.browse(self.cr,1,emp_id)[0]
             data_user.update({'designation':emp_obj.job_id and emp_obj.job_id.name or ''})
-        data_user.update({'sign':res_record.sign or default_image})
+        data_user.update({'sign':default_image})
         data_user.update({'name':res_record.name or ''})
         return data_user
 

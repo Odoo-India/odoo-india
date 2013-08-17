@@ -16,7 +16,8 @@
 				</xpath>
 			</field>
 		</record>
-
+        
+        <!-- Indent Form View -->
 		<record id='view_stock_indent_indent_form' model='ir.ui.view'>
 			<field name="name">indent.indent.form</field>
 			<field name="model">indent.indent</field>
@@ -47,29 +48,28 @@
 						</div>
 
 						<group>
-							<group string="Required For">
-								<field name="item_for" on_change="onchange_item(item_for)" />
+							<group>
+								<field name="item_for" />
 								<field name="analytic_account_id" attrs="{'required': [('item_for', '=', 'capital')]}" />
-								<field name="requirement" />
+								<field name="requirement"
+									on_change="onchange_requirement(indent_date, requirement)" />
 								<field name="department_id"
-                                    domain="[('location_id', '!=',False), ('usage', '!=', 'view'), ('can_request','=',True)]"
-                                    context="{'default_maize_location': 
-                                True}" />
+									domain="[('location_id', '!=',False), ('usage', '!=', 'view'), ('can_request','=',True)]" />
 							</group>
-							<group string="Indentor">
+							<group>
 								<field name="indentor_id" readonly="1" />
-								<field name="manager_id"  readonly="1" />
+								<field name="manager_id" readonly="1" />
 							</group>
 
-							<group string="Dates">
+							<group>
 								<field name="indent_date" />
 								<field name="required_date" />
 							</group>
-                            
-                            <group string="Others">
-                                <field name="type" />
-                                <field name="company_id" invisible="1" />
-                            </group>
+
+							<group>
+								<field name="type" />
+								<field name="company_id" />
+							</group>
 						</group>
 						<notebook>
 							<page string="Products">
@@ -124,7 +124,8 @@
 									</tree>
 								</field>
 								<group class="oe_subtotal_footer oe_right">
-									<field name="amount_total" />
+									<field name="amount_total" widget="monetary"
+                                options="{'currency_field': 'currency_id'}"/>
 								</group>
 							</page>
 							<page string="Status">
@@ -139,8 +140,10 @@
 								</field>
 							</page>
 						</notebook>
-						<label for="description" />
-						<field name="description" />
+						<div class="oe_clear">
+                            <label for="description"/>
+                        </div>
+						<field name="description" class="oe_inline" placeholder="Additional note..."/>
 					</sheet>
 					<div class="oe_chatter">
 						<field name="message_follower_ids" widget="mail_followers" />
@@ -149,7 +152,8 @@
 				</form>
 			</field>
 		</record>
-
+        
+        <!-- Indent Tree View -->
 		<record id='view_indent_indent_tree' model='ir.ui.view'>
 			<field name="name">indent.indent.tree</field>
 			<field name="model">indent.indent</field>
@@ -165,11 +169,12 @@
 					<field name="requirement" />
 					<field name="type" />
 					<field name="amount_total" />
-					<field name="fiscalyear" />
 					<field name="state" />
 				</tree>
 			</field>
 		</record>
+		
+		<!-- Indent Search View -->
 		<record id="view_indent_indent_search" model="ir.ui.view">
 			<field name="name">indent.indent.search</field>
 			<field name="model">indent.indent</field>
@@ -198,13 +203,13 @@
 						<filter string="Requirement" context="{'group_by': 'requirement'}" />
 						<filter string="Indent Type" context="{'group_by': 'type'}" />
 						<filter string="Date" context="{'group_by': 'indent_date'}" />
-						<filter string="Year" context="{'group_by': 
-			'fiscalyear'}" />
 						<filter string="Status" context="{'group_by': 'state'}" />
 					</group>
 				</search>
 			</field>
 		</record>
+		
+		<!-- Indent Window Action -->
 		<record id='action_indent_indent' model='ir.actions.act_window'>
 			<field name="name">Indents</field>
 			<field name="res_model">indent.indent</field>
@@ -219,6 +224,8 @@
 				</p>
 			</field>
 		</record>
+		
+		<!-- Indent Menu -->
 		<menuitem name="Indents" parent="stock.menu_stock_root" id="menu_indent_indent_main"
 			sequence="1" />
 		<menuitem action="action_indent_indent" name="Indents"
@@ -227,7 +234,8 @@
 			parent="stock.menu_stock_root" sequence="2" />
 		<menuitem id="stock.menu_stock_products_moves" name="Receive/Deliver Products"
 			parent="stock.menu_stock_root" sequence="3" />
-
+        
+        <!-- Document Authority Form View -->
 		<record id="view_document_authority_form" model="ir.ui.view">
 			<field name="name">document.authority.form</field>
 			<field name="model">document.authority</field>
@@ -250,6 +258,8 @@
 				</form>
 			</field>
 		</record>
+		
+		<!-- Document Authority Tree View -->
 		<record id='view_document_authority_tree' model='ir.ui.view'>
 			<field name="name">document.authority.tree</field>
 			<field name="model">document.authority</field>
@@ -262,6 +272,8 @@
 				</tree>
 			</field>
 		</record>
+		
+		<!-- Document Authority Window Action -->
 		<record id='action_document_authority' model='ir.actions.act_window'>
 			<field name="name">Document Authorities</field>
 			<field name="res_model">document.authority</field>
@@ -273,6 +285,8 @@
 				</p>
 			</field>
 		</record>
+		
+		<!-- Document Authority Menu -->
 		<menuitem name="Indent 
 			Management" parent="stock.menu_stock_configuration"
 			id="menu_indent_configuration" sequence="41" />

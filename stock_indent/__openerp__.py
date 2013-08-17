@@ -41,9 +41,17 @@ Using Indent Management you can control the purchase and issue of material to em
 - Valuation
 - Etc
 """,
-    'depends' : ['stock'],
-    'data' : [],
-    'update_xml' : ['stock_indent_view.xml'],
+    'depends' : ['stock', 'purchase'],
+    'data' : [
+        "stock_indent_data.xml",
+        "stock_indent_sequence.xml"
+    ],
+    'update_xml' : [
+        'stock_indent_view.xml',
+        'stock_indent_workflow.xml',
+        'stock_workflow_change.xml',
+        'stock_indent_report.xml'
+    ],
 
     'demo': [],
 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Indent-related subtypes for messaging / Chatter -->
+        <record id="mt_indent_waiting_approval" model="mail.message.subtype">
+            <field name="name">Waiting Approval</field>
+            <field name="res_model">indent.indent</field>
+            <field name="description">Indent is confirmed and waiting for approval</field>
+        </record>
+
+        <record id="mt_indent_inprogress" model="mail.message.subtype">
+            <field name="name">Inprogress</field>
+            <field name="res_model">indent.indent</field>
+            <field name="description">Indent in progress</field>
+        </record>
+
+        <record id="mt_indent_received" model="mail.message.subtype">
+            <field name="name">Received</field>
+            <field name="res_model">indent.indent</field>
+            <field name="description">Indent received</field>
+        </record>
+
+        <record id="mt_indent_rejected" model="mail.message.subtype">
+            <field name="name">Rejected</field>
+            <field name="res_model">indent.indent</field>
+            <field name="description">Indent rejected</field>
+        </record>
+
+    </data>
+</openerp>

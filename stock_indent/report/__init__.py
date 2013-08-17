@@ -19,5 +19,6 @@
 #
 ##############################################################################
 
-import stock_indent
-import report
+import stock_indent_report
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

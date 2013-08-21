@@ -603,26 +603,26 @@ class account_invoice(osv.Model):
             'DEBAMT': invoice.debit_note_amount,
             'DEBVOUNO': debit_note_id,
             'DEBVATAMT': vat_debit + add_vat_debit,
-            'RSNCODE': 0,
-            'STAMT1': 0,
-            'STAMT2': 0,  
-            'DEBVATAMT1': vat_debit,  
-            'DEBVATAMT2': add_vat_debit,  
-            'EXCISE': '',  
-            'EXCISECESS': '',  
-            'EXCISEHCESS': '',  
+            'RSNCODE': invoice.invoice_line[0].reason or '',
+            'STAMT1': vat,
+            'STAMT2': add_vat,
+            'DEBVATAMT1': vat_debit,
+            'DEBVATAMT2': add_vat_debit,
+            'EXCISE': '',
+            'EXCISECESS': '',
+            'EXCISEHCESS': '',
             'RATE': 0,
             'CFORMIND': invoice.c_form and 'Y' or '',
-            'STATE': invoice.partner_id.state_id.name or '',  
-            'REASON': '',  
-            'CONRETAMT': 0,  
+            'STATE': invoice.partner_id.state_id.name or '',
+            'REASON': '',
+            'CONRETAMT': 0,
             'DEDACCODE3': 0,  
-            'DEBTAXABLEAMT': 0,  
-            'AHDFLG': '',  
-            'DEDACCODE4': '',    
+            'DEBTAXABLEAMT': invoice.debit_note_amount - (vat_debit + add_vat_debit),
+            'AHDFLG': '',
+            'DEDACCODE4': '',
             'DEDAMT4' : 0,
         }
-        
+
         try:
             conn.request("GET", "/cgi-bin/query", maizeSQL, headers)
         except Exception, e:
@@ -631,7 +631,7 @@ class account_invoice(osv.Model):
         rsp = conn.getresponse()
         data_received = rsp.read()
         data = json.loads(data_received)
-        
+
         credit_lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
             [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
             [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
@@ -642,7 +642,7 @@ class account_invoice(osv.Model):
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         credit_res = {
             'COCODE': 1, 
-            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name, 
+            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name,
             'BKTYPE': invoice.move_id.journal_id.code, 
             'BKSRS': invoice.move_id.journal_id.series, 
             'VOUNO': voucher_no, 
@@ -663,7 +663,7 @@ class account_invoice(osv.Model):
             'CRDBID':'C', 
             'VOUAMT':invoice.net_amount
         }
-        
+
         debit_lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
             [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
             [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])

@@ -330,18 +330,18 @@ class account_invoice(osv.Model):
             multi='all'),
         'account_code': fields.many2one('account.account', 'Account Code'),
         'book_series_id': fields.many2one('product.order.series', 'Book Series'),
-        'st_code':fields.selection([('nothing', 'Nothing')], 'S.T. Code'),
+        'st_code':fields.selection([('1', 'ST-CD-01'), ('2', 'ST-CD-02'), ('11', 'ST-CD-11 Unregistered Dealer'), ('21', 'ST-CD-21 Outside Gujarat State'), ('22', 'ST-CD-22 Import'), ('31', 'ST-CD-31 Tax Free'), ('41', 'ST-CD-41 Labour & Cartage'), ('51', 'ST-CD-51 Against H Form'), ('91', 'ST-CD-91 Input Tax Credit'), ('92', 'ST-CD-92 Registered Dealer'), ('93', 'ST-CD-93')], 'S.T. Code'),
         'due_date': fields.date('Due Date'),
         'c_form':fields.boolean('C Form'),
         'state_id': fields.many2one('res.country.state', 'State'),
         'voucher_id': fields.many2one('account.voucher', 'Payment'),
         'tds_ac_code': fields.selection([('503033', '503033')], 'TDS A/C Code'),
         'tds_amount': fields.float('TDS Amount'),
-        'other_ac_code': fields.selection([('nothing', 'Nothing')], 'Other Deduction A/C Code'),
+        'other_ac_code': fields.selection([('5133859', '5133859')], 'Other Deduction A/C Code'),
         'other_amount': fields.float('Other Deduction Amount'),
         'maize_voucher_no':fields.char('Voucher No', size=16)
     }
-    
+
     def get_voucher_number(self, cr, uid, invoice, debit_note, context):
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
         url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
@@ -399,17 +399,17 @@ class account_invoice(osv.Model):
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
         url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
         conn = httplib.HTTPConnection(url)
-        
+
         voucher_no = self.get_voucher_number(cr, uid, invoice, True, context=context)
         _logger.info('Going to create a debit note by voucher : %s', voucher_no)
-        
+
         tax_exist = False
         tax_amount = 0
         for tax in invoice.tax_line:
             if tax.tax_categ in ('vat', 'add_vat'):
                 tax_amount += tax.amount
                 tax_exist = True
-        
+
         if tax_exist:
             tax_amount = (invoice.debit_note_amount * tax_amount ) / invoice.amount_untaxed
 
@@ -537,7 +537,7 @@ class account_invoice(osv.Model):
         conn.close()
 
         return voucher_no
-    
+
     def create_maize_voucher(self, cr, uid, invoice, context=None):
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
         url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
@@ -583,17 +583,17 @@ class account_invoice(osv.Model):
             'BKTYPE': invoice.move_id.journal_id.code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 0,
-            'SERIES': invoice.move_id.journal_id.series or '',  
-            'RMQTY': 0,  
-            'PAYDUE': invoice.date_due,  
-            'STCODE': 91,  
-            'TAXAMT': invoice.amount_untaxed,  
+            'SERIES': invoice.move_id.journal_id.series or '',
+            'RMQTY': 0,
+            'PAYDUE': invoice.date_due,
+            'STCODE': invoice.st_code or '',
+            'TAXAMT': invoice.amount_untaxed,
             'GSTAMT': 0,
             'STAMT': vat + add_vat,
             'SURAMT': invoice.amount_total - (invoice.amount_untaxed + vat + add_vat),
             'USERID': invoice.user_id.user_code or '',
             'ACTION': '',
-            'PRTFLG': '',  
+            'PRTFLG': '',
             'ADVAMT': invoice.advance_amount,
             'DEDACCODE1': invoice.tds_ac_code or '',
             'DEDAMT1': invoice.tds_amount,
@@ -614,9 +614,9 @@ class account_invoice(osv.Model):
             'RATE': 0,
             'CFORMIND': invoice.c_form and 'Y' or '',
             'STATE': invoice.partner_id.state_id.name or '',
-            'REASON': '',
+            'REASON': invoice.invoice_line[0].reason or '',
             'CONRETAMT': 0,
-            'DEDACCODE3': 0,  
+            'DEDACCODE3': 0,
             'DEBTAXABLEAMT': invoice.debit_note_amount - (vat_debit + add_vat_debit),
             'AHDFLG': '',
             'DEDACCODE4': '',
@@ -642,26 +642,26 @@ class account_invoice(osv.Model):
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         credit_res = {
             'COCODE': 1, 
-            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name,
-            'BKTYPE': invoice.move_id.journal_id.code, 
-            'BKSRS': invoice.move_id.journal_id.series, 
-            'VOUNO': voucher_no, 
-            'VOUSRL': 0, 
-            'VOUDATE': invoice.date_invoice, 
-            'VOUSTS': 'P', 
-            'FASCODE': invoice.partner_id.supp_code, 
-            'SUBCODE': '', 
-            'REFNO': invoice.move_id.id,
-            'REFDAT': invoice.date_invoice, 
-            'REMK01': invoice.number[0:35], 
-            'REMK02': '', 
-            'REMK03': '', 
+            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
+            'BKTYPE': invoice.move_id.journal_id.code or '',
+            'BKSRS': invoice.book_series_id and invoice.book_series_id.name or '',
+            'VOUNO': voucher_no,
+            'VOUSRL': 0,
+            'VOUDATE': invoice.date_invoice,
+            'VOUSTS': '', 
+            'FASCODE': invoice.partner_id.supp_code or '',
+            'SUBCODE': '',
+            'REFNO': invoice.id,
+            'REFDAT': invoice.date_invoice,
+            'REMK01': invoice.number[0:35],
+            'REMK02': '',
+            'REMK03': '',
             'REMK04': '',
-            'USERID': invoice.user_id.user_code, 
-            'ACTION': invoice.id, 
+            'USERID': invoice.user_id.user_code or '',
+            'ACTION': '',
             'CVOUNO': 0,
-            'CRDBID':'C', 
-            'VOUAMT':invoice.net_amount
+            'CRDBID':'C',
+            'VOUAMT':invoice.net_amount,
         }
 
         debit_lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
@@ -674,80 +674,40 @@ class account_invoice(osv.Model):
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         debit_res = {
             'COCODE': 0, 
-            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name, 
-            'BKTYPE': invoice.move_id.journal_id.code, 
-            'BKSRS': invoice.move_id.journal_id.series, 
-            'VOUNO': voucher_no, 
-            'VOUSRL': 1, 
-            'VOUDATE': invoice.date_invoice, 
-            'VOUSTS': 'P', 
-            'FASCODE': invoice.account_id.code, 
-            'SUBCODE': '', 
-            'REFNO': invoice.move_id.id,
-            'REFDAT': invoice.date_invoice, 
-            'REMK01': invoice.number[0:35], 
-            'REMK02': '', 
-            'REMK03': '', 
+            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
+            'BKTYPE': invoice.move_id.journal_id.code or '',
+            'BKSRS': invoice.book_series_id and invoice.book_series_id.name or '',
+            'VOUNO': voucher_no,
+            'VOUSRL': 1,
+            'VOUDATE': invoice.date_invoice,
+            'VOUSTS': '',
+            'FASCODE': invoice.account_id.code or '',
+            'SUBCODE': '',
+            'REFNO': invoice.id,
+            'REFDAT': invoice.date_invoice,
+            'REMK01': invoice.number[0:35],
+            'REMK02': '',
+            'REMK03': '',
             'REMK04': '',
-            'USERID': invoice.user_id.user_code, 
-            'ACTION': invoice.id, 
+            'USERID': invoice.user_id.user_code or '',
+            'ACTION': '',
             'CVOUNO': 0,
-            'CRDBID':'D', 
-            'VOUAMT':invoice.net_amount - (invoice.tds_amount + invoice.other_amount)
+            'CRDBID':'D',
+            'VOUAMT':invoice.net_amount - invoice.other_amount,
         }
-        
+
         lineSQL = credit_lineSQL % credit_res
         conn.request("GET", "/cgi-bin/query", lineSQL, headers)
         rsp = conn.getresponse()
         data_received = rsp.read()
         data = json.loads(data_received)
-        
+
         lineSQL = debit_lineSQL % debit_res
         conn.request("GET", "/cgi-bin/query", lineSQL, headers)
         rsp = conn.getresponse()
         data_received = rsp.read()
         data = json.loads(data_received)
-        
-        tds_lineSQL = ""
-        tds_res = {}
-        if invoice.tds_amount > 0 and invoice.tds_ac_code == '503033':
-            tds_lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
-                [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
-                [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
-                VALUES (
-                '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
-                '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
-                '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
-                '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
-            tds_res = {
-                'COCODE': 1, 
-                'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name, 
-                'BKTYPE': invoice.move_id.journal_id.code, 
-                'BKSRS': invoice.move_id.journal_id.series, 
-                'VOUNO': voucher_no, 
-                'VOUSRL': 2, 
-                'VOUDATE': invoice.date_invoice, 
-                'VOUSTS': 'P', 
-                'FASCODE': invoice.account_id.code, 
-                'SUBCODE': '', 
-                'REFNO': invoice.move_id.id,
-                'REFDAT': invoice.date_invoice, 
-                'REMK01': invoice.number[0:35], 
-                'REMK02': '', 
-                'REMK03': '', 
-                'REMK04': '',
-                'USERID': invoice.user_id.user_code, 
-                'ACTION': invoice.id, 
-                'CVOUNO': 0,
-                'CRDBID':'D', 
-                'VOUAMT':invoice.tds_amount
-            }
-            lineSQL = tds_lineSQL % tds_res
-            conn.request("GET", "/cgi-bin/query", lineSQL, headers)
-            rsp = conn.getresponse()
-            data_received = rsp.read()
-            data = json.loads(data_received)
-        
+
         other_lineSQL = ""
         other_res = {}
         if invoice.other_amount > 0:
@@ -760,36 +720,36 @@ class account_invoice(osv.Model):
                 '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
                 '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
             other_res = {
-                'COCODE': 1, 
-                'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name, 
-                'BKTYPE': invoice.move_id.journal_id.code, 
-                'BKSRS': invoice.move_id.journal_id.series, 
-                'VOUNO': voucher_no, 
+                'COCODE': 1,
+                'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
+                'BKTYPE': invoice.move_id.journal_id.code or '',
+                'BKSRS': invoice.book_series_id and invoice.book_series_id.name or '',
+                'VOUNO': voucher_no,
                 'VOUSRL': 2,
-                'VOUDATE': invoice.date_invoice, 
-                'VOUSTS': 'P', 
-                'FASCODE': invoice.account_id.code, 
-                'SUBCODE': '', 
+                'VOUDATE': invoice.date_invoice,
+                'VOUSTS': '',
+                'FASCODE': invoice.account_id.code,
+                'SUBCODE': '',
                 'REFNO': invoice.move_id.id,
-                'REFDAT': invoice.date_invoice, 
-                'REMK01': invoice.number[0:35], 
-                'REMK02': '', 
-                'REMK03': '', 
+                'REFDAT': invoice.date_invoice,
+                'REMK01': invoice.number[0:35],
+                'REMK02': '',
+                'REMK03': '',
                 'REMK04': '',
-                'USERID': invoice.user_id.user_code, 
-                'ACTION': invoice.id, 
+                'USERID': invoice.user_id.user_code or '',
+                'ACTION': '',
                 'CVOUNO': 0,
                 'CRDBID':'D',
-                'VOUAMT':invoice.other_amount
+                'VOUAMT':invoice.other_amount,
             }
             lineSQL = other_lineSQL % other_res
             conn.request("GET", "/cgi-bin/query", lineSQL, headers)
             rsp = conn.getresponse()
             data_received = rsp.read()
             data = json.loads(data_received)
-        
+
         conn.close()
-    
+
     def invoice_validate(self, cr, uid, ids, context=None):
         super(account_invoice, self).invoice_validate(cr, uid, ids, context)
         invoice = self.browse(cr, uid, ids)[0]

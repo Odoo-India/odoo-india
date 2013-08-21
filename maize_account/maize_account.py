@@ -591,14 +591,14 @@ class account_invoice(osv.Model):
             'GSTAMT': 0,
             'STAMT': vat + add_vat,
             'SURAMT': invoice.amount_total - (invoice.amount_untaxed + vat + add_vat),
-            'USERID': invoice.user_id.user_code,
+            'USERID': invoice.user_id.user_code or '',
             'ACTION': '',
             'PRTFLG': '',  
-            'ADVAMT': invoice.advance_amount,  
-            'DEDACCODE1': invoice.tds_ac_code or '',  
-            'DEDAMT1': invoice.tds_amount,  
-            'DEDACCODE2': invoice.other_ac_code or '',  
-            'DEDAMT2': invoice.other_amount,  
+            'ADVAMT': invoice.advance_amount,
+            'DEDACCODE1': invoice.tds_ac_code or '',
+            'DEDAMT1': invoice.tds_amount,
+            'DEDACCODE2': invoice.other_ac_code or '',
+            'DEDAMT2': invoice.other_amount,
             'RETAMT': invoice.retention_amount,
             'DEBAMT': invoice.debit_note_amount,
             'DEBVOUNO': debit_note_id,
@@ -808,9 +808,17 @@ account_invoice()
 
 class account_invoice_line(osv.Model):
     _inherit = "account.invoice.line"
-    
+
     _columns = {
-        'debit_note_qty':fields.float('Debit Quantity')
+        'debit_note_qty':fields.float('Debit Quantity'),
+        'reason': fields.selection(
+        [('CO1', '[CO1] GOODS SHORTAGE'),
+         ('CO2', '[CO2] RATE DIFFERANCE'),
+         ('CO3', '[CO3]VAT ADJUSTMENT'),
+         ('CO4', '[CO4] ITEM REJECTION'),
+         ('CO5','[CO5] DISCOUNT DIFFERENCE'), 
+         ('CO6', '[CO6] OTHERS'),
+        ], 'Reason')
     }
 
 account_invoice_line()

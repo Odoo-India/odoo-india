@@ -376,8 +376,8 @@ class account_invoice(osv.Model):
         except Exception:
             raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
   
-        if not debit_note and is_open == 'Y':
-            raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
+#         if not debit_note and is_open == 'Y':
+#             raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
         
         if debit_note:
             journal = 'DBN'
@@ -508,8 +508,8 @@ class account_invoice(osv.Model):
                 'BKTYPE': 'DBP',
                 'BKSRS': invoice.journal_id.series or '',
                 'VOUNO': voucher_no, 
-                'VOUSRL': 2, 
-                'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'), 
+                'VOUSRL': 2,
+                'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'),
                 'VOUSTS': '',
                 'FASCODE': '6102002',
                 'SUBCODE': '',
@@ -644,14 +644,14 @@ class account_invoice(osv.Model):
             'COCODE': 1, 
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
             'BKTYPE': invoice.move_id.journal_id.code or '',
-            'BKSRS': invoice.book_series_id and invoice.book_series_id.name or '',
+            'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 0,
             'VOUDATE': invoice.date_invoice,
             'VOUSTS': '', 
             'FASCODE': invoice.partner_id.supp_code or '',
             'SUBCODE': '',
-            'REFNO': invoice.id,
+            'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': invoice.date_invoice,
             'REMK01': invoice.number[0:35],
             'REMK02': '',
@@ -673,17 +673,17 @@ class account_invoice(osv.Model):
             '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         debit_res = {
-            'COCODE': 0, 
+            'COCODE': 1, 
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
             'BKTYPE': invoice.move_id.journal_id.code or '',
-            'BKSRS': invoice.book_series_id and invoice.book_series_id.name or '',
+            'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 1,
             'VOUDATE': invoice.date_invoice,
             'VOUSTS': '',
             'FASCODE': invoice.account_id.code or '',
             'SUBCODE': '',
-            'REFNO': invoice.id,
+            'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': invoice.date_invoice,
             'REMK01': invoice.number[0:35],
             'REMK02': '',
@@ -723,14 +723,14 @@ class account_invoice(osv.Model):
                 'COCODE': 1,
                 'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
                 'BKTYPE': invoice.move_id.journal_id.code or '',
-                'BKSRS': invoice.book_series_id and invoice.book_series_id.name or '',
+                'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
                 'VOUNO': voucher_no,
                 'VOUSRL': 2,
                 'VOUDATE': invoice.date_invoice,
                 'VOUSTS': '',
                 'FASCODE': invoice.account_id.code,
                 'SUBCODE': '',
-                'REFNO': invoice.move_id.id,
+                'REFNO': invoice.supplier_invoice_number or '',
                 'REFDAT': invoice.date_invoice,
                 'REMK01': invoice.number[0:35],
                 'REMK02': '',
@@ -754,9 +754,9 @@ class account_invoice(osv.Model):
         super(account_invoice, self).invoice_validate(cr, uid, ids, context)
         invoice = self.browse(cr, uid, ids)[0]
         self.create_maize_voucher(cr, uid, invoice, context)
-        
+
         return True
-    
+
     def copy(self, cr, uid, id, default=None, context=None):
         default = default or {}
         default.update({

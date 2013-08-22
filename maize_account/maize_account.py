@@ -587,6 +587,11 @@ class account_invoice(osv.Model):
             prtflag = 'P'
         user = invoice.user_id and invoice.user_id.user_code[:3]
         action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
+
+        taxamt = invoice.amount_total + invoice.rounding_shortage - (vat + add_vat)
+        stamt = vat + add_vat
+        suramt = invoice.amount_total - taxamt - stamt
+
         maizeSQL = maizeSQL % {
             'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
@@ -597,10 +602,10 @@ class account_invoice(osv.Model):
             'RMQTY': 0,
             'PAYDUE': invoice.date_due,
             'STCODE': invoice.st_code or '',
-            'TAXAMT': invoice.net_amount + invoice.rounding_shortage - (vat + add_vat),
+            'TAXAMT': taxamt,
             'GSTAMT': 0,
-            'STAMT': vat + add_vat,
-            'SURAMT': invoice.amount_total - (invoice.net_amount + invoice.rounding_shortage),
+            'STAMT': stamt,
+            'SURAMT': suramt,
             'USERID': 'ERP' + '/' + user or '',
             'ACTION': action,
             'PRTFLG': prtflag,
@@ -671,7 +676,7 @@ class account_invoice(osv.Model):
             'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'C',
-            'VOUAMT':invoice.net_amount,
+            'VOUAMT':invoice.amount_total,
         }
 
         debit_lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
@@ -703,7 +708,7 @@ class account_invoice(osv.Model):
             'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'D',
-            'VOUAMT':invoice.net_amount - invoice.other_amount,
+            'VOUAMT':invoice.amount_total - invoice.other_amount,
         }
 
         lineSQL = credit_lineSQL % credit_res

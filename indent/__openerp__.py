@@ -32,7 +32,7 @@ Managing internal material request
 ================================================================================================================================================================
 The user will raise an indent form to the stores, The store keeper checks for the availability, if available issue the material else raise purchase requisition. 
 """,
-    'depends' : ['purchase_requisition', 'hr'],
+    'depends' : ['purchase_requisition', 'account_voucher', 'hr'],
     'data' : [
         'indent_view.xml',
         'indent_data.xml',

@@ -339,7 +339,8 @@ class account_invoice(osv.Model):
         'tds_amount': fields.float('TDS Amount'),
         'other_ac_code': fields.selection([('5133859', '5133859')], 'Other Deduction A/C Code'),
         'other_amount': fields.float('Other Deduction Amount'),
-        'maize_voucher_no':fields.char('Voucher No', size=16)
+        'maize_voucher_no':fields.char('Voucher No', size=16),
+        'ref_date': fields.date('Ref Date'),
     }
 
     def get_voucher_number(self, cr, uid, invoice, debit_note, context):

@@ -68,6 +68,15 @@
 			<field name="model">account.invoice</field>
 			<field name="inherit_id" ref="account.invoice_supplier_form" />
 			<field name="arch" type="xml">
+				<field name="date_invoice" position="replace">
+				    <field name="date_invoice" string="Bill Date"/>
+				</field>
+				<field name="supplier_invoice_number" position="replace">
+				    <field name="supplier_invoice_number" string="Ref No"/>
+				</field>
+				<field name="account_id" position="after">
+				    <field name="ref_date"/>
+				</field>
 				<xpath expr="//page[@string='Invoice']/field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']" position='before'>
 				    <field name="debit_note_qty"/>
 				    <field name="reason"/>

@@ -197,7 +197,7 @@
 							<field name="st_code" />
 							<field name="due_date" invisible="1" />
 							<field name="c_form" />
-							<field name="state_id" invisible="1" />
+							<field name="state_id"/>
 
 						</group>
 						<group>

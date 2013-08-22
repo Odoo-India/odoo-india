@@ -623,7 +623,7 @@ class account_invoice(osv.Model):
             'EXCISEHCESS': '',
             'RATE': 0,
             'CFORMIND': invoice.c_form and 'Y' or '',
-            'STATE': invoice.partner_id.state_id.name or '',
+            'STATE': invoice.state_id and invoice.state_id.name or '',
             'REASON': invoice.invoice_line[0].reason or '',
             'CONRETAMT': 0,
             'DEDACCODE3': '',

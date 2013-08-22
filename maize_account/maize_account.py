@@ -340,7 +340,7 @@ class account_invoice(osv.Model):
         'other_ac_code': fields.selection([('5133859', '5133859')], 'Other Deduction A/C Code'),
         'other_amount': fields.float('Other Deduction Amount'),
         'maize_voucher_no':fields.char('Voucher No', size=16),
-        'ref_date': fields.date('Ref Date'),
+        'ref_date': fields.date('Ref Date', required=True),
     }
 
     def get_voucher_number(self, cr, uid, invoice, debit_note, context):
@@ -377,8 +377,8 @@ class account_invoice(osv.Model):
         except Exception:
             raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
   
-        if not debit_note and is_open == 'Y':
-            raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
+#         if not debit_note and is_open == 'Y':
+#             raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
         
         if debit_note:
             journal = 'DBN'
@@ -415,6 +415,7 @@ class account_invoice(osv.Model):
             tax_amount = (invoice.debit_note_amount * tax_amount ) / invoice.amount_untaxed
 
         action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
+        user = invoice.user_id and invoice.user_id.user_code[:3]
 
         lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
             [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
@@ -437,11 +438,11 @@ class account_invoice(osv.Model):
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': invoice.ref_date,
-            'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date,
+            'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
-            'USERID': 'ERP' + '/' + invoice.user_id and invoice.user_id.user_code[:3] or '',
+            'USERID': 'ERP' + '/' + user or '',
             'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'D',
@@ -475,11 +476,11 @@ class account_invoice(osv.Model):
             'SUBCODE': '', 
             'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': invoice.ref_date,
-            'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date,
+            'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
-            'USERID': 'ERP' + '/' + invoice.user_id and invoice.user_id.user_code[:3] or '',
+            'USERID': 'ERP' + '/' + user or '',
             'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'C',
@@ -518,11 +519,11 @@ class account_invoice(osv.Model):
                 'SUBCODE': '',
                 'REFNO': invoice.supplier_invoice_number or '',
                 'REFDAT': invoice.ref_date,
-                'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date,
+                'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
                 'REMK02': '',
                 'REMK03': '',
                 'REMK04': '',
-                'USERID': 'ERP' + '/' + invoice.user_id and invoice.user_id.user_code[:3] or '',
+                'USERID': 'ERP' + '/' + user or '',
                 'ACTION': action,
                 'CVOUNO': 0,
                 'CRDBID':'C',
@@ -584,6 +585,7 @@ class account_invoice(osv.Model):
         prtflag = ''
         if invoice.amount_total == amt_tot:
             prtflag = 'P'
+        user = invoice.user_id and invoice.user_id.user_code[:3]
         action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
         maizeSQL = maizeSQL % {
             'COCODE': 1,
@@ -599,7 +601,7 @@ class account_invoice(osv.Model):
             'GSTAMT': 0,
             'STAMT': vat + add_vat,
             'SURAMT': invoice.amount_total - (invoice.net_amount + invoice.rounding_shortage),
-            'USERID': 'ERP' + '/' + invoice.user_id and invoice.user_id.user_code[:3] or '',
+            'USERID': 'ERP' + '/' + user or '',
             'ACTION': action,
             'PRTFLG': prtflag,
             'ADVAMT': invoice.advance_amount,
@@ -624,7 +626,7 @@ class account_invoice(osv.Model):
             'STATE': invoice.partner_id.state_id.name or '',
             'REASON': invoice.invoice_line[0].reason or '',
             'CONRETAMT': 0,
-            'DEDACCODE3': 0,
+            'DEDACCODE3': '',
             'DEBTAXABLEAMT': invoice.debit_note_amount - (vat_debit + add_vat_debit),
             'AHDFLG': '',
             'DEDACCODE4': '',
@@ -661,11 +663,11 @@ class account_invoice(osv.Model):
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': invoice.ref_date,
-            'REMK01': 'Ref:' + invoice.supplier_invoice_number + ':' + invoice.ref_date,
+            'REMK01': 'Ref:' + invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
-            'USERID': 'ERP' + '/' + invoice.user_id and invoice.user_id.user_code[:3] or '',
+            'USERID': 'ERP' + '/' + user or '',
             'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'C',
@@ -697,7 +699,7 @@ class account_invoice(osv.Model):
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
-            'USERID': 'ERP' + '/' + invoice.user_id and invoice.user_id.user_code[:3] or '',
+            'USERID': 'ERP' + '/' + user or '',
             'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'D',
@@ -740,11 +742,11 @@ class account_invoice(osv.Model):
                 'SUBCODE': '',
                 'REFNO': invoice.supplier_invoice_number or '',
                 'REFDAT': invoice.ref_date,
-                'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date,
+                'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
                 'REMK02': '',
                 'REMK03': '',
                 'REMK04': '',
-                'USERID': 'ERP' + '/' + invoice.user_id and invoice.user_id.user_code[:3] or '',
+                'USERID': 'ERP' + '/' + user or '',
                 'ACTION': action,
                 'CVOUNO': 0,
                 'CRDBID':'D',

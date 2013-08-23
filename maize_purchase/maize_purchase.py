@@ -788,7 +788,7 @@ class purchase_order(osv.Model):
         invoice_obj = self.pool.get('account.invoice')
         invoice_id = super(purchase_order, self).action_invoice_create(cr, uid, ids, context=context)
         order = self.browse(cr, uid, ids[0], context=context)
-        invoice_obj.write(cr, uid, [invoice_id], {'freight':order.freight, 'insurance':order.insurance, 'other_charges':order.other_charges}, context=context)
+        invoice_obj.write(cr, uid, [invoice_id], {'freight':order.freight, 'insurance':order.insurance, 'other_charges':order.other_charges,'book_series_id':order.po_series_id.id }, context=context)
         invoice_obj.button_compute(cr, uid, [invoice_id], context=context, set_total=True)
         return invoice_id
 

@@ -340,6 +340,7 @@ class account_invoice(osv.Model):
         'other_ac_code': fields.selection([('5133859', '5133859')], 'Other Deduction A/C Code'),
         'other_amount': fields.float('Other Deduction Amount'),
         'maize_voucher_no':fields.char('Voucher No', size=16),
+        'debit_note_no':fields.char('Debit Note No', size=16),
         'ref_date': fields.date('Ref Date', required=True),
     }
 
@@ -402,6 +403,8 @@ class account_invoice(osv.Model):
 
         voucher_no = self.get_voucher_number(cr, uid, invoice, True, context=context)
         _logger.info('Going to create a debit note by voucher : %s', voucher_no)
+        self.write(cr, uid, [invoice.id], {'debit_note_no': voucher_no}, context=context)
+        cr.commit()
 
         tax_exist = False
         tax_amount = 0

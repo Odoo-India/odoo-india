@@ -73,9 +73,11 @@
 				</field>
 				<field name="supplier_invoice_number" position="replace">
 				    <field name="supplier_invoice_number" string="Ref No"/>
+				    <field name="maize_voucher_no" readonly="1"/>
 				</field>
 				<field name="account_id" position="after">
 				    <field name="ref_date"/>
+				    <field name="debit_note_no" readonly="1"/>
 				</field>
 				<xpath expr="//page[@string='Invoice']/field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']" position='before'>
 				    <field name="debit_note_qty"/>

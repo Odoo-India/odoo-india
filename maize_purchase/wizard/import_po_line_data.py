@@ -30,6 +30,9 @@ _logger = logging.getLogger("Indent Indent")
 
 class import_po_line_data(osv.osv_memory):
     _name = "import.po.line.data"
+    _columns = {
+       'file_path': fields.char('File Path', required=True, size=256),
+    }     
     def _read_csv_data(self, cr, uid, path, context=None):
         """
             Reads CSV from given path and Return list of dict with Mapping
@@ -63,7 +66,8 @@ class import_po_line_data(osv.osv_memory):
 
     def po_line_create(self,cr,uid,ids,context=None):
         #file_path = "/home/ara/Desktop/odt/PO/podetail1.csv"
-        file_path = "/home/ara/Desktop/po_detial.csv"
+        data = self.read(cr, uid, ids)[0]
+        file_path = data['file_path']
         
         fields = data_lines = False
         try:

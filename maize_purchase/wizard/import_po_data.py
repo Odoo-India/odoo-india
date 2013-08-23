@@ -30,6 +30,9 @@ _logger = logging.getLogger("Indent Indent")
 
 class import_po_data(osv.osv_memory):
     _name = "import.po.data"
+    _columns = {
+       'file_path': fields.char('File Path', required=True, size=256),
+    }    
     
     def _read_csv_data(self, cr, uid, path, context=None):
         """
@@ -79,7 +82,8 @@ class import_po_data(osv.osv_memory):
     def do_import_po_data(self, cr, uid,ids, context=None):
         po_pool = self.pool.get('purchase.order')
         #file_path = "/home/ara/Desktop/odt/PO/poheader.csv"
-        file_path = "/home/ara/Desktop/po_header.csv"
+        data = self.read(cr, uid, ids)[0]
+        file_path = data['file_path']
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

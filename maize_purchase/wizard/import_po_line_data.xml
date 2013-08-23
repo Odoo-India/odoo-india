@@ -9,6 +9,9 @@
                <group>
                     <separator string="Import PO Line Data"/>
                </group>
+               <group>
+                   <field name='file_path'/>
+               </group>                
                <footer>
                     <button name="po_line_create" string="Import" type="object" class="oe_highlight"/>
                     or

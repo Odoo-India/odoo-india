@@ -9,6 +9,9 @@
                <group>
                     <separator string="Import Indent data_line"/>
                </group>
+               <group>
+                   <field name='file_path'/>
+               </group>               
                <footer>
                     <button name="do_import_indent_data_line" string="Import Line" type="object" class="oe_highlight"/>
                     or

@@ -31,6 +31,10 @@ _logger = logging.getLogger("Product product")
 class import_product_data(osv.osv_memory):
     _name = "import.product.data"
 
+    _columns = {
+       'file_path': fields.char('File Path', required=True, size=256),
+    }
+    
     def _read_csv_data(self, cr, uid, path, context=None):
         """
             Reads CSV from given path and Return list of dict with Mapping
@@ -64,7 +68,9 @@ class import_product_data(osv.osv_memory):
 
     #TODO:FIX ME TO FIND INDENT
     def import_product_data(self, cr, uid,ids, context=None):
-        file_path = "/home/maize/data/item_8aug/all_item.csv"
+        data = self.read(cr, uid, ids)[0]
+        file_path = data['file_path']
+        
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

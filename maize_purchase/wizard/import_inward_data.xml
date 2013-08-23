@@ -9,6 +9,9 @@
                <group>
                     <separator string="Import Inward Data"/>
                </group>
+               <group>
+                   <field name='file_path'/>
+               </group>                 
                <footer>
                     <button name="do_import_inward_data" string="Import" type="object" class="oe_highlight"/>
                     or

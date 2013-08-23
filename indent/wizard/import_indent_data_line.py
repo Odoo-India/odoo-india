@@ -30,7 +30,9 @@ _logger = logging.getLogger("Indent Indent")
 
 class import_indent_data_line(osv.osv_memory):
     _name = "import.indent.data.line"
-    
+    _columns = {
+       'file_path': fields.char('File Path', required=True, size=256),
+    }     
     def _read_csv_data(self, cr, uid, path, context=None):
         """
             Reads CSV from given path and Return list of dict with Mapping
@@ -62,10 +64,8 @@ class import_indent_data_line(osv.osv_memory):
             _logger.warning("Can not Export bounced(Rejected) Partner detail to the file. ")
         
     def do_import_indent_data_line(self, cr, uid,ids, context=None):
-        #file_path = "/home/ara/Desktop/odt/indent/indenttr20132014.csv"
-        #file_path = "/home/ara/Desktop/odt/indent/IDENTTRANSACTIONNOT20132014BUTPO20132014.csv"
-        #file_path = "/home/ara/Desktop/odt/indent/INDENTTRANSACTIONNOT20132014BUTINWORD20132014.csv"
-        file_path = "/home/maize/data/indent/indent_line_not_20102011.csv"
+        data = self.read(cr, uid, ids)[0]
+        file_path = data['file_path']
         
         if not file_path or file_path == "":
             _logger.warning("Import can not be started. Configure your schedule Actions.")

@@ -9,6 +9,9 @@
                <group>
                     <separator string="Import Product Supplier Data"/>
                </group>
+               <group>
+                   <field name='file_path'/>
+               </group>                
                <footer>
                     <button name="import_product_supp_data" string="Import" type="object" class="oe_highlight"/>
                     or

@@ -27,6 +27,7 @@ from dateutil.relativedelta import relativedelta
 from openerp.osv import fields, osv
 import csv
 import logging
+import collections
 from openerp import netsvc
 _logger = logging.getLogger("Indent Indent")
 
@@ -45,52 +46,6 @@ class import_inward_line_data(osv.osv_memory):
             items = dict(zip(fields, row))
             data_lines.append(items)
         return fields,data_lines
-    def _get_start_end_date_from_year(self,cr,uid,year):
-        po_year_start=''
-        po_year_end=''
-        if year =='20132014':
-            po_year_start = '2013-04-01'
-            po_year_end = '2014-03-31'
-        elif year =='20122013':
-            po_year_start = '2012-04-01'
-            po_year_end = '2013-03-31'
-        elif year =='20112012':
-            po_year_start = '2011-04-01'
-            po_year_end = '2012-03-31'
-        elif year =='20102011':
-            po_year_start = '2010-04-01'
-            po_year_end = '2011-03-31'
-        elif year =='20092010':
-            po_year_start = '2009-04-01'
-            po_year_end = '2010-03-31'
-        elif year =='20082009':
-            po_year_start = '2008-04-01'
-            po_year_end = '2009-03-31'
-        elif year =='20072008':
-            po_year_start = '2007-04-01'
-            po_year_end = '2008-03-31'
-        elif year =='20062007':
-            po_year_start = '2006-04-01'
-            po_year_end = '2007-03-31'                                
-        elif year =='20052006':
-            po_year_start = '2005-04-01'
-            po_year_end = '2006-03-31'
-        elif year =='20042005':
-            po_year_start = '2004-04-01'
-            po_year_end = '2005-03-31'
-        elif year =='20032004':
-            po_year_start = '2003-04-01'
-            po_year_end = '2004-03-31'
-        elif year =='20022003':
-            po_year_start = '2002-04-01'
-            po_year_end = '2003-03-31'
-        elif year =='20012002':
-            po_year_start = '2001-04-01'
-            po_year_end = '2002-03-31'
-        elif year =='20002001':
-            po_year_start = '2000-04-01'
-            po_year_end = '2001-03-31'
-        return {'start':po_year_start,'end':po_year_end}                                
     
     def _write_bounced_indent(self, cr, uid, file_head, bounced_detail, context):
         if not file_head:
@@ -112,7 +67,7 @@ class import_inward_line_data(osv.osv_memory):
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
 
-        file_path = "/home/ara/Desktop/inward_16aug.csv"
+        file_path = "/home/maize/data/inward/inward_line_20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -140,9 +95,17 @@ class import_inward_line_data(osv.osv_memory):
         bounced_inward = [tuple(fields)]
         i=[]
         m_v=[]
-        in_name = []        
+        in_name = [] 
+        h=0
+        chl=0.0
+        ind_lst = []
+        chl_lst =[]
+        f=0
+        maize_in_lst = []
+        openerp_name = []
+        inc=0
+        pp=0
         for data in data_lines:
-            pp=0
             m=''
             try:
                 name = inwrd_num = fiscalyear=''
@@ -162,24 +125,20 @@ class import_inward_line_data(osv.osv_memory):
                 if data["POYEAR"]:
                     poyear = data["POYEAR"]
                 if data["CHLNQTY"]:
-                    chlnqty = data["CHLNQTY"]
+                    chlnqty = float(data["CHLNQTY"])
                 if data["INWYEAR"]:
                     indyear = data["INWYEAR"] 
                 if data['INDYEAR']:
                     fiscalyear = data['INDYEAR']
                 if data['INWYEAR'] and data['INWARDNO']:
-                    maize_in = data['INWYEAR']+'/'+data["INDENTNO"]
-                po_name = data['INWYEAR']+'/'+data["POSERIES"] +'/'+ data["PONO"]
-                maize_name = data['INDYEAR']+'/'+data["INWARDNO"]
-                new_picking_id = False
+                    maize_in = data['INWYEAR']+'/'+data["INWARDNO"]
+                po_name = data['POYEAR']+'/'+data["POSERIES"] +'/'+ data["PONO"]
+                maize_name = data['POYEAR']+'/'+data["POSERIES"] +'/'+ data["PONO"]+'/'+data['INWYEAR']+'/'+data["INWARDNO"]
                 purchase_date = ''
-                date_start = self._get_start_end_date_from_year(cr,uid,indyear)['start']
-                date_end = self._get_start_end_date_from_year(cr,uid,indyear)['end']
-                date_start_po = self._get_start_end_date_from_year(cr,uid,poyear)['start']
-                date_end_po = self._get_start_end_date_from_year(cr,uid,poyear)['end']
 
                 indent_id=False
                 indentor_id=False
+                
                 #fiscalyear = self.pool.get('account.fiscalyear').search(cr,uid,[('name','=',data['INDYEAR'].strip())])
                 if data["INDENTNO"] and fiscalyear:
                     try:
@@ -191,25 +150,68 @@ class import_inward_line_data(osv.osv_memory):
                 if data["INDENTOR"]:
                     indentor = self.pool.get('res.users').search(cr,uid,[('user_code','=',data["INDENTOR"])])
                     indentor_id = indentor and indentor[0] or ''
-
-                
+                flg=0
                 if po_name:
                     purchase_id = self.pool.get('purchase.order').search(cr,uid,[('maize','=',po_name)])[0]
+                    #maize_in_lst.append(data['INWYEAR']+'/'+data["INWARDNO"])
+                    op_name = data['INWYEAR']+'/'+'IN'+'/'+data["INWARDNO"].zfill(5)
                     if purchase_id:
-                        try:
-                            wf_service = netsvc.LocalService('workflow')
-                            wf_service.trg_validate(uid, 'purchase.order', purchase_id, 'purchase_confirm', cr)
-                            inward_id = picking_in_obj.search(cr,uid,[('purchase_id','=',purchase_id), ('state','=','assigned')])
-                            if inward_id[0] not in i:
-                                inwrite = picking_in_obj.write(cr,uid,inward_id[-1],{'maize_in':maize_name})
-                                i.append(inward_id[0])
-                            if maize_name not in in_name:
-                                in_name.append(maize_name)
-                            department_id = False
-                            if indent_id:
-                                department_id = self.pool.get('indent.indent').read(cr,uid,indent_id,['department_id'])['department_id'][0]
-                            move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[-1]), ('type', '=', 'in'),('product_id', '=', product),('indent', '=', indent_id)])
-                            m_v.append((0,0,{
+                        wf_service = netsvc.LocalService('workflow')
+                        aa = wf_service.trg_validate(uid, 'purchase.order', purchase_id, 'purchase_confirm', cr)
+                        inward_id = picking_in_obj.search(cr,uid,[('purchase_id','=',purchase_id), ('state','=','assigned')])
+                        in_name.append(maize_name)
+                        i.append(inward_id[0])
+                        if op_name not in openerp_name:
+                            openerp_name.append(op_name)
+                        elif h==1:
+                            if in_name[-1]!=in_name[-2]:
+                                inc+=1
+                                openerp_name.append(op_name+'new'+str(inc))
+                        maize_name_op =  data['INWYEAR']+'/'+data["INWARDNO"]
+                        
+                        if maize_name_op not in maize_in_lst:
+                            maize_in_lst.append(maize_name_op)
+                        elif h==1:
+                            if in_name[-1]!=in_name[-2]:
+                                maize_in_lst.append(maize_name_op)
+                        department_id = False
+                        if indent_id:
+                            department_id = self.pool.get('indent.indent').read(cr,uid,indent_id,['department_id'])['department_id'][0]
+                        move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[-1]), ('type', '=', 'in'),('product_id', '=', product),('indent', '=', indent_id)])
+                        ind_lst.append(maize_no)
+                        chl_lst.append(chlnqty)
+                        m_v.append((0,0,{
+                                    'product_id': product,
+                                    'quantity':chlnqty,
+                                    'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
+                                    'location_id': supplier_location[0],
+                                    'location_dest_id': 299,#input location fix
+                                    'move_id':move_ids[0],
+                                    }))
+                        if h==1:
+                            context.update({'active_model': 'stock.picking', 'active_id':i[-1], 'active_ids': [i[-1]],'default_type':'in'})
+                            if len(i)!=0:
+                                aa = m_v.pop()
+                                print "aa", aa
+                            if i[0]!=i[-1] and in_name[-1]!=in_name[-2]: #add condition for same inward but diffrent po and pon[-1]!=pon[-2]
+                                partial_id = partial_picking_obj.create(cr, uid, {'date': datetime.today(), 'picking_id': i[0], 'move_ids': m_v})
+                                res = partial_picking_obj.do_partial(cr, uid,[partial_id],context)
+                                picking_in_obj.write(cr,uid,res[i[0]]['delivered_picking'],{'maize_in':maize_in_lst[-2],'name':openerp_name[-2]})
+                                m_v=[]
+                                print "m_vm_vm_vm_vv", m_v
+                            elif in_name[-1]!=in_name[-2]:
+                                partial_id = partial_picking_obj.create(cr, uid, {'date': datetime.today(), 'picking_id': i[-1], 'move_ids': m_v})
+                                res = partial_picking_obj.do_partial(cr, uid,[partial_id],context)
+                                picking_in_obj.write(cr,uid,res[i[-1]]['delivered_picking'],{'maize_in':maize_in_lst[-2],'name':openerp_name[-2]})
+                                m_v=[]
+                            pp=1
+                            i.remove(i[0])
+                            in_name.remove(in_name[0])
+                        h=1
+                        if inward_id:
+                            if pp==1:
+                                #move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[-1]), ('type', '=', 'in'),('product_id', '=', product),('indentor_id', '=', indentor_id)])
+                                m_v.append((0,0,{
                                         'product_id': product,
                                         'quantity':float(chlnqty),
                                         'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
@@ -217,50 +219,15 @@ class import_inward_line_data(osv.osv_memory):
                                         'location_dest_id': 299,#input location fix
                                         'move_id':move_ids[0],
                                         }))
-                            print "ward data in", in_name, in_name[0], in_name[-1]
-                            if i[0] != i[-1] or len(i)!=1 or in_name[0]!=in_name[-1] or len(in_name)!=1:
-                                context.update({'active_model': 'stock.picking', 'active_id':i[0], 'active_ids': [i[0]],'default_type':'in'})
-                                if len(i)!=0:
-                                    m_v.pop()
-                                print "\n>>>>>>>>>>> new picking create>>>>>>>>>>>", m_v, i[0]
-                                partial_id = partial_picking_obj.create(cr, uid, {'date': datetime.today(), 'picking_id': i[0], 'move_ids': m_v})
-                                res = partial_picking_obj.do_partial(cr, uid,[partial_id],context)
-                                i.remove(i[0])
-                                in_name.remove(in_name[0])
-                                m_v=[]
-                                pp=1
-                            if inward_id:
-                                if pp==1 or len(i)!=1:
-                                    #move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', inward_id[-1]), ('type', '=', 'in'),('product_id', '=', product),('indentor_id', '=', indentor_id)])
-                                    m_v.append((0,0,{
-                                            'product_id': product,
-                                            'quantity':float(chlnqty),
-                                            'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                                            'location_id': supplier_location[0],
-                                            'location_dest_id': 299,#input location fix
-                                            'move_id':move_ids[0],
-                                            }))                                  
-                                purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
-                                new_vals = {
-                                        'product_id': product,
-                                        'quantity':float(chlnqty),
-                                        'product_uom': self.pool.get('product.product').browse(cr,uid,product).uom_id.id,
-                                        'location_id': supplier_location[0],
-                                        'location_dest_id': 299,#input location fix
-                                        'move_id':move_ids[0],
-                                        }
-                                print ">>>>>>>>>>>>>>>>move>>>>>>>>>>>>>>>>>", move_ids
-                                move_pool.write(cr, uid, move_ids[0],{'challan_qty': float(chlnqty)}, context)
-                            else:
-                                print "\n\n=-=-=- not found line"
-                                rejected.append(data['INWARDNO'])
-                                reject = [ data.get(f, '') for f in fields]
-                                bounced_inward.append(reject)
-                        except:
-                            po_not_found.append(data["POSERIES"]+'/'+data["PONO"]+'/'+data["POYEAR"])
+                            purchase_date = self.pool.get('purchase.order').browse(cr,uid,purchase_id).date_order
+                            move_pool.write(cr, uid, move_ids[0],{'challan_qty': float(chlnqty)}, context)
+                            
+                        else:
+                            print "\n\n=-=-=- not found line"
                             rejected.append(data['INWARDNO'])
                             reject = [ data.get(f, '') for f in fields]
                             bounced_inward.append(reject)
+
             except:
                 rejected.append(data['INWARDNO'])
                 reject = [ data.get(f, '') for f in fields]
@@ -268,12 +235,14 @@ class import_inward_line_data(osv.osv_memory):
                 _logger.warning("Skipping Record with Inward code '%s'."%(data['INWARDNO']), exc_info=True)
                 continue
         print "inward_idinward_id>>>", inward_id,maize_name
-        print "rejectedrejectedrejected", rejected
+        print "rejectedrejectedrejected", rejected,
         print "po_not_foundpo_not_foundpo_not_foundpo_not_found>>>>>>>>>>", po_not_found
         #print "po_not_foundpo_not_foundpo_not_foundpo_not_found>>>>>>>>>>", indent_not_found
         head, tail = os.path.split(file_path)
         self._write_bounced_indent(cr, uid, head, bounced_inward, context)
         _logger.info("Successfully completed import Inward process.")
+
+    #print l
         return True
     
 import_inward_line_data()

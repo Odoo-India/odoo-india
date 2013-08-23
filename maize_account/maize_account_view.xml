@@ -107,6 +107,9 @@
 				    <field name="debit_note_qty"/>
 				    <field name="reason"/>
 				</xpath>
+				<xpath expr="//page[@string='Invoice']/field[@name='invoice_line']/tree/field[@name='quantity']" position='replace'>
+				    <field name="quantity" sum="Total Quantity"/>
+				</xpath>
 				<xpath expr="//page[@string='Invoice']/group/field[@name='amount_tax']"
 					position='after'>
 					<field name="debit_note_qty"/>

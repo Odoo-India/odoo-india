@@ -375,7 +375,7 @@ class purchase_order_line(osv.Model):
                 'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
             }),
-        'new_price': fields.function(_amount_line, multi="tax",string='Price (include all tax)', digits_compute= dp.get_precision('Account'),
+        'new_price': fields.function(_amount_line, multi="tax",string='Price (include all tax)',digits_compute= dp.get_precision('Payment Term'),
             store={
                 'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
                 'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
@@ -1293,7 +1293,7 @@ class stock_move(osv.osv):
     _columns = {
             'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type',store=True),
             'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
-            'new_rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is calculate after adding all tax"),
+            'new_rate': fields.float('Rate', help="Rate for the product which is calculate after adding all tax"),
             'diff': fields.float('Add (%)', digits_compute= dp.get_precision('Account'), help="Amount to be add"),
             'less_diff': fields.float('Less (%)', digits_compute= dp.get_precision('Account'), help="Amount to be less"),
             'diff_amount': fields.float('Diff amount',digits_compute= dp.get_precision('Account'), help="Difference Amount"),

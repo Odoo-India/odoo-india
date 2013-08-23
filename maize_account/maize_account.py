@@ -431,6 +431,7 @@ class account_invoice(osv.Model):
 
         action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
         user = invoice.user_id and invoice.user_id.user_code[:3]
+        ref_date = invoice.ref_date or ''
 
         lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
             [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
@@ -452,8 +453,8 @@ class account_invoice(osv.Model):
             'FASCODE': '302K060',
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': invoice.ref_date,
-            'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
+            'REFDAT': ref_date,
+            'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
@@ -490,8 +491,8 @@ class account_invoice(osv.Model):
             'FASCODE': '6102002',
             'SUBCODE': '', 
             'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': invoice.ref_date,
-            'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
+            'REFDAT': ref_date,
+            'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
@@ -533,8 +534,8 @@ class account_invoice(osv.Model):
                 'FASCODE': '6102002',
                 'SUBCODE': '',
                 'REFNO': invoice.supplier_invoice_number or '',
-                'REFDAT': invoice.ref_date,
-                'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
+                'REFDAT': ref_date,
+                'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
                 'REMK02': '',
                 'REMK03': '',
                 'REMK04': '',
@@ -604,6 +605,7 @@ class account_invoice(osv.Model):
 
         user = invoice.user_id and invoice.user_id.user_code[:3]
         action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
+        ref_date = invoice.ref_date or ''
 
         taxamt = invoice.amount_total + invoice.rounding_shortage - (vat + add_vat)
         stamt = vat + add_vat
@@ -684,8 +686,8 @@ class account_invoice(osv.Model):
             'FASCODE': invoice.partner_id.supp_code or '',
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': invoice.ref_date,
-            'REMK01': 'Ref:' + invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
+            'REFDAT': ref_date,
+            'REMK01': 'Ref:' + invoice.supplier_invoice_number + ':' + ref_date,
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
@@ -716,7 +718,7 @@ class account_invoice(osv.Model):
             'FASCODE': invoice.account_id.code or '',
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': invoice.ref_date,
+            'REFDAT': ref_date,
             'REMK01': 'Purchase Summary',
             'REMK02': '',
             'REMK03': '',
@@ -763,8 +765,8 @@ class account_invoice(osv.Model):
                 'FASCODE': invoice.account_id.code or '',
                 'SUBCODE': '',
                 'REFNO': invoice.supplier_invoice_number or '',
-                'REFDAT': invoice.ref_date,
-                'REMK01': invoice.supplier_invoice_number + ':' + invoice.ref_date or '',
+                'REFDAT': ref_date,
+                'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
                 'REMK02': '',
                 'REMK03': '',
                 'REMK04': '',

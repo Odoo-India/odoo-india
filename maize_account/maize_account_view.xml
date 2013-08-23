@@ -96,7 +96,7 @@
 				    <field name="date_invoice" string="Bill Date"/>
 				</field>
 				<field name="supplier_invoice_number" position="replace">
-				    <field name="supplier_invoice_number" string="Ref No"/>
+				    <field name="supplier_invoice_number" string="Bill No"/>
 				    <field name="maize_voucher_no" readonly="1"/>
 				</field>
 				<field name="account_id" position="after">

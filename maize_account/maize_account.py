@@ -604,7 +604,7 @@ class account_invoice(osv.Model):
             prtflag = 'P'
 
         user = invoice.user_id and invoice.user_id.user_code[:3]
-        action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
+        action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.code or ''
         ref_date = invoice.ref_date or ''
 
         taxamt = invoice.amount_total + invoice.rounding_shortage - (vat + add_vat)
@@ -626,7 +626,7 @@ class account_invoice(osv.Model):
             'STAMT': stamt,
             'SURAMT': suramt,
             'USERID': 'ERP' + '/' + user or '',
-            'ACTION': action,
+            'ACTION': '',
             'PRTFLG': prtflag,
             'ADVAMT': invoice.advance_amount,
             'DEDACCODE1': invoice.tds_ac_code or '',
@@ -646,7 +646,7 @@ class account_invoice(osv.Model):
             'EXCISECESS': '',
             'EXCISEHCESS': '',
             'RATE': 0,
-            'CFORMIND': invoice.c_form and 'Y' or '',
+            'CFORMIND': invoice.c_form and 'Y' or 'N',
             'STATE': invoice.state_id and invoice.state_id.name or '',
             'REASON': invoice.invoice_line[0].reason or '',
             'CONRETAMT': 0,

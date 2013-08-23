@@ -239,6 +239,19 @@ class account_journal(osv.osv):
 
 class account_invoice(osv.Model):
     _inherit = "account.invoice"
+    
+    def onchange_partner_id(self, cr, uid, ids, type, partner_id,\
+        date_invoice=False, payment_term=False, partner_bank_id=False, company_id=False):
+        state_id = False
+        partner = self.pool.get('res.partner').browse(cr, uid, partner_id)
+        result =  super(account_invoice, self).onchange_partner_id(cr, uid, ids, type, partner_id,
+            date_invoice=date_invoice, payment_term=payment_term, 
+            partner_bank_id=partner_bank_id, company_id=company_id)
+        if partner.state_id:
+            state_id = partner.state_id.id
+        vals = result.get('value',{})
+        vals.update({'state_id':state_id})
+        return {'value': vals}
 
     def _amount_all(self, cr, uid, ids, name, args, context=None):
         res = {}

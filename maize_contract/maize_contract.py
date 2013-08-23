@@ -51,9 +51,14 @@ class indent_indent(osv.Model):
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
         res = super(indent_indent, self)._prepare_indent_line_procurement(cr, uid, indent, line, move_id, date_planned, context=context)
         res.update({'person':line.person})
-        print res   
         return res
-        
+
+    def indent_confirm(self, cr, uid, ids, context=None):
+        for contract_rec in self.browse(cr, uid, ids, context=context):
+            if contract_rec.contract and contract_rec.amount_total == 0.0:
+                raise osv.except_osv(_("Warning !"), _("Contract amount must be greater than zero."))
+        res = super(indent_indent, self).indent_confirm(cr, uid, ids, context=context)
+        return True
 
     def fields_view_get(self, cr, user, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
         if context is None: 

@@ -239,6 +239,19 @@ class account_journal(osv.osv):
 
 class account_invoice(osv.Model):
     _inherit = "account.invoice"
+    
+    def onchange_partner_id(self, cr, uid, ids, type, partner_id,\
+        date_invoice=False, payment_term=False, partner_bank_id=False, company_id=False):
+        state_id = False
+        partner = self.pool.get('res.partner').browse(cr, uid, partner_id)
+        result =  super(account_invoice, self).onchange_partner_id(cr, uid, ids, type, partner_id,
+            date_invoice=date_invoice, payment_term=payment_term, 
+            partner_bank_id=partner_bank_id, company_id=company_id)
+        if partner.state_id:
+            state_id = partner.state_id.id
+        vals = result.get('value',{})
+        vals.update({'state_id':state_id})
+        return {'value': vals}
 
     def _amount_all(self, cr, uid, ids, name, args, context=None):
         res = {}
@@ -339,23 +352,24 @@ class account_invoice(osv.Model):
         'tds_amount': fields.float('TDS Amount'),
         'other_ac_code': fields.selection([('5133859', '5133859')], 'Other Deduction A/C Code'),
         'other_amount': fields.float('Other Deduction Amount'),
-        'maize_voucher_no':fields.char('Voucher No', size=16)
+        'maize_voucher_no':fields.char('Voucher No', size=16),
+        'debit_note_no':fields.char('Debit Note No', size=16),
+        'ref_date': fields.date('Ref Date', required=True),
     }
 
-    def get_voucher_number(self, cr, uid, invoice, debit_note, context):
+    def get_voucher_number(self, cr, uid, invoice, debit_note=False, context=None):
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
         url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
         conn = httplib.HTTPConnection(url)
         voucher_no = invoice.maize_voucher_no
-        
+
         if (not debit_note) and voucher_no:
             return voucher_no
 
         current_month = time.strptime(invoice.date_invoice,'%Y-%m-%d').tm_mon
         cls_dict = {'1':'01', '2':'02', '3':'03', '4':'04', '5':'05', '6':'06', '7':'07', '8':'08', '9':'09', '10':'10', '11':'11', '12':'12'}
-        month_dict = {'1':'01', '2':'02', '3':'03', '4':'04', '5':'05', '6':'06', '7':'07', '8':'08', '9':'09', '10':'10', '11':'11', '12':'12'}
         close_column = "CLS%s" % (cls_dict.get(str(current_month-3)))
-        month_column = "VOUNO%s" % (month_dict.get(str(current_month)))
+        month_column = "VOUNO%s" % (cls_dict.get(str(current_month)))
 
         journal = invoice.move_id.journal_id.code
         vounoSQL = ""
@@ -375,16 +389,16 @@ class account_invoice(osv.Model):
             _logger.info("Voucher Number %s, Year %s, Type %s, Series %s, Debit Note %s", voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal, invoice.move_id.journal_id.series, debit_note)
         except Exception:
             raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
-  
+
 #         if not debit_note and is_open == 'Y':
 #             raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
-        
+
         if debit_note:
             journal = 'DBN'
             vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [VOUNO]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='ZZ'" % (voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal)
         else:
             vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [%s]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (month_column, voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal, invoice.move_id.journal_id.series)
-        
+
         try:
             conn.request("GET", "/cgi-bin/query", vounoSQL, headers)
             rsp = conn.getresponse()
@@ -392,7 +406,7 @@ class account_invoice(osv.Model):
             data = json.loads(data_received)
         except Exception:
             raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
-        
+
         return voucher_no
 
     def create_debit_note(self, cr, uid, invoice, context=None):
@@ -402,6 +416,8 @@ class account_invoice(osv.Model):
 
         voucher_no = self.get_voucher_number(cr, uid, invoice, True, context=context)
         _logger.info('Going to create a debit note by voucher : %s', voucher_no)
+        self.write(cr, uid, [invoice.id], {'debit_note_no': voucher_no}, context=context)
+        cr.commit()
 
         tax_exist = False
         tax_amount = 0
@@ -412,6 +428,10 @@ class account_invoice(osv.Model):
 
         if tax_exist:
             tax_amount = (invoice.debit_note_amount * tax_amount ) / invoice.amount_untaxed
+
+        action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
+        user = invoice.user_id and invoice.user_id.user_code[:3]
+        ref_date = invoice.ref_date or ''
 
         lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
             [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
@@ -425,21 +445,21 @@ class account_invoice(osv.Model):
             'COCODE': 1,
             'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
             'BKTYPE': 'DBP',
-            'BKSRS': invoice.journal_id.series or '',
+            'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 0,
-            'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'VOUDATE': invoice.date_invoice,
             'VOUSTS': '',
             'FASCODE': '302K060',
             'SUBCODE': '',
-            'REFNO': invoice.id,
-            'REFDAT': invoice.date_invoice,
-            'REMK01': invoice.number,
+            'REFNO': invoice.supplier_invoice_number or '',
+            'REFDAT': ref_date,
+            'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
-            'USERID': invoice.user_id.user_code or '',
-            'ACTION': '',
+            'USERID': 'ERP' + '/' + user or '',
+            'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'D',
             'VOUAMT':invoice.debit_note_amount,
@@ -460,24 +480,24 @@ class account_invoice(osv.Model):
             '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         res1 = {
-            'COCODE': 1, 
+            'COCODE': 1,
             'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
             'BKTYPE': 'DBP',
-            'BKSRS': invoice.journal_id.series or '',
+            'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 1,
-            'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'VOUDATE': invoice.date_invoice,
             'VOUSTS': '',
             'FASCODE': '6102002',
             'SUBCODE': '', 
-            'REFNO': invoice.id,
-            'REFDAT': invoice.date_invoice,
-            'REMK01': invoice.number,
+            'REFNO': invoice.supplier_invoice_number or '',
+            'REFDAT': ref_date,
+            'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
-            'USERID': invoice.user_id.user_code or '',
-            'ACTION': '',
+            'USERID': 'ERP' + '/' + user or '',
+            'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'C',
         }
@@ -506,21 +526,21 @@ class account_invoice(osv.Model):
                 'COCODE': 1, 
                 'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
                 'BKTYPE': 'DBP',
-                'BKSRS': invoice.journal_id.series or '',
+                'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
                 'VOUNO': voucher_no, 
-                'VOUSRL': 2,
-                'VOUDATE': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'VOUSRL': 2, 
+                'VOUDATE': invoice.date_invoice, 
                 'VOUSTS': '',
                 'FASCODE': '6102002',
                 'SUBCODE': '',
-                'REFNO': invoice.id,
-                'REFDAT': invoice.date_invoice,
-                'REMK01': invoice.number,
+                'REFNO': invoice.supplier_invoice_number or '',
+                'REFDAT': ref_date,
+                'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
                 'REMK02': '',
                 'REMK03': '',
                 'REMK04': '',
-                'USERID': invoice.user_id.user_code or '',
-                'ACTION': '',
+                'USERID': 'ERP' + '/' + user or '',
+                'ACTION': action,
                 'CVOUNO': 0,
                 'CRDBID':'C',
                 'VOUAMT': tax_amount,
@@ -545,7 +565,7 @@ class account_invoice(osv.Model):
         voucher_no = self.get_voucher_number(cr, uid, invoice, False, context=context)
         self.write(cr, uid, [invoice.id], {'maize_voucher_no': voucher_no}, context=context)
         cr.commit()
-        invoice = self.browse(cr, uid, invoice.id)
+        invoice = self.browse(cr, uid, invoice.id, context=context)
 
         vat = add_vat = excise = cess = hedu = 0
         for tax in invoice.tax_line:
@@ -559,7 +579,7 @@ class account_invoice(osv.Model):
                 cess += tax.amount
             elif tax.tax_categ in ('hedu_cess'):
                 hedu += tax.amount
-        
+
         vat_debit = 0.0
         add_vat_debit = 0.0
         debit_note_id = 0
@@ -577,23 +597,37 @@ class account_invoice(osv.Model):
                '%(PRTFLG)s',  '%(ADVAMT)s',  '%(DEDACCODE1)s',  '%(DEDAMT1)s',  '%(DEDACCODE2)s',  '%(DEDAMT2)s',  '%(RETAMT)s',  '%(DEBAMT)s',  '%(DEBVOUNO)s',  '%(DEBVATAMT)s',  '%(RSNCODE)s',  '%(STAMT1)s',  '%(STAMT2)s',  '%(DEBVATAMT1)s',  
                '%(DEBVATAMT2)s',  '%(EXCISE)s',  '%(EXCISECESS)s',  '%(EXCISEHCESS)s',  '%(RATE)s',  '%(CFORMIND)s',  '%(STATE)s',  '%(REASON)s',  '%(CONRETAMT)s',  '%(DEDACCODE3)s',  '%(DEBTAXABLEAMT)s',  '%(AHDFLG)s',  '%(DEDACCODE4)s',  
                '%(DEDAMT4)s')"""
+
+        amt_tot = invoice.debit_note_amount_total + invoice.retention_amount + invoice.advance_amount
+        prtflag = ''
+        if invoice.amount_total == amt_tot:
+            prtflag = 'P'
+
+        user = invoice.user_id and invoice.user_id.user_code[:3]
+        action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.code or ''
+        ref_date = invoice.ref_date or ''
+
+        taxamt = invoice.amount_total + invoice.rounding_shortage - (vat + add_vat)
+        stamt = vat + add_vat
+        suramt = invoice.amount_total - taxamt - stamt
+
         maizeSQL = maizeSQL % {
             'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
             'BKTYPE': invoice.move_id.journal_id.code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 0,
-            'SERIES': invoice.move_id.journal_id.series or '',
+            'SERIES': invoice.book_series_id and invoice.book_series_id.code or '',
             'RMQTY': 0,
             'PAYDUE': invoice.date_due,
             'STCODE': invoice.st_code or '',
-            'TAXAMT': invoice.amount_untaxed,
+            'TAXAMT': taxamt,
             'GSTAMT': 0,
-            'STAMT': vat + add_vat,
-            'SURAMT': invoice.amount_total - (invoice.amount_untaxed + vat + add_vat),
-            'USERID': invoice.user_id.user_code or '',
+            'STAMT': stamt,
+            'SURAMT': suramt,
+            'USERID': 'ERP' + '/' + user or '',
             'ACTION': '',
-            'PRTFLG': '',
+            'PRTFLG': prtflag,
             'ADVAMT': invoice.advance_amount,
             'DEDACCODE1': invoice.tds_ac_code or '',
             'DEDAMT1': invoice.tds_amount,
@@ -612,11 +646,11 @@ class account_invoice(osv.Model):
             'EXCISECESS': '',
             'EXCISEHCESS': '',
             'RATE': 0,
-            'CFORMIND': invoice.c_form and 'Y' or '',
-            'STATE': invoice.partner_id.state_id.name or '',
+            'CFORMIND': invoice.c_form and 'Y' or 'N',
+            'STATE': invoice.state_id and invoice.state_id.name or '',
             'REASON': invoice.invoice_line[0].reason or '',
             'CONRETAMT': 0,
-            'DEDACCODE3': 0,
+            'DEDACCODE3': '',
             'DEBTAXABLEAMT': invoice.debit_note_amount - (vat_debit + add_vat_debit),
             'AHDFLG': '',
             'DEDACCODE4': '',
@@ -641,7 +675,7 @@ class account_invoice(osv.Model):
             '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         credit_res = {
-            'COCODE': 1, 
+            'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
             'BKTYPE': invoice.move_id.journal_id.code or '',
             'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
@@ -652,16 +686,16 @@ class account_invoice(osv.Model):
             'FASCODE': invoice.partner_id.supp_code or '',
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': invoice.date_invoice,
-            'REMK01': invoice.number[0:35],
+            'REFDAT': ref_date,
+            'REMK01': 'Ref:' + invoice.supplier_invoice_number + ':' + ref_date,
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
-            'USERID': invoice.user_id.user_code or '',
-            'ACTION': '',
+            'USERID': 'ERP' + '/' + user or '',
+            'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'C',
-            'VOUAMT':invoice.net_amount,
+            'VOUAMT':invoice.amount_total,
         }
 
         debit_lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
@@ -673,7 +707,7 @@ class account_invoice(osv.Model):
             '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         debit_res = {
-            'COCODE': 1, 
+            'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
             'BKTYPE': invoice.move_id.journal_id.code or '',
             'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
@@ -684,16 +718,16 @@ class account_invoice(osv.Model):
             'FASCODE': invoice.account_id.code or '',
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': invoice.date_invoice,
-            'REMK01': invoice.number[0:35],
+            'REFDAT': ref_date,
+            'REMK01': 'Purchase Summary',
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
-            'USERID': invoice.user_id.user_code or '',
-            'ACTION': '',
+            'USERID': 'ERP' + '/' + user or '',
+            'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'D',
-            'VOUAMT':invoice.net_amount - invoice.other_amount,
+            'VOUAMT':invoice.amount_total - invoice.other_amount,
         }
 
         lineSQL = credit_lineSQL % credit_res
@@ -728,16 +762,16 @@ class account_invoice(osv.Model):
                 'VOUSRL': 2,
                 'VOUDATE': invoice.date_invoice,
                 'VOUSTS': '',
-                'FASCODE': invoice.account_id.code,
+                'FASCODE': invoice.account_id.code or '',
                 'SUBCODE': '',
                 'REFNO': invoice.supplier_invoice_number or '',
-                'REFDAT': invoice.date_invoice,
-                'REMK01': invoice.number[0:35],
+                'REFDAT': ref_date,
+                'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
                 'REMK02': '',
                 'REMK03': '',
                 'REMK04': '',
-                'USERID': invoice.user_id.user_code or '',
-                'ACTION': '',
+                'USERID': 'ERP' + '/' + user or '',
+                'ACTION': action,
                 'CVOUNO': 0,
                 'CRDBID':'D',
                 'VOUAMT':invoice.other_amount,
@@ -751,18 +785,20 @@ class account_invoice(osv.Model):
         conn.close()
 
     def invoice_validate(self, cr, uid, ids, context=None):
-        super(account_invoice, self).invoice_validate(cr, uid, ids, context)
-        invoice = self.browse(cr, uid, ids)[0]
-        self.create_maize_voucher(cr, uid, invoice, context)
-
+        super(account_invoice, self).invoice_validate(cr, uid, ids, context=context)
+        invoice = self.browse(cr, uid, ids, context=context)[0]
+        self.create_maize_voucher(cr, uid, invoice, context=context)
         return True
 
     def copy(self, cr, uid, id, default=None, context=None):
-        default = default or {}
+        if default is None:
+            default = {}
+
         default.update({
-            'maize_voucher_no':0
+            'maize_voucher_no': 0,
         })
-        return super(account_invoice, self).copy(cr, uid, id, default, context)
+
+        return super(account_invoice, self).copy(cr, uid, id, default, context=context)
 
 account_invoice()
 

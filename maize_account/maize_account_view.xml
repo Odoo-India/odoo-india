@@ -16,6 +16,30 @@
 			</field>
 		</record>
 
+        <record id="view_maize_account_invoice_select" model="ir.ui.view">
+            <field name="name">maize.account.invoice.select</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter" />
+            <field name="arch" type="xml">
+                <xpath expr="//group/filter[@string='Due Date']" position="after">
+                    <separator/>
+                    <filter string="Series"  domain="[]"  context="{'group_by':'book_series_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_maize_account_invoice_tree" model="ir.ui.view">
+            <field name="name">maize.account.invoice.tree</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="book_series_id" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+
 		<!-- Account Tax Form Inherit for add field -->
 		<record id="view_maize_account_tax_form" model="ir.ui.view">
 			<field name="name">inherit.account.tax.form</field>
@@ -68,9 +92,23 @@
 			<field name="model">account.invoice</field>
 			<field name="inherit_id" ref="account.invoice_supplier_form" />
 			<field name="arch" type="xml">
+				<field name="date_invoice" position="replace">
+				    <field name="date_invoice" string="Bill Date"/>
+				</field>
+				<field name="supplier_invoice_number" position="replace">
+				    <field name="supplier_invoice_number" string="Bill No"/>
+				    <field name="maize_voucher_no" readonly="1"/>
+				</field>
+				<field name="account_id" position="after">
+				    <field name="ref_date"/>
+				    <field name="debit_note_no" readonly="1"/>
+				</field>
 				<xpath expr="//page[@string='Invoice']/field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']" position='before'>
 				    <field name="debit_note_qty"/>
 				    <field name="reason"/>
+				</xpath>
+				<xpath expr="//page[@string='Invoice']/field[@name='invoice_line']/tree/field[@name='quantity']" position='replace'>
+				    <field name="quantity" sum="Total Quantity"/>
 				</xpath>
 				<xpath expr="//page[@string='Invoice']/group/field[@name='amount_tax']"
 					position='after'>
@@ -188,7 +226,7 @@
 							<field name="st_code" />
 							<field name="due_date" invisible="1" />
 							<field name="c_form" />
-							<field name="state_id" invisible="1" />
+							<field name="state_id"/>
 
 						</group>
 						<group>

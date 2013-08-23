@@ -343,20 +343,19 @@ class account_invoice(osv.Model):
         'ref_date': fields.date('Ref Date', required=True),
     }
 
-    def get_voucher_number(self, cr, uid, invoice, debit_note, context):
+    def get_voucher_number(self, cr, uid, invoice, debit_note=False, context=None):
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
         url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
         conn = httplib.HTTPConnection(url)
         voucher_no = invoice.maize_voucher_no
-        
+
         if (not debit_note) and voucher_no:
             return voucher_no
 
         current_month = time.strptime(invoice.date_invoice,'%Y-%m-%d').tm_mon
         cls_dict = {'1':'01', '2':'02', '3':'03', '4':'04', '5':'05', '6':'06', '7':'07', '8':'08', '9':'09', '10':'10', '11':'11', '12':'12'}
-        month_dict = {'1':'01', '2':'02', '3':'03', '4':'04', '5':'05', '6':'06', '7':'07', '8':'08', '9':'09', '10':'10', '11':'11', '12':'12'}
         close_column = "CLS%s" % (cls_dict.get(str(current_month-3)))
-        month_column = "VOUNO%s" % (month_dict.get(str(current_month)))
+        month_column = "VOUNO%s" % (cls_dict.get(str(current_month)))
 
         journal = invoice.move_id.journal_id.code
         vounoSQL = ""
@@ -376,16 +375,16 @@ class account_invoice(osv.Model):
             _logger.info("Voucher Number %s, Year %s, Type %s, Series %s, Debit Note %s", voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal, invoice.move_id.journal_id.series, debit_note)
         except Exception:
             raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
-  
+
 #         if not debit_note and is_open == 'Y':
 #             raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
-        
+
         if debit_note:
             journal = 'DBN'
             vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [VOUNO]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='ZZ'" % (voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal)
         else:
             vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [%s]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (month_column, voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal, invoice.move_id.journal_id.series)
-        
+
         try:
             conn.request("GET", "/cgi-bin/query", vounoSQL, headers)
             rsp = conn.getresponse()
@@ -393,7 +392,7 @@ class account_invoice(osv.Model):
             data = json.loads(data_received)
         except Exception:
             raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
-        
+
         return voucher_no
 
     def create_debit_note(self, cr, uid, invoice, context=None):
@@ -464,7 +463,7 @@ class account_invoice(osv.Model):
             '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         res1 = {
-            'COCODE': 1, 
+            'COCODE': 1,
             'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
             'BKTYPE': 'DBP',
             'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
@@ -549,7 +548,7 @@ class account_invoice(osv.Model):
         voucher_no = self.get_voucher_number(cr, uid, invoice, False, context=context)
         self.write(cr, uid, [invoice.id], {'maize_voucher_no': voucher_no}, context=context)
         cr.commit()
-        invoice = self.browse(cr, uid, invoice.id)
+        invoice = self.browse(cr, uid, invoice.id, context=context)
 
         vat = add_vat = excise = cess = hedu = 0
         for tax in invoice.tax_line:
@@ -563,7 +562,7 @@ class account_invoice(osv.Model):
                 cess += tax.amount
             elif tax.tax_categ in ('hedu_cess'):
                 hedu += tax.amount
-        
+
         vat_debit = 0.0
         add_vat_debit = 0.0
         debit_note_id = 0
@@ -581,10 +580,12 @@ class account_invoice(osv.Model):
                '%(PRTFLG)s',  '%(ADVAMT)s',  '%(DEDACCODE1)s',  '%(DEDAMT1)s',  '%(DEDACCODE2)s',  '%(DEDAMT2)s',  '%(RETAMT)s',  '%(DEBAMT)s',  '%(DEBVOUNO)s',  '%(DEBVATAMT)s',  '%(RSNCODE)s',  '%(STAMT1)s',  '%(STAMT2)s',  '%(DEBVATAMT1)s',  
                '%(DEBVATAMT2)s',  '%(EXCISE)s',  '%(EXCISECESS)s',  '%(EXCISEHCESS)s',  '%(RATE)s',  '%(CFORMIND)s',  '%(STATE)s',  '%(REASON)s',  '%(CONRETAMT)s',  '%(DEDACCODE3)s',  '%(DEBTAXABLEAMT)s',  '%(AHDFLG)s',  '%(DEDACCODE4)s',  
                '%(DEDAMT4)s')"""
+
         amt_tot = invoice.debit_note_amount_total + invoice.retention_amount + invoice.advance_amount
         prtflag = ''
         if invoice.amount_total == amt_tot:
             prtflag = 'P'
+
         user = invoice.user_id and invoice.user_id.user_code[:3]
         action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
 
@@ -656,7 +657,7 @@ class account_invoice(osv.Model):
             '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         credit_res = {
-            'COCODE': 1, 
+            'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
             'BKTYPE': invoice.move_id.journal_id.code or '',
             'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
@@ -688,7 +689,7 @@ class account_invoice(osv.Model):
             '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
             '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
         debit_res = {
-            'COCODE': 1, 
+            'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
             'BKTYPE': invoice.move_id.journal_id.code or '',
             'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
@@ -766,18 +767,20 @@ class account_invoice(osv.Model):
         conn.close()
 
     def invoice_validate(self, cr, uid, ids, context=None):
-        super(account_invoice, self).invoice_validate(cr, uid, ids, context)
-        invoice = self.browse(cr, uid, ids)[0]
-        self.create_maize_voucher(cr, uid, invoice, context)
-        
+        super(account_invoice, self).invoice_validate(cr, uid, ids, context=context)
+        invoice = self.browse(cr, uid, ids, context=context)[0]
+        self.create_maize_voucher(cr, uid, invoice, context=context)
         return True
-    
+
     def copy(self, cr, uid, id, default=None, context=None):
-        default = default or {}
+        if default is None:
+            default = {}
+
         default.update({
-            'maize_voucher_no':0
+            'maize_voucher_no': 0,
         })
-        return super(account_invoice, self).copy(cr, uid, id, default, context)
+
+        return super(account_invoice, self).copy(cr, uid, id, default, context=context)
 
 account_invoice()
 

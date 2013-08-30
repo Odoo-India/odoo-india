@@ -33,9 +33,11 @@ Account Purpose.
 """,
     'depends' : ['indent', 'account'],
     'data' : [
-        'maize_account_view.xml',
+        'maize_accout_data.xml'
     ],
-    'update_xml' : [],
+    'update_xml' : [
+        'maize_account_view.xml'
+    ],
 
     'demo': [],
 

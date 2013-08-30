@@ -51,7 +51,6 @@ class account_tax(osv.Model):
         result = {}
         vals = []
         if tax_type == 'excise':
-            
             vals = [(0,0, {'name':'Edu.cess 2% on '+name,
                     'tax_type':'cess',
                     'sequence':1,
@@ -234,6 +233,7 @@ class account_move(osv.osv):
 class account_journal(osv.osv):
     _inherit = "account.journal"
     _columns = {
+        'code':fields.char('Code', size=16),
         'series':fields.char("Series", size=64, help="Maize series that used to generate the next number for the accounting vouchers")
     }
 
@@ -254,6 +254,8 @@ class account_invoice(osv.Model):
         return {'value': vals}
 
     def _amount_all(self, cr, uid, ids, name, args, context=None):
+        tax_obj = self.pool.get('account.tax')
+        
         res = {}
         for invoice in self.browse(cr, uid, ids, context=context):
             res[invoice.id] = {
@@ -265,7 +267,15 @@ class account_invoice(osv.Model):
             }
             for line in invoice.invoice_line:
                 res[invoice.id]['amount_untaxed'] += line.price_subtotal
-                res[invoice.id]['debit_note_amount_total'] += (line.price_subtotal / line.quantity) * line.debit_note_qty
+                if line.debit_note_qty:
+                    debit_tax_total = 0.0
+                    #compute all tax when computing refund
+                    taxes = tax_obj.compute_all(cr, uid, line.invoice_line_tax_id, line.price_unit, line.debit_note_qty, line.product_id, line.invoice_id.partner_id)
+                    for tax in taxes.get('taxes', []):
+                        debit_tax_total += tax.get('amount', 0)
+                    
+                    res[invoice.id]['debit_note_amount_total'] += (line.price_unit * line.debit_note_qty)
+                    res[invoice.id]['debit_note_amount_total'] += debit_tax_total
                 
             for line in invoice.tax_line:
                 res[invoice.id]['amount_tax'] += line.amount

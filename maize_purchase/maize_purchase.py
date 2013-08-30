@@ -592,7 +592,7 @@ class purchase_order(osv.Model):
                     service_tax = service.get('amount', 0.0)
                 val += service_tax
                 res[order.id]['vat_total'] = val
-            if order.packing_type == 'per_unit':
+            if order.packing_type == 'per_unit':    
                 other_charge = packing_and_forwading  - order.commission
             elif order.packing_type == 'percentage':
                 other_charge = (order.package_and_forwording * val1) / 100 -order.commission
@@ -1029,8 +1029,8 @@ class stock_picking(osv.Model):
                 if tax.tax_type != 'excise':
                     tax_ids.append(tax.id)
 
-            tax_amount = round(move_line.excies,3) / move_line.product_qty
-            name = str(tax_amount)+'per unit (Edu.cess 2% + H.Edu cess 1%)'
+            tax_amount = round(move_line.excies / move_line.product_qty, 3)
+            name = str(tax_amount)+' per unit (Edu.cess 2% + H.Edu cess 1%)'
             excise_ids = account_tax_obj.search(cr, uid, [('tax_type','=', 'excise'),('amount','=', tax_amount)])
             if excise_ids:
                 tax_ids += excise_ids

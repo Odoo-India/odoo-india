@@ -234,6 +234,7 @@ class account_journal(osv.osv):
     _inherit = "account.journal"
     _columns = {
         'code':fields.char('Code', size=16),
+        'maize_code':fields.char('Code', size=16),
         'series':fields.char("Series", size=64, help="Maize series that used to generate the next number for the accounting vouchers")
     }
 
@@ -352,8 +353,8 @@ class account_invoice(osv.Model):
             },
             multi='all'),
         'account_code': fields.many2one('account.account', 'Account Code'),
-        'book_series_id': fields.many2one('product.order.series', 'Book Series'),
-        'st_code':fields.selection([('1', 'ST-CD-01'), ('2', 'ST-CD-02'), ('11', 'ST-CD-11 Unregistered Dealer'), ('21', 'ST-CD-21 Outside Gujarat State'), ('22', 'ST-CD-22 Import'), ('31', 'ST-CD-31 Tax Free'), ('41', 'ST-CD-41 Labour & Cartage'), ('51', 'ST-CD-51 Against H Form'), ('91', 'ST-CD-91 Input Tax Credit'), ('92', 'ST-CD-92 Registered Dealer'), ('93', 'ST-CD-93')], 'S.T. Code'),
+        'book_series_id': fields.many2one('product.order.series', 'Book Series', required=True),
+        'st_code':fields.selection([('1', 'ST-CD-01'), ('2', 'ST-CD-02'), ('11', 'ST-CD-11 Unregistered Dealer'), ('21', 'ST-CD-21 Outside Gujarat State'), ('22', 'ST-CD-22 Import'), ('31', 'ST-CD-31 Tax Free'), ('41', 'ST-CD-41 Labour & Cartage'), ('51', 'ST-CD-51 Against H Form'), ('91', 'ST-CD-91 Input Tax Credit'), ('92', 'ST-CD-92 Registered Dealer'), ('93', 'ST-CD-93')], 'S.T. Code', required=True),
         'due_date': fields.date('Due Date'),
         'c_form':fields.boolean('C Form'),
         'state_id': fields.many2one('res.country.state', 'State'),
@@ -378,10 +379,13 @@ class account_invoice(osv.Model):
 
         current_month = time.strptime(invoice.date_invoice,'%Y-%m-%d').tm_mon
         cls_dict = {'1':'01', '2':'02', '3':'03', '4':'04', '5':'05', '6':'06', '7':'07', '8':'08', '9':'09', '10':'10', '11':'11', '12':'12'}
-        close_column = "CLS%s" % (cls_dict.get(str(current_month-3)))
+        close_column = "CLS%s" % (cls_dict.get(str(current_month)))
         month_column = "VOUNO%s" % (cls_dict.get(str(current_month)))
+        
+        journal = ''
+        if invoice.move_id.journal_id.type == 'purchase':
+            journal = 'PUR'
 
-        journal = invoice.move_id.journal_id.code
         vounoSQL = ""
         if debit_note:
             journal = 'DBN'
@@ -400,8 +404,8 @@ class account_invoice(osv.Model):
         except Exception:
             raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
 
-#         if not debit_note and is_open == 'Y':
-#             raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
+        if not debit_note and is_open == 'Y':
+            raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
 
         if debit_note:
             journal = 'DBN'
@@ -464,7 +468,7 @@ class account_invoice(osv.Model):
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': ref_date,
-            'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
+            'REMK01': invoice.number + ':' + ref_date,
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
@@ -502,7 +506,7 @@ class account_invoice(osv.Model):
             'SUBCODE': '', 
             'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': ref_date,
-            'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
+            'REMK01': invoice.number + ':' + ref_date,
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
@@ -545,7 +549,7 @@ class account_invoice(osv.Model):
                 'SUBCODE': '',
                 'REFNO': invoice.supplier_invoice_number or '',
                 'REFDAT': ref_date,
-                'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
+                'REMK01': invoice.number + ':' + ref_date,
                 'REMK02': '',
                 'REMK03': '',
                 'REMK04': '',
@@ -615,16 +619,18 @@ class account_invoice(osv.Model):
 
         user = invoice.user_id and invoice.user_id.user_code[:3]
         action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.code or ''
-        ref_date = invoice.ref_date or ''
+        ref_date = str(invoice.ref_date) or ''
 
         taxamt = invoice.amount_total + invoice.rounding_shortage - (vat + add_vat)
         stamt = vat + add_vat
-        suramt = invoice.amount_total - taxamt - stamt
-
+        suramt = 0.0
+        suramt = invoice.amount_total - taxamt
+        suramt = round(suramt - stamt,2)
+        
         maizeSQL = maizeSQL % {
             'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
-            'BKTYPE': invoice.move_id.journal_id.code or '',
+            'BKTYPE': invoice.move_id.journal_id.maize_code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 0,
             'SERIES': invoice.book_series_id and invoice.book_series_id.code or '',
@@ -687,7 +693,7 @@ class account_invoice(osv.Model):
         credit_res = {
             'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
-            'BKTYPE': invoice.move_id.journal_id.code or '',
+            'BKTYPE': invoice.move_id.journal_id.maize_code or '',
             'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 0,
@@ -697,7 +703,7 @@ class account_invoice(osv.Model):
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': ref_date,
-            'REMK01': 'Ref:' + invoice.supplier_invoice_number + ':' + ref_date,
+            'REMK01': 'Ref:' + str(invoice.number) + ':' + ref_date,
             'REMK02': '',
             'REMK03': '',
             'REMK04': '',
@@ -719,13 +725,13 @@ class account_invoice(osv.Model):
         debit_res = {
             'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
-            'BKTYPE': invoice.move_id.journal_id.code or '',
+            'BKTYPE': invoice.move_id.journal_id.maize_code or '',
             'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 1,
             'VOUDATE': invoice.date_invoice,
             'VOUSTS': '',
-            'FASCODE': invoice.account_id.code or '',
+            'FASCODE': invoice.journal_id.default_credit_account_id.code or '',
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': ref_date,
@@ -766,7 +772,7 @@ class account_invoice(osv.Model):
             other_res = {
                 'COCODE': 1,
                 'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
-                'BKTYPE': invoice.move_id.journal_id.code or '',
+                'BKTYPE': invoice.move_id.journal_id.maize_code or '',
                 'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
                 'VOUNO': voucher_no,
                 'VOUSRL': 2,
@@ -776,7 +782,7 @@ class account_invoice(osv.Model):
                 'SUBCODE': '',
                 'REFNO': invoice.supplier_invoice_number or '',
                 'REFDAT': ref_date,
-                'REMK01': invoice.supplier_invoice_number + ':' + ref_date,
+                'REMK01': invoice.number + ':' + ref_date,
                 'REMK02': '',
                 'REMK03': '',
                 'REMK04': '',
@@ -791,7 +797,7 @@ class account_invoice(osv.Model):
             rsp = conn.getresponse()
             data_received = rsp.read()
             data = json.loads(data_received)
-
+        print 'XXXXXXXXXXXXXXXXXXXXXXX Voucher created : ', voucher_no
         conn.close()
 
     def invoice_validate(self, cr, uid, ids, context=None):

@@ -173,16 +173,108 @@
 
 		<!-- Bank Code -->
 		<record id="st_6102001" model="account.journal">
-			<field name="code">6102001</field>
-			<field name="name">STORES &amp; SPARE PARTS PURCHASE</field>
+			<field name="code">ST-6102001</field>
+			<field name="maize_code">PUR</field>
+			<field name="name">[ST] STORES &amp; SPARE PARTS PURCHASE</field>
 			<field name="type">purchase</field>
 			<field name="default_debit_account_id" ref="maize_6102001" />
 			<field name="default_credit_account_id" ref="maize_6102001" />
 			<field name="series">ST</field>
 		</record>
 
+		<record id="ch_6102002" model="account.journal">
+			<field name="code">CH-6102002</field>
+			<field name="maize_code">PUR</field>
+			<field name="name">[CH] CHEMICAL PURCHASE</field>
+			<field name="type">purchase</field>
+			<field name="default_debit_account_id" ref="maize_6102002" />
+			<field name="default_credit_account_id" ref="maize_6102002" />
+			<field name="series">CH</field>
+		</record>
+
+		<record id="pk_6102003" model="account.journal">
+			<field name="code">PK-6102003</field>
+			<field name="maize_code">PUR</field>
+			<field name="name">[PK] PACKING MATERIAL PURCHASE</field>
+			<field name="type">purchase</field>
+			<field name="default_debit_account_id" ref="maize_6102003" />
+			<field name="default_credit_account_id" ref="maize_6102003" />
+			<field name="series">PK</field>
+		</record>
+
+		<record id="cp_5110603" model="account.journal">
+			<field name="code">CP-5110603</field>
+			<field name="maize_code">PUR</field>
+			<field name="name">[CP] ADDITION TO PLANT MACHINERY</field>
+			<field name="type">purchase</field>
+			<field name="default_debit_account_id" ref="maize_5110603" />
+			<field name="default_credit_account_id" ref="maize_5110603" />
+			<field name="series">BA</field>
+		</record>
+
+		<record id="cp_5110602" model="account.journal">
+			<field name="code">CP-5110602</field>
+			<field name="maize_code">PUR</field>
+			<field name="name">[CP] ADDITION TO BUILDING DURING THE YEAR</field>
+			<field name="type">purchase</field>
+			<field name="default_debit_account_id" ref="maize_5110602" />
+			<field name="default_credit_account_id" ref="maize_5110602" />
+			<field name="series">BA</field>
+		</record>
+
+		<record id="cp_5110607" model="account.journal">
+			<field name="code">CP-5110607</field>
+			<field name="maize_code">PUR</field>
+			<field name="name">[CP] ADDITION TO OFFICE EQUIPMENTS</field>
+			<field name="type">purchase</field>
+			<field name="default_debit_account_id" ref="maize_5110607" />
+			<field name="default_credit_account_id" ref="maize_5110607" />
+			<field name="series">BA</field>
+		</record>
+
+		<record id="og_6102001" model="account.journal">
+			<field name="code">OG-6102001</field>
+			<field name="maize_code">PUR</field>
+			<field name="name">[OG] STORES &amp; SPARE PARTS PURCHASE</field>
+			<field name="type">purchase</field>
+			<field name="default_debit_account_id" ref="maize_6102001" />
+			<field name="default_credit_account_id" ref="maize_6102001" />
+			<field name="series">ST</field>
+		</record>
+		
+		<record id="lb_6102103" model="account.journal">
+            <field name="code">LB-6102103</field>
+            <field name="maize_code">PUR</field>
+            <field name="name">[LB] LABORATORY EXPENSES</field>
+            <field name="type">purchase</field>
+            <field name="default_debit_account_id" ref="maize_6102103" />
+            <field name="default_credit_account_id" ref="maize_6102103" />
+            <field name="series">EX</field>
+        </record>
+        
+        <record id="fc_6102001" model="account.journal">
+            <field name="code">FC-6102001</field>
+            <field name="maize_code">PUR</field>
+            <field name="name">[FC] STORES &amp; SPARE PARTS PURCHASE</field>
+            <field name="type">purchase</field>
+            <field name="default_debit_account_id" ref="maize_6102001" />
+            <field name="default_credit_account_id" ref="maize_6102001" />
+            <field name="series">ST</field>
+        </record>
+        
+        <record id="mm_6102001" model="account.journal">
+            <field name="code">MM-6102001</field>
+            <field name="maize_code">PUR</field>
+            <field name="name">[MM] STORES &amp; SPARE PARTS PURCHASE</field>
+            <field name="type">purchase</field>
+            <field name="default_debit_account_id" ref="maize_6102001" />
+            <field name="default_credit_account_id" ref="maize_6102001" />
+            <field name="series">ST</field>
+        </record>
+
 		<record id="bank_11" model="account.journal">
 			<field name="code">11</field>
+			<field name="maize_code">PUR</field>
 			<field name="name">PNB VANIJYA BHAVAN AHD CC-80/5</field>
 			<field name="type">bank</field>
 		</record>

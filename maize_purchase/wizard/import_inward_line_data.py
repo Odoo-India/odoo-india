@@ -33,7 +33,9 @@ _logger = logging.getLogger("Indent Indent")
 
 class import_inward_line_data(osv.osv_memory):
     _name = "import.inward.line.data"
-    
+    _columns = {
+       'file_path': fields.char('File Path', required=True, size=256),
+    }
     def _read_csv_data(self, cr, uid, path, context=None):
         """
             Reads CSV from given path and Return list of dict with Mapping
@@ -66,8 +68,9 @@ class import_inward_line_data(osv.osv_memory):
             return False
     
     def do_import_inward_data(self, cr, uid,ids, context=None):
-
-        file_path = "/home/maize/data/inward/inward_line_20132014.csv"
+        data = self.read(cr, uid, ids)[0]
+        file_path = data['file_path']
+        #file_path = "/home/maize/data/inward/inward_line_20132014.csv"
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)

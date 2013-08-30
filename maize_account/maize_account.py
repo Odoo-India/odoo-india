@@ -52,21 +52,21 @@ class account_tax(osv.Model):
         vals = []
         if tax_type == 'excise':
             
-            vals = [{'name':'Edu.cess 2% on '+name,
+            vals = [(0,0, {'name':'Edu.cess 2% on '+name,
                     'tax_type':'cess',
                     'sequence':1,
                     'type':'percent',
                     'amount':0.02,
                     'include_base_amount':False,
                     'type_tax_use':'all',
-                   },{'name':'Edu.cess 1% on '+name,
+                   }),(0, 0, {'name':'H. Edu.cess 1% on '+name,
                     'tax_type':'hedu_cess',
                     'sequence':1,
                     'type':'percent',
                     'amount':0.01,
                     'include_base_amount':False,
                     'type_tax_use':'all',
-                    }]
+                    })]
         result['child_ids'] = vals
         result['include_base_amount'] = True
         return {'value': result}

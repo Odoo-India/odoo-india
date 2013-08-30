@@ -975,7 +975,6 @@ class purchase_order(osv.Model):
             order_data['order_line'] = [(0, 0, value) for value in order_data['order_line'].itervalues()]
             order_data.update({'requisition_ids':[(6, 0, tander_ids)]})
 
-            print 'XXXXXXXXXXXXXXXXXXXXXXX', order_data
             # create the new order
             neworder_id = self.create(cr, uid, order_data)
             orders_info.update({neworder_id: old_ids})
@@ -1019,6 +1018,40 @@ class stock_picking(osv.Model):
             vat_amount += move.vat_unit * move.product_qty
         res = dict(res, freight = freight, insurance = insurance, package_and_forwording = package_and_forwording, vat_amount = vat_amount, voucher_id = picking.voucher_id.id, advance_amount = advance_amount)
         return res
+
+    def _get_taxes_invoice(self, cr, uid, move_line, type):
+        account_tax_obj =  self.pool.get('account.tax')
+        
+        old_tax_ids = super(stock_picking, self)._get_taxes_invoice(cr, uid, move_line, type)
+        tax_ids = []
+        if move_line.tax_cal != 0.0:
+            for tax in account_tax_obj.browse(cr, uid, old_tax_ids):
+                if tax.tax_type != 'excise':
+                    tax_ids.append(tax.id)
+
+            tax_amount = round(move_line.excies,3) / move_line.product_qty
+            name = str(tax_amount)+'per unit (Edu.cess 2% + H.Edu cess 1%)'
+            excise_ids = account_tax_obj.search(cr, uid, [('tax_type','=', 'excise'),('amount','=', tax_amount)])
+            if excise_ids:
+                tax_ids += excise_ids
+            else:
+                new_tax_vals = {
+                    'name': name, 
+                    'tax_type': 'excise', 
+                    'amount': tax_amount, 
+                    'type':'fixed',
+                    'sequence': 1,
+                    'include_base_amount': True
+                }
+                child_tax = account_tax_obj.onchange_tax_type(cr, uid, False, str(tax_amount),'excise')
+                new_tax_vals.update(child_tax.get('value'))
+                tax_id = account_tax_obj.create(cr, uid, new_tax_vals)
+                tax_ids.append(tax_id)
+               
+        else:
+            tax_ids = old_tax_ids
+
+        return tax_ids
 
     def action_invoice_create(self, cr, uid, ids, journal_id=False,
             group=False, type='out_invoice', context=None):
@@ -1072,12 +1105,12 @@ class stock_picking(osv.Model):
             for pick in self.browse(cr, uid, ids, context=context):
                 if context.get('default_type') == 'receipt':
                     for move in pick.move_lines:
-                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0,0,0, context)
+                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,move.diff,move.less_diff,move.new_rate,move.import_duty,move.tax_cal, context)
                         stock_move.write(cr, uid, [move.id], dict['value'])
                     if res[pick.id]['delivered_picking']:
                         for new_pick in self.browse(cr, uid, [res[pick.id]['delivered_picking']], context=context):
                             for move in new_pick.move_lines:
-                                dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,0,0,0,0,0, context)
+                                dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,move.diff,move.less_diff,move.new_rate,move.import_duty,move.tax_cal, context)
                                 stock_move.write(cr, uid, [move.id], dict['value'])
                         receipt_obj.write(cr,uid,[res[pick.id]['delivered_picking']], {})
                     receipt_obj.write(cr,uid,ids, {})
@@ -1340,6 +1373,7 @@ class stock_move(osv.osv):
 
         purchase_obj = self.pool.get('purchase.order')
         purchase_line_obj = self.pool.get('purchase.order.line')
+        account_tax_obj = self.pool.get('account.tax')
         line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])
         line_id = line_id and line_id[0] or False
         if not line_id:

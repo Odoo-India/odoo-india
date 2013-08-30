@@ -264,7 +264,9 @@ class account_invoice(osv.Model):
                 'amount_tax': 0.0,
                 'amount_total': 0.0,
                 'net_amount': 0.0,
-                'debit_note_amount_total':0.0
+                'debit_note_amount_total':0.0,
+                'deb_vat':0.0,
+                'deb_add_vat':0.0
             }
             for line in invoice.invoice_line:
                 res[invoice.id]['amount_untaxed'] += line.price_subtotal
@@ -274,6 +276,11 @@ class account_invoice(osv.Model):
                     taxes = tax_obj.compute_all(cr, uid, line.invoice_line_tax_id, line.price_unit, line.debit_note_qty, line.product_id, line.invoice_id.partner_id)
                     for tax in taxes.get('taxes', []):
                         debit_tax_total += tax.get('amount', 0)
+                        tax_type = tax_obj.browse(cr, uid, tax.get('id', 0)).tax_type
+                        if  tax_type == 'vat':
+                            res[invoice.id]['deb_vat'] += tax.get('amount', 0)
+                        elif tax_type == 'add_vat':
+                            res[invoice.id]['deb_add_vat'] += tax.get('amount', 0)
                     
                     res[invoice.id]['debit_note_amount_total'] += (line.price_unit * line.debit_note_qty)
                     res[invoice.id]['debit_note_amount_total'] += debit_tax_total
@@ -366,6 +373,21 @@ class account_invoice(osv.Model):
         'maize_voucher_no':fields.char('Voucher No', size=16),
         'debit_note_no':fields.char('Debit Note No', size=16),
         'ref_date': fields.date('Ref Date', required=True),
+        
+        'deb_vat': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Debit Note Total',
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges', 'package_and_forwording', 'loading_charges', 'inspection_charges', 'delivery_charges', 'rounding_shortage', 'debit_note_amount'], 20),
+                'account.invoice.tax': (_get_invoice_tax, None, 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
+            },
+            multi='all'),
+        'deb_add_vat': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Debit Note Total',
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges', 'package_and_forwording', 'loading_charges', 'inspection_charges', 'delivery_charges', 'rounding_shortage', 'debit_note_amount'], 20),
+                'account.invoice.tax': (_get_invoice_tax, None, 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
+            },
+            multi='all'),
     }
 
     def get_voucher_number(self, cr, uid, invoice, debit_note=False, context=None):
@@ -440,9 +462,6 @@ class account_invoice(osv.Model):
                 tax_amount += tax.amount
                 tax_exist = True
 
-        if tax_exist:
-            tax_amount = (invoice.debit_note_amount * tax_amount ) / invoice.amount_untaxed
-
         action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
         user = invoice.user_id and invoice.user_id.user_code[:3]
         ref_date = invoice.ref_date or ''
@@ -459,7 +478,7 @@ class account_invoice(osv.Model):
             'COCODE': 1,
             'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
             'BKTYPE': 'DBP',
-            'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
+            'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
             'VOUNO': voucher_no,
             'VOUSRL': 0,
             'VOUDATE': invoice.date_invoice,
@@ -476,7 +495,7 @@ class account_invoice(osv.Model):
             'ACTION': action,
             'CVOUNO': 0,
             'CRDBID':'D',
-            'VOUAMT':invoice.debit_note_amount,
+            'VOUAMT':invoice.debit_note_amount_total,
         }
 
         lineSQL = lineSQL % res
@@ -497,7 +516,7 @@ class account_invoice(osv.Model):
             'COCODE': 1,
             'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
             'BKTYPE': 'DBP',
-            'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
+            'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
             'VOUNO': voucher_no,
             'VOUSRL': 1,
             'VOUDATE': invoice.date_invoice,
@@ -517,9 +536,9 @@ class account_invoice(osv.Model):
         }
 
         if tax_exist:
-            res1.update({'VOUAMT': invoice.debit_note_amount - tax_amount})
+            res1.update({'VOUAMT': invoice.debit_note_amount_total - (invoice.deb_vat + invoice.deb_add_vat)})
         else:
-            res1.update({'VOUAMT': invoice.debit_note_amount})
+            res1.update({'VOUAMT': invoice.debit_note_amount_total})
 
         lineSQL1 = lineSQL1 % res1
         conn.request("GET", "/cgi-bin/query", lineSQL1, headers)
@@ -540,7 +559,7 @@ class account_invoice(osv.Model):
                 'COCODE': 1, 
                 'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
                 'BKTYPE': 'DBP',
-                'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
+                'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
                 'VOUNO': voucher_no, 
                 'VOUSRL': 2, 
                 'VOUDATE': invoice.date_invoice, 
@@ -557,7 +576,7 @@ class account_invoice(osv.Model):
                 'ACTION': action,
                 'CVOUNO': 0,
                 'CRDBID':'C',
-                'VOUAMT': tax_amount,
+                'VOUAMT': invoice.deb_vat + invoice.deb_add_vat,
             }
 
             lineSQL2 = lineSQL2 % res2
@@ -597,9 +616,9 @@ class account_invoice(osv.Model):
         vat_debit = 0.0
         add_vat_debit = 0.0
         debit_note_id = 0
-        if invoice.debit_note_amount:
-            vat_debit = (invoice.debit_note_amount *  vat) / (invoice.amount_untaxed + excise + cess + hedu)
-            add_vat_debit = (invoice.debit_note_amount *  add_vat) / (invoice.amount_untaxed + excise + cess + hedu)
+        if invoice.debit_note_amount_total:
+            vat_debit = invoice.deb_vat
+            add_vat_debit = invoice.deb_add_vat
             debit_note_id = self.create_debit_note(cr, uid, invoice, context=context)
 
         maizeSQL = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], 
@@ -633,7 +652,7 @@ class account_invoice(osv.Model):
             'BKTYPE': invoice.move_id.journal_id.maize_code or '',
             'VOUNO': voucher_no,
             'VOUSRL': 0,
-            'SERIES': invoice.book_series_id and invoice.book_series_id.code or '',
+            'SERIES': invoice.move_id.journal_id.series or '',
             'RMQTY': 0,
             'PAYDUE': invoice.date_due,
             'STCODE': invoice.st_code or '',
@@ -650,7 +669,7 @@ class account_invoice(osv.Model):
             'DEDACCODE2': invoice.other_ac_code or '',
             'DEDAMT2': invoice.other_amount,
             'RETAMT': invoice.retention_amount,
-            'DEBAMT': invoice.debit_note_amount,
+            'DEBAMT': invoice.debit_note_amount_total,
             'DEBVOUNO': debit_note_id,
             'DEBVATAMT': vat_debit + add_vat_debit,
             'RSNCODE': invoice.invoice_line[0].reason or '',
@@ -667,7 +686,7 @@ class account_invoice(osv.Model):
             'REASON': invoice.invoice_line[0].reason or '',
             'CONRETAMT': 0,
             'DEDACCODE3': '',
-            'DEBTAXABLEAMT': invoice.debit_note_amount - (vat_debit + add_vat_debit),
+            'DEBTAXABLEAMT': invoice.debit_note_amount_total - (vat_debit + add_vat_debit),
             'AHDFLG': '',
             'DEDACCODE4': '',
             'DEDAMT4' : 0,
@@ -694,7 +713,7 @@ class account_invoice(osv.Model):
             'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
             'BKTYPE': invoice.move_id.journal_id.maize_code or '',
-            'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
+            'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
             'VOUNO': voucher_no,
             'VOUSRL': 0,
             'VOUDATE': invoice.date_invoice,
@@ -726,7 +745,7 @@ class account_invoice(osv.Model):
             'COCODE': 1,
             'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
             'BKTYPE': invoice.move_id.journal_id.maize_code or '',
-            'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
+            'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
             'VOUNO': voucher_no,
             'VOUSRL': 1,
             'VOUDATE': invoice.date_invoice,
@@ -773,7 +792,7 @@ class account_invoice(osv.Model):
                 'COCODE': 1,
                 'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
                 'BKTYPE': invoice.move_id.journal_id.maize_code or '',
-                'BKSRS': invoice.book_series_id and invoice.book_series_id.code or '',
+                'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
                 'VOUNO': voucher_no,
                 'VOUSRL': 2,
                 'VOUDATE': invoice.date_invoice,

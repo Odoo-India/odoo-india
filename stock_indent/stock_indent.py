@@ -89,7 +89,6 @@ class indent_indent(osv.Model):
         'picking_id': fields.many2one('stock.picking','Picking'),
         'description': fields.text('Additional Information', readonly=True, states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', readonly=True, states={'draft': [('readonly', False)]}),
-        'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', readonly=True, states={'draft': [('readonly', False)]}),
         'active': fields.boolean('Active'),
         'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item for', readonly=True, states={'draft': [('readonly', False)]}),
         'amount_total': fields.function(_total_amount, type="float", string='Total',
@@ -98,6 +97,7 @@ class indent_indent(osv.Model):
                 'indent.product.lines': (_get_product_line, ['price_subtotal', 'product_uom_qty', 'indent_id'], 20),
             }),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting For Approval'), ('inprogress', 'Inprogress'), ('received', 'Received'), ('reject', 'Rejected')], 'State', readonly=True, track_visibility='onchange'),
+        'approver_id': fields.many2one('res.users', 'Authority', readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}, help="who have approve or reject indent."),
     }
     
     def _default_stock_location(self, cr, uid, context=None):
@@ -121,8 +121,9 @@ class indent_indent(osv.Model):
         'department_id':_default_stock_location,
         'item_for':'store',
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c),
-        'name':lambda self, cr, uid, c: self.pool.get('ir.sequence').get(cr, uid, 'stock.indent'),
+        'name':"/",
         'active': True,
+        'approver_id':False
     }
 
     def onchange_requirement(self, cr, uid, ids, indent_date, requirement='urgent', context=None):
@@ -142,15 +143,14 @@ class indent_indent(osv.Model):
     def copy(self, cr, uid, id, default=None, context=None):
         if default is None:
             default = {}
-        days_delay = 7
         default.update({
-            'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.indent'),
+            'name': "/",
             'indent_date': time.strftime('%Y-%m-%d %H:%M:%S'),
             'requirement': 'ordinary',
-            'required_date': datetime.datetime.strftime(datetime.datetime.today() + timedelta(days=days_delay), DEFAULT_SERVER_DATETIME_FORMAT),
             'picking_id': False,
             'indent_authority_ids': [],
             'state': 'draft',
+            'approver_id':False
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
 
@@ -161,32 +161,16 @@ class indent_indent(osv.Model):
         return {'value': result}
     
     def indent_confirm(self, cr, uid, ids, context=None):
-        document_authority_obj = self.pool.get('document.authority')
-        document_authority_instance_obj = self.pool.get('document.authority.instance')
-        
-        document_authority_ids = document_authority_obj.search(cr, uid, [('document', '=', 'indent')], context=context)
         for indent in self.browse(cr, uid, ids, context=context): 
             if not indent.product_lines:
-                raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent which has no line.'))
+                raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent %s which has no line.' % (indent.name)))
+            
+            res = {
+               'name':self.pool.get('ir.sequence').get(cr, uid, 'stock.indent'),
+               'state': 'waiting_approval'
+            }
+            self.write(cr, uid, ids, res, context=context)
 
-            authorities = []
-            for authority in document_authority_obj.browse(cr, uid, document_authority_ids, context=context):
-                if authority.name.id not in authorities:
-                    res_line = {
-                        'name': authority.name.id,
-                        'document': 'indent',
-                        'indent_id': indent.id,
-                        'priority': authority.priority
-                    }
-                    document_authority_instance_obj.create(cr, uid, res_line, context=context)
-                    authorities.append(authority.name.id)
-
-            # Add all authorities of the indent as followers
-            for authority in indent.indent_authority_ids:
-                if authority.name and authority.name.partner_id and authority.name.partner_id.id not in indent.message_follower_ids:
-                    self.write(cr, uid, [indent.id], {'message_follower_ids': [(4, authority.name.partner_id.id)]}, context=context)
-
-        self.write(cr, uid, ids, {'state': 'waiting_approval'}, context=context)
         return True
     
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
@@ -195,7 +179,6 @@ class indent_indent(osv.Model):
         warehouse_ids = warehouse_obj.search(cr, uid, [('company_id', '=', company_id)], context=context)
         warehouse_id = warehouse_ids and warehouse_ids[0] or False
         location_id = warehouse_obj.browse(cr, uid, warehouse_id, context=context).lot_input_id.id
-        
         res = {
             'name': line.name,
             'origin': indent.name,
@@ -244,7 +227,6 @@ class indent_indent(osv.Model):
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
         return res
-
 
     def _prepare_indent_picking(self, cr, uid, indent, context=None):
         pick_name = self.pool.get('ir.sequence').get(cr, uid, 'stock.picking')
@@ -303,41 +285,18 @@ class indent_indent(osv.Model):
             wf_service.trg_validate(uid, 'procurement.order', pro, 'button_check', cr)
         return picking_id
 
-    def check_approval(self, cr, uid, ids, context=None):
-        document_authority_instance_obj = self.pool.get('document.authority.instance')
-        for indent in self.browse(cr, uid, ids):
-            authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in indent.indent_authority_ids]
-            sort_authorities = sorted(authorities, key=lambda element: (element[2]))
-            
-            count = count_auth = 0
-            
-            for authority in sort_authorities:
-                count += 1
-                if authority[1] == uid:
-                    count_auth += 1
-                    if authority[3] == 'approve':
-                        raise osv.except_osv(_("Warning !"),_('You have already approved an indent.'))
-                    
-                    write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
-                    document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
-                    msg = 'Indent is approved by <b>%s</b>.' % (authority[4])
-                    self.message_post(cr, uid, [indent.id], body=msg)
-                    if count_auth == 1:
-                        for write_id in write_ids:
-                            desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
-                            description = 'Approved by higher authority - %s' %(authority[4],)
-                            if desc:
-                                description = 'Approved by higher authority - %s' %(authority[4],) + '\n' + desc
-                            document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
+    def check_reject(self, cr, uid, ids):
+        res = {
+           'approver_id':uid
+        }
+        self.write(cr, uid, ids, res)
+        return True
 
-        for indent in self.browse(cr, uid, ids):
-            authorities = [(authority.id, authority.priority, authority.state) for authority in indent.indent_authority_ids]
-            sort_authorities = sorted(authorities, key=lambda element: (element[1]))
-            for authority in sort_authorities:
-                if authority[2] == 'approve':
-                    return True
-                elif authority[2] == 'pending' or authority[2] == 'reject':
-                    return False
+    def check_approval(self, cr, uid, ids, context=None):
+        res = {
+           'approver_id':uid
+        }
+        self.write(cr, uid, ids, res)
         return True
 
     def action_receive_products(self, cr, uid, ids, context=None):
@@ -359,8 +318,28 @@ class indent_indent(osv.Model):
             'res_id': picking_id,
         }
         return result
-
 indent_indent()
+
+class purchase_order(osv.Model):
+    _inherit = 'purchase.order'
+
+    def _get_indent(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        indent_obj = self.pool.get('indent.indent')
+        for order in self.browse(cr, uid, ids, context=context):
+            indent_id = False
+            if order.origin:
+                indent_ids = indent_obj.search(cr, uid, [('name', '=', order.origin)], context=context)
+                indent_id = indent_ids and indent_ids[0] or False
+            result[order.id] = indent_id
+        return result
+
+    _columns = {
+        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
+    }
+purchase_order()
 
 class indent_product_lines(osv.Model):
     _name = 'indent.product.lines'
@@ -412,8 +391,12 @@ class indent_product_lines(osv.Model):
         product = product_obj.browse(cr, uid, product_id, context=context)
         if indent_type and indent_type == 'existing' and product.type != 'service':
             raise osv.except_osv(_("Warning !"), _("You must select a service type product."))
+        
         if not product.seller_ids:
             raise osv.except_osv(_("Warning !"), _("You must define at least one supplier for this product."))
+        
+        if product.qty_available and product.virtual_available > 0:
+            result['type'] = 'make_to_stock'
         
         result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
         result['product_uom'] = product.uom_id.id
@@ -421,76 +404,20 @@ class indent_product_lines(osv.Model):
         result['qty_available'] = product.qty_available
         result['virtual_available'] = product.virtual_available
         result['delay'] = product.seller_ids[0].delay
+        result['specification'] = product.description_purchase
         return {'value': result}
-
+    
 indent_product_lines()
-
-class document_authority(osv.Model):
-    _name = 'document.authority'
-    _description = 'Document Authority'
-
-    def name_get(self, cr, uid, ids, context=None):
-        res = []
-        if not ids:
-            return res
-
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-
-        return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
-
-    _columns = {
-        'name': fields.many2one('res.users', 'Authority', required=True),
-        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
-        'priority': fields.integer('Priority'),
-        'active': fields.boolean('Active', help="If the active field is set to False, it will allow you to hide the document authority without removing it."),
-        'description': fields.text('Description'),
-    }
-
-    _defaults = {
-        'active': True,
-    }
-
-document_authority()
-
-class document_authority_instance(osv.Model):
-    _name = 'document.authority.instance'
-    _description = 'Document Authority Instance'
-
-    def name_get(self, cr, uid, ids, context=None):
-        res = []
-        if not ids:
-            return res
-        # name_get may receive int id instead of an id list
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-
-        return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
-
-    _columns = {
-        'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
-        'name': fields.many2one('res.users', 'Authority', required=True),
-        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
-        'priority': fields.integer('Priority'),
-        'description': fields.text('Description'),
-        'date': fields.datetime('Date'),
-        'state':fields.selection([('pending','Pending'), ('approve','Approved'), ('reject','Rejected')], 'State', required=True)
-    }
-    _defaults = {
-        'state': 'pending',
-        'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
-    }
-document_authority_instance()
 
 class stock_picking(osv.Model):
     _inherit = 'stock.picking'
-
+ 
     def action_confirm(self, cr, uid, ids, context=None):
         #Implement method that will check further verification for authority
         return super(stock_picking, self).action_confirm(cr, uid, ids, context=context)
-
+ 
     def check_approval(self, cr, uid, ids):
         #Implement method that will check further verification for authority
         return True
-    
+     
 stock_picking()

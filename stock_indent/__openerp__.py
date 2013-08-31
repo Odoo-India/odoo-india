@@ -24,9 +24,9 @@
     'version' : '1.0',
     'author' : 'OpenERP S.A.',
     'sequence': 120,
-    'category': 'warehouse Management',
+    'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Indent',
+    'summary' : 'Manage and track internal material requests',
     'description' : """
 Indent Management
 ================================================================================================================================================================ 

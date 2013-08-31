@@ -16,30 +16,6 @@
 			</field>
 		</record>
 
-        <record id="view_maize_account_invoice_select" model="ir.ui.view">
-            <field name="name">maize.account.invoice.select</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="account.view_account_invoice_filter" />
-            <field name="arch" type="xml">
-                <xpath expr="//group/filter[@string='Due Date']" position="after">
-                    <separator/>
-                    <filter string="Series"  domain="[]"  context="{'group_by':'book_series_id'}"/>
-                </xpath>
-            </field>
-        </record>
-
-        <record id="view_maize_account_invoice_tree" model="ir.ui.view">
-            <field name="name">maize.account.invoice.tree</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="account.invoice_tree" />
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='state']" position="after">
-                    <field name="book_series_id" invisible="1"/>
-                </xpath>
-            </field>
-        </record>
-
-
 		<!-- Account Tax Form Inherit for add field -->
 		<record id="view_maize_account_tax_form" model="ir.ui.view">
 			<field name="name">inherit.account.tax.form</field>
@@ -167,7 +143,7 @@
 
 							<separator string="Advances and Debit Notes" colspan="2" />
 							<field name="debit_note_amount" widget="monetary"
-								options="{'currency_field': 'currency_id'}" />
+								options="{'currency_field': 'currency_id'}" invisible="1"/>
 							<field name="debit_note_amount_total" widget="monetary"
                                 options="{'currency_field': 'currency_id'}"/>
                             
@@ -222,7 +198,6 @@
 						<group>
 							<separator string="Other Options" colspan="2" />
 							<field name="account_code" invisible="1" />
-							<field name="book_series_id" widget="selection" />
 							<field name="st_code" />
 							<field name="due_date" invisible="1" />
 							<field name="c_form" />

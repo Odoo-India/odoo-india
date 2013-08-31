@@ -23,7 +23,7 @@ import time
 import json
 import httplib
 import logging
-        
+
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -343,7 +343,7 @@ class account_invoice(osv.Model):
         'vat_amount': fields.float('VAT Amount'),
         'additional_vat': fields.float('Additional Tax'),
         'debit_note_amount': fields.float('Additional Debit Note'),
-        'debit_note_amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Debit Note Total',
+        'debit_note_amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Debit Note',
             store={
                 'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges', 'package_and_forwording', 'loading_charges', 'inspection_charges', 'delivery_charges', 'rounding_shortage', 'debit_note_amount'], 20),
                 'account.invoice.tax': (_get_invoice_tax, None, 20),
@@ -360,7 +360,6 @@ class account_invoice(osv.Model):
             },
             multi='all'),
         'account_code': fields.many2one('account.account', 'Account Code'),
-        'book_series_id': fields.many2one('product.order.series', 'Book Series', required=True),
         'st_code':fields.selection([('1', 'ST-CD-01'), ('2', 'ST-CD-02'), ('11', 'ST-CD-11 Unregistered Dealer'), ('21', 'ST-CD-21 Outside Gujarat State'), ('22', 'ST-CD-22 Import'), ('31', 'ST-CD-31 Tax Free'), ('41', 'ST-CD-41 Labour & Cartage'), ('51', 'ST-CD-51 Against H Form'), ('91', 'ST-CD-91 Input Tax Credit'), ('92', 'ST-CD-92 Registered Dealer'), ('93', 'ST-CD-93')], 'S.T. Code', required=True),
         'due_date': fields.date('Due Date'),
         'c_form':fields.boolean('C Form'),
@@ -390,441 +389,6 @@ class account_invoice(osv.Model):
             multi='all'),
     }
 
-    def get_voucher_number(self, cr, uid, invoice, debit_note=False, context=None):
-        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
-        url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
-        conn = httplib.HTTPConnection(url)
-        voucher_no = invoice.maize_voucher_no
-
-        if (not debit_note) and voucher_no:
-            return voucher_no
-
-        current_month = time.strptime(invoice.date_invoice,'%Y-%m-%d').tm_mon
-        cls_dict = {'1':'01', '2':'02', '3':'03', '4':'04', '5':'05', '6':'06', '7':'07', '8':'08', '9':'09', '10':'10', '11':'11', '12':'12'}
-        close_column = "CLS%s" % (cls_dict.get(str(current_month)))
-        month_column = "VOUNO%s" % (cls_dict.get(str(current_month)))
-        
-        journal = ''
-        if invoice.move_id.journal_id.type == 'purchase':
-            journal = 'PUR'
-
-        vounoSQL = ""
-        if debit_note:
-            journal = 'DBN'
-            vounoSQL = "SELECT [%s] as IS_OPEN, [VOUNO] as VOUNO FROM [MZFAS].[dbo].[FASPARM] where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s'  and SERIES='ZZ'" % (close_column, invoice.move_id.period_id.fiscalyear_id.name, journal)
-        else:
-            vounoSQL = "SELECT [%s] as IS_OPEN, [%s] as VOUNO  FROM [MZFAS].[dbo].[FASPARM] where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (close_column, month_column, invoice.move_id.period_id.fiscalyear_id.name, journal, invoice.move_id.journal_id.series)
-
-        try:
-            conn.request("GET", "/cgi-bin/query", vounoSQL, headers)
-            rsp = conn.getresponse()
-            data_received = rsp.read()
-            data = json.loads(data_received)
-            is_open = data[0]['IS_OPEN']
-            voucher_no = int(data[0]['VOUNO']) + 1
-            _logger.info("Voucher Number %s, Year %s, Type %s, Series %s, Debit Note %s", voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal, invoice.move_id.journal_id.series, debit_note)
-        except Exception:
-            raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
-
-        if not debit_note and is_open == 'Y':
-            raise osv.except_osv(_('Error !'), _('Accounting period closed for %s date, please contact to Account / EDP Department !' % (invoice.date_invoice) ))
-
-        if debit_note:
-            journal = 'DBN'
-            vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [VOUNO]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='ZZ'" % (voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal)
-        else:
-            vounoSQL = "UPDATE [MZFAS].[dbo].[FASPARM] SET [%s]=%s where COCODE='1' and FINYEAR=%s and TYPE='DBK' and SUBTYPE='%s' and SERIES='%s'" % (month_column, voucher_no, invoice.move_id.period_id.fiscalyear_id.name, journal, invoice.move_id.journal_id.series)
-
-        try:
-            conn.request("GET", "/cgi-bin/query", vounoSQL, headers)
-            rsp = conn.getresponse()
-            data_received = rsp.read()
-            data = json.loads(data_received)
-        except Exception:
-            raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
-
-        return voucher_no
-
-    def create_debit_note(self, cr, uid, invoice, context=None):
-        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
-        url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
-        conn = httplib.HTTPConnection(url)
-
-        voucher_no = self.get_voucher_number(cr, uid, invoice, True, context=context)
-        _logger.info('Going to create a debit note by voucher : %s', voucher_no)
-        self.write(cr, uid, [invoice.id], {'debit_note_no': voucher_no}, context=context)
-        cr.commit()
-
-        tax_exist = False
-        tax_amount = 0
-        for tax in invoice.tax_line:
-            if tax.tax_categ in ('vat', 'add_vat'):
-                tax_amount += tax.amount
-                tax_exist = True
-
-        action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
-        user = invoice.user_id and invoice.user_id.user_code[:3]
-        ref_date = invoice.ref_date or ''
-
-        lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
-            [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
-            [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
-            VALUES (
-            '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
-            '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
-            '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
-            '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
-        res = {
-            'COCODE': 1,
-            'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
-            'BKTYPE': 'DBP',
-            'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
-            'VOUNO': voucher_no,
-            'VOUSRL': 0,
-            'VOUDATE': invoice.date_invoice,
-            'VOUSTS': '',
-            'FASCODE': '302K060',
-            'SUBCODE': '',
-            'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': ref_date,
-            'REMK01': invoice.number + ':' + ref_date,
-            'REMK02': '',
-            'REMK03': '',
-            'REMK04': '',
-            'USERID': 'ERP' + '/' + user or '',
-            'ACTION': action,
-            'CVOUNO': 0,
-            'CRDBID':'D',
-            'VOUAMT':invoice.debit_note_amount_total,
-        }
-
-        lineSQL = lineSQL % res
-        conn.request("GET", "/cgi-bin/query", lineSQL, headers)
-        rsp = conn.getresponse()
-        data_received = rsp.read()
-        data = json.loads(data_received)
-
-        lineSQL1 = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
-            [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
-            [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
-            VALUES (
-            '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
-            '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
-            '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
-            '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
-        res1 = {
-            'COCODE': 1,
-            'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
-            'BKTYPE': 'DBP',
-            'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
-            'VOUNO': voucher_no,
-            'VOUSRL': 1,
-            'VOUDATE': invoice.date_invoice,
-            'VOUSTS': '',
-            'FASCODE': '6102002',
-            'SUBCODE': '', 
-            'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': ref_date,
-            'REMK01': invoice.number + ':' + ref_date,
-            'REMK02': '',
-            'REMK03': '',
-            'REMK04': '',
-            'USERID': 'ERP' + '/' + user or '',
-            'ACTION': action,
-            'CVOUNO': 0,
-            'CRDBID':'C',
-        }
-
-        if tax_exist:
-            res1.update({'VOUAMT': invoice.debit_note_amount_total - (invoice.deb_vat + invoice.deb_add_vat)})
-        else:
-            res1.update({'VOUAMT': invoice.debit_note_amount_total})
-
-        lineSQL1 = lineSQL1 % res1
-        conn.request("GET", "/cgi-bin/query", lineSQL1, headers)
-        rsp = conn.getresponse()
-        data_received = rsp.read()
-        data = json.loads(data_received)
-
-        if tax_exist:
-            lineSQL2 = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
-                [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
-                [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
-                VALUES (
-                '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
-                '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
-                '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
-                '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
-            res2 = {
-                'COCODE': 1, 
-                'FINYEAR': invoice.period_id.fiscalyear_id.name or '',
-                'BKTYPE': 'DBP',
-                'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
-                'VOUNO': voucher_no, 
-                'VOUSRL': 2, 
-                'VOUDATE': invoice.date_invoice, 
-                'VOUSTS': '',
-                'FASCODE': '6102002',
-                'SUBCODE': '',
-                'REFNO': invoice.supplier_invoice_number or '',
-                'REFDAT': ref_date,
-                'REMK01': invoice.number + ':' + ref_date,
-                'REMK02': '',
-                'REMK03': '',
-                'REMK04': '',
-                'USERID': 'ERP' + '/' + user or '',
-                'ACTION': action,
-                'CVOUNO': 0,
-                'CRDBID':'C',
-                'VOUAMT': invoice.deb_vat + invoice.deb_add_vat,
-            }
-
-            lineSQL2 = lineSQL2 % res2
-
-            conn.request("GET", "/cgi-bin/query", lineSQL2, headers)
-            rsp = conn.getresponse()
-
-            data_received = rsp.read()
-            data = json.loads(data_received)
-        _logger.info('Debit note created by new voucher : %s', voucher_no)
-        conn.close()
-
-        return voucher_no
-
-    def create_maize_voucher(self, cr, uid, invoice, context=None):
-        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
-        url = "%s:%s" % (invoice.company_id.account_ip, invoice.company_id.account_port)
-        conn = httplib.HTTPConnection(url)
-        voucher_no = self.get_voucher_number(cr, uid, invoice, False, context=context)
-        self.write(cr, uid, [invoice.id], {'maize_voucher_no': voucher_no}, context=context)
-        cr.commit()
-        invoice = self.browse(cr, uid, invoice.id, context=context)
-
-        vat = add_vat = excise = cess = hedu = 0
-        for tax in invoice.tax_line:
-            if tax.tax_categ in ('vat'):
-                vat += tax.amount
-            elif tax.tax_categ in ('add_vat'):
-                add_vat += tax.amount
-            elif tax.tax_categ in ('excise'):
-                excise += tax.amount
-            elif tax.tax_categ in ('cess'):
-                cess += tax.amount
-            elif tax.tax_categ in ('hedu_cess'):
-                hedu += tax.amount
-
-        vat_debit = 0.0
-        add_vat_debit = 0.0
-        debit_note_id = 0
-        if invoice.debit_note_amount_total:
-            vat_debit = invoice.deb_vat
-            add_vat_debit = invoice.deb_add_vat
-            debit_note_id = self.create_debit_note(cr, uid, invoice, context=context)
-
-        maizeSQL = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], 
-                [TAXAMT], [GSTAMT], [STAMT], [SURAMT], [USERID], [ACTION], [PRTFLG], [ADVAMT], [DEDACCODE1], [DEDAMT1], [DEDACCODE2], [DEDAMT2], [RETAMT], 
-                [DEBAMT], [DEBVOUNO], [DEBVATAMT], [RSNCODE], [STAMT1], [STAMT2], [DEBVATAMT1], [DEBVATAMT2], [EXCISE], [EXCISECESS], [EXCISEHCESS], [RATE], 
-                [CFORMIND], [STATE], [REASON], [CONRETAMT], [DEDACCODE3], [DEBTAXABLEAMT], [AHDFLG], [DEDACCODE4], [DEDAMT4])
-         VALUES
-               ('%(COCODE)s',  '%(FINYEAR)s',  '%(BKTYPE)s',  '%(VOUNO)s',  '%(VOUSRL)s',  '%(SERIES)s',  '%(RMQTY)s',  '%(PAYDUE)s',  '%(STCODE)s',  '%(TAXAMT)s',  '%(GSTAMT)s',  '%(STAMT)s',  '%(SURAMT)s',  '%(USERID)s',  '%(ACTION)s',  
-               '%(PRTFLG)s',  '%(ADVAMT)s',  '%(DEDACCODE1)s',  '%(DEDAMT1)s',  '%(DEDACCODE2)s',  '%(DEDAMT2)s',  '%(RETAMT)s',  '%(DEBAMT)s',  '%(DEBVOUNO)s',  '%(DEBVATAMT)s',  '%(RSNCODE)s',  '%(STAMT1)s',  '%(STAMT2)s',  '%(DEBVATAMT1)s',  
-               '%(DEBVATAMT2)s',  '%(EXCISE)s',  '%(EXCISECESS)s',  '%(EXCISEHCESS)s',  '%(RATE)s',  '%(CFORMIND)s',  '%(STATE)s',  '%(REASON)s',  '%(CONRETAMT)s',  '%(DEDACCODE3)s',  '%(DEBTAXABLEAMT)s',  '%(AHDFLG)s',  '%(DEDACCODE4)s',  
-               '%(DEDAMT4)s')"""
-
-        amt_tot = invoice.debit_note_amount_total + invoice.retention_amount + invoice.advance_amount
-        prtflag = ''
-        if invoice.amount_total == amt_tot:
-            prtflag = 'P'
-
-        user = invoice.user_id and invoice.user_id.user_code[:3]
-        action = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.code or ''
-        ref_date = str(invoice.ref_date) or ''
-
-        taxamt = invoice.amount_total + invoice.rounding_shortage - (vat + add_vat)
-        stamt = vat + add_vat
-        suramt = 0.0
-        suramt = invoice.amount_total - taxamt
-        suramt = round(suramt - stamt,2)
-        
-        maizeSQL = maizeSQL % {
-            'COCODE': 1,
-            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
-            'BKTYPE': invoice.move_id.journal_id.maize_code or '',
-            'VOUNO': voucher_no,
-            'VOUSRL': 0,
-            'SERIES': invoice.move_id.journal_id.series or '',
-            'RMQTY': 0,
-            'PAYDUE': invoice.date_due,
-            'STCODE': invoice.st_code or '',
-            'TAXAMT': taxamt,
-            'GSTAMT': 0,
-            'STAMT': stamt,
-            'SURAMT': suramt,
-            'USERID': 'ERP' + '/' + user or '',
-            'ACTION': '',
-            'PRTFLG': prtflag,
-            'ADVAMT': invoice.advance_amount,
-            'DEDACCODE1': invoice.tds_ac_code or '',
-            'DEDAMT1': invoice.tds_amount,
-            'DEDACCODE2': invoice.other_ac_code or '',
-            'DEDAMT2': invoice.other_amount,
-            'RETAMT': invoice.retention_amount,
-            'DEBAMT': invoice.debit_note_amount_total,
-            'DEBVOUNO': debit_note_id,
-            'DEBVATAMT': vat_debit + add_vat_debit,
-            'RSNCODE': invoice.invoice_line[0].reason or '',
-            'STAMT1': vat,
-            'STAMT2': add_vat,
-            'DEBVATAMT1': vat_debit,
-            'DEBVATAMT2': add_vat_debit,
-            'EXCISE': '',
-            'EXCISECESS': '',
-            'EXCISEHCESS': '',
-            'RATE': 0,
-            'CFORMIND': invoice.c_form and 'Y' or 'N',
-            'STATE': invoice.state_id and invoice.state_id.name or '',
-            'REASON': invoice.invoice_line[0].reason or '',
-            'CONRETAMT': 0,
-            'DEDACCODE3': '',
-            'DEBTAXABLEAMT': invoice.debit_note_amount_total - (vat_debit + add_vat_debit),
-            'AHDFLG': '',
-            'DEDACCODE4': '',
-            'DEDAMT4' : 0,
-        }
-
-        try:
-            conn.request("GET", "/cgi-bin/query", maizeSQL, headers)
-        except Exception, e:
-            raise osv.except_osv(_('Error!'), _('Check your network connection as connection to maize accounting server %s failed !' % (url)))
-
-        rsp = conn.getresponse()
-        data_received = rsp.read()
-        data = json.loads(data_received)
-
-        credit_lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
-            [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
-            [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
-            VALUES (
-            '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
-            '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
-            '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
-            '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
-        credit_res = {
-            'COCODE': 1,
-            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
-            'BKTYPE': invoice.move_id.journal_id.maize_code or '',
-            'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
-            'VOUNO': voucher_no,
-            'VOUSRL': 0,
-            'VOUDATE': invoice.date_invoice,
-            'VOUSTS': '', 
-            'FASCODE': invoice.partner_id.supp_code or '',
-            'SUBCODE': '',
-            'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': ref_date,
-            'REMK01': 'Ref:' + str(invoice.number) + ':' + ref_date,
-            'REMK02': '',
-            'REMK03': '',
-            'REMK04': '',
-            'USERID': 'ERP' + '/' + user or '',
-            'ACTION': action,
-            'CVOUNO': 0,
-            'CRDBID':'C',
-            'VOUAMT':invoice.amount_total,
-        }
-
-        debit_lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
-            [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
-            [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
-            VALUES (
-            '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
-            '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
-            '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
-            '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
-        debit_res = {
-            'COCODE': 1,
-            'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
-            'BKTYPE': invoice.move_id.journal_id.maize_code or '',
-            'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
-            'VOUNO': voucher_no,
-            'VOUSRL': 1,
-            'VOUDATE': invoice.date_invoice,
-            'VOUSTS': '',
-            'FASCODE': invoice.journal_id.default_credit_account_id.code or '',
-            'SUBCODE': '',
-            'REFNO': invoice.supplier_invoice_number or '',
-            'REFDAT': ref_date,
-            'REMK01': 'Purchase Summary',
-            'REMK02': '',
-            'REMK03': '',
-            'REMK04': '',
-            'USERID': 'ERP' + '/' + user or '',
-            'ACTION': action,
-            'CVOUNO': 0,
-            'CRDBID':'D',
-            'VOUAMT':invoice.amount_total - invoice.other_amount,
-        }
-
-        lineSQL = credit_lineSQL % credit_res
-        conn.request("GET", "/cgi-bin/query", lineSQL, headers)
-        rsp = conn.getresponse()
-        data_received = rsp.read()
-        data = json.loads(data_received)
-
-        lineSQL = debit_lineSQL % debit_res
-        conn.request("GET", "/cgi-bin/query", lineSQL, headers)
-        rsp = conn.getresponse()
-        data_received = rsp.read()
-        data = json.loads(data_received)
-
-        other_lineSQL = ""
-        other_res = {}
-        if invoice.other_amount > 0:
-            other_lineSQL = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
-                [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
-                [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
-                VALUES (
-                '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
-                '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
-                '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s',
-                '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
-            other_res = {
-                'COCODE': 1,
-                'FINYEAR': invoice.move_id.period_id.fiscalyear_id.name or '',
-                'BKTYPE': invoice.move_id.journal_id.maize_code or '',
-                'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
-                'VOUNO': voucher_no,
-                'VOUSRL': 2,
-                'VOUDATE': invoice.date_invoice,
-                'VOUSTS': '',
-                'FASCODE': invoice.account_id.code or '',
-                'SUBCODE': '',
-                'REFNO': invoice.supplier_invoice_number or '',
-                'REFDAT': ref_date,
-                'REMK01': invoice.number + ':' + ref_date,
-                'REMK02': '',
-                'REMK03': '',
-                'REMK04': '',
-                'USERID': 'ERP' + '/' + user or '',
-                'ACTION': action,
-                'CVOUNO': 0,
-                'CRDBID':'D',
-                'VOUAMT':invoice.other_amount,
-            }
-            lineSQL = other_lineSQL % other_res
-            conn.request("GET", "/cgi-bin/query", lineSQL, headers)
-            rsp = conn.getresponse()
-            data_received = rsp.read()
-            data = json.loads(data_received)
-        print 'XXXXXXXXXXXXXXXXXXXXXXX Voucher created : ', voucher_no
-        conn.close()
-
-    def invoice_validate(self, cr, uid, ids, context=None):
-        super(account_invoice, self).invoice_validate(cr, uid, ids, context=context)
-        invoice = self.browse(cr, uid, ids, context=context)[0]
-        self.create_maize_voucher(cr, uid, invoice, context=context)
-        return True
-
     def copy(self, cr, uid, id, default=None, context=None):
         if default is None:
             default = {}
@@ -832,7 +396,6 @@ class account_invoice(osv.Model):
         default.update({
             'maize_voucher_no': 0,
         })
-
         return super(account_invoice, self).copy(cr, uid, id, default, context=context)
 
 account_invoice()
@@ -842,14 +405,12 @@ class account_invoice_line(osv.Model):
 
     _columns = {
         'debit_note_qty':fields.float('Debit Quantity'),
-        'reason': fields.selection(
-        [('CO1', '[CO1] GOODS SHORTAGE'),
-         ('CO2', '[CO2] RATE DIFFERANCE'),
-         ('CO3', '[CO3]VAT ADJUSTMENT'),
-         ('CO4', '[CO4] ITEM REJECTION'),
-         ('CO5','[CO5] DISCOUNT DIFFERENCE'), 
-         ('CO6', '[CO6] OTHERS'),
-        ], 'Reason')
+        'reason': fields.selection([('CO1', '[CO1] GOODS SHORTAGE'),
+                     ('CO2', '[CO2] RATE DIFFERANCE'),
+                     ('CO3', '[CO3]VAT ADJUSTMENT'),
+                     ('CO4', '[CO4] ITEM REJECTION'),
+                     ('CO5','[CO5] DISCOUNT DIFFERENCE'), 
+                     ('CO6', '[CO6] OTHERS'),
+                     ], 'Reason')
     }
-
 account_invoice_line()

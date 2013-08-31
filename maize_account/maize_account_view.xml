@@ -120,6 +120,10 @@
 
 						</group>
 						<group>
+							<separator string="Charge before tax" colspan="2" />
+							<field name="before_tax" widget="monetary"
+							    options="{'currency_field': 'currency_id'}" />
+
 							<separator string="Taxable Amount" colspan="2" />
 							<field name="amount_untaxed" string="Taxable Amount"
 								widget="monetary" options="{'currency_field': 'currency_id'}" />

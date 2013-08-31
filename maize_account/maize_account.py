@@ -372,7 +372,7 @@ class account_invoice(osv.Model):
         'maize_voucher_no':fields.char('Voucher No', size=16),
         'debit_note_no':fields.char('Debit Note No', size=16),
         'ref_date': fields.date('Ref Date', required=True),
-        
+        'before_tax': fields.float('Charge before tax'),
         'deb_vat': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Debit Note Total',
             store={
                 'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'freight', 'insurance', 'other_charges', 'package_and_forwording', 'loading_charges', 'inspection_charges', 'delivery_charges', 'rounding_shortage', 'debit_note_amount'], 20),
@@ -388,6 +388,21 @@ class account_invoice(osv.Model):
             },
             multi='all'),
     }
+    def write(self, cr, uid, ids, vals, context=None):
+        result = {}
+        line_obj = self.pool.get('account.invoice.line')
+        res = super(account_invoice,self).write(cr, uid, ids, vals)
+        for id in ids:
+            line_id = line_obj.search(cr, uid, [('name', '=', 'Other Charges'),('invoice_id', '=', id)])
+            if vals.get('before_tax') > 0 :
+                new_vals = dict(quantity = 1.0, price_unit = vals.get('before_tax'), name = 'Other Charges',account_id = line_obj._default_account_id(cr, uid),invoice_id= id)
+                if line_id:
+                    line_obj.write(cr, uid, line_id, new_vals)
+                else:
+                    new_line_id =  line_obj.create(cr, uid, new_vals)
+            elif line_id:
+                    line_obj.unlink(cr, uid, line_id)
+        return res
 
     def copy(self, cr, uid, id, default=None, context=None):
         if default is None:

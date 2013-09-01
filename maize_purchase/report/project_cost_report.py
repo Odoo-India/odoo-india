@@ -69,12 +69,12 @@ class project_cost_report(osv.osv):
                     i.analytic_account_id as analytic_account_id
                 from
                     indent_indent i
-                    left join purchase_order po on (i.id=po.indent_id)
-                    left join purchase_order_line pol on (pol.order_id = po.id)
+                    left join purchase_order_line pol on (pol.indent_id = i.id)
+                    left join purchase_order po on (pol.order_id=po.id)
                     left join stock_picking sp on (po.id = sp.purchase_id)
                     left join product_product product on (pol.product_id = product.id)
                     left join account_analytic_account a on (i.analytic_account_id = a.id)
-                where po.indent_id is not null and product.state='done'
+                where i.analytic_account_id is not null and product.state='done' and pol.indentor_id is not null
                 group by
                     i.contract,
                     i.indentor_id,

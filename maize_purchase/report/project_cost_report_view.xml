@@ -9,9 +9,9 @@
             <field name="model">project.cost.report</field>
             <field name="arch" type="xml">
                 <tree string="Project Cost Analysis" create="false" delete="false">
-                    <field name="project_code" invisible="True"/>
-                    <field name="project_name" invisible="True"/>
-                    <field name="product_id"/>
+                    <field name="project_code" invisible="context.get('project_view',False)"/>
+                    <field name="project_name" invisible="context.get('project_view',False)"/>
+                    <field name="product_id" invisible="context.get('item_view',True)"/>
                     <field name="puchase_total" sum="PO Total"/>
                     <field name="receipt_total" sum="Receipt Total"/>
                     <!-- field name="payment"/> -->
@@ -53,7 +53,7 @@
                     <separator/>
                     <filter icon="terp-personal" string="My Indents" help="My Indents" domain="[('indentor_id', '=', uid)]"/>
                     <group expand="1" string="Group By..." >
-	                    <filter name="project_code" string="Project" icon="terp-accessories-archiver" context="{'group_by':'project_code'}"/>
+	                    <filter name="project_name" string="Project" icon="terp-accessories-archiver" context="{'group_by':'project_name','project_view': True,'item_view':False}"/>
 	                </group>
                 </search>
             </field>
@@ -67,7 +67,7 @@
             <field name="view_mode">tree,graph</field>
             <field name="search_view_id" ref="view_project_cost_report_search"/>
             <field name="view_id" ref="view_project_cost_report_tree"/>
-            <field name="context">{'group_by_no_leaf':0, 'group_by':['project_code']}</field>
+            <field name="context">{'group_by_no_leaf':0}</field>
             <field name="help">This report performs analysis on your project cost.</field>
         </record>
 

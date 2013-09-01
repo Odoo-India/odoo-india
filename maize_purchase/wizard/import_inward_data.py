@@ -25,6 +25,7 @@ from openerp.osv import fields, osv
 import csv
 import logging
 from openerp import netsvc
+import os
 _logger = logging.getLogger("Indent Indent")
 
 class import_inward_data(osv.osv_memory):
@@ -44,7 +45,25 @@ class import_inward_data(osv.osv_memory):
             items = dict(zip(fields, row))
             data_lines.append(items)
         return fields,data_lines
-    
+
+    def _write_bounced_inward(self, cr, uid, file_head, bounced_detail, context):
+        if not file_head:
+            _logger.warning("Can not Export bounced(Rejected) filllllllleee Inward detail to the file. ")
+            return False
+        try:
+            dtm = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
+            fname = "BOUNCED_INWARD_HEADER"+dtm+".csv"
+            _logger.info("Opening file '%s' for logging the bounced inward detail."%(fname))
+            fl= csv.writer(open(file_head+"/"+fname, 'wb'))
+            for ln in  bounced_detail:
+                fl.writerow(ln)
+            _logger.info("Successfully exported the bounced inward detail to the file %s."%(fname))
+            return True
+        except Exception, e:
+            print e
+            _logger.warning("Can not Export bounced(Rejected) Inward detail to the file. ")
+            return False
+
     def do_import_inward_data(self, cr, uid,ids, context=None):
         
         data = self.read(cr, uid, ids)[0]
@@ -59,6 +78,8 @@ class import_inward_data(osv.osv_memory):
         _logger.info("Starting Import PO Process from file '%s'."%(file_path))
         inward_pool =self.pool.get('stock.picking.in')
         indent = []
+        rejected =[]
+        bounced_inward = [tuple(fields)]
         rejected =[]
         for data in data_lines:
             try:
@@ -147,14 +168,14 @@ class import_inward_data(osv.osv_memory):
                 if data["LABNO"]:
                     labno = data["LABNO"]
                 transporter = ''
-                if data["TRANSP1"]:
-                    transporter = data["TRANSP2"]
+                if data["TRANSP1"] or data["TRANSP2"]:
+                    transporter = data["TRANSP1"]+ data["TRANSP2"]
                     
                 hpressure = ''
                 if data["HYDPRESSURE"]:
                     hpressure = data["HYDPRESSURE"]
-                if data["TRANSP2"] or data["REMARK2"]:
-                    note = data["TRANSP2"]+'\n'+data["REMARK2"]                     
+                if data["REMARK2"]:
+                    note = data["REMARK2"]                     
 #                if data["REMARK1"] or data["REMARK2"] or data["REMARK3"] or data["REMARK4"]:
 #                    note= data["REMARK1"] +'\n'+ data["REMARK2"] +'\n'+ data["REMARK3"] +'\n'+ data["REMARK4"]
                 if data['INWYEAR'] and data['INWARDNO']:
@@ -187,12 +208,18 @@ class import_inward_data(osv.osv_memory):
                     print "valsvalsvals", ok
                 else:
                     rejected.append(data['INWARDNO'])
+                    reject = [ data.get(f, '') for f in fields]
+                    bounced_inward.append(reject)
             except:
                 rejected.append(data['INWARDNO'])
+                reject = [ data.get(f, '') for f in fields]
+                bounced_inward.append(reject)
                 _logger.warning("Skipping Record with Inward code '%s'."%(data['INWARDNO']), exc_info=True)
                 continue
         print "rejectedrejectedrejected", rejected
         _logger.info("Successfully completed import Inward process.")
+        head, tail = os.path.split(file_path)
+        self._write_bounced_inward(cr, uid, head, bounced_inward, context)
         return True
     
 import_inward_data()

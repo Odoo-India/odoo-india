@@ -97,6 +97,15 @@
             <field name="context">{'model':'maize_purchase','action':'action_format_rg_report'}</field>
         </record>
 
+        <record id="action_indentor_wise_purchase_datestart_from" model="ir.actions.act_window">
+            <field name="name">Indentor Wise Purchases</field>
+            <field name="res_model">datestart.from</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_datestart_from_form"/>
+            <field name="target">new</field>
+            <field name="context">{'model':'maize_purchase','action':'action_indentorwise_purchase_report'}</field>
+        </record>
         
        
     </data>

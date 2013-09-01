@@ -46,7 +46,7 @@ class indentor_purchase_report(osv.osv):
             }
 
         for order in self.browse(cr, uid, ids, context=context):
-            search_id = line_obj.search(cr, uid,[('indentor_id','=',order.indentor_id.id)],context=context)
+            search_id = line_obj.search(cr, uid,[('indentor_id','=',order.indentor_id.id),('po_date', '>=', context.get('date_from',False)),('po_date', '<=', context.get('date_to',False))],context=context)
             st_amount = 0.0
             mm_amount = 0.0
             og_amount = 0.0
@@ -86,23 +86,26 @@ class indentor_purchase_report(osv.osv):
         'date': fields.date('Date of Indent', readonly=True),
         'year': fields.char('Year', size=4, readonly=True),
         'name': fields.char('NAME', size=64, readonly=True),
+        'day': fields.char('NAME', size=64, readonly=True),
         'month': fields.selection([('01', 'January'), ('02', 'February'), ('03', 'March'), ('04', 'April'),
             ('05', 'May'), ('06', 'June'), ('07', 'July'), ('08', 'August'), ('09', 'September'),
             ('10', 'October'), ('11', 'November'), ('12', 'December')], 'Month', readonly=True),
         'purchase_id': fields.many2one('purchase.order', 'PO Number', readonly=True),
         'indentor_id': fields.many2one('res.users', 'Indentor', readonly=True),
+        'department_id': fields.many2one('hr.department', 'Department', readonly=True),
         'nbr': fields.integer('# of Lines', readonly=True),
-        'product_id': fields.many2one('product.product', 'Product', readonly=True),
-        'po_series' : fields.many2one('product.order.series', 'Series'),
-        'line_id' : fields.many2one('purchase.order.line', 'Lines'),
-        'po_series_id': fields.char('PO Series',size=64,readonly=True),
+        #'product_id': fields.many2one('product.product', 'Product', readonly=True),
+        'po_series_id' : fields.many2one('product.order.series', 'Series'),
+       # 'line_id' : fields.many2one('purchase.order.line', 'Lines'),
         'state':fields.selection([
-            ('draft','Draft'),
-            ('confirm','Confirm'),
-            ('waiting_approval','Waiting For Approval'),
-            ('inprogress','Inprogress'),
-            ('received','Received'),
-            ('reject','Rejected')
+                ('draft', 'Draft PO'),
+                ('sent', 'RFQ Sent'),
+                ('confirmed', 'Waiting Approval'),
+                ('approved', 'Purchase Order'),
+                ('except_picking', 'Shipping Exception'),
+                ('except_invoice', 'Invoice Exception'),
+                ('done', 'Done'),
+                ('cancel', 'Cancelled')
             ], 'State', readonly=True),
         'purchase_total': fields.float('TOTAL', readonly=True),
         'store': fields.function(series_purchase, digits_compute= dp.get_precision('Account'), string='STORE', type="float", multi="series",help="STORE"),
@@ -123,49 +126,41 @@ class indentor_purchase_report(osv.osv):
         cr.execute("""
             create or replace view indentor_purchase_report as(
  select
-                    (r.user_id) as id,
+                    l.indentor_id as id,
                     r.name as name, 
-                    ps.id as po_series_id,
-        		    emp.purchase_limit as purchase_limit,
-		            emp.group_desc as group_desc,
-		            l.date_planned as date_planned,
-                    l.product_id as product_id,
-                    l.id as line_id,
+                    emp.purchase_limit as purchase_limit,
+                    emp.group_desc as group_desc,
+                    emp.department_id as department_id,
                     po.id as purchase_id,
                     l.amount_total as purchase_total,
                     l.indentor_id as indentor_id,
-                    i.indent_date as date,
-                    to_char(i.indent_date, 'YYYY') as year,
-                    to_char(i.indent_date, 'MM') as month,
-                    to_char(i.indent_date, 'YYYY-MM-DD') as day,
+                    po.date_order as date,
+                    po.state as state,
                     1 as nbr,
-                    i.state as state,
-                    po.po_series_id as po_series
+                    to_char(po.date_order, 'YYYY') as year,
+                    to_char(po.date_order, 'MM') as month,
+                    to_char(po.date_order, 'DD') as day,
+                    po.po_series_id as po_series_id
                 from
-		    hr_employee as emp
-		    left join resource_resource r on (r.id = emp.resource_id)
-                    left join purchase_order_line l on (l.indentor_id=r.user_id)
-                    left join product_product p on (l.product_id=p.id)
+        purchase_order_line as l
+        left join resource_resource r on (r.user_id = l.indentor_id)
+                    left join hr_employee emp on (r.id = emp.resource_id)
                     left join purchase_order po on (l.order_id=po.id)
-                    left join product_template t on (p.product_tmpl_id=t.id)
                     left join product_order_series ps on (po.po_series_id = ps.id)
-                    left join indent_indent i on (i.indentor_id = r.user_id)
                 where l.indentor_id is not null
-		group by
-				r.user_id,
-				emp.id,
-				l.date_planned,
-				l.indentor_id,
-				l.product_id,
-				l.amount_total,
-				i.indent_date,
-				i.state,
-				emp.purchase_limit,
-				emp.group_desc,
-				ps.id,
-				po.id,
-				r.name,
-				l.id
+        group by
+                l.product_id,
+                l.amount_total,
+                emp.purchase_limit,
+                emp.group_desc,
+                emp.department_id,
+                emp.id,
+                ps.id,
+                po.id,
+                po.state,
+                r.name,
+                l.indentor_id,
+                l.id
 
 
             )

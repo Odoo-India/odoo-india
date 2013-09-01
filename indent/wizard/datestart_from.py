@@ -23,8 +23,13 @@ class datestart_from(osv.osv_memory):
         print context
         action_model, action_id = tuple(mod_obj.get_object_reference(cr, uid, context.get('model'), context.get('action')))
         action = self.pool.get(action_model).read(cr, uid, action_id, context=context)
+        demo = action['context']
+        action['context'] = {'date_from':date_from,'date_to':date_to}
+        action['context'].update(eval(demo))
         if context.get('action') == 'maize_advance_note_report':
             domain = [('advance_date', '>=', date_from),('advance_date', '<=', date_to)]
+        if context.get('action') == 'action_indent_purchase_report':
+            domain = [('purchase_date', '>=', date_from),('purchase_date', '<=', date_to)]
         else:
             domain = [
                       ('date', '>=', date_from),

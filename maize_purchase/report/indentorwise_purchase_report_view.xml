@@ -8,7 +8,9 @@
             <field name="model">indentor.purchase.report</field>
             <field name="arch" type="xml">
                 <tree string="Indentorwise Purchases" create="false" delete="false">
-                                      <field name="po_series_id" invisible="context.get('po_series_id',True)"/>
+                    <field name="date" invisible="context.get('date',True)"/>
+                    <field name="department_id" invisible="context.get('department_id',True)"/>
+                    <field name="po_series_id" invisible="context.get('po_series_id',True)"/>
                     <field name="group_desc"/>
                     <field name="name"/>
                     <field name="purchase_limit" sum="Limit"/>
@@ -20,6 +22,11 @@
                     <field name="oil_gre" sum="Oil / Grease"/>
                     <field name="fil_cloth" sum="Fil_cloth"/>
                     <field name="lab" sum="Lab"/>
+                    <field name="indentor_id" invisible='1'/>
+                    <field name="state" invisible="context.get('state',True)"/>
+                    <field name="day" invisible="1"/>
+                    <field name="month" invisible="1"/>
+                    <field name="year" invisible="1"/>
                 </tree>
             </field>
         </record>
@@ -48,9 +55,9 @@
                     </group>
                     
                     <group expand="1" string="Group By...">
-                        <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id','purchase_id_view': True}"/>
-                        <filter string="Department" context="{'group_by':'department_id','department_id_view': True}"/>
-                        <filter string="Status" context="{'group_by':'state','state_view': True}"/>
+                        <filter string="State" name="state" context="{'group_by':'state'}"/>
+                        <filter string="Department" name="department" context="{'group_by':'department_id','department_id_view': True}"/>
+                        <filter string="Indentor" name="indentor" context="{'group_by':'indentor_id'}"/>
                         <filter string="Day" context="{'group_by':'day'}"/>
                         <filter string="Month" name="order_month" context="{'group_by':'month'}"/>
                         <filter string="Year" context="{'group_by':'year'}"/>
@@ -67,9 +74,10 @@
             <field name="search_view_id" ref="view_indentorwise_purchase_report_search"/>
             <field name="view_id" ref="view_indentorwise_purchase_report_tree"/>
             <field name="help">This Indentorwise Purchase.</field>
+            <field name="context">{'search_default_department':1,'group_by_no_leaf':0}</field>
         </record>
 
-        <menuitem action="action_indentorwise_purchase_report" id="menu_indentorwise_purchase_report" parent="stock.next_id_61" sequence="71"/>
+        <menuitem action="indent.action_indentor_wise_purchase_datestart_from" id="menu_indentorwise_purchase_report" parent="stock.next_id_61" sequence="71"/>
 
 
     </data>

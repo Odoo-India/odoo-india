@@ -128,7 +128,7 @@ class purchase_order_information_report(osv.osv):
         tools.drop_view_if_exists(cr, 'purchase_order_information_report')
         cr.execute("""
             create or replace view purchase_order_information_report as (
-                select
+               select
                     min(al.id) as id,
                     al.indent_id as indent_id,
                     al.name as name,
@@ -217,9 +217,9 @@ class purchase_order_information_report(osv.osv):
                     p.default_code as default_code,
                     po.date_order as date_order
             from indent_indent i
-            left join purchase_order po on (i.id=po.indent_id)
+            left join purchase_order_line l on (i.id=l.indent_id)
+            left join purchase_order po on (l.order_id=po.id)
                     left join stock_location sl on (sl.id=i.department_id)
-                    left join purchase_order_line l on (l.order_id = po.id)
                     left join product_product p on (l.product_id=p.id)
                     left join product_template t on (p.product_tmpl_id=t.id)
                     left join product_order_series ps on (po.po_series_id = ps.id)
@@ -303,7 +303,7 @@ class purchase_order_information_report(osv.osv):
                     al.pending_qty,
                     al.default_code,
                     al.date_order
-            )
+                    )
         """)
         
 purchase_order_information_report()

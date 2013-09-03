@@ -99,7 +99,7 @@ class import_indent_data(osv.osv_memory):
                        
 #                 if int(data['PONO'].strip()) != 0:
 #                     wf_service = netsvc.LocalService('workflow')
-#                     indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDENTNO"]+'/'+data["INDYEAR"])])[0]
+#                     indent = self.pool.get('indent.indent').search(cr,uid,[('maize','=',data["INDYEAR"]+'/'+data["INDENTNO"])])[0]
 #                     user_indent = self.pool.get('indent.indent').browse(cr,uid,indent).indentor_id.id
 #                     wf_service.trg_validate(user_indent, 'indent.indent', indent, 'indent_confirm', cr)
 #                     wf_service.trg_validate(7, 'indent.indent', indent, 'indent_inprogress', cr)

@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<menuitem name="Launchpad" id="menu_launchpad"
+			parent="project.menu_project_management" sequence="3" />
+
+
+		<!-- Merge Proposals Start -->
+		<record model="ir.ui.view" id="view_project_branch_merge_list">
+			<field name="name">project.branch.merge.list</field>
+			<field name="model">project.branch.merge</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Merge Proposal"
+					colors="red:state in ('Rejected', 'Code failed to merge');blue:state in ('Work in progress');grey: state in ('Merged');green: state in ('Approved')">
+					<field name="user_id" invisible="context.get('user_view', False)" />
+					<field name="project_id" invisible="context.get('project_view', False)" />
+					<field name="name" />
+					<field name="target_branch_id" invisible="1" />
+					<field name="date_created" />
+					<field name="diff_link" />
+					<field name="branch_type" invisible="context.get('type_view', False)" />
+					<field name="state" invisible="context.get('state_view', False)" />
+				</tree>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_project_branch_merge_form">
+			<field name="name">project.branch.merge.form</field>
+			<field name="model">project.branch.merge</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Merge Proposal" version="7.0">
+					<header>
+						<button name="update_merge_proposals" string="Update" type="object"
+							icon="terp-stock_effects-object-colorize" />
+						<button name="get_merge_proposals" string="Get Proposal"
+							type="object" icon="terp-stock_effects-object-colorize" groups="project.group_project_manager" />
+						<field name="state" widget="statusbar" statusbar_colors='{"reject":"red"}'
+							statusbar_visible="Work in progress,waiting_approval,inprogress,received" />
+					</header>
+
+					<sheet>
+						<h1>
+							<field name="name" class="oe_inline" />
+						</h1>
+						<field name="web_link" widget="url" colspan="4" readonly="1" />
+						<group>
+							<group>
+								<field name="user_id" readonly="1" />
+								<field name="reviewer_user_id" readonly="1" />
+							</group>
+							<group>
+								<field name="branch_type" readonly="1" />
+							</group>
+						</group>
+
+						<notebook colspan="4">
+							<page string="General">
+								<group>
+									<group>
+										<field name="branch_id" readonly="1" />
+										<field name="target_branch_id" readonly="1" />
+										<field name="rev_no" readonly="1" />
+									</group>
+
+									<group>
+										<field name="diff_link" readonly="1" />
+										<field name="added_lines_count" readonly="1" />
+										<field name="removed_lines_count" readonly="1" />
+										<field name="diff_lines_count" readonly="1" />
+										<field name="diff_file_count" readonly="1" />
+									</group>
+
+									<group>
+										<field name="date_created" readonly="1" />
+										<field name="date_reviewed" readonly="1" />
+									</group>
+								</group>
+							</page>
+
+							<page string="Reviews">
+								<field name="comment_ids" readonly="1" colspan="4"
+									nolabel="1">
+									<tree string="Comments">
+										<field name="name" />
+										<field name="user_id" />
+										<field name="date_created" />
+										<field name="state" />
+									</tree>
+								</field>
+
+								<field name="file_ids" readonly="1" colspan="4" nolabel="1">
+									<tree string="Files Changed">
+										<field name="name" />
+										<field name="add_line" />
+										<field name="remove_line" />
+									</tree>
+								</field>
+							</page>
+						</notebook>
+						<div class="oe_clear">
+							<label for="description" />
+						</div>
+						<field name="description" class="oe_inline" placeholder="Additional note..." />
+					</sheet>
+					<div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" />
+                        <field name="message_ids" widget="mail_thread" />
+                    </div>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_project_branch_merge_search">
+			<field name="name">project.branch.merge.search</field>
+			<field name="model">project.branch.merge</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="project_branches">
+					<group expand="0" string="Filters">
+						<filter icon="terp-go-year" string="Year" name="year"
+							domain="[('date_created','&lt;=', time.strftime('%%Y-%%m-%%d')),('date_created','&gt;=',time.strftime('%%Y-01-01'))]"
+							help="Work submmitted in current year" />
+						<separator orientation="vertical" />
+						<filter icon="terp-go-month" string="Month" name="month"
+							domain="[('date_created','&lt;=',(datetime.date.today()+relativedelta(day=31)).strftime('%%Y-%%m-%%d')),('date_created','&gt;=',(datetime.date.today()-relativedelta(day=1)).strftime('%%Y-%%m-%%d'))]"
+							help="Work submiited in current month" />
+						<filter icon="terp-go-month" string="Month-1"
+							domain="[('date_created','&lt;=', (datetime.date.today() - relativedelta(day=31, months=1)).strftime('%%Y-%%m-%%d')),('date_created','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+							help="Work submmitted in last month" />
+						<separator orientation="vertical" />
+						<filter name="need_review" string="Needs review"
+							domain="[('state','in',['Needs review', 'Work in progress', 'Queued'])]"
+							help="Needs review" icon="terp-gtk-media-pause" />
+						<filter string="Approved" domain="[('state','=','Approved')]"
+							help="Approved" icon="terp-check" />
+						<filter string="Merged" domain="[('state','=','Merged')]"
+							name="done" help="Merged" icon="terp-camera_test" />
+						<filter string="Rejected" domain="[('state','=','Rejected')]"
+							help="Rejected" icon="gtk-cancel" />
+						<separator orientation="vertical" />
+						<field name="name" />
+						<separator orientation="vertical" />
+						<field name="date_created" />
+						<separator orientation="vertical" />
+						<field name="user_id">
+							<filter domain="[('user_id','=',uid)]" help="My Proposal"
+								icon="terp-personal" />
+						</field>
+					</group>
+					<newline />
+					<group expand="0" string="Group By...">
+						<filter string="Project" name="group_user_id" icon="terp-accessories-archiver"
+							domain="[]" context="{'group_by':'project_id', 'project_view':True}" />
+						<filter string="Owner" name="group_user_id" icon="terp-personal"
+							domain="[]" context="{'group_by':'user_id', 'user_view':True}" />
+						<separator orientation="vertical" />
+						<filter string="Target" name="group_target_branch_id" icon="terp-personal"
+							domain="[]" context="{'group_by':'target_branch_id'}" />
+						<separator orientation="vertical" />
+						<filter string="Type" name="group_type"
+							icon="terp-stock_effects-object-colorize" domain="[]"
+							context="{'group_by':'branch_type', 'type_view':True}" />
+						<filter string="State" name="group_state"
+							icon="terp-stock_effects-object-colorize" domain="[]"
+							context="{'group_by':'state', 'state_view':True}" />
+						<separator orientation="vertical" />
+						<filter string="Date" name="group_date_created" icon="terp-go-month"
+							domain="[]" context="{'group_by':'date_created'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="action_view_project_branch_merge" model="ir.actions.act_window">
+			<field name="name">Merge</field>
+			<field name="res_model">project.branch.merge</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_project_branch_merge_list" />
+			<field name="domain">[('project_id.state','=','open')]</field>
+			<field name="search_view_id" ref="view_project_branch_merge_search" />
+		</record>
+
+		<menuitem action="action_view_project_branch_merge" id="menu_action_view_project_branch_merge"
+			parent="menu_launchpad" sequence="3" />
+
+		<act_window context="{'project_id': active_id}" domain="[('project_id','in',active_ids)]"
+			id="act_project_beanches" name="Branches" res_model="project.branch"
+			src_model="project.project" view_mode="tree,form" view_type="form" />
+
+		<act_window context="{'project_id': active_id}" domain="[('project_id','in',active_ids)]"
+			id="act_project_beanches_merge" name="Merge Proposal" res_model="project.branch.merge"
+			src_model="project.project" view_mode="tree,form" view_type="form" />
+
+		<record model="ir.actions.act_window" id="act_beanches_merge">
+			<field name="context">{'search_default_indent_id': active_id}</field>
+			<field name="domain">['|', ('target_branch_id','in',active_ids),
+				('branch_id','in',active_ids)]
+			</field>
+			<field name="name">Merge Proposals</field>
+			<field name="res_model">project.branch.merge</field>
+			<field name="search_view_id" ref="view_project_branch_merge_search" />
+		</record>
+		<!-- Merge Proposal Ends -->
+
+
+		<!-- Branch Starts -->
+		<record model="ir.ui.view" id="view_project_branch_list">
+			<field name="name">project.branch.list</field>
+			<field name="model">project.branch</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Branches"
+					colors="red:state in ('Experimental', 'Abandoned', );blue:state in ('Development');grey: state in ('Merged');green: state in ('Mature')">
+					<field name="project_id" invisible="context.get('project_view', False)" />
+					<field name="user_id" invisible="context.get('user_view', False)" />
+					<field name="name" />
+					<field name="rev_no" />
+					<field name="date_created" />
+					<field name="branch_type" invisible="context.get('type_view', False)" />
+					<field name="state" invisible="context.get('state_view', False)" />
+				</tree>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_project_branch_form">
+			<field name="name">project.branch.form</field>
+			<field name="model">project.branch</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Branches" version="7.0">
+					<header>
+						<button name="update_branches" string="Update" type="object"
+							icon="terp-stock_effects-object-colorize" />
+						<button name="get_launchpad_branches" string="Get Branches"
+							type="object" icon="terp-stock_effects-object-colorize" groups="project.group_project_manager" />
+						<field name="state" readonly="True" widget="statusbar" />
+					</header>
+					<sheet>
+						<div class="oe_title">
+							<h1>
+								<field name="name" class="oe_inline" />
+							</h1>
+							<field name="web_link" widget="url" colspan="4" />
+						</div>
+						<div class="oe_right oe_inline" name="buttons">
+							<button name="%(act_beanches_merge)d" string="Merge Proposals"
+								type="action" />
+						</div>
+						<group>
+							<group>
+								<field name="project_id" readonly="False" />
+								<field name="user_id" readonly="True" />
+								<field name="information_type" readonly="True" />
+							</group>
+							<group>
+								<field name="branch_type" />
+								<field name="rev_no" readonly="True" />
+								<field name="history" />
+							</group>
+						</group>
+						<notebook colspan="4">
+							<page string="General">
+								<group>
+									<group>
+										<field name="branch_format" readonly="True" />
+										<field name="repository_format" readonly="True" />
+										<field name="control_format" readonly="True" />
+									</group>
+									<group>
+										<group>
+											<field name="date_created" readonly="True" />
+											<field name="date_last_modified" readonly="True" />
+										</group>
+										<group col="2" colspan="2">
+											<field name="create_date" readonly="True" />
+											<field name="write_date" readonly="True" />
+										</group>
+									</group>
+								</group>
+								<div class="oe_clear">
+									<label for="description" />
+								</div>
+								<field name="description" class="oe_inline" placeholder="Additional note..." />
+							</page>
+							<page string="Other Information">
+								<group>
+									<field name="bug_id" readonly="True" />
+								</group>
+								<field name="branch_ids" colspan="4" nolabel="1" />
+							</page>
+						</notebook>
+					</sheet>
+					<div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" />
+                        <field name="message_ids" widget="mail_thread" />
+                    </div>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_project_branch_search">
+			<field name="name">project.branch.search</field>
+			<field name="model">project.branch</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="project_branches">
+					<group expand="0" string="Filters">
+						<filter icon="terp-go-year" string="Year" name="year"
+							domain="[('date_created','&lt;=', time.strftime('%%Y-%%m-%%d')),('date_created','&gt;=',time.strftime('%%Y-01-01'))]"
+							help="Branches created in current year" />
+						<separator orientation="vertical" />
+						<filter icon="terp-go-month" string="Month" name="month"
+							domain="[('date_created','&lt;=',(datetime.date.today()+relativedelta(day=31)).strftime('%%Y-%%m-%%d')),('date_created','&gt;=',(datetime.date.today()-relativedelta(day=1)).strftime('%%Y-%%m-%%d'))]"
+							help="Branches created in current month" />
+						<filter icon="terp-go-month" string="Month-1"
+							domain="[('date_created','&lt;=', (datetime.date.today() - relativedelta(day=31, months=1)).strftime('%%Y-%%m-%%d')),('date_created','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+							help="Branches created in last month" />
+						<separator orientation="vertical" />
+						<filter name="need_review" string="Development"
+							domain="[('state','=','Development')]" help="Development"
+							icon="terp-accessories-archiver" />
+						<filter string="Merged" domain="[('state','=','Merged')]"
+							name="done" help="Merged" icon="terp-camera_test" />
+						<filter string="Rejected" domain="[('state','=','Abandoned')]"
+							help="Abandoned" icon="gtk-cancel" />
+						<separator orientation="vertical" />
+						<field name="name" />
+						<separator orientation="vertical" />
+						<field name="date_created" />
+						<field name="date_last_modified" />
+						<separator orientation="vertical" />
+						<field name="user_id">
+							<filter domain="[('user_id','=',uid)]" help="My Branches"
+								icon="terp-personal" />
+						</field>
+					</group>
+					<newline />
+					<group expand="0" string="Group By">
+						<filter string="Project" name="group_user_id" icon="terp-accessories-archiver"
+							domain="[]" context="{'group_by':'project_id', 'project_view':True}" />
+						<filter string="Users" name="group_user_id" icon="terp-personal"
+							domain="[]" context="{'group_by':'user_id', 'user_view':True}" />
+						<separator orientation="vertical" />
+						<filter string="Type" name="group_type"
+							icon="terp-stock_effects-object-colorize" domain="[]"
+							context="{'group_by':'branch_type', 'type_view':True}" />
+						<filter string="State" name="group_state"
+							icon="terp-stock_effects-object-colorize" domain="[]"
+							context="{'group_by':'state', 'state_view':True}" />
+						<separator orientation="vertical" />
+						<filter string="Date" icon="terp-go-month" domain="[]"
+							context="{'group_by':'date_created'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="action_view_project_branch" model="ir.actions.act_window">
+			<field name="name">Branches</field>
+			<field name="res_model">project.branch</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_project_branch_list" />
+			<field name="domain">[('project_id.state','=','open')]</field>
+			<field name="search_view_id" ref="view_project_branch_search" />
+			<field name="help">Launchpad branches automatically sync here based on
+				the projects created in project management system.
+				You can analyze
+				branches based on the date, project, type and status, it also allows
+				you to understand the workload of team or user.
+			</field>
+		</record>
+
+		<menuitem action="action_view_project_branch" id="menu_action_view_project_branch"
+			parent="menu_launchpad" sequence="3" />
+
+		<!-- Branch Ends -->
+
+		<!-- Bugs -->
+		<record model="ir.ui.view" id="view_project_bug_list">
+			<field name="name">project.bug.list</field>
+			<field name="model">project.bug</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Bugs"
+					colors="red:importance in ('Critical', 'High') and state not in ('Fix Committed', 'Fix Released');blue:state in ('Medium', 'Low');grey: state in ('Wishlist') or state in ('Fix Released', 'Fix Committed')">
+					<field name="project_id" invisible="context.get('project_view', False)" />
+					<field name="user_id" invisible="context.get('user_view', False)" />
+					<field name="assign_user_id" invisible="1" />
+					<field name="date_in_progress" invisible="1" />
+					<field name="date_fix_committed" invisible="1" />
+					<field name="name" />
+					<field name="date_created" />
+					<field name="importance" invisible="context.get('importance_view', False)" />
+					<field name="milestone" invisible="context.get('milestone_view', False)" />
+					<field name="state" invisible="context.get('state', False)" />
+				</tree>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_project_bug_form">
+			<field name="name">project.bug.form</field>
+			<field name="model">project.bug</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Branches">
+					<group col="6" colspan="4">
+						<field name="name" colspan="4" readonly="True" />
+						<field name="user_id" readonly="True" />
+						<field name="importance" />
+						<field name="project_id" readonly="True" />
+						<field name="assign_user_id" readonly="True" />
+						<field name="web_link" widget="url" colspan="4" />
+						<field name="milestone" />
+					</group>
+					<notebook colspan="4">
+						<page string="General">
+							<separator colspan="4" string="Description" />
+							<field name="description" readonly="True" colspan="4"
+								nolabel="1" height="1" />
+							<field name="comment_ids" readonly="True" colspan="4"
+								nolabel="1" height="1">
+								<tree string="Activities">
+									<field name="date_created" />
+									<field name="user_id" />
+									<field name="name" />
+								</tree>
+							</field>
+						</page>
+						<page string="Other Informations">
+							<group col="2" colspan="2">
+								<separator colspan="2" string="Tags" />
+								<field name="tags" readonly="True" nolabel="1" colspan="2" />
+							</group>
+							<group col="2" colspan="2">
+								<separator colspan="2" string="Dates" />
+								<field name="date_created" readonly="True" />
+								<field name="date_assigned" readonly="True" />
+								<field name="date_closed" readonly="True" />
+								<field name="date_fix_committed" readonly="True" />
+								<field name="date_fix_released" readonly="True" />
+								<field name="date_in_progress" readonly="True" />
+							</group>
+							<field name="branch_ids" colspan="4" nolabel="1" readonly="1" />
+						</page>
+					</notebook>
+					<group col="6" colspan="4">
+						<field name="state" readonly="True" widget="statusbar" />
+						<button name="update_launchpad_bugs" string="Update" type="object"
+							icon="terp-stock_effects-object-colorize" />
+						<button name="get_launchpad_bugs" string="Get Bugs" type="object"
+							icon="terp-stock_effects-object-colorize" groups="project.group_project_manager" />
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_project_bug_search">
+			<field name="name">project.bug.search</field>
+			<field name="model">project.bug</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="project_bugs">
+					<group>
+						<filter icon="terp-go-year" string="Year" name="year"
+							domain="[('date_created','&lt;=', time.strftime('%%Y-%%m-%%d')),('date_created','&gt;=',time.strftime('%%Y-01-01'))]"
+							help="Work submmitted in current year" />
+						<separator orientation="vertical" />
+						<filter icon="terp-go-month" string="Month" name="month"
+							domain="[('date_created','&lt;=',(datetime.date.today()+relativedelta(day=31)).strftime('%%Y-%%m-%%d')),('date_created','&gt;=',(datetime.date.today()-relativedelta(day=1)).strftime('%%Y-%%m-%%d'))]"
+							help="Work submiited in current month" />
+						<filter icon="terp-go-month" string="Month-1"
+							domain="[('date_created','&lt;=', (datetime.date.today() - relativedelta(day=31, months=1)).strftime('%%Y-%%m-%%d')),('date_created','&gt;=',(datetime.date.today() - relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+							help="Work submmitted in last month" />
+						<separator orientation="vertical" />
+						<filter name="state_new" string="New" domain="[('state','in',['New'])]"
+							help="New Bugs" icon="terp-check" />
+						<filter name="importance_critical" string="Critical"
+							domain="[('importance','in',['Critical', 'High']),  ('state','not in', ['Fix Committed', 'Fix Released', 'Invalid'])]"
+							help="Important" icon="terp-dialog-close" />
+						<filter string="ToDo"
+							domain="[('importance','in',['Medium', 'Low']), ('state','not in', ['Fix Committed', 'Fix Released', 'Invalid'])]"
+							name="done" help="ToDo" icon="terp-gtk-media-pause" />
+						<separator orientation="vertical" />
+						<filter name="state_done" string="Fixed"
+							domain="[('state','in',['Fix Released', 'Fix Committed'])]" help="Fix Released"
+							icon="terp-camera_test" />
+						<separator orientation="vertical" />
+						<field name="name" />
+						<separator orientation="vertical" />
+						<field name="date_created" />
+						<field name="date_closed" />
+						<separator orientation="vertical" />
+						<field name="assign_user_id">
+							<filter domain="[('assign_user_id','=',uid)]" help="Bugs i am working on"
+								icon="terp-personal" />
+						</field>
+					</group>
+					<newline />
+					<group expand="0" string="Group By...">
+						<filter string="Project" name="group_user_id" icon="terp-accessories-archiver"
+							domain="[]" context="{'group_by':'project_id', 'project_view':True}" />
+						<filter string="Users" name="group_user_id" icon="terp-personal"
+							domain="[]" context="{'group_by':'assign_user_id', 'user_view':True}" />
+						<separator orientation="vertical" />
+						<filter string="Importance" name="group_type"
+							icon="terp-stock_effects-object-colorize" domain="[]"
+							context="{'group_by':'importance', 'importance_view':True}" />
+						<filter string="Milestone" name="group_milestone"
+							icon="terp-stock_effects-object-colorize" domain="[]"
+							context="{'group_by':'milestone', 'milestone_view':True}" />
+						<filter string="State" name="group_state"
+							icon="terp-stock_effects-object-colorize" domain="[]"
+							context="{'group_by':'state', 'state_view':True}" />
+						<separator orientation="vertical" />
+						<filter string="Created" icon="terp-go-month" domain="[]"
+							context="{'group_by':'date_created'}" />
+						<filter string="In Progress" icon="terp-go-month" domain="[]"
+							context="{'group_by':'date_in_progress'}" />
+						<filter string="Fixed" icon="terp-go-month" domain="[]"
+							context="{'group_by':'date_fix_committed'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="action_view_bug_branch" model="ir.actions.act_window">
+			<field name="name">Bugs</field>
+			<field name="res_model">project.bug</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_project_bug_list" />
+			<field name="domain">[('project_id.state','=','open')]</field>
+			<field name="search_view_id" ref="view_project_bug_search" />
+		</record>
+
+		<menuitem action="action_view_bug_branch" id="menu_action_view_bug_branch"
+			parent="menu_launchpad" sequence="3" />
+	</data>
+</openerp>
+

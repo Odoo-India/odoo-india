@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+
+        <!-- Indent-related subtypes for messaging / Chatter -->
+        <record id="mt_branch_new" model="mail.message.subtype">
+            <field name="name">New Branch</field>
+            <field name="res_model">project.branch</field>
+            <field name="default" eval="False"/>
+            <field name="description">New Branch</field>
+        </record>
+        
+        <record id="development" model="mail.message.subtype">
+            <field name="name">In Development</field>
+            <field name="res_model">project.branch</field>
+            <field name="default" eval="False"/>
+            <field name="description">Branch in Development</field>
+        </record>
+
+        <record id="mature" model="mail.message.subtype">
+            <field name="name">Mature</field>
+            <field name="res_model">project.branch</field>
+            <field name="description">Branch become Mature</field>
+        </record>
+
+        <record id="merged" model="mail.message.subtype">
+            <field name="name">Merged</field>
+            <field name="res_model">project.branch</field>
+            <field name="description">Branch Merged</field>
+        </record>
+
+        <record id="adandoned" model="mail.message.subtype">
+            <field name="name">Rejected</field>
+            <field name="res_model">project.branch</field>
+            <field name="description">Branch Rejected</field>
+        </record>
+        
+        <record id="experimental" model="mail.message.subtype">
+            <field name="name">Experimental</field>
+            <field name="default" eval="False"/>
+            <field name="res_model">project.branch</field>
+            <field name="description">Experimental Branch</field>
+        </record>
+        
+        <record id="new_branch" model="mail.message.subtype">
+            <field name="name">New Branch Created</field>
+            <field name="default" eval="False"/>
+            <field name="res_model">project.project</field>
+            <field name="description">New Branch</field>
+            <field name="parent_id" eval="ref('mt_branch_new')"/>
+            <field name="relation_field">project_id</field>
+        </record>
+
+    </data>
+</openerp>

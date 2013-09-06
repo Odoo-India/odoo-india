@@ -1,49 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-        <!-- Purchase Order Search View -->
-        <record id="view_purchase_order_inherited_search" model="ir.ui.view">
-            <field name="name">purchase.order.search.inherit</field>
-            <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
-            <field name="arch" type="xml">
-               <filter string="Source" position="attributes">
-                    <attribute name="string">Indent</attribute>
-                </filter>
-               <field name="create_uid" position="after">
-                    <field name="indent_id"/>
-                </field>
-            </field>
-        </record>
-
-        <!-- Purchase Order Link with Indent action -->
-        <record model="ir.actions.act_window" id="action_purchase_order_indent_view">
-            <field name="context">{'search_default_indent_id': active_id}</field>
-            <field name="name">Purchase Order</field>
-            <field name="res_model">purchase.order</field>
-            <field name="search_view_id" ref="view_purchase_order_inherited_search"/>
-        </record>
-
-        <!-- Purchase Requisition Search View -->
-        <record id="view_purchase_requisition_inherited_search" model="ir.ui.view">
-            <field name="name">purchase.requisition.search.inherit</field>
-            <field name="model">purchase.requisition</field>
-            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_filter"/>
-            <field name="arch" type="xml">
-                <field name="user_id" position="after">
-                    <field name="indent_id"/>
-                </field>
-            </field>
-        </record>
-
-        <!-- Purchase Requisiton Link with Indent action -->
-        <record model="ir.actions.act_window" id="action_purchase_requisition_indent_view">
-            <field name="context">{'search_default_indent_id': active_id}</field>
-            <field name="name">Purchase Requisition</field>
-            <field name="res_model">purchase.requisition</field>
-            <field name="search_view_id" ref="view_purchase_requisition_inherited_search"/>
-        </record>
-
         <!-- Indent Form View -->
         <record id='view_indent_indent_form' model='ir.ui.view'>
             <field name="name">indent.indent.form</field>
@@ -68,8 +25,6 @@
 	                        </h1>
                         </div>
                         <div class="oe_right oe_inline" name="buttons">
-                            <button name="%(action_purchase_requisition_indent_view)d" string="Enquiry" type="action" groups="purchase.group_purchase_user" states="inprogress"/>
-                            <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('state', '!=', 'inprogress'),'|',('type', '!=', 'existing'),]}"/>
                         </div>
                         <group>
                             <group>
@@ -330,61 +285,6 @@
             </field>
         </record>
 
-        <!-- Stock Move Form View -->
-        <record id="view_indent_move_form" model="ir.ui.view">
-            <field name="name">indent.move.form</field>
-            <field name="model">stock.move</field>
-            <field name="inherit_id" ref="stock.view_move_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//group[@string='Traceability']" position="after">
-                    <group string="Indent">
-                        <field name="indent" readonly="1"/>
-                        <field name="indentor" readonly="1"/>
-                        <field name="department_id" readonly="1"/>
-                    </group>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- Purchase Order Form View -->
-        <record id="view_purchase_order_form" model="ir.ui.view">
-            <field name="name">purchase.order.form.inherit</field>
-            <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.purchase_order_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//sheet/div/h1/field[@name='name']" position="after">
-                    <field name="contract_name"/>
-                </xpath>
-                <field name="origin" position="replace">
-                    <field name="origin" invisible="1"/>
-                    <field name="indent_id" invisible="1"/>
-                    <field name="indentor_id" invisible="1"/>
-                    <field name="indent_date" invisible="1"/>
-                    <field name="maize" groups="indent.group_maize_data"/>
-                </field>
-                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
-                    <field name="indent_id" readonly="1"/>
-                    <field name="indentor_id" readonly="1"/>
-                    <field name="department_id" readonly="1"/>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- Purchase Requisition Form View -->
-        <record id="view_purchase_requisition_inherited_form" model="ir.ui.view">
-            <field name="name">purchase.requisition.form.inherit</field>
-            <field name="model">purchase.requisition</field>
-            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
-            <field name="arch" type="xml">
-                <field name="exclusive" position="after">
-                    <field name="indent_id"/>
-                    <field name="indentor_id"/>
-                    <field name="indent_date"/>
-                    <field name="maize" groups="indent.group_maize_data"/>
-                </field>
-            </field>
-        </record>
-
         <!-- User's Signature Form View -->
         <record id="view_res_users_signature_form" model="ir.ui.view">
             <field name="name">res.users.signature.form</field>
@@ -398,19 +298,6 @@
                         </group>
                     </page>
                 </xpath>
-            </field>
-        </record>
-
-        <!-- Employee Form View -->
-        <record id="view_hr_employee_form_inherited" model="ir.ui.view">
-            <field name="name">hr.employee.form.inherited</field>
-            <field name="model">hr.employee</field>
-            <field name="inherit_id" ref="hr.view_employee_form"/>
-            <field name="arch" type="xml">
-                <field name="category_ids" position="after">
-                    <label for="absent"/>
-                    <field name="absent"/>
-                </field>
             </field>
         </record>
 

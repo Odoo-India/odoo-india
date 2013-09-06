@@ -27,12 +27,9 @@
 					position='after'>
 					<field name="discount" />
 				</xpath>
-				<!--
-					<xpath expr="//group/group/field[@name='taxes_id']"
-					position='replace'> <field name="taxes_id" widget="many2many_tags"
-					domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"
-					invisible="1"/> </xpath>
-				-->
+				<!-- <xpath expr="//group/group/field[@name='taxes_id']" position='replace'> 
+					<field name="taxes_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','!=','sale')]" 
+					invisible="1"/> </xpath> -->
 				<xpath expr="//group/group/field[@name='product_id']"
 					position='after'>
 					<field name="contract" invisible="1" />
@@ -61,7 +58,8 @@
 			<field name="model">purchase.order</field>
 			<field name="inherit_id" ref="purchase.purchase_order_form" />
 			<field name="arch" type="xml">
-				<xpath expr="//field[@name='payment_term_id']" position="replace">
+				<xpath expr="//field[@name='payment_term_id']" position="replace" >
+				    <field name="contract"/>
 				</xpath>
 				<xpath
 					expr="//notebook/page[@string='Purchase Order']/field/tree/field[@name='taxes_id']"
@@ -72,9 +70,7 @@
 				</xpath>
 				<xpath expr="//notebook/page[@string='Purchase Order']/group"
 					position="replace">
-
 					<group>
-
 						<group>
 							<separator string="Other Charges" colspan="2" />
 							<label for="package_and_forwording" />
@@ -93,8 +89,6 @@
 							<field name="delivey" />
 							<field name="voucher_id" invisible="1" />
 							<field name="dispatch_id" />
-
-
 						</group>
 
 						<group>
@@ -163,7 +157,7 @@
 				<xpath
 					expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']"
 					position="before">
-					<field name="contract" invisible="1"/>
+					<field name="contract" invisible="1" />
 					<field name="person" attrs="{'readonly':[('contract','!=',True)]}" />
 					<field name="discount" />
 				</xpath>
@@ -205,7 +199,7 @@
 			</field>
 		</record>
 
-		<!--  Purcahse Order Template Form view -->
+		<!-- Purcahse Order Template Form view -->
 		<record id="maize_purchase_order_template_form" model="ir.ui.view">
 			<field name="name">purchase.order.template.form</field>
 			<field name="priority">20</field>
@@ -276,7 +270,6 @@
 									</tree>
 								</field>
 								<group>
-
 									<group>
 										<separator string="Other Charges" colspan="2" />
 										<label for="package_and_forwording" />
@@ -290,14 +283,11 @@
 												attrs="{'invisible':[('packing_type','=','percentage')]}" />
 										</div>
 										<field name="commission" />
-
 										<separator string="Terms and Conditions" colspan="2" />
 										<field name="payment_term_id" />
 										<field name="delivey" />
 										<field name="voucher_id" invisible="1" />
 										<field name="dispatch_id" />
-
-
 									</group>
 
 									<group>
@@ -341,7 +331,6 @@
 											<label string="₹"
 												attrs="{'invisible':[('freight_type','=','percentage')]}" />
 										</div>
-
 										<separator string="Others options" colspan="2" />
 										<field name="other_charges" widget="monetary"
 											options="{'currency_field': 'currency_id'}" />
@@ -379,10 +368,8 @@
 										<field name="invoiced" />
 										<field name="payment_term_id" widget="selection" />
 										<field name="fiscal_position" attrs="{'readonly': [('invoiced','=', True)]}" />
-										<!--
-											We do not need these fields anymore, the information is in
-											open chatter
-										-->
+										<!-- We do not need these fields anymore, the information is in 
+											open chatter -->
 										<field name="validator" groups="base.group_no_one" />
 										<field name="date_approve" groups="base.group_no_one" />
 									</group>
@@ -402,7 +389,7 @@
 		</record>
 
 
-		<!--  Purchase Order with Template  -->
+		<!-- Purchase Order with Template -->
 		<record id="maize_purchase_order_action_template" model="ir.actions.act_window">
 			<field name="name">Puchase Template</field>
 			<field name="res_model">purchase.order</field>
@@ -414,12 +401,12 @@
 			<field name="search_view_id" ref="purchase.view_purchase_order_filter" />
 			<field name="help" type="html">
 				<p class="oe_view_nocontent_create">
-					Click to create Template for Purchase Order. 
-              </p>
+					Click to create Template for Purchase Order.
+				</p>
 				<p>
 					The Template contains the history of the discussion/negociation
 					you had with your supplier.
-              </p>
+				</p>
 			</field>
 		</record>
 
@@ -437,10 +424,11 @@
 			<field name="act_window_id" ref="maize_purchase_order_action_template" />
 		</record>
 
-		<!--  Inherit Requsest For Quotation for set Domain-->
+		<!-- Inherit Requsest For Quotation for set Domain -->
 		<record id="purchase.purchase_rfq" model="ir.actions.act_window">
 			<field name="domain">[('is_template' ,'=',
-				False),('state','in',('draft','sent','confirmed'))]</field>
+				False),('state','in',('draft','sent','confirmed'))]
+			</field>
 		</record>
 
 		<menuitem action="maize_purchase_order_action_template" id="maize_menu_purchase_template"
@@ -526,37 +514,37 @@
 					<button name="receipt_tree_view" string="Receipts" class="oe_right"
 						type="object" />
 				</xpath>
-				<!--xpath expr="//field[@name='purchase_id']" position="attributes">
-				    <attribute name="attrs">{'readonly':[('state','=','done')]}</attribute>
-			    </xpath--> 
+				<!--xpath expr="//field[@name='purchase_id']" position="attributes"> 
+					<attribute name="attrs">{'readonly':[('state','=','done')]}</attribute> </xpath -->
 				<xpath expr="//group" position="after">
-					<group col="12" string="Inward Details"  >
-						<group colspan="4" >
-							<field name="lr_no" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="lr_date" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="hpressure" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="transporter" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="gp_year" attrs="{'readonly':[('state','=','done')]}"/>
+					<group col="12" string="Inward Details">
+						<group colspan="4">
+							<field name="lr_no" attrs="{'readonly':[('state','=','done')]}" />
+							<field name="lr_date" attrs="{'readonly':[('state','=','done')]}" />
+							<field name="hpressure" attrs="{'readonly':[('state','=','done')]}" />
+							<field name="transporter" attrs="{'readonly':[('state','=','done')]}" />
+							<field name="gp_year" attrs="{'readonly':[('state','=','done')]}" />
 						</group>
-						<group colspan="4" >
-							<field name="lab_no" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="dest_from" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="despatch_mode" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="maize_in" groups="indent.group_maize_data" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="series_id" attrs="{'readonly':[('state','=','done')]}"/>
+						<group colspan="4">
+							<field name="lab_no" attrs="{'readonly':[('state','=','done')]}" />
+							<field name="dest_from" attrs="{'readonly':[('state','=','done')]}" />
+							<field name="despatch_mode" attrs="{'readonly':[('state','=','done')]}" />
+							<field name="maize_in" groups="indent.group_maize_data"
+								attrs="{'readonly':[('state','=','done')]}" />
+							<field name="series_id" attrs="{'readonly':[('state','=','done')]}" />
 						</group>
-						<group colspan="4" >
-							<field name="case_code" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="challan_no" attrs="{'readonly':[('state','=','done')]}"/>
-							<field name="dest_to" attrs="{'readonly':[('state','=','done')]}"/>
+						<group colspan="4">
+							<field name="case_code" attrs="{'readonly':[('state','=','done')]}" />
+							<field name="challan_no" attrs="{'readonly':[('state','=','done')]}" />
+							<field name="dest_to" attrs="{'readonly':[('state','=','done')]}" />
 							<field name="other_dispatch"
-								attrs="{'invisible': [('despatch_mode','=','others')],'readonly':[('state','=','done')]}"/>
-							<field name="gp_no" attrs="{'readonly':[('state','=','done')]}"/>
+								attrs="{'invisible': [('despatch_mode','=','others')],'readonly':[('state','=','done')]}" />
+							<field name="gp_no" attrs="{'readonly':[('state','=','done')]}" />
 						</group>
 					</group>
 				</xpath>
-				<xpath expr="//field[@name='date_done']" position="replace">
-				</xpath>
+				<xpath expr="//field[@name='date_done']" position="replace" />
+
 				<xpath expr="//field[@name='stock_journal_id']" position="after">
 					<field name="date_done" string="Inward Date" />
 				</xpath>
@@ -572,9 +560,6 @@
 			<field name="model">stock.move</field>
 			<field name="inherit_id" ref="stock.view_move_picking_tree" />
 			<field name="arch" type="xml">
-				<xpath expr="//field[@name='product_id']" position="after">
-					<field name="department_id" />
-				</xpath>
 				<xpath expr="//field[@name='product_id']" position="replace">
 					<field name="product_id"
 						on_change="onchange_product_id(product_id,location_id,location_dest_id, parent.partner_id)" />
@@ -629,7 +614,7 @@
 			<field name="act_window_id" ref="stock.track_line" />
 		</record>
 
-		<!--  Inherit tree view for chagne the string of date field -->
+		<!-- Inherit tree view for chagne the string of date field -->
 		<record id="maize_inherit_stock_picking_in_tree" model="ir.ui.view">
 			<field name="name">maize.inherit.stock.picking.in.tree</field>
 			<field name="model">stock.picking.in</field>
@@ -640,14 +625,14 @@
 				</xpath>
 			</field>
 		</record>
-		
+
 		<record id="view_stock_picking_in_search_inherit" model="ir.ui.view">
 			<field name="name">maize.inherit.stock.picking.in.search</field>
 			<field name="model">stock.picking.in</field>
 			<field name="inherit_id" ref="stock.view_picking_in_search" />
 			<field name="arch" type="xml">
 				<field name="partner_id" position="replace">
-					<field name="partner_id"/>
+					<field name="partner_id" />
 				</field>
 			</field>
 		</record>
@@ -679,23 +664,25 @@
 			<field name="model">stock.picking.receipt</field>
 			<field name="inherit_id" ref="stock.view_picking_form" />
 			<field name="arch" type="xml">
-
 				<xpath expr="//field[@name='stock_journal_id']" position="after">
-					<field name="inward_id" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="inward_date" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="inward_id" attrs="{'readonly':[('state','=','done')]}" />
+					<field name="inward_date" attrs="{'readonly':[('state','=','done')]}" />
 					<field name="challan_no" attrs="{'readonly':[('state','=','done')]}" />
-					<field name="tr_code" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="party_id" domain="[('supp_code', '=like', '309%%')]" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="tr_code" attrs="{'readonly':[('state','=','done')]}" />
+					<field name="party_id" domain="[('supp_code', '=like', '309%%')]"
+						attrs="{'readonly':[('state','=','done')]}" />
 				</xpath>
 				<xpath expr="//field[@name='origin']" position="after">
-					<field name="excisable_item" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="gp_received" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="gp_date" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="purchase_id" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="maize_receipt" groups="indent.group_maize_data" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="voucher_id" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="bill_no" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="bill_date" on_change="onchange_bill_date(bill_no,bill_date)" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="excisable_item" attrs="{'readonly':[('state','=','done')]}" />
+					<field name="gp_received" attrs="{'readonly':[('state','=','done')]}" />
+					<field name="gp_date" attrs="{'readonly':[('state','=','done')]}" />
+					<field name="purchase_id" attrs="{'readonly':[('state','=','done')]}" />
+					<field name="maize_receipt" groups="indent.group_maize_data"
+						attrs="{'readonly':[('state','=','done')]}" />
+					<field name="voucher_id" attrs="{'readonly':[('state','=','done')]}" />
+					<field name="bill_no" attrs="{'readonly':[('state','=','done')]}" />
+					<field name="bill_date" on_change="onchange_bill_date(bill_no,bill_date)"
+						attrs="{'readonly':[('state','=','done')]}" />
 				</xpath>
 
 				<xpath
@@ -717,7 +704,7 @@
 						string="Supplier" />
 				</xpath>
 				<xpath expr="//field[@name='move_lines']" position="replace">
-					<field name="move_lines" 
+					<field name="move_lines"
 						context="{'address_in_id': partner_id, 'picking_type': 'receipt', 'form_view_ref':'view_move_picking_form', 'tree_view_ref':'view_move_picking_tree'}" />
 				</xpath>
 				<xpath expr="/form/sheet" position="after">
@@ -733,7 +720,6 @@
 						context="{'address_in_id': partner_id, 'form_view_ref':'view_move_picking_form', 'tree_view_ref':'view_move_picking_tree', 'picking_type': 'internal'}">
 						<tree string="Receipt">
 							<field name="product_id" />
-							<field name="department_id" />
 							<field name="new_rate" />
 							<field name="rate" invisible="1" />
 							<field name="diff_amount" invisible="1" />
@@ -850,8 +836,8 @@
 				<xpath expr="//button[@name='draft_force_assign']" position="attributes">
 					<attribute name="invisible">True</attribute>
 				</xpath>
-				<xpath expr="//field[@name='date_done']" position="replace">
-				</xpath>
+				<xpath expr="//field[@name='date_done']" position="replace" />
+
 				<xpath expr="//field[@name='origin']" position="before">
 					<field name="date_done" string="Receipt Date" />
 				</xpath>
@@ -883,7 +869,7 @@
 					<separator />
 					<filter icon="terp-dolar" name="to_invoice" string="To Invoice"
 						domain="[('invoice_state','=','2binvoiced')]" help="Delivery orders to invoice" />
-					<field name="partner_id"/>
+					<field name="partner_id" />
 					<field name="stock_journal_id" />
 					<field name="inward_id" />
 					<field name="company_id" groups="base.group_multi_company" />
@@ -910,12 +896,13 @@
 			<field name="view_mode">tree,form</field>
 			<field name="domain">[('type','=','receipt')]</field>
 			<field name="context">{'contact_display': 'partner_address',
-				'default_type': 'receipt'}</field>
+				'default_type': 'receipt'}
+			</field>
 			<field name="search_view_id" ref="view_picking_receipt_search" />
 			<field name="help" type="html">
 				<p class="oe_view_nocontent_create">
-					Click to create an incoming shipment. 
-              </p>
+					Click to create an incoming shipment.
+				</p>
 				<p>
 					The Incoming Shipments is the list of all orders you will
 					receive
@@ -923,7 +910,7 @@
 					list of
 					products to be received according to the original
 					purchase order.
-					</p>    
+				</p>
 			</field>
 		</record>
 
@@ -958,7 +945,7 @@
 			id="stock.menu_action_picking_tree6" parent="stock.menu_stock_warehouse_mgmt"
 			sequence="2" groups="stock.group_locations" />
 
-		<!--  Stock Picking form view inherit -->
+		<!-- Stock Picking form view inherit -->
 		<record id="inherit_view_stock_picking_form" model="ir.ui.view">
 			<field name="name">stock.picking.form.inherit</field>
 			<field name="model">stock.picking</field>
@@ -970,15 +957,15 @@
 					<field name="tr_code_id" />
 					<field name="cylinder" />
 				</field>
-				<xpath expr="//field[@name='date_done']" position="replace">
-				</xpath>
+				<xpath expr="//field[@name='date_done']" position="replace" />
+
 				<xpath expr="//field[@name='date']" position="after">
 					<field name="date_done" string="Issue Date" />
 				</xpath>
 			</field>
 		</record>
 
-		<!--  Split Serial Number Wizard inherit -->
+		<!-- Split Serial Number Wizard inherit -->
 		<record id="maize_inherit_split_serial_form" model="ir.ui.view">
 			<field name="model">stock.move.split</field>
 			<field name="inherit_id" ref="stock.view_split_in_lots" />
@@ -997,32 +984,32 @@
 			</field>
 		</record>
 
-		<!--  Stock Picking Out form view inherit -->
+		<!-- Stock Picking Out form view inherit -->
 		<record id="maize_inherit_view_stock_picking_out_form" model="ir.ui.view">
 			<field name="name">maize.inherit.stock.picking.out.form</field>
 			<field name="model">stock.picking.out</field>
 			<field name="inherit_id" ref="stock.view_picking_out_form" />
 			<field name="arch" type="xml">
-				<xpath expr="//field[@name='date_done']" position="replace">
-				</xpath>
+				<xpath expr="//field[@name='date_done']" position="replace" />
+
 				<xpath expr="//field[@name='stock_journal_id']" position="after">
 					<field name="date_done" string="Delivery Date" />
 				</xpath>
 			</field>
 		</record>
-		
+
 		<record id="view_picking_out_search_inherit" model="ir.ui.view">
 			<field name="name">maize.inherit.stock.picking.out.search</field>
 			<field name="model">stock.picking.out</field>
 			<field name="inherit_id" ref="stock.view_picking_out_search" />
 			<field name="arch" type="xml">
-			    <field name="partner_id" position="replace">
-			        <field name="partner_id"/>
-			    </field>
+				<field name="partner_id" position="replace">
+					<field name="partner_id" />
+				</field>
 			</field>
 		</record>
 
-		<!--  Stock Move Search View Inherit -->
+		<!-- Stock Move Search View Inherit -->
 		<record id="view_stock_move_search_inherit" model="ir.ui.view">
 			<field name="name">stock.move.search.inherit</field>
 			<field name="model">stock.move</field>
@@ -1052,10 +1039,7 @@
 					<field name="po_name" />
 					<field name="payment_id" />
 					<field name="supplier_id" />
-					<field name="indentor_id" />
-					<!--
-						field name="gate_pass_id"/> <field name="despatch_mode"/
-					-->
+					<!-- field name="gate_pass_id"/> <field name="despatch_mode"/ -->
 				</xpath>
 			</field>
 		</record>
@@ -1069,16 +1053,16 @@
 			<field name="search_view_id" ref="view_stock_move_search_inherit" />
 			<field name="context">{}</field>
 			<field name="help" type="html">
-                <p class="oe_view_nocontent_create">
-                    Click to create a stock movement.
-                </p>
-                <p>
-                    This menu gives you the full traceability of inventory
-                    operations
-                    on a specific product. You can filter on the product
-                    to see all the
-                    past or future movements for the product.
-                </p>
+				<p class="oe_view_nocontent_create">
+					Click to create a stock movement.
+				</p>
+				<p>
+					This menu gives you the full traceability of inventory
+					operations
+					on a specific product. You can filter on the product
+					to see all the
+					past or future movements for the product.
+				</p>
 			</field>
 		</record>
 
@@ -1161,7 +1145,7 @@
 			id="menu_maize_tr_code" parent="maize_product.menu_maize_config"
 			sequence="13" />
 
-		<!--  Series/Supplier wise Report -->
+		<!-- Series/Supplier wise Report -->
 
 		<record id="view_maize_series_tree" model="ir.ui.view">
 			<field name="name">maize.series.tree</field>
@@ -1225,7 +1209,8 @@
 			<field name="view_mode">tree,graph</field>
 			<field name="search_view_id" eval="maize_series_search_report" />
 			<field name="help">Series/Supplier Wise Analysis allows you to easily
-				check and analyse your Contract.</field>
+				check and analyse your Contract.
+			</field>
 		</record>
 
 		<record id="maize_action_product_report_view" model="ir.actions.act_window.view">
@@ -1254,9 +1239,6 @@
 					<field name="date_order" />
 					<field name="minimum_planned_date" invisible="context.get('quotation_only', False)" />
 					<field name="origin" />
-					<field name="indentor_code" invisible="1" />
-					<field name="indent_id" invisible="1" />
-					<field name="indentor_id" invisible="1" />
 					<field name="company_id" groups="base.group_multi_company"
 						widget="selection" />
 					<field name="amount_untaxed" sum="Total Untaxed amount"
@@ -1280,8 +1262,8 @@
 						filter_domain="['|', '|', ('name', 'ilike', self), ('indentor_code', 'ilike', self), ('supplier_code', 'ilike', self)]" />
 				</field>
 				<field name="partner_id" position="replace">
-				    <field name="partner_id"/>
-			    </field>
+					<field name="partner_id" />
+				</field>
 				<field name="partner_id" position="after">
 					<field name="po_series_id" />
 					<field name="product_id" />
@@ -1301,7 +1283,7 @@
 				</filter>
 			</field>
 		</record>
-		<!--  Advance Note Report -->
+		<!-- Advance Note Report -->
 
 		<record id="view_maize_purchase_order_line_tree" model="ir.ui.view">
 			<field name="name">maize.purchase.order.line.tree</field>
@@ -1394,7 +1376,7 @@
 			<field name="search_view_id" eval="maize_advance_note_search_report" />
 			<field name="help">Advance Note Register</field>
 		</record>
-		
+
 
 		<record id="maize_action_advance_note_view" model="ir.actions.act_window.view">
 			<field eval="1" name="sequence" />
@@ -1402,12 +1384,11 @@
 			<field name="view_id" ref="view_maize_purchase_order_line_tree" />
 			<field name="act_window_id" ref="maize_advance_note_report" />
 		</record>
-		<menuitem action="indent.action_advance_note_datestart_from" id="menu_action_maize_advance_note_report"
-			parent="stock.next_id_61" sequence="7" />
+		<menuitem action="indent.action_advance_note_datestart_from"
+			id="menu_action_maize_advance_note_report" parent="stock.next_id_61"
+			sequence="7" />
 
-		<!--
-			Override the menus to change products to items in warehouse module
-		-->
+		<!-- Override the menus to change products to items in warehouse module -->
 		<menuitem id="stock.menu_stock_product" name="Items"
 			parent="stock.menu_stock_root" sequence="6" />
 		<menuitem name="Items by Category" id="stock.menu_product_by_category_stock_form"
@@ -1423,9 +1404,7 @@
 			id="stock.menu_product_category_config_stock" parent="stock.menu_product_in_config_stock"
 			sequence="0" />
 
-		<!--
-			Override the menus to change products to items in purchase module
-		-->
+		<!-- Override the menus to change products to items in purchase module -->
 		<menuitem id="purchase.menu_procurement_management_product"
 			name="Items" parent="base.menu_purchase_root" sequence="8" />
 		<menuitem name="Items by Category"

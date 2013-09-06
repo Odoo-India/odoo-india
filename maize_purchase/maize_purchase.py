@@ -19,6 +19,7 @@
 #
 ##############################################################################
 
+import math
 import time
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -35,15 +36,6 @@ SERIES = [
     ('purchase', 'Purchase'),
     ('store', 'Store')
 ]
-
-class hr_employee(osv.osv):
-    _inherit = 'hr.employee'
-    _columns = {
-        'group_desc': fields.char('Group Description', size=64, required=False, readonly=False),
-        'purchase_limit': fields.float('Purchase Limit', required=False, readonly=False),
-    }
-hr_employee()
-    
 class stock_picking_in(osv.osv):
     _inherit = "stock.picking.in"
     _order = "id desc"
@@ -82,8 +74,7 @@ class stock_picking_in(osv.osv):
                                            ('camel_cart','By Camel Cart'),
                                            ('others','Others'),],"Despatch Mode"),
         'other_dispatch': fields.char("Other Dispatch",size=256),
-        'maize_in': fields.char('Maize', size=256, readonly=True),
-            
+        'maize_in': fields.char('Maize', size=256, readonly=True)
     }
     _defaults = {
         'dest_to' : 'Kathwada'
@@ -311,6 +302,11 @@ class purchase_order_line(osv.Model):
         return result
 
     _columns = {
+        # 'purchase.order.line'
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'indentor_id': fields.many2one('res.users', 'Indentor'),
+        'department_id': fields.many2one('stock.location', 'Department'),
+        
         'discount': fields.float('Discount (%)'),
         'price_subtotal': fields.function(_amount_line, multi="tax", string='Subtotal', digits_compute= dp.get_precision('Account'),
             store={
@@ -330,7 +326,7 @@ class purchase_order_line(osv.Model):
         'po_series_id': fields.related('order_id', 'po_series_id', type="many2one", relation="product.order.series", string="PO Sr", store=True),
         'po_payment_term_id': fields.related('order_id', 'payment_term_id', type="many2one", relation='account.payment.term', string="Payment Term", store=True),
         'po_delivery': fields.related('order_id', 'delivey', type="many2one", relation="purchase.delivery",string="Mill Delivery/Ex-Godown",store=True),
-        'po_indentor_id': fields.related('order_id', 'indentor_id', type="many2one", relation="res.users", string="Indentor",store=True),
+        'po_indentor_id': fields.related('indentor_id', 'indentor_id', type="many2one", relation="res.users", string="Indentor",store=True),
         'po_excise': fields.function(_amount_line, multi="tax", string='Excise', digits_compute= dp.get_precision('Account'),
             store={
                 'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
@@ -406,7 +402,7 @@ class purchase_order_line(osv.Model):
                 'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
             }),
       }
-      
+    
     def action_confirm(self, cr, uid, ids, context=None):
         product_obj = self.pool.get('product.product')
         current_year = str(datetime.now()).split('-')[0]
@@ -420,14 +416,76 @@ purchase_order_line()
 class purchase_requisition(osv.osv):
     _inherit = "purchase.requisition"
     _order = "name desc"
+    
+    def _get_indent(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        indent_obj = self.pool.get('indent.indent')
+        for requisition in self.browse(cr, uid, ids, context=context):
+            indent_id = False
+            if requisition.origin:
+                indent_ids = indent_obj.search(cr, uid, [('name', '=', requisition.origin)], context=context)
+                indent_id = indent_ids and indent_ids[0] or False
+            result[requisition.id] = indent_id
+        return result
+
     _columns = {
-        #'purchase_ids' : fields.one2many('purchase.order','requisition_id','Purchase Orders',states={'done': [('readonly', True)]}),
-        #'purchase_ids' : fields.many2many('purchase.order','purchase_requisition_rel11','requisition_id','purchase_id','Latest Requisition',states={'done': [('readonly', True)]}),
+        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
+        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
+        'maize': fields.char('Maize', size=256, readonly=True),
         'purchase_ids' : fields.many2many('purchase.order','purchase_requisition_rel11','requisition_id','purchase_id','Latest Requisition')
-        }
-    _defaults = {
-                 'exclusive': 'exclusive',
     }
+    _defaults = {
+        'exclusive': 'exclusive',
+    }
+    
+    def make_purchase_order(self, cr, uid, ids, partner_id, context=None):
+        """
+        Create New RFQ for Supplier
+        """
+        if context is None:
+            context = {}
+        assert partner_id, 'Supplier should be specified'
+        purchase_order = self.pool.get('purchase.order')
+        purchase_order_line = self.pool.get('purchase.order.line')
+        res_partner = self.pool.get('res.partner')
+        fiscal_position = self.pool.get('account.fiscal.position')
+        supplier = res_partner.browse(cr, uid, partner_id, context=context)
+        supplier_pricelist = supplier.property_product_pricelist_purchase or False
+        res = {}
+        for requisition in self.browse(cr, uid, ids, context=context):
+            if supplier.id in filter(lambda x: x, [rfq.state <> 'cancel' and rfq.partner_id.id or None for rfq in requisition.purchase_ids]):
+                raise osv.except_osv(_('Warning!'), _('You have already one %s purchase order for this partner, you must cancel this purchase order to create a new quotation.') % rfq.state)
+            location_id = requisition.warehouse_id.lot_input_id.id
+            purchase_id = purchase_order.create(cr, uid, {
+                        'origin': requisition.origin,
+                        'partner_id': supplier.id,
+                        'pricelist_id': supplier_pricelist.id,
+                        'location_id': location_id,
+                        'company_id': requisition.company_id.id,
+                        'fiscal_position': supplier.property_account_position and supplier.property_account_position.id or False,
+                        'requisition_id':requisition.id,
+                        'notes':requisition.description,
+                        'warehouse_id':requisition.warehouse_id.id,
+            }, context=context)
+            res[requisition.id] = purchase_id
+            for line in requisition.line_ids:
+                product = line.product_id
+                seller_price, qty, default_uom_po_id, date_planned = self._seller_details(cr, uid, line, supplier, context=context)
+                taxes_ids = product.supplier_taxes_id
+                taxes = fiscal_position.map_tax(cr, uid, supplier.property_account_position, taxes_ids)
+                purchase_order_line.create(cr, uid, {
+                    'order_id': purchase_id,
+                    'name': product.partner_ref,
+                    'product_qty': qty,
+                    'product_id': product.id,
+                    'product_uom': default_uom_po_id,
+                    'price_unit': seller_price,
+                    'date_planned': date_planned,
+                    'taxes_id': [(6, 0, taxes)],
+                }, context=context)
+            self.pool.get('purchase.requisition').write(cr, uid, requisition.id, {'purchase_ids':[(4, purchase_id)]})
+        return res
     
     def request_all_supplier(self, cr, uid, ids, context=None):
         """
@@ -518,6 +576,124 @@ purchase_requisition_partner()
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
     _order = 'id desc'
+    
+    def _get_number_of_days(self, date_from, date_to):
+        """Returns a float equals to the timedelta between two dates given as string."""
+
+        DATETIME_FORMAT = "%Y-%m-%d"
+        from_dt = datetime.strptime(date_from, DATETIME_FORMAT)
+        to_dt = datetime.strptime(date_to, DATETIME_FORMAT)
+        timedelta = to_dt - from_dt
+        diff_day = timedelta.days + float(timedelta.seconds) / 86400
+        return diff_day
+
+    def onchange_compute_days1(self, cr, uid, ids, date_from, date_to,d1=0,d2=0,d3=0):
+        """
+        If there are no date set for date_to, automatically set one 8 hours later than
+        the date_from.
+        Also update the number_of_days.
+        """
+        # date_to has to be greater than date_from
+        if (date_from and date_to) and (date_from > date_to):
+            raise osv.except_osv(_('Warning!'),_('The start date must be anterior to the end date.'))
+
+        result = {'value': {}}
+
+        # No date_to set so far: automatically compute one 8 hours later
+        if date_from and not date_to:
+            result['value']['no_of_days1'] = 0
+            result['value']['total_days'] = d1+d2+d3
+
+        # Compute and update the number of days
+        if (date_to and date_from) and (date_from <= date_to):
+            diff_day = self._get_number_of_days(date_from, date_to)
+            result['value']['no_of_days1'] = round(math.floor(diff_day))+1
+            result['value']['total_days'] = d1+d2+round(math.floor(diff_day))+1+d3
+        else:
+            result['value']['no_of_days1'] = 0
+
+        return result
+    
+    def onchange_compute_days2(self, cr, uid, ids, date_from, date_to,d1=0,d2=0,d3=0):
+        """
+        If there are no date set for date_to, automatically set one 8 hours later than
+        the date_from.
+        Also update the number_of_days.
+        """
+        # date_to has to be greater than date_from
+        if (date_from and date_to) and (date_from > date_to):
+            raise osv.except_osv(_('Warning!'),_('The start date must be anterior to the end date.'))
+
+        result = {'value': {}}
+
+        # No date_to set so far: automatically compute one 8 hours later
+        if date_from and not date_to:
+            result['value']['no_of_days2'] = 0
+            result['value']['total_days'] = d1+d2+d3
+
+        # Compute and update the number of days
+        if (date_to and date_from) and (date_from <= date_to):
+            diff_day = self._get_number_of_days(date_from, date_to)
+            result['value']['no_of_days2'] = round(math.floor(diff_day))+1
+            result['value']['total_days'] = round(math.floor(diff_day))+1+d1+d2+d3
+        else:
+            result['value']['no_of_days2'] = 0
+
+        return result
+
+    def onchange_compute_days3(self, cr, uid, ids, date_from, date_to,d1=0,d2=0,d3=0):
+        """
+        If there are no date set for date_to, automatically set one 8 hours later than
+        the date_from.
+        Also update the number_of_days.
+        """
+        # date_to has to be greater than date_from
+        if (date_from and date_to) and (date_from > date_to):
+            raise osv.except_osv(_('Warning!'),_('The start date must be anterior to the end date.'))
+
+        result = {'value': {}}
+
+        # No date_to set so far: automatically compute one 8 hours later
+        if date_from and not date_to:
+            result['value']['no_of_days3'] = 0
+            result['value']['total_days'] = d1+d2+d3
+
+        # Compute and update the number of days
+        if (date_to and date_from) and (date_from <= date_to):
+            diff_day = self._get_number_of_days(date_from, date_to)
+            result['value']['no_of_days3'] = round(math.floor(diff_day))+1
+            result['value']['total_days'] = round(math.floor(diff_day))+1+d1+d2+d3
+        else:
+            result['value']['no_of_days3'] = 0
+
+        return result       
+
+    def onchange_compute_days4(self, cr, uid, ids, date_from, date_to,d1=0,d2=0,d3=0):
+        """
+        If there are no date set for date_to, automatically set one 8 hours later than
+        the date_from.
+        Also update the number_of_days.
+        """
+        # date_to has to be greater than date_from
+        if (date_from and date_to) and (date_from > date_to):
+            raise osv.except_osv(_('Warning!'),_('The start date must be anterior to the end date.'))
+
+        result = {'value': {}}
+
+        # No date_to set so far: automatically compute one 8 hours later
+        if date_from and not date_to:
+            result['value']['no_of_days4'] = 0
+            result['value']['total_days'] = d1+d2+d3
+
+        # Compute and update the number of days
+        if (date_to and date_from) and (date_from <= date_to):
+            diff_day = self._get_number_of_days(date_from, date_to)
+            result['value']['no_of_days4'] = round(math.floor(diff_day))+1
+            result['value']['total_days'] = round(math.floor(diff_day))+1+d1+d2+d3
+        else:
+            result['value']['no_of_days4'] = 0
+
+        return result
     
     def wkf_send_rfq(self, cr, uid, ids, context=None):
         ir_model_data = self.pool.get('ir.model.data')
@@ -666,7 +842,56 @@ class purchase_order(osv.Model):
         })
         return super(purchase_order, self).copy(cr, uid, ids[0], default, context=context)
     
+    def _get_indent(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        indent_obj = self.pool.get('indent.indent')
+        for order in self.browse(cr, uid, ids, context=context):
+            indent_id = False
+            if order.origin:
+                indent_ids = indent_obj.search(cr, uid, [('name', '=', order.origin)], context=context)
+                indent_id = indent_ids and indent_ids[0] or False
+            result[order.id] = indent_id
+        return result
+
+    def _prepare_order_picking(self, cr, uid, order, context=None):
+        return {
+            'name': False,
+            'origin': order.name + ((order.origin and (':' + order.origin)) or ''),
+            'date': self.date_to_datetime(cr, uid, order.date_order, context),
+            'partner_id': order.dest_address_id.id or order.partner_id.id,
+            'invoice_state': '2binvoiced' if order.invoice_method == 'picking' else 'none',
+            'type': 'in',
+            'partner_id': order.dest_address_id.id or order.partner_id.id,
+            'purchase_id': order.id,
+            'company_id': order.company_id.id,
+            'move_lines' : [],
+            'voucher_id': order.voucher_id.id,
+        }
+
     _columns = {
+        #fields from contract
+        'contract': fields.boolean('Contract'),
+        
+        'no_of_days1': fields.integer("No of Days1", help="Calculate number of days for contracts"),
+        'no_of_days2': fields.integer("No of Days2", help="Calculate Extended number of days 1st time for contracts"),
+        'no_of_days3': fields.integer("No of Days3", help="Calculate Extended number of days 2nd time for contracts"),
+        'no_of_days4': fields.integer("No of Days4", help="Calculate Extended number of days 2nd time for contracts"),
+        'total_days': fields.integer("Total Days", help="Calculate Total number of days for contracts"),
+        'date_from': fields.date('From Date', required=True),
+        'date_to': fields.date('To Date'),
+        'extended_date_from1': fields.date('Extended From'),
+        'extended_date_from2': fields.date('Extended From'),
+        'extended_date_from3': fields.date('Extended From'),
+        'extended_date_to1': fields.date('Extended Upto'),
+        'extended_date_to2': fields.date('Extended Upto'),
+        'extended_date_to3': fields.date('Extended Upto'),
+        'retention': fields.selection([('leived', 'CONTRACTOR\'S RETENTION TO BE LEIVED'),('not_leived', 'CONTRACTOR\'S RETENTION NOT TO BE LEIVED')], "Retention Type"),
+
+        #fields from indent
+        'maize': fields.char('Maize PO Number', size=256, readonly=True),
+        'contract_name': fields.char('Contract Name', size=256, readonly=True),
+        'voucher_id': fields.many2one('account.voucher', 'Payment'),
+        
         'package_and_forwording': fields.float('Packing & Forwarding', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'insurance': fields.float('Insurance',  states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'commission': fields.float('Commission', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
@@ -723,7 +948,7 @@ class purchase_order(osv.Model):
         'voucher_id': fields.many2one('account.voucher', 'Payment', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'contract_id': fields.many2one('product.order.series', 'Contract Series'),
         'supplier_code': fields.related('partner_id', 'supp_code', type='char', string='Supplier Code', store=True, readonly=True),
-        'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor Code', store=True, readonly=True),
+#        'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor Code', store=True, readonly=True),
         'dispatch_id': fields.many2one('purchase.dispatch', 'Dispatch', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'other_discount': fields.float('Discount / Round Off', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in fix amount", track_visibility='always'),
         'discount_percentage':  fields.float('Discount (%)', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in %", track_visibility='always'),
@@ -741,6 +966,7 @@ class purchase_order(osv.Model):
         'insurance_type': 'fix',
         'freight_type': 'fix',
         'packing_type': 'fix',
+        'date_from': lambda *a: datetime.now().strftime('%Y-%m-%d'),
      }
     
     def search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False):
@@ -801,39 +1027,46 @@ class purchase_order(osv.Model):
         voucher_obj = self.pool.get('account.voucher')
         for po in self.browse(cr, uid, ids, context=context):
             sequence = po.name
-            if po.indent_id and po.indent_id.contract and not po.maize:
-                if not po.contract_id:
-                    raise osv.except_osv(_("Warning !"),_('Please select a contract series.'))
-                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
-                sequence = seq_obj.get(cr, uid, contract_seq)
-            elif not po.maize:
-                if not po.po_series_id:
-                    raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
-                seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
-                sequence = seq_obj.get(cr, uid, seq)
+            
+#             if po.indent_id and po.indent_id.contract and not po.maize:
+#                 if not po.contract_id:
+#                     raise osv.except_osv(_("Warning !"),_('Please select a contract series.'))
+#                 
+#                 contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
+#                 sequence = seq_obj.get(cr, uid, contract_seq)
+#             if not po.maize:
+#                 if not po.po_series_id:
+#                     raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
+#                 seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
+#                 sequence = seq_obj.get(cr, uid, seq)
+            
             voucher_id = False
             totlines = []
             total_amt = 0.0
             flag = False
             if po.payment_term_id and po.payment_term_id.line_ids:
                 totlines = payment_term_obj.compute(cr, uid, po.payment_term_id.id, po.amount_untaxed, po.date_order or False, context=context)
-            journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
-            journal_id = journal_ids and journal_ids[0] or False
-            if not journal_id:
-                raise osv.except_osv(_("Warning !"),_('You must define a journal related to an advance payment.'))
-            journal = self.pool.get('account.journal').browse(cr, uid, journal_id, context=context)
-            account_id = journal.default_credit_account_id or journal.default_debit_account_id or False
-            if not account_id:
-                raise osv.except_osv(_("Warning !"),_('You must define a default debit and credit account for a journal.'))
-            for line in totlines:
-                today = fields.date.context_today(self, cr, uid, context=context)
-                if line[0] == today:
-                    total_amt += line[1]
-                    flag = True
-            if flag:
-                note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, sequence, po.indent_id.name or '',)
-                voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': sequence, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
-            self.write(cr, uid, [po.id], {'name': sequence, 'voucher_id': voucher_id}, context=context)
+            
+                journal_ids = self.pool.get('account.journal').search(cr, uid, [('code', '=', 'BNK2')], context=context)
+                journal_id = journal_ids and journal_ids[0] or False
+            
+                if po.payment_term_id and not journal_id:
+                    raise osv.except_osv(_("Warning !"),_('Bank journal not defined, You must define a bank journal to process an advance payment.'))
+        
+                journal = self.pool.get('account.journal').browse(cr, uid, journal_id, context=context)
+                account_id = journal.default_credit_account_id or journal.default_debit_account_id or False
+                if not account_id:
+                    raise osv.except_osv(_("Warning !"),_('You must define a default debit and credit account for a journal.'))
+                for line in totlines:
+                    today = fields.date.context_today(self, cr, uid, context=context)
+                    if line[0] == today:
+                        total_amt += line[1]
+                        flag = True
+                if flag:
+                    note = '''An advance payment of rupees: %s\n\nREFERENCES:\nPurchase order: %s\nIndent: %s''' %(total_amt, sequence, po.indent_id.name or '',)
+                    voucher_id = voucher_obj.create(cr, uid, {'partner_id': po.partner_id.id, 'date': today, 'amount': total_amt, 'reference': sequence, 'type': 'payment', 'journal_id': journal_id, 'account_id': account_id.id, 'narration': note}, context=context)
+                self.write(cr, uid, [po.id], {'name': sequence, 'voucher_id': voucher_id}, context=context)
+            
             for pp in po.requisition_ids:
                 if pp.exclusive=='exclusive':
                     for order in pp.purchase_ids:
@@ -1024,7 +1257,7 @@ class stock_picking(osv.Model):
         
         old_tax_ids = super(stock_picking, self)._get_taxes_invoice(cr, uid, move_line, type)
         tax_ids = []
-        if move_line.tax_cal != 0.0:
+        if move_line.tax_cal != 0.0 or (move_line.excies and move_line.cess == 0 and move_line.high_cess == 0):
             for tax in account_tax_obj.browse(cr, uid, old_tax_ids):
                 if tax.tax_type != 'excise':
                     tax_ids.append(tax.id)
@@ -1043,7 +1276,8 @@ class stock_picking(osv.Model):
                     'sequence': 1,
                     'include_base_amount': True
                 }
-                child_tax = account_tax_obj.onchange_tax_type(cr, uid, False, str(tax_amount),'excise')
+                if move_line.excies and move_line.cess != 0 and move_line.high_cess != 0:
+                    child_tax = account_tax_obj.onchange_tax_type(cr, uid, False, str(tax_amount),'excise')
                 new_tax_vals.update(child_tax.get('value'))
                 tax_id = account_tax_obj.create(cr, uid, new_tax_vals)
                 tax_ids.append(tax_id)
@@ -1089,17 +1323,17 @@ class stock_picking(osv.Model):
                         if move.product_id and move.product_id.ex_chapter:
                             vals.update({'excisable_item': True})
                     vals.update({'inward_id': pick.backorder_id and pick.backorder_id.id or False})
+                
                 vals.update({'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
-                        'partner_id': pick.partner_id.id,
-                        'stock_journal_id': pick.stock_journal_id or False,
-                        'origin': pick.origin or False,
-                        'type': 'receipt',
-                        'inward_date': datetime.today().strftime('%m-%d-%Y'),
-                        'purchase_id': pick.purchase_id.id or False,
-                        'voucher_id': pick.voucher_id.id,
-                        'move_lines': [(6,0, move_line)]
-
-                        })
+                    'partner_id': pick.partner_id.id,
+                    'stock_journal_id': pick.stock_journal_id or False,
+                    'origin': pick.origin or False,
+                    'type': 'receipt',
+                    'inward_date': datetime.today().strftime('%m-%d-%Y'),
+                    'purchase_id': pick.purchase_id.id or False,
+                    'voucher_id': pick.voucher_id.id,
+                    'move_lines': [(6,0, move_line)]
+                })
             receipt_obj.create(cr, uid, vals, context=context)
         else:
             for pick in self.browse(cr, uid, ids, context=context):
@@ -1228,7 +1462,9 @@ class stock_picking_receipt(osv.Model):
         'amount_total': fields.function(_total_amount, multi="cal",type="float", string='Total', store=True),
         'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff", store=True),
         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
-        'department_id': fields.related('purchase_id', 'indent_id', 'department_id', type="many2one", relation="stock.location", store=True),
+
+#        'department_id': fields.related('purchase_id', 'indent_id', 'department_id', type="many2one", relation="stock.location", store=True),
+        
         'maize_receipt': fields.char('Maize', size=256, readonly=True),
         'import_duty': fields.function(_total_amount, multi="cal", type="float", string='Import Duty', help="Total Import Duty", store=True),
         'voucher_id': fields.many2one('account.voucher', 'Payment'),
@@ -1239,12 +1475,8 @@ class stock_picking_receipt(osv.Model):
         'type': 'receipt',
         'invoice_state': '2binvoiced',
     }
-    
-
 stock_picking_receipt()
-#----------------------------------------------------------
-# Stock Location
-#----------------------------------------------------------
+
 class stock_location(osv.osv):
     _inherit = 'stock.location'
 
@@ -1273,19 +1505,19 @@ class stock_move(osv.osv):
     
     def _get_year(self, cr, uid, ids, name, args, context=None):
         res = dict([(id, {'inward_year':'','puchase_year':'','indent_year':''}) for id in ids])
-        move_year = po_year = indent_year = ''
-        for move in self.browse(cr, uid, ids, context=context):
-            move_date = datetime.strptime(move.create_date,'%Y-%m-%d %H:%M:%S').year
-            move_year=str(move_date-1)+''+str(move_date)
-            res[move.id]['inward_year'] = move_year
-            if move.picking_id and move.picking_id.purchase_id:
-                po_date = datetime.strptime(move.picking_id.purchase_id.date_order,'%Y-%m-%d').year
-                po_year=str(po_date-1)+''+str(po_date)
-                if move.picking_id.purchase_id.indent_date:
-                    indent_date = datetime.strptime(move.picking_id.purchase_id.indent_date,'%Y-%m-%d %H:%M:%S').year
-                    indent_year=str(indent_date-1)+''+str(indent_date)
-                res[move.id]['puchase_year'] = po_year 
-                res[move.id]['indent_year'] = indent_year
+#         move_year = po_year = indent_year = ''
+#         for move in self.browse(cr, uid, ids, context=context):
+#             move_date = datetime.strptime(move.create_date,'%Y-%m-%d %H:%M:%S').year
+#             move_year=str(move_date-1)+''+str(move_date)
+#             res[move.id]['inward_year'] = move_year
+#             if move.picking_id and move.picking_id.purchase_id:
+#                 po_date = datetime.strptime(move.picking_id.purchase_id.date_order,'%Y-%m-%d').year
+#                 po_year=str(po_date-1)+''+str(po_date)
+#                 if move.picking_id.purchase_id.indent_date:
+#                     indent_date = datetime.strptime(move.picking_id.purchase_id.indent_date,'%Y-%m-%d %H:%M:%S').year
+#                     indent_year=str(indent_date-1)+''+str(indent_date)
+#                 res[move.id]['puchase_year'] = po_year 
+#                 res[move.id]['indent_year'] = indent_year
         return res
     
     def _get_stock(self, cr, uid, ids, name, args, context=None):
@@ -1324,46 +1556,44 @@ class stock_move(osv.osv):
         return res
     
     _columns = {
-            'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type',store=True),
-            'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
-            'new_rate': fields.float('Rate', help="Rate for the product which is calculate after adding all tax"),
-            'diff': fields.float('Add (%)', digits_compute= dp.get_precision('Account'), help="Amount to be add"),
-            'less_diff': fields.float('Less (%)', digits_compute= dp.get_precision('Account'), help="Amount to be less"),
-            'diff_amount': fields.float('Diff amount',digits_compute= dp.get_precision('Account'), help="Difference Amount"),
-            'amount': fields.float('Amount.', digits_compute= dp.get_precision('Account'), help="Total Amount"),
-            'bill_no': fields.integer('Bill No'),
-            'bill_date': fields.date('Bill Date'),
-            'excies': fields.float('Excies.', digits_compute= dp.get_precision('Account')),
-            'cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
-            'high_cess': fields.float('High cess.', digits_compute= dp.get_precision('Account')),
-            'import_duty': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
-            'import_duty1': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
-            'cenvat': fields.float('CenVAT.', digits_compute= dp.get_precision('Account')),
-            'c_cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
-            'c_high_cess': fields.float('High Cess.', digits_compute= dp.get_precision('Account')),
-            'tax_cal': fields.float('Tax Cal', digits_compute= dp.get_precision('Account')),
-            'supplier_id': fields.related('picking_id', 'purchase_id', 'partner_id', type='many2one', relation='res.partner', string="Supplier", store=True),
-            'po_name': fields.related('picking_id', 'purchase_id','name', type="char", size=64, relation='puchase.order', string="PO Number", store=True),
-            'payment_id': fields.related('picking_id', 'purchase_id', 'payment_term_id','name', type="char", size=64, relation='account.payment.term',string="Payment", store=True),
-            'indentor_id': fields.related('picking_id', 'purchase_id', 'indentor_id', type="many2one", relation='res.users', string="Indentor", store=True),
-            'po_series_id': fields.related('picking_id', 'purchase_id', 'po_series_id', type="many2one", relation='product.order.series', string="PO series", store=True),
-            'indent_id': fields.related('picking_id', 'purchase_id', 'indent_id', type="many2one", relation='indent.indent', string="Indent", store=True),
-            'inward_year':fields.function(_get_year, multi="year", string="Inward Year",store=True),
-            'puchase_year':fields.function(_get_year, multi="year", string="Puchase Year", store=True),
-            'indent_year':fields.function(_get_year, multi="year", string="Puchase Year", store=True),
-            'excisable_item': fields.related('picking_id', 'excisable_item', type="boolean", relation='stock.picking', string="Excisable Item", store=True),
-            #'gate_pass_id': fields.related('picking_id', 'gp_no', type="many2one", relation='gate.pass', string="Gate Pass No", store=True),
-            #'despatch_mode': fields.related('picking_id', 'despatch_mode', type="selection", relation='stock.picking', string="Mode of Despatch", store=True),
-            'today': fields.function(_get_today, string="Today Date",type="date"),
-            # required=False because we change product on_change in po line so it come black in some case
-            'name': fields.char('Description', select=True),
-            'challan_qty': fields.float('Challan Quantity', digits_compute=dp.get_precision('Product Unit of Measure'),states={'done': [('readonly', True)]},help="This Quntity is used for backorder and actual received quntity"),
-            'qty_available': fields.function(_get_stock, string="Stock", type="float"),
-            'vat_unit': fields.float('VAT Unit', digits_compute= dp.get_precision('Account')),
-            'packing_unit': fields.float('Packing Unit', digits_compute= dp.get_precision('Account')),
-            'insurance_unit': fields.float('Insurance Unit', digits_compute= dp.get_precision('Account')),
-            'freight_unit': fields.float('Freight Unit', digits_compute= dp.get_precision('Account')),
-                }
+        'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'),('receipt', 'receipt')], string='Shipping Type',store=True),
+        'rate': fields.float('Rate', digits_compute= dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
+        'new_rate': fields.float('Rate', help="Rate for the product which is calculate after adding all tax"),
+        'diff': fields.float('Add (%)', digits_compute= dp.get_precision('Account'), help="Amount to be add"),
+        'less_diff': fields.float('Less (%)', digits_compute= dp.get_precision('Account'), help="Amount to be less"),
+        'diff_amount': fields.float('Diff amount',digits_compute= dp.get_precision('Account'), help="Difference Amount"),
+        'amount': fields.float('Amount.', digits_compute= dp.get_precision('Account'), help="Total Amount"),
+        'bill_no': fields.integer('Bill No'),
+        'bill_date': fields.date('Bill Date'),
+        'excies': fields.float('Excies.', digits_compute= dp.get_precision('Account')),
+        'cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
+        'high_cess': fields.float('High cess.', digits_compute= dp.get_precision('Account')),
+        'import_duty': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
+        'import_duty1': fields.float('Import Duty.', digits_compute= dp.get_precision('Account')),
+        'cenvat': fields.float('CenVAT.', digits_compute= dp.get_precision('Account')),
+        'c_cess': fields.float('Cess.', digits_compute= dp.get_precision('Account')),
+        'c_high_cess': fields.float('High Cess.', digits_compute= dp.get_precision('Account')),
+        'tax_cal': fields.float('Tax Cal', digits_compute= dp.get_precision('Account')),
+        'supplier_id': fields.related('picking_id', 'purchase_id', 'partner_id', type='many2one', relation='res.partner', string="Supplier", store=True),
+        'po_name': fields.related('picking_id', 'purchase_id','name', type="char", size=64, relation='puchase.order', string="PO Number", store=True),
+        'payment_id': fields.related('picking_id', 'purchase_id', 'payment_term_id','name', type="char", size=64, relation='account.payment.term',string="Payment", store=True),
+        'po_series_id': fields.related('picking_id', 'purchase_id', 'po_series_id', type="many2one", relation='product.order.series', string="PO series", store=True),
+        
+        #'indent_id': fields.related('picking_id', 'purchase_id', 'indent_id', type="many2one", relation='indent.indent', string="Indent", store=True),
+        
+        'inward_year':fields.function(_get_year, multi="year", string="Inward Year",store=True),
+        'puchase_year':fields.function(_get_year, multi="year", string="Puchase Year", store=True),
+        'indent_year':fields.function(_get_year, multi="year", string="Puchase Year", store=True),
+        'excisable_item': fields.related('picking_id', 'excisable_item', type="boolean", relation='stock.picking', string="Excisable Item", store=True),
+        'today': fields.function(_get_today, string="Today Date",type="date"),
+        'name': fields.char('Description', select=True),
+        'challan_qty': fields.float('Challan Quantity', digits_compute=dp.get_precision('Product Unit of Measure'),states={'done': [('readonly', True)]},help="This Quntity is used for backorder and actual received quntity"),
+        'qty_available': fields.function(_get_stock, string="Stock", type="float"),
+        'vat_unit': fields.float('VAT Unit', digits_compute= dp.get_precision('Account')),
+        'packing_unit': fields.float('Packing Unit', digits_compute= dp.get_precision('Account')),
+        'insurance_unit': fields.float('Insurance Unit', digits_compute= dp.get_precision('Account')),
+        'freight_unit': fields.float('Freight Unit', digits_compute= dp.get_precision('Account')),
+    }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, add_diff, less_diff,rate, import_duty, tax_cal, context=None):
         tax = ''
@@ -1498,7 +1728,6 @@ class tr_code(osv.Model):
     _sql_constraints = [
         ('code_uniq', 'unique (code)', 'The code must be unique!')
     ]
-
 tr_code()
 
 class stock_invoice_onshipping(osv.osv_memory):

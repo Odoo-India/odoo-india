@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <!-- Indent Form View -->
+        <record id='indent.view_indent_indent_form' model='ir.ui.view'>
+            <field name="name">indent.indent.form</field>
+            <field name="model">indent.indent</field>
+            <field name="arch" type="xml">
+                <form string="Indents" version="7.0">
+                    <header>
+                        <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight"/>
+                        <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight"/>
+                        <button name="indent_reject" string="Reject" states="waiting_approval"/>
+                        <button name="action_receive_products" string="Receive Product(s)" states="inprogress" type="object" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}'/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <label string="Draft Indent" attrs="{'invisible': ['|',('contract','=',True),('state','&lt;&gt;','draft')]}"/>
+                                <label string="Draft Contract" attrs="{'invisible': ['|',('contract','=',False),('state','&lt;&gt;','draft')]}"/>
+                                <label string="Indent" attrs="{'invisible': ['|',('contract','=',True),('state', '=', 'draft')]}"/>
+                                <label string="Contract" attrs="{'invisible': ['|',('contract','=',False),('state', '=', 'draft')]}"/>
+                                <field name="name" class="oe_inline"/>
+                            </h1>
+                        </div>
+                        <div class="oe_right oe_inline" name="buttons">
+                        </div>
+                        <group>
+                            <group>
+                                <field name="indent_date" />
+                                <field name="maize" groups="indent.group_maize_data"/>
+                                <field name="contract" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="required_date"/>
+                                <field name="attachment_id" invisible="1"/>
+                                <field name="print_report" readonly="1" attrs="{'invisible': [('print_report', '=', False)]}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Details">
+                                <field name="item_for" on_change="onchange_item(item_for)"/>
+                                <field name="analytic_account_id" attrs="{'invisible': [('item_for', '!=', 'capital')], 'required': [('item_for', '=', 'capital')]}"/>
+                                <field name="requirement"/>
+                                <field name="type"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="indent_equipment_id"/>
+                            </group>
+                            <group string="Indentor">
+                                <field name="indentor_id" readonly="1"/>
+                                <field name="employee_id" groups="indent.group_maize_data" invisible="1"/>
+                                <field name="employee_department_id" groups="indent.group_maize_data" invisible="1"/>
+                                <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view'), ('maize_location', '=', True)]" context="{'default_maize_location': True}"/>
+                                <field name="indent_section_id"/>
+                                <field name="fiscalyear"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="product_lines">
+                                    <form string="Products" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field name="product_id"
+                                                    groups="base.group_user"
+                                                    on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type, parent.contract)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field
+                                                        name="product_uom_qty" class="oe_inline"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
+                                                        on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type, parent.contract)"/>
+                                                </div>
+                                                 <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type, parent.contract)"/>
+                                                 <field name="person"/>
+                                            </group>
+                                            <group>
+                                                <field name="original_product_id"/>
+                                                <field name="type"/>
+                                                <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type, parent.contract)"/>
+                                                <field name="virtual_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type, parent.contract)"/>
+                                                <field name="delay"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                        <label for="specification"/>
+                                        <field name="specification"/>
+                                    </form>
+                                    <tree string="Products">
+                                        <field name="product_id"
+                                            groups="base.group_user"
+                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type, parent.contract)"/>
+                                        <field name="product_uom" string="Unit"
+                                            on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type, parent.contract)"
+                                            groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="qty_available" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type, parent.contract)"/>
+                                        <field name="person"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="name"/>
+                                        <field name="specification"/>
+                                        <field name="price_unit" on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, name, parent.analytic_account_id, parent.type, parent.contract)"/>
+                                        <field name="price_subtotal"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total"/>
+                                </group>
+                            </page>
+                            <page string="Status">
+                                <field name="indent_authority_ids" readonly="1">
+                                    <tree string="Status" editable="bottom">
+                                        <field name="date"/>
+                                        <field name="name"/>
+                                        <field name="priority"/>
+                                        <field name="description"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                        <label for="description"/>
+                        <field name="description"/>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id='view_contract_indent_tree' model='ir.ui.view'>
+            <field name="name">contract.contract.tree</field>
+            <field name="model">indent.indent</field>
+            <field name="arch" type="xml">
+                <tree string="Indents" colors="gray:state=='received';">
+                    <field name="name" string="Contract #"/>
+                    <field name="indentor_id"/>
+                    <field name="indent_date"/>
+                    <field name="required_date"/>
+                    <field name="department_id"/>
+                    <field name="analytic_account_id"/>
+                    <field name="requirement"/>
+                    <field name="type"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="view_contract_search" model="ir.ui.view">
+            <field name="name">contract.search</field>
+            <field name="model">indent.indent</field>
+            <field name="inherit_id" ref="indent.view_indent_indent_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position='after'>
+                	<filter string="Indent" name="indent_indent" domain="[('contract','=', False)]"/>
+                    <filter string="Contract" name="contract_contract" domain="[('contract','=', True)]"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id='action_contract_view' model='ir.actions.act_window'>
+            <field name="name">Contracts</field>
+            <field name="domain">[('contract', '=', True)]</field>
+            <field name="context">{'default_contract_contract': True, 'search_default_waiting': 1, 'default_contract': True}</field>
+            <field name="res_model">indent.indent</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_contract_search"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new Contract.
+                </p>
+            </field>
+        </record>
+        
+        <record id="action_contract_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_contract_indent_tree"/>
+            <field name="act_window_id" ref="action_contract_view"/>
+        </record>
+        
+        <record id="action_contract_form_view1" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="indent.view_indent_indent_form"/>
+            <field name="act_window_id" ref="action_contract_view"/>
+        </record>
+        <!-- override search view for add default search -->
+        <record id='indent.action_indent_indent' model='ir.actions.act_window'>
+            <field name="name">Indents</field>
+            <field name="res_model">indent.indent</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('contract', '=', False)]</field>
+            <field name="context">{'default_contract': False, 'search_default_waiting': 1}</field>
+            <field name="view_id" ref="indent.view_indent_indent_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new indent.
+                </p>
+            </field>
+        </record>
+        
+        <record id="action_indent_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="indent.view_indent_indent_tree"/>
+            <field name="act_window_id" ref="indent.action_indent_indent"/>
+        </record>
+        
+        <record id="action_indent_form_view1" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="indent.view_indent_indent_form"/>
+            <field name="act_window_id" ref="indent.action_indent_indent"/>
+        </record>
+        
+        <menuitem action="action_contract_view" name="Contracts" parent="indent.menu_indent_indent_main" id="menu_contract_main" sequence="2"/>
+
+    </data>
+</openerp>

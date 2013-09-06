@@ -35,6 +35,7 @@ The user will raise an indent form to the stores, The store keeper checks for th
     'depends' : ['purchase_requisition', 'account_voucher', 'hr'],
     'data' : [
         'indent_view.xml',
+        'maize_contract_view.xml',
         'indent_data.xml',
         'indent_workflow.xml',
         'stock_workflow.xml',

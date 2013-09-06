@@ -21,14 +21,16 @@
 
 import time
 import datetime
+from lxml import etree
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
-from openerp.osv import fields, osv
-import openerp.addons.decimal_precision as dp
-from openerp.tools.translate import _
-from openerp.tools import amount_to_text_en as text
+
 from openerp import tools
 from openerp import netsvc
+from openerp.osv import fields, osv
+from openerp.tools.translate import _
+import openerp.addons.decimal_precision as dp
+from openerp.tools import amount_to_text_en as text
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
 SERIES = [
@@ -36,6 +38,59 @@ SERIES = [
     ('purchase', 'Purchase'),
     ('store', 'Store')
 ]
+class hr_employee(osv.osv):
+    _inherit = 'hr.employee'
+    _columns = {
+        'absent': fields.boolean("Not in office"),
+        'group_desc': fields.char('Group Description', size=64, required=False, readonly=False),
+        'purchase_limit': fields.float('Purchase Limit', required=False, readonly=False),
+    }
+hr_employee()
+
+class indent_section(osv.Model):
+    _name = 'indent.section'
+    _rec_name = 'code'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.code and '[' + pckg.code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res 
+    
+    _columns = {
+        'name': fields.char('Name',size=256),
+        'code': fields.char('Code', size=64)
+    }
+indent_section()
+
+class indent_equipment(osv.Model):
+    _name = 'indent.equipment'
+    _rec_name = 'code'
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return []
+        res = []
+        for pckg in self.browse(cr, uid, ids, context=context):
+            p_name = pckg.code and '[' + pckg.code + '] ' or ''
+            p_name += pckg.name
+            res.append((pckg.id,p_name))
+        return res 
+    
+    _columns = {
+        'name': fields.char('Name',size=256),
+        'code': fields.char('Code', size=64)
+    }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of an equipment must be unique!')
+    ]
+
+indent_equipment()
 
 class ir_attachment(osv.Model):
     _inherit = 'ir.attachment'
@@ -43,7 +98,7 @@ class ir_attachment(osv.Model):
     def create(self, cr, uid, values, context=None):
         res_id = super(ir_attachment, self).create(cr, uid, values, context)
         if values.get('res_model') == 'indent.indent' and values.get('res_id'):
-            self.pool.get('indent.indent').write(cr, uid, values['res_id'], {'attachment_id': res_id},context)
+            self.pool.get('indent.indent').write(cr, uid, values['res_id'], {'attachment_id': res_id}, context)
         return res_id
 
 ir_attachment()
@@ -55,10 +110,10 @@ class indent_indent(osv.Model):
     _order = "id desc"
     _track = {
         'state': {
-            'indent.mt_indent_waiting_approval': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'waiting_approval',
-            'indent.mt_indent_inprogress': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'inprogress',
-            'indent.mt_indent_received': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'received',
-            'indent.mt_indent_rejected': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'reject'
+            'indent.mt_indent_waiting_approval': lambda self, cr, uid, obj, ctx = None: obj['state'] == 'waiting_approval',
+            'indent.mt_indent_inprogress': lambda self, cr, uid, obj, ctx = None: obj['state'] == 'inprogress',
+            'indent.mt_indent_received': lambda self, cr, uid, obj, ctx = None: obj['state'] == 'received',
+            'indent.mt_indent_rejected': lambda self, cr, uid, obj, ctx = None: obj['state'] == 'reject'
         },
     }
 
@@ -77,7 +132,28 @@ class indent_indent(osv.Model):
             result[line.indent_id.id] = True
         return result.keys()
 
+    def fields_view_get(self, cr, user, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+        if context is None: 
+            context = {}
+        res = super(indent_indent, self).fields_view_get(cr, user, view_id, view_type, context, toolbar=toolbar, submenu=submenu)
+        doc = etree.XML(res['arch'])
+        domain = [('state','=', 'done')]
+        nodes = doc.xpath("//div[@name='buttons']/button[@string='Enquiry']")
+        if context.get('default_contract_contract'):
+            if 'product_lines' in res['fields'].keys() and 'product_id' in res['fields']['product_lines']['views']['form']['fields'].keys():
+                domain.append(('type','=', 'service'))
+                res['fields']['product_lines']['views']['form']['fields']['product_id']['domain'] = domain
+        else:
+            if 'product_lines' in res['fields'].keys() and 'product_id' in res['fields']['product_lines']['views']['form']['fields'].keys():
+                res['fields']['product_lines']['views']['form']['fields']['product_id']['domain'] = domain
+        res['arch'] = etree.tostring(doc)
+        return res
+
     _columns = {
+        'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent"),
+        'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
+        'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
+        
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
         'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
@@ -85,13 +161,13 @@ class indent_indent(osv.Model):
         'print_report': fields.related('attachment_id', 'datas', type='binary', string='Indent Report'),
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
         'employee_id': fields.many2one('hr.employee', 'Employee'),
-        'employee_department_id': fields.related('employee_id', 'department_id',readonly=True, type='many2one', relation='hr.department', string='Employee Department', store=True, states={'draft': [('readonly', False)]}),
+        'employee_department_id': fields.related('employee_id', 'department_id', readonly=True, type='many2one', relation='hr.department', string='Employee Department', store=True, states={'draft': [('readonly', False)]}),
         'department_id': fields.many2one('stock.location', 'Department', required=True, readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
-        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade",readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
+        'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'requirement': fields.selection([('ordinary', 'Ordinary'), ('urgent', 'Urgent')], 'Requirement', readonly=True, required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'type': fields.selection([('new', 'Store'), ('existing', 'Repairing')], 'Type', required=True, track_visibility='onchange', readonly=True, states={'draft': [('readonly', False)]}),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products', readonly=True, states={'draft': [('readonly', False)], 'waiting_approval': [('readonly', False)]}),
-        'picking_id': fields.many2one('stock.picking','Picking'),
+        'picking_id': fields.many2one('stock.picking', 'Picking'),
         'description': fields.text('Item Description', readonly=True, states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', readonly=True, states={'draft': [('readonly', False)]}),
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', readonly=True, states={'draft': [('readonly', False)]}),
@@ -101,8 +177,7 @@ class indent_indent(osv.Model):
             store={
                 'indent.indent': (lambda self, cr, uid, ids, c={}: ids, ['product_lines'], 20),
                 'indent.product.lines': (_get_product_line, ['price_subtotal', 'product_uom_qty', 'indent_id'], 20),
-            },
-            ),
+            }),
         'maize': fields.char('Maize', size=256, readonly=True),
         'fiscalyear': fields.char('Year', readonly=True),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting For Approval'), ('inprogress', 'Inprogress'), ('received', 'Received'), ('reject', 'Rejected')], 'State', readonly=True, track_visibility='onchange'),
@@ -111,7 +186,7 @@ class indent_indent(osv.Model):
     def _default_employee_id(self, cr, uid, context=None):
         employees = self.pool.get('hr.employee').search(cr, uid, [('user_id', '=', uid)], context=context)
         if not employees:
-            raise osv.except_osv(_("Warning !"),_('You must define an employee and assign the related user to that employee.'))
+            raise osv.except_osv(_("Warning !"), _('You must define an employee and assign the related user to that employee.'))
         return employees and employees[0] or False
 
     def _default_stock_location(self, cr, uid, context=None):
@@ -131,7 +206,8 @@ class indent_indent(osv.Model):
         'type': 'new',
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c),
         'active': True,
-        'fiscalyear': str(time.strptime(time.strftime('%Y', time.localtime()),'%Y').tm_year)+str(time.strptime(time.strftime('%Y', time.localtime()),'%Y').tm_year+1)
+        'contract': False,
+        'fiscalyear': str(time.strptime(time.strftime('%Y', time.localtime()), '%Y').tm_year) + str(time.strptime(time.strftime('%Y', time.localtime()), '%Y').tm_year + 1)
     }
 
     def create(self, cr, uid, vals, context=None):
@@ -145,7 +221,7 @@ class indent_indent(osv.Model):
         return super(indent_indent, self).create(cr, uid, vals, context=context)
 
     def write(self, cr, uid, ids, vals, context=None):
-        con = self.browse(cr,uid,ids)[0].contract
+        con = self.browse(cr, uid, ids)[0].contract
         if vals.get('department_id') and not con:
             location = self.pool.get('stock.location').browse(cr, uid, vals.get('department_id'), context=context).location_id
             if location and location.seq_id:
@@ -176,6 +252,7 @@ class indent_indent(osv.Model):
         return {'value': result}
 
     def indent_confirm(self, cr, uid, ids, context=None):
+        
         def _create_parent_category_list(id, lst):
             if not id:
                 return []
@@ -185,14 +262,18 @@ class indent_indent(osv.Model):
                 return _create_parent_category_list(parent, lst)
             else:
                 return lst
-        # _create_manager_list
+
         obj_hr = self.pool.get('hr.employee')
         document_authority_obj = self.pool.get('document.authority')
         document_authority_instance_obj = self.pool.get('document.authority.instance')
         document_authority_ids = document_authority_obj.search(cr, uid, [('document', '=', 'indent')], context=context)
-        for indent in self.browse(cr, uid, ids, context=context): 
+        
+        for indent in self.browse(cr, uid, ids, context=context):
+            if indent.contract and indent.amount_total == 0.0:
+                raise osv.except_osv(_("Warning !"), _("Contract amount must be greater than zero."))
+            
             if not indent.product_lines:
-                raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent which has no line.'))
+                raise osv.except_osv(_('Warning!'), _('You cannot confirm an indent which has no line.'))
 
             authorities = []
             for authority in document_authority_obj.browse(cr, uid, document_authority_ids, context=context):
@@ -203,17 +284,19 @@ class indent_indent(osv.Model):
             employee_parent_ids = obj_hr.search(cr, uid, [])
             employee_parents = obj_hr.read(cr, uid, employee_parent_ids, ['coach_id'])
             employee_tree = dict([(item['id'], item['coach_id'][0]) for item in employee_parents if item['coach_id']])
+            
             if not indent.employee_id.id:
                 raise osv.except_osv(_('Configuration Error!'), _('Create related employee for %s' % indent.indentor_id.name))
+            
             parent_employee_ids = _create_parent_category_list(indent.employee_id.id, [indent.employee_id.id])
             new_parent_employee_id = list(reversed(parent_employee_ids))
-            priority=11
+            priority = 11
             for auth in new_parent_employee_id:
-                emp = obj_hr.browse(cr,uid,auth,context=context)
+                emp = obj_hr.browse(cr, uid, auth, context=context)
                 if emp.user_id and not emp.absent:
                     if emp.user_id.id not in authorities:
                         document_authority_instance_obj.create(cr, uid, {'name': emp.user_id.id, 'document': 'indent', 'indent_id': indent.id, 'priority': priority}, context=context)
-                        priority=priority+1
+                        priority = priority + 1
                         authorities.append(emp.user_id.id)
 
             # Add all authorities of the indent as followers
@@ -235,10 +318,10 @@ class indent_indent(osv.Model):
         self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress'}, context=context)
         wf_service = netsvc.LocalService("workflow")
 
-        move_ids = move_obj.search(cr,uid,[('picking_id','=',picking_id)])
-        pro_ids = proc_obj.search(cr,uid,[('move_id','in',move_ids)])
+        move_ids = move_obj.search(cr, uid, [('picking_id', '=', picking_id)])
+        pro_ids = proc_obj.search(cr, uid, [('move_id', 'in', move_ids)])
         if indent.contract or indent.type == 'existing':
-            pro_ids  = proc_obj.search(cr,uid,[('origin','=',indent.name)])
+            pro_ids = proc_obj.search(cr, uid, [('origin', '=', indent.name)])
         for pro in pro_ids:
             wf_service.trg_validate(uid, 'procurement.order', pro, 'button_check', cr)
         return picking_id
@@ -255,7 +338,7 @@ class indent_indent(osv.Model):
                 if authority[1] == uid:
                     count_auth += 1
                     if authority[3] == 'approve':
-                        raise osv.except_osv(_("Warning !"),_('You have already approved an indent.'))
+                        raise osv.except_osv(_("Warning !"), _('You have already approved an indent.'))
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
                     msg = 'Indent is approved by <b>%s</b>.' % (authority[4])
@@ -263,9 +346,9 @@ class indent_indent(osv.Model):
                     if count_auth == 1:
                         for write_id in write_ids:
                             desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
-                            description = 'Approved by higher authority - %s' %(authority[4],)
+                            description = 'Approved by higher authority - %s' % (authority[4],)
                             if desc:
-                                description = 'Approved by higher authority - %s' %(authority[4],) + '\n' + desc
+                                description = 'Approved by higher authority - %s' % (authority[4],) + '\n' + desc
                             document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
 
         for indent in self.browse(cr, uid, ids):
@@ -290,7 +373,7 @@ class indent_indent(osv.Model):
                 if authority[1] == uid:
                     count_auth += 1
                     if authority[3] == 'reject':
-                        raise osv.except_osv(_("Warning !"),_('You have already rejected an indent.'))
+                        raise osv.except_osv(_("Warning !"), _('You have already rejected an indent.'))
                     write_ids = [(auth[0], auth[3]) for auth in sort_authorities][count:]
                     document_authority_instance_obj.write(cr, uid, [authority[0]], {'state': 'reject'})
                     msg = 'Indent is rejected by <b>%s</b>.' % (authority[4])
@@ -298,9 +381,9 @@ class indent_indent(osv.Model):
                     if count_auth == 1:
                         for write_id in write_ids:
                             desc = document_authority_instance_obj.browse(cr, uid, write_id[0]).description
-                            description = 'Rejected by higher authority - %s' %(authority[4],)
+                            description = 'Rejected by higher authority - %s' % (authority[4],)
                             if desc:
-                                description = 'Rejected by higher authority - %s' %(authority[4],) + '\n' + desc
+                                description = 'Rejected by higher authority - %s' % (authority[4],) + '\n' + desc
                             document_authority_instance_obj.write(cr, uid, [write_id[0]], {'description': description})
 
         for indent in self.browse(cr, uid, ids):
@@ -355,7 +438,7 @@ class indent_indent(osv.Model):
             'price_unit': line.product_id.standard_price or 0.0
         }
         if indent.company_id:
-            res = dict(res, company_id = indent.company_id.id)
+            res = dict(res, company_id=indent.company_id.id)
         return res
 
     def _prepare_indent_picking(self, cr, uid, indent, context=None):
@@ -367,7 +450,7 @@ class indent_indent(osv.Model):
             'type': 'internal',
         }
         if indent.company_id:
-            res = dict(res, company_id = indent.company_id.id)
+            res = dict(res, company_id=indent.company_id.id)
         return res
 
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
@@ -395,9 +478,10 @@ class indent_indent(osv.Model):
             'procure_method': line.type,
             'move_id': move_id,
             'note': line.name,
+            'person':line.person
         }
         if indent.company_id:
-            res = dict(res, company_id = indent.company_id.id)
+            res = dict(res, company_id=indent.company_id.id)
         return res
 
     def _get_date_planned(self, cr, uid, indent, line, start_date, context=None):
@@ -434,13 +518,13 @@ class indent_indent(osv.Model):
 
     def create_series_sequence(self, cr, uid, vals, context=None):
         series_obj = self.pool.get('product.order.series')
-        type_name= series_obj.browse(cr,uid,vals['po_series_id']).code
-        type = self.pool.get('ir.sequence.type').create(cr,uid,{'name':'maize'+type_name,'code':type_name})
-        code = self.pool.get('ir.sequence.type').browse(cr,uid,type).code
+        type_name = series_obj.browse(cr, uid, vals['po_series_id']).code
+        type = self.pool.get('ir.sequence.type').create(cr, uid, {'name':'maize' + type_name, 'code':type_name})
+        code = self.pool.get('ir.sequence.type').browse(cr, uid, type).code
         seq = {
-            'name': series_obj.browse(cr,uid,vals['po_series_id']).code,
+            'name': series_obj.browse(cr, uid, vals['po_series_id']).code,
             'implementation':'standard',
-            'prefix': series_obj.browse(cr,uid,vals['po_series_id']).code+"/",
+            'prefix': series_obj.browse(cr, uid, vals['po_series_id']).code + "/",
             'padding': 4,
             'number_increment': 1,
             'code':code
@@ -460,48 +544,22 @@ class indent_product_lines(osv.Model):
         for line in self.browse(cr, uid, ids, context=context):
             result[line.id] = (line.product_uom_qty * line.price_unit)
         return result
-
-    _columns = {
-        'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
-        'name': fields.text('Description', required=True),
-        'product_id': fields.many2one('product.product', 'Product', required=True),
-        'original_product_id': fields.many2one('product.product', 'Original Product'),
-        'type': fields.selection([('make_to_stock', 'Assign from stock'), ('make_to_order', 'Make new purchase order')], 'Procurement Method', required=True,
-         help="From stock: When needed, the product is taken from the stock or we wait for replenishment.\nOn order: When needed, the product is purchased or produced."),
-        'product_uom_qty': fields.float('Quantity', digits_compute= dp.get_precision('Product UoS'), required=True),
-        'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
-        'product_uos_qty': fields.float('Quantity (UoS)' ,digits_compute= dp.get_precision('Product UoS')),
-        'product_uos': fields.many2one('product.uom', 'Product UoS'),
-        'price_unit': fields.float('Unit Price', required=True, digits_compute= dp.get_precision('Product Price')),
-        'price_subtotal': fields.function(_amount_subtotal, string='Subtotal', digits_compute= dp.get_precision('Account'), store=True),
-        'qty_available': fields.float('Stock'),
-        'virtual_available': fields.float('Forecasted Qty'),
-        'delay': fields.float('Lead Time', required=True),
-        'name': fields.text('Purpose', required=True),
-        'specification': fields.text('Item Specification'),
-    }
-
-    def _get_uom_id(self, cr, uid, *args):
-        result = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'product', 'product_uom_unit')
-        return result and result[1] or False
-
-    _defaults = {
-#        'product_uom' : _get_uom_id,
-        'product_uom_qty': 1,
-        'product_uos_qty': 1,
-        'type': 'make_to_order',
-        'delay': 0.0,
-    }
-
-    def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', analytic_account_id=False, indent_type=False, context=None):
+    
+    def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', analytic_account_id=False, indent_type=False, contract=False, context=None):
         result = {}
         product_obj = self.pool.get('product.product')
         if not product_id:
             return {'value': {'product_uom_qty': 1.0, 'product_uom': False, 'price_unit': 0.0, 'qty_available': 0.0, 'virtual_available': 0.0, 'name': '', 'delay': 0.0}}
         if analytic_account_id:
-            prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0152')], context=context)
-            if product_id not in prod_ids:
-                raise osv.except_osv(_("Warning !"), _("You must select a product whose code start with '0152'."))
+            if contract == False:
+                prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0152')], context=context)
+                if product_id not in prod_ids:
+                    raise osv.except_osv(_("Warning !"), _("You must select a product whose code start with '0152'."))
+            else:
+                prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0192')], context=context)
+                if product_id not in prod_ids:
+                    raise osv.except_osv(_("Warning !"), _("You must select a product whose code start with '0192'."))
+
         product = product_obj.browse(cr, uid, product_id, context=context)
         if indent_type and indent_type == 'existing' and product.type != 'service':
             raise osv.except_osv(_("Warning !"), _("You must select a service type product."))
@@ -514,6 +572,60 @@ class indent_product_lines(osv.Model):
         result['virtual_available'] = product.virtual_available
         result['delay'] = product.seller_ids[0].delay
         return {'value': result}
+
+    _columns = {
+        'person': fields.integer('Person'),
+        'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
+        'name': fields.text('Description', required=True),
+        'product_id': fields.many2one('product.product', 'Product', required=True),
+        'original_product_id': fields.many2one('product.product', 'Original Product'),
+        'type': fields.selection([('make_to_stock', 'Assign from stock'), ('make_to_order', 'Make new purchase order')], 'Procurement Method', required=True,
+         help="From stock: When needed, the product is taken from the stock or we wait for replenishment.\nOn order: When needed, the product is purchased or produced."),
+        'product_uom_qty': fields.float('Quantity', digits_compute=dp.get_precision('Product UoS'), required=True),
+        'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True),
+        'product_uos_qty': fields.float('Quantity (UoS)' , digits_compute=dp.get_precision('Product UoS')),
+        'product_uos': fields.many2one('product.uom', 'Product UoS'),
+        'price_unit': fields.float('Unit Price', required=True, digits_compute=dp.get_precision('Product Price')),
+        'price_subtotal': fields.function(_amount_subtotal, string='Subtotal', digits_compute=dp.get_precision('Account'), store=True),
+        'qty_available': fields.float('Stock'),
+        'virtual_available': fields.float('Forecasted Qty'),
+        'delay': fields.float('Lead Time', required=True),
+        'name': fields.text('Purpose', required=True),
+        'specification': fields.text('Item Specification'),
+    }
+
+    def _get_uom_id(self, cr, uid, *args):
+        result = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'product', 'product_uom_unit')
+        return result and result[1] or False
+
+    _defaults = {
+        'product_uom_qty': 1,
+        'product_uos_qty': 1,
+        'type': 'make_to_order',
+        'delay': 0.0,
+    }
+
+#     def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', analytic_account_id=False, indent_type=False, context=None):
+#         result = {}
+#         product_obj = self.pool.get('product.product')
+#         if not product_id:
+#             return {'value': {'product_uom_qty': 1.0, 'product_uom': False, 'price_unit': 0.0, 'qty_available': 0.0, 'virtual_available': 0.0, 'name': '', 'delay': 0.0}}
+#         if analytic_account_id:
+#             prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0152')], context=context)
+#             if product_id not in prod_ids:
+#                 raise osv.except_osv(_("Warning !"), _("You must select a product whose code start with '0152'."))
+#         product = product_obj.browse(cr, uid, product_id, context=context)
+#         if indent_type and indent_type == 'existing' and product.type != 'service':
+#             raise osv.except_osv(_("Warning !"), _("You must select a service type product."))
+#         if not product.seller_ids:
+#             raise osv.except_osv(_("Warning !"), _("You must define at least one supplier for this product."))
+#         result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
+#         result['product_uom'] = product.uom_id.id
+#         result['price_unit'] = product.standard_price
+#         result['qty_available'] = product.qty_available
+#         result['virtual_available'] = product.virtual_available
+#         result['delay'] = product.seller_ids[0].delay
+#         return {'value': result}
 
 indent_product_lines()
 
@@ -533,7 +645,7 @@ class document_authority(osv.Model):
 
     _columns = {
         'name': fields.many2one('res.users', 'Authority', required=True),
-        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
+        'document': fields.selection([('indent', 'Indent'), ('order', 'Purchase Order'), ('picking', 'Picking')], 'Document', required=True),
         'priority': fields.integer('Priority'),
         'active': fields.boolean('Active', help="If the active field is set to False, it will allow you to hide the document authority without removing it."),
         'description': fields.text('Description'),
@@ -542,7 +654,6 @@ class document_authority(osv.Model):
     _defaults = {
         'active': True,
     }
-
 document_authority()
 
 class document_authority_instance(osv.Model):
@@ -561,12 +672,14 @@ class document_authority_instance(osv.Model):
 
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
+        'picking_id': fields.many2one('stock.picking', 'Picking', required=True, ondelete='cascade'),
+        
         'name': fields.many2one('res.users', 'Authority', required=True),
-        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
+        'document': fields.selection([('indent', 'Indent'), ('order', 'Purchase Order'), ('picking', 'Picking')], 'Document', required=True),
         'priority': fields.integer('Priority'),
         'description': fields.text('Description'),
         'date': fields.datetime('Date'),
-        'state':fields.selection([('pending','Pending'), ('approve','Approved'), ('reject','Rejected')], 'State', required=True)
+        'state':fields.selection([('pending', 'Pending'), ('approve', 'Approved'), ('reject', 'Rejected')], 'State', required=True)
     }
     _defaults = {
         'state': 'pending',
@@ -593,59 +706,72 @@ class stock_picking(osv.Model):
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
-        'picking_authority_ids': fields.one2many('picking.authority', 'picking_id', 'Authority'),
+        'picking_authority_ids': fields.one2many('document.authority.instance', 'picking_id', 'Authority', domain=[('document','=','picking')]),
         'maize': fields.char('Maize', size=256, readonly=True),
         'maize_in': fields.char('Maize', size=256, readonly=True),
         'maize_out': fields.char('Maize', size=256, readonly=True),
         'maize_receipt': fields.char('Maize', size=256, readonly=True),
-        'lr_no': fields.char("LR No",size=64),
+        'lr_no': fields.char("LR No", size=64),
         'lr_date': fields.date("LR Date"),
-        'transporter':fields.char("Transporter",size=256),
+        'transporter':fields.char("Transporter", size=256),
         'hpressure':fields.integer("HPressure"),
-        'dest_from': fields.char("Destination From",size=64),
-        'dest_to': fields.char("Destination To",size=64),
+        'dest_from': fields.char("Destination From", size=64),
+        'dest_to': fields.char("Destination To", size=64),
         'lab_no':fields.integer("Lab No"),
         'gp_no': fields.integer("Gate Pass No"),
-        'gp_year': fields.char("GP Year",size=64),
-        'remark1': fields.char("Remark1",size=256),
-        'remark2': fields.char("remark2",size=256),
+        'gp_year': fields.char("GP Year", size=64),
+        'remark1': fields.char("Remark1", size=256),
+        'remark2': fields.char("remark2", size=256),
         'case_code': fields.boolean("Cash Code"),
-        'challan_no': fields.char("Challan Number",size=256),
-        'despatch_mode': fields.selection([('person','By Person'),
-                                           ('scooter','By Scooter'),
-                                           ('tanker','By Tanker'),
-                                           ('truck','By Truck'),
-                                           ('auto_rickshaw','By Auto Rickshaw'),
-                                           ('loading_rickshaw','By Loading Rickshaw'),
-                                           ('tempo','By Tempo'),
-                                           ('metador','By Metador'),
-                                           ('rickshaw_tempo','By Rickshaw Tempo'),
-                                           ('cart','By Cart'),
-                                           ('cycle','By Cycle'),
-                                           ('pedal_rickshaw','By Pedal Rickshaw'),
-                                           ('car','By Car'),
-                                           ('post_parcel','By Post Parcel'),
-                                           ('courier','By Courier'),
-                                           ('tractor','By Tractor'),
-                                           ('hand_cart','By Hand Cart'),
-                                           ('camel_cart','By Camel Cart'),
-                                           ('others','Others'),],"Despatch Mode"),
-        'other_dispatch': fields.char("Other Dispatch",size=256),
+        'challan_no': fields.char("Challan Number", size=256),
+        'despatch_mode': fields.selection([('person', 'By Person'),
+                                           ('scooter', 'By Scooter'),
+                                           ('tanker', 'By Tanker'),
+                                           ('truck', 'By Truck'),
+                                           ('auto_rickshaw', 'By Auto Rickshaw'),
+                                           ('loading_rickshaw', 'By Loading Rickshaw'),
+                                           ('tempo', 'By Tempo'),
+                                           ('metador', 'By Metador'),
+                                           ('rickshaw_tempo', 'By Rickshaw Tempo'),
+                                           ('cart', 'By Cart'),
+                                           ('cycle', 'By Cycle'),
+                                           ('pedal_rickshaw', 'By Pedal Rickshaw'),
+                                           ('car', 'By Car'),
+                                           ('post_parcel', 'By Post Parcel'),
+                                           ('courier', 'By Courier'),
+                                           ('tractor', 'By Tractor'),
+                                           ('hand_cart', 'By Hand Cart'),
+                                           ('camel_cart', 'By Camel Cart'),
+                                           ('others', 'Others'), ], "Despatch Mode"),
+        'other_dispatch': fields.char("Other Dispatch", size=256),
         'series_id':fields.selection(SERIES, 'Series'),
     }
 
     def action_confirm(self, cr, uid, ids, context=None):
-        picking_authority_obj = self.pool.get('picking.authority')
+        picking_authority_obj = self.pool.get('document.authority.instance')
         for picking in self.browse(cr, uid, ids, context=context):
             if picking.type == 'internal':
                 if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.coach_id and picking.indent_id.employee_id.coach_id.user_id and picking.indent_id.employee_id.coach_id.user_id.id:
-                    picking_authority_obj.create(cr, uid, {'name': picking.indent_id.employee_id.coach_id.user_id.id, 'document': 'picking', 'picking_id': picking.id, 'priority': 1}, context=context)
+                    res = {
+                       'name': picking.indent_id.employee_id.coach_id.user_id.id, 
+                       'document': 'picking', 
+                       'picking_id': picking.id, 
+                       'priority': 1
+                    }
+                    picking_authority_obj.create(cr, uid, res, context=context)
+                
                 if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.user_id and picking.indent_id.employee_id.user_id.id:
-                    picking_authority_obj.create(cr, uid, {'name': picking.indent_id.employee_id.user_id.id, 'document': 'picking', 'picking_id': picking.id, 'priority': 2}, context=context)
+                    res = {
+                       'name': picking.indent_id.employee_id.user_id.id, 
+                       'document': 'picking', 
+                       'picking_id': picking.id, 
+                       'priority': 2
+                    }
+                    picking_authority_obj.create(cr, uid, res, context=context)
         return super(stock_picking, self).action_confirm(cr, uid, ids, context=context)
 
     def check_approval(self, cr, uid, ids):
-        picking_authority_obj = self.pool.get('picking.authority')
+        picking_authority_obj = self.pool.get('document.authority.instance')
         for picking in self.browse(cr, uid, ids):
             if picking.type == 'internal':
                 authorities = [(authority.id, authority.name.id, authority.priority, authority.state, authority.name.name) for authority in picking.picking_authority_ids]
@@ -658,9 +784,9 @@ class stock_picking(osv.Model):
                         picking_authority_obj.write(cr, uid, [authority[0]], {'state': 'approve'})
                         for write_id in write_ids:
                             desc = picking_authority_obj.browse(cr, uid, write_id[0]).description
-                            description = 'Approved by higher authority - %s' %(authority[4],)
+                            description = 'Approved by higher authority - %s' % (authority[4],)
                             if desc:
-                                description = 'Approved by higher authority - %s' %(authority[4],) + '\n' + desc
+                                description = 'Approved by higher authority - %s' % (authority[4],) + '\n' + desc
                             picking_authority_obj.write(cr, uid, [write_id[0]], {'description': description})
                         break
 
@@ -699,12 +825,12 @@ class stock_picking(osv.Model):
             for move in pick.move_lines:
                 if move.state in ('done', 'cancel'):
                     continue
-                partial_data = partial_datas.get('move%s'%(move.id), {})
-                product_qty = partial_data.get('product_qty',0.0)
+                partial_data = partial_datas.get('move%s' % (move.id), {})
+                product_qty = partial_data.get('product_qty', 0.0)
                 move_product_qty[move.id] = product_qty
-                product_uom = partial_data.get('product_uom',False)
-                product_price = partial_data.get('product_price',0.0)
-                product_currency = partial_data.get('product_currency',False)
+                product_uom = partial_data.get('product_uom', False)
+                product_price = partial_data.get('product_price', 0.0)
+                product_currency = partial_data.get('product_currency', False)
                 prodlot_id = partial_data.get('prodlot_id')
                 prodlot_ids[move.id] = prodlot_id
                 product_uoms[move.id] = product_uom
@@ -739,7 +865,7 @@ class stock_picking(osv.Model):
                             # Get the standard price
                             amount_unit = product.price_get('standard_price', context=context)[product.id]
                             new_std_price = ((amount_unit * product_avail[product.id])\
-                                + (new_price * qty))/(product_avail[product.id] + qty)
+                                + (new_price * qty)) / (product_avail[product.id] + qty)
                         # Write the field according to price type field
                         product_obj.write(cr, uid, [product.id], {'standard_price': new_std_price})
 
@@ -762,7 +888,7 @@ class stock_picking(osv.Model):
                 if product_qty != 0:
                     defaults = {
                             'product_qty' : product_qty,
-                            'product_uos_qty': product_qty, #TODO: put correct uos_qty
+                            'product_uos_qty': product_qty,  # TODO: put correct uos_qty
                             'picking_id' : new_picking,
                             'state': 'assigned',
                             'move_dest_id': False,
@@ -776,7 +902,7 @@ class stock_picking(osv.Model):
                 move_obj.write(cr, uid, [move.id],
                     {
                         'product_qty': move.product_qty - partial_qty[move.id],
-                        'product_uos_qty': move.product_qty - partial_qty[move.id], #TODO: put correct uos_qty
+                        'product_uos_qty': move.product_qty - partial_qty[move.id],  # TODO: put correct uos_qty
                         'prodlot_id': False,
                         'tracking_id': False,
                     })
@@ -792,7 +918,7 @@ class stock_picking(osv.Model):
                 product_qty = move_product_qty[move.id]
                 defaults = {
                     'product_qty' : product_qty,
-                    'product_uos_qty': product_qty, #TODO: put correct uos_qty
+                    'product_uos_qty': product_qty,  # TODO: put correct uos_qty
                     'product_uom': product_uoms[move.id]
                 }
                 prodlot_id = prodlot_ids.get(move.id)
@@ -825,168 +951,15 @@ class stock_picking(osv.Model):
 
 stock_picking()
 
-class picking_authority(osv.Model):
-    _name = 'picking.authority'
-    _description = 'Picking Authority'
-
-    def name_get(self, cr, uid, ids, context=None):
-        res = []
-        if not ids:
-            return res
-        # name_get may receive int id instead of an id list
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-
-        return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
-
-    _columns = {
-        'picking_id': fields.many2one('stock.picking', 'Picking', required=True, ondelete='cascade'),
-        'name': fields.many2one('res.users', 'Authority', required=True),
-        'document': fields.selection([('indent','Indent'), ('order','Purchase Order'), ('picking','Picking')], 'Document', required=True),
-        'priority': fields.integer('Priority'),
-        'description': fields.text('Description'),
-        'date': fields.datetime('Date'),
-        'state':fields.selection([('pending','Pending'), ('approve','Approved'), ('reject','Rejected')], 'State', required=True)
-    }
-    _defaults = {
-        'state': 'pending',
-        'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
-    }
-
-picking_authority()
-
-class purchase_order(osv.Model):
-    _inherit = 'purchase.order'
-
-    def _get_indent(self, cr, uid, ids, name, args, context=None):
-        result = {}
-        indent_obj = self.pool.get('indent.indent')
-        for order in self.browse(cr, uid, ids, context=context):
-            indent_id = False
-            if order.origin:
-                indent_ids = indent_obj.search(cr, uid, [('name', '=', order.origin)], context=context)
-                indent_id = indent_ids and indent_ids[0] or False
-            result[order.id] = indent_id
-        return result
-
-    _columns = {
-        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
-        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
-        'maize': fields.char('Maize PO Number', size=256, readonly=True),
-        'contract_name': fields.char('Contract Name', size=256, readonly=True),
-        'voucher_id': fields.many2one('account.voucher', 'Payment'),
-    }
-
-    def _prepare_order_picking(self, cr, uid, order, context=None):
-        return {
-            'name': False,
-            'origin': order.name + ((order.origin and (':' + order.origin)) or ''),
-            'date': self.date_to_datetime(cr, uid, order.date_order, context),
-            'partner_id': order.dest_address_id.id or order.partner_id.id,
-            'invoice_state': '2binvoiced' if order.invoice_method == 'picking' else 'none',
-            'type': 'in',
-            'partner_id': order.dest_address_id.id or order.partner_id.id,
-            'purchase_id': order.id,
-            'company_id': order.company_id.id,
-            'move_lines' : [],
-            'voucher_id': order.voucher_id.id,
-        }
-
-purchase_order()
-
-class purchase_order_line(osv.Model):
-    _inherit = 'purchase.order.line'
-
-    _columns = {
-        'indent_id': fields.many2one('indent.indent', 'Indent'),
-        'indentor_id': fields.many2one('res.users', 'Indentor'),
-        'department_id': fields.many2one('stock.location', 'Department'),
-    }
-
-purchase_order_line()
-
-class purchase_requisition(osv.Model):
-    _inherit = 'purchase.requisition'
-
-    def _get_indent(self, cr, uid, ids, name, args, context=None):
-        result = {}
-        indent_obj = self.pool.get('indent.indent')
-        for requisition in self.browse(cr, uid, ids, context=context):
-            indent_id = False
-            if requisition.origin:
-                indent_ids = indent_obj.search(cr, uid, [('name', '=', requisition.origin)], context=context)
-                indent_id = indent_ids and indent_ids[0] or False
-            result[requisition.id] = indent_id
-        return result
-
-    _columns = {
-        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
-        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
-        'maize': fields.char('Maize', size=256, readonly=True),
-    }
-
-    def make_purchase_order(self, cr, uid, ids, partner_id, context=None):
-        """
-        Create New RFQ for Supplier
-        """
-        if context is None:
-            context = {}
-        assert partner_id, 'Supplier should be specified'
-        purchase_order = self.pool.get('purchase.order')
-        purchase_order_line = self.pool.get('purchase.order.line')
-        res_partner = self.pool.get('res.partner')
-        fiscal_position = self.pool.get('account.fiscal.position')
-        supplier = res_partner.browse(cr, uid, partner_id, context=context)
-        supplier_pricelist = supplier.property_product_pricelist_purchase or False
-        res = {}
-        for requisition in self.browse(cr, uid, ids, context=context):
-            if supplier.id in filter(lambda x: x, [rfq.state <> 'cancel' and rfq.partner_id.id or None for rfq in requisition.purchase_ids]):
-                raise osv.except_osv(_('Warning!'), _('You have already one %s purchase order for this partner, you must cancel this purchase order to create a new quotation.') % rfq.state)
-            location_id = requisition.warehouse_id.lot_input_id.id
-            purchase_id = purchase_order.create(cr, uid, {
-                        'origin': requisition.origin,
-                        'partner_id': supplier.id,
-                        'pricelist_id': supplier_pricelist.id,
-                        'location_id': location_id,
-                        'company_id': requisition.company_id.id,
-                        'fiscal_position': supplier.property_account_position and supplier.property_account_position.id or False,
-                        'requisition_id':requisition.id,
-                        'notes':requisition.description,
-                        'warehouse_id':requisition.warehouse_id.id,
-            }, context=context)
-            res[requisition.id] = purchase_id
-            for line in requisition.line_ids:
-                product = line.product_id
-                seller_price, qty, default_uom_po_id, date_planned = self._seller_details(cr, uid, line, supplier, context=context)
-                taxes_ids = product.supplier_taxes_id
-                taxes = fiscal_position.map_tax(cr, uid, supplier.property_account_position, taxes_ids)
-                purchase_order_line.create(cr, uid, {
-                    'order_id': purchase_id,
-                    'name': product.partner_ref,
-                    'product_qty': qty,
-                    'product_id': product.id,
-                    'product_uom': default_uom_po_id,
-                    'price_unit': seller_price,
-                    'date_planned': date_planned,
-                    'taxes_id': [(6, 0, taxes)],
-                }, context=context)
-            self.pool.get('purchase.requisition').write(cr,uid,requisition.id,{'purchase_ids':[(4,purchase_id)]})
-        return res
-
-purchase_requisition()
-
 class procurement_order(osv.osv):
     _inherit = 'procurement.order'
-
     _columns = {
+        'person': fields.integer('Person',help="Number of Person work for this task"),
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'indentor_id': fields.many2one('res.users', 'Indentor'),
         'department_id': fields.many2one('stock.location', 'Department'),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project'),
     }
-
 
     def _prepare_line_purchase(self, cr, uid, name, procurement, qty, uom_id, price, schedule_date, taxes):
         line_vals = {
@@ -1001,10 +974,10 @@ class procurement_order(osv.osv):
             'price_unit': price or 0.0,
             'date_planned': schedule_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
             'move_dest_id': False,
-            'taxes_id': [(6,0,taxes)],
+            'taxes_id': [(6, 0, taxes)],
+            'person':procurement.person
         }
         return line_vals
-
 
     def make_po(self, cr, uid, ids, context=None):
         """ Make purchase order from procurement
@@ -1023,7 +996,7 @@ class procurement_order(osv.osv):
         requisition_obj = self.pool.get('purchase.requisition')
         for procurement in self.browse(cr, uid, ids, context=context):
             res_id = procurement.move_id.id
-            partner = procurement.product_id.seller_id # Taken Main Supplier of Product of Procurement.
+            partner = procurement.product_id.seller_id  # Taken Main Supplier of Product of Procurement.
             seller_qty = procurement.product_id.seller_qty
             partner_id = partner.id
             pricelist_id = partner.property_product_pricelist_purchase.id
@@ -1032,14 +1005,14 @@ class procurement_order(osv.osv):
 
             qty = uom_obj._compute_qty(cr, uid, procurement.product_uom.id, procurement.product_qty, uom_id)
             if seller_qty:
-                qty = max(qty,seller_qty)
+                qty = max(qty, seller_qty)
 
             price = pricelist_obj.price_get(cr, uid, [pricelist_id], procurement.product_id.id, qty, partner_id, {'uom': uom_id})[pricelist_id]
 
             schedule_date = self._get_purchase_schedule_date(cr, uid, procurement, company, context=context)
             purchase_date = self._get_purchase_order_date(cr, uid, procurement, company, schedule_date, context=context)
 
-            #Passing partner_id to context for purchase order line integrity of Line name
+            # Passing partner_id to context for purchase order line integrity of Line name
             new_context = context.copy()
             new_context.update({'lang': partner.lang, 'partner_id': partner_id})
 
@@ -1067,13 +1040,13 @@ class procurement_order(osv.osv):
             res[procurement.id] = self.create_procurement_purchase_order(cr, uid, procurement, po_vals, line_vals, context=new_context)
             requisition_id = False
             if procurement.product_id.purchase_requisition:
-                requisition_id = requisition_obj.create(cr, uid, 
+                requisition_id = requisition_obj.create(cr, uid,
                     {
                         'origin': procurement.origin,
                         'date_end': procurement.date_planned,
                         'warehouse_id':warehouse_id and warehouse_id[0] or False,
                         'company_id':procurement.company_id.id,
-                        'line_ids': [(0,0,{
+                        'line_ids': [(0, 0, {
                             'product_id': procurement.product_id.id,
                             'product_uom_id': procurement.product_uom.id,
                             'product_qty': procurement.product_qty
@@ -1088,21 +1061,11 @@ procurement_order()
 
 class res_users(osv.Model):
     _inherit = 'res.users'
-
     _columns = {
         'sign': fields.binary("Sign", help="This field holds the image used for the signature, limited to 1024x1024px."),
     }
 
 res_users()
-
-class hr_employee(osv.Model):
-    _inherit = "hr.employee"
-
-    _columns = {
-        'absent': fields.boolean("Not in office"),
-    }
-
-hr_employee()
 
 class product_order_series(osv.Model):
     _name = 'product.order.series'
@@ -1112,7 +1075,7 @@ class product_order_series(osv.Model):
     _columns = {
         'name': fields.char('Name', size=64, required=True, translate=True),
         'code': fields.char('Code', size=32, required=True),
-        'type': fields.selection([('indent', 'Indent'), ('purchase','Purchase')], 'Type', required=True),
+        'type': fields.selection([('indent', 'Indent'), ('purchase', 'Purchase')], 'Type', required=True),
         'seq_id': fields.many2one('ir.sequence', 'Sequence'),
         'seq_type_id': fields.many2one('ir.sequence.type', 'Sequence Type'),
         }
@@ -1129,7 +1092,7 @@ class product_order_series(osv.Model):
         seq = {
             'name': name,
             'implementation':'no_gap',
-            'prefix': '%(year)s/'+prefix + "/",
+            'prefix': '%(year)s/' + prefix + "/",
             'suffix': '',
             'padding': 4,
             'number_increment': 1,
@@ -1172,7 +1135,7 @@ class stock_location(osv.Model):
         'seq_id': fields.many2one('ir.sequence', 'Sequence'),
         'seq_type_id': fields.many2one('ir.sequence.type', 'Sequence Type'),
         'maize_location': fields.boolean('Maize Location'),
-        'manager_id': fields.many2one('hr.employee','Manager'),
+        'manager_id': fields.many2one('hr.employee', 'Manager'),
     }
 
     def create(self, cr, uid, vals, context=None):
@@ -1189,7 +1152,7 @@ class stock_location(osv.Model):
             seq = {
                 'name': name,
                 'implementation':'no_gap',
-                'prefix': '%(year)s/'+prefix,
+                'prefix': '%(year)s/' + prefix,
                 'padding': padding,
                 'number_increment': 1,
                 'code': code
@@ -1215,7 +1178,7 @@ class stock_location(osv.Model):
                 if location.seq_type_id:
                     seq_type_obj.write(cr, uid, [location.seq_type_id.id], {'code': vals.get('code')}, context=context)
                 if location.seq_id:
-                    seq_obj.write(cr, uid, [location.seq_id.id], {'code': vals.get('code'), 'prefix': '%(year)s/'+prefix, 'padding': padding}, context=context)
+                    seq_obj.write(cr, uid, [location.seq_id.id], {'code': vals.get('code'), 'prefix': '%(year)s/' + prefix, 'padding': padding}, context=context)
         return super(stock_location, self).write(cr, uid, ids, vals, context=context)
 
     def unlink(self, cr, uid, ids, context=None):
@@ -1232,15 +1195,14 @@ class stock_location(osv.Model):
 
 stock_location()
 
-class stock_move(osv.Model):
-    _inherit = 'stock.move'
-
-    _columns = {
-        'indent': fields.many2one('indent.indent', 'Indent'),
-        'indentor': fields.many2one('res.users', 'Indentor'),
-        'department_id': fields.many2one('stock.location', 'Department'),
-    }
-
-stock_move()
+# class stock_move(osv.Model):
+#     _inherit = 'stock.move'
+#     _columns = {
+#         'indent': fields.many2one('indent.indent', 'Indent'),
+#         'indentor': fields.many2one('res.users', 'Indentor'),
+#         'department_id': fields.many2one('stock.location', 'Department'),
+#     }
+# 
+# stock_move()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -28,23 +28,14 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 
-PURTRAN = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], 
-            [TAXAMT], [GSTAMT], [STAMT], [SURAMT], [USERID], [ACTION], [PRTFLG], [ADVAMT], [DEDACCODE1], [DEDAMT1], [DEDACCODE2], [DEDAMT2], [RETAMT], 
-            [DEBAMT], [DEBVOUNO], [DEBVATAMT], [RSNCODE], [STAMT1], [STAMT2], [DEBVATAMT1], [DEBVATAMT2], [EXCISE], [EXCISECESS], [EXCISEHCESS], [RATE], 
-            [CFORMIND], [STATE], [REASON], [CONRETAMT], [DEDACCODE3], [DEBTAXABLEAMT], [AHDFLG], [DEDACCODE4], [DEDAMT4])
-         VALUES
-           ('%(COCODE)s',  '%(FINYEAR)s',  '%(BKTYPE)s',  '%(VOUNO)s',  '%(VOUSRL)s',  '%(SERIES)s',  '%(RMQTY)s',  '%(PAYDUE)s',  '%(STCODE)s',  '%(TAXAMT)s',  '%(GSTAMT)s',  '%(STAMT)s',  '%(SURAMT)s',  '%(USERID)s',  '%(ACTION)s',  
-           '%(PRTFLG)s',  '%(ADVAMT)s',  '%(DEDACCODE1)s',  '%(DEDAMT1)s',  '%(DEDACCODE2)s',  '%(DEDAMT2)s',  '%(RETAMT)s',  '%(DEBAMT)s',  '%(DEBVOUNO)s',  '%(DEBVATAMT)s',  '%(RSNCODE)s',  '%(STAMT1)s',  '%(STAMT2)s',  '%(DEBVATAMT1)s',  
-           '%(DEBVATAMT2)s',  '%(EXCISE)s',  '%(EXCISECESS)s',  '%(EXCISEHCESS)s',  '%(RATE)s',  '%(CFORMIND)s',  '%(STATE)s',  '%(REASON)s',  '%(CONRETAMT)s',  '%(DEDACCODE3)s',  '%(DEBTAXABLEAMT)s',  '%(AHDFLG)s',  '%(DEDACCODE4)s',  
-           '%(DEDAMT4)s')"""
+PURTRAN = """INSERT INTO [MZFAS].[dbo].[PURTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [SERIES], [RMQTY], [PAYDUE], [STCODE], [TAXAMT], [GSTAMT], [STAMT], [SURAMT], [USERID], [ACTION], [PRTFLG], [ADVAMT], [DEDACCODE1], [DEDAMT1], [DEDACCODE2], [DEDAMT2], [RETAMT],  [DEBAMT], [DEBVOUNO], [DEBVATAMT], [RSNCODE], [STAMT1], [STAMT2], [DEBVATAMT1], [DEBVATAMT2], [EXCISE], [EXCISECESS], [EXCISEHCESS], [RATE], [CFORMIND], [STATE], [REASON], [CONRETAMT], [DEDACCODE3], [DEBTAXABLEAMT], [AHDFLG], [DEDACCODE4], [DEDAMT4])
+         VALUES ('%(COCODE)s',  '%(FINYEAR)s',  '%(BKTYPE)s',  '%(VOUNO)s',  '%(VOUSRL)s',  '%(SERIES)s',  '%(RMQTY)s',  '%(PAYDUE)s',  '%(STCODE)s',  '%(TAXAMT)s',  '%(GSTAMT)s',  '%(STAMT)s',  '%(SURAMT)s',  '%(USERID)s',  '%(ACTION)s', '%(PRTFLG)s',  '%(ADVAMT)s',  '%(DEDACCODE1)s',  '%(DEDAMT1)s',  '%(DEDACCODE2)s',  '%(DEDAMT2)s',  '%(RETAMT)s',  '%(DEBAMT)s',  '%(DEBVOUNO)s',  '%(DEBVATAMT)s', '%(RSNCODE)s', '%(STAMT1)s', '%(STAMT2)s',  '%(DEBVATAMT1)s',  '%(DEBVATAMT2)s',  '%(EXCISE)s',  '%(EXCISECESS)s',  '%(EXCISEHCESS)s',  '%(RATE)s',  '%(CFORMIND)s',  '%(STATE)s',  '%(REASON)s',  '%(CONRETAMT)s',  '%(DEDACCODE3)s',  '%(DEBTAXABLEAMT)s',  '%(AHDFLG)s',  '%(DEDACCODE4)s',  '%(DEDAMT4)s')"""
 
-TRANMAIN = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] (
-                [COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID], 
-                [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
-            VALUES (
-                '%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', 
-                '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', 
-                '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s', '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
+TRANMAIN = """INSERT INTO [MZFAS].[dbo].[TRANMAIN] ([COCODE], [FINYEAR], [BKTYPE], [BKSRS], [VOUNO], [VOUSRL], [VOUDATE], [VOUSTS], [FASCODE], [CRDBID],  [VOUAMT], [SUBCODE], [REFNO], [REFDAT], [REMK01], [REMK02], [REMK03], [REMK04], [USERID], [ACTION], [CVOUNO])
+            VALUES ('%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(BKSRS)s', '%(VOUNO)s', '%(VOUSRL)s', '%(VOUDATE)s', '%(VOUSTS)s', '%(FASCODE)s', '%(CRDBID)s', '%(VOUAMT)s', '%(SUBCODE)s', '%(REFNO)s', '%(REFDAT)s', '%(REMK01)s', '%(REMK02)s', '%(REMK03)s', '%(REMK04)s', '%(USERID)s', '%(ACTION)s', '%(CVOUNO)s')"""
+
+BANKTRAN = """INSERT INTO [MZFAS].[dbo].[BANKTRAN] ([COCODE], [FINYEAR], [BKTYPE], [VOUNO], [VOUSRL], [BANKCD], [CHQDRF], [CHDRNO], [CHDRDT], [PRTFLG], [USERID], [ACTION], [CONTRABANKCD], [CONTRAVOUNO], [CONTRAFASCODE], [chqinfavour], [PAYABLEAT], [CVOUNO])
+            VALUES ('%(COCODE)s', '%(FINYEAR)s', '%(BKTYPE)s', '%(VOUNO)s', '%(VOUSRL)s', '%(BANKCD)s', '%(CHQDRF)s', '%(CHDRNO)s', '%(CHDRDT)s', '%(PRTFLG)s', '%(USERID)s', '%(ACTION)s', '%(CONTRABANKCD)s', '%(CONTRAVOUNO)s', '%(CONTRAFASCODE)s', '%(chqinfavour)s', '%(PAYABLEAT)s', '%(CVOUNO)s)"""
 
 _logger = logging.getLogger(__name__)
 
@@ -134,14 +125,11 @@ class account_invoice(osv.Model):
         REFDAT = invoice.ref_date or ''
         ACTION = invoice.invoice_line and invoice.invoice_line[0].account_analytic_id.id or ''
         USERID = invoice.user_id and invoice.user_id.user_code[:3]
-        FASCODE = ""
         
         if debit_note:
             BKTYPE = 'DBP'
-            FASCODE = '302K060'
         else:
-            BKTYPE = invoice.move_id.journal_id.maize_code or '',
-            FASCODE = invoice.partner_id.supp_code or ''
+            BKTYPE = invoice.move_id.journal_id.maize_code or ''
         
         res = {
             'COCODE': 1,
@@ -150,7 +138,6 @@ class account_invoice(osv.Model):
             'BKSRS': invoice.move_id.journal_id.series and invoice.move_id.journal_id.series  or '',
             'VOUDATE': invoice.date_invoice,
             'VOUSTS': '',
-            'FASCODE': FASCODE,
             'SUBCODE': '',
             'REFNO': invoice.supplier_invoice_number or '',
             'REFDAT': REFDAT,
@@ -182,6 +169,7 @@ class account_invoice(osv.Model):
         debit_vals.update({
             'VOUNO': voucher_no,
             'FASCODE': '302K060',
+            'VOUSRL': 0,
             'REMK01': invoice.number + ':' + ref_date,
             'CRDBID':'D',
             'VOUAMT':invoice.debit_note_amount_total,
@@ -203,19 +191,19 @@ class account_invoice(osv.Model):
         else:
             credit_vals.update({'VOUAMT': invoice.debit_note_amount_total})
 
-        self._execute_sql(cr, uid, invoice, credit_line, context)
+        self._execute_sql(cr, uid, invoice, credit_line, credit_vals, context)
 
         if tax_exist:
             tax_line = str(TRANMAIN)
             tax_vals = self._get_transaction_line(cr, uid, invoice, True, context)
-            tax_vals = {
+            tax_vals.update({
                 'VOUNO': voucher_no, 
                 'VOUSRL': 2, 
                 'FASCODE': '6102002',
                 'REMK01': invoice.number + ':' + ref_date,
                 'CRDBID':'C',
                 'VOUAMT': invoice.deb_vat + invoice.deb_add_vat,
-            }
+            })
             self._execute_sql(cr, uid, invoice, tax_line, tax_vals, context)
 
         return voucher_no
@@ -323,6 +311,7 @@ class account_invoice(osv.Model):
             'VOUSRL': 0,
             'REMK01': 'Ref:' + str(invoice.number) + ':' + ref_date,
             'CRDBID':'C',
+            'FASCODE':invoice.partner_id.supp_code,
             'VOUAMT':invoice.amount_total,
         })
 
@@ -333,6 +322,7 @@ class account_invoice(osv.Model):
             'VOUSRL': 1,
             'REMK01': 'Purchase Summary',
             'CRDBID':'D',
+            'FASCODE':invoice.journal_id.default_debit_account_id.code,
             'VOUAMT':invoice.amount_total - invoice.other_amount,
         })
 
@@ -346,6 +336,7 @@ class account_invoice(osv.Model):
                 'VOUNO': voucher_no,
                 'VOUSRL': 2,
                 'CRDBID':'D',
+                'FASCODE':invoice.other_ac_code,
                 'VOUAMT':invoice.other_amount,
             })
             self._execute_sql(cr, uid, invoice, other_lineSQL, other_res, context)

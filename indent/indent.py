@@ -150,24 +150,34 @@ class indent_indent(osv.Model):
         return res
 
     _columns = {
-        'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent"),
-        'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
-        'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
-        
-        'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
-        'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
-        'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        #Report printing tracking fields
         'attachment_id': fields.many2one('ir.attachment', 'Attachment'),
         'print_report': fields.related('attachment_id', 'datas', type='binary', string='Indent Report'),
+        
+        #Contract related fields
+        'contract': fields.boolean('Contract', help="Check box True means the contract otherwise it is indent"),
+        
+        #Indentor, Employee and related Departments
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
         'employee_id': fields.many2one('hr.employee', 'Employee'),
         'employee_department_id': fields.related('employee_id', 'department_id', readonly=True, type='many2one', relation='hr.department', string='Employee Department', store=True, states={'draft': [('readonly', False)]}),
         'department_id': fields.many2one('stock.location', 'Department', required=True, readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
+        
+         #Maize specific fields 
+        'maize': fields.char('Maize', size=256, readonly=True),
+        'fiscalyear': fields.char('Year', readonly=True),
+
+        'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
+        'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
+        'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
+        'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade", readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'requirement': fields.selection([('ordinary', 'Ordinary'), ('urgent', 'Urgent')], 'Requirement', readonly=True, required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'type': fields.selection([('new', 'Store'), ('existing', 'Repairing')], 'Type', required=True, track_visibility='onchange', readonly=True, states={'draft': [('readonly', False)]}),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products', readonly=True, states={'draft': [('readonly', False)], 'waiting_approval': [('readonly', False)]}),
-        'picking_id': fields.many2one('stock.picking', 'Picking'),
+        
         'description': fields.text('Item Description', readonly=True, states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', readonly=True, states={'draft': [('readonly', False)]}),
         'indent_authority_ids': fields.one2many('document.authority.instance', 'indent_id', 'Authority', readonly=True, states={'draft': [('readonly', False)]}),
@@ -177,10 +187,10 @@ class indent_indent(osv.Model):
             store={
                 'indent.indent': (lambda self, cr, uid, ids, c={}: ids, ['product_lines'], 20),
                 'indent.product.lines': (_get_product_line, ['price_subtotal', 'product_uom_qty', 'indent_id'], 20),
-            }),
-        'maize': fields.char('Maize', size=256, readonly=True),
-        'fiscalyear': fields.char('Year', readonly=True),
+            }
+        ),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting For Approval'), ('inprogress', 'Inprogress'), ('received', 'Received'), ('reject', 'Rejected')], 'State', readonly=True, track_visibility='onchange'),
+        'picking_id': fields.many2one('stock.picking', 'Picking'),
     }
 
     def _default_employee_id(self, cr, uid, context=None):
@@ -640,7 +650,6 @@ class document_authority(osv.Model):
         # name_get may receive int id instead of an id list
         if isinstance(ids, (int, long)):
             ids = [ids]
-
         return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
 
     _columns = {
@@ -671,9 +680,8 @@ class document_authority_instance(osv.Model):
         return [(record.id, record.name.name) for record in self.browse(cr, uid , ids, context=context)]
 
     _columns = {
-        'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
-        'picking_id': fields.many2one('stock.picking', 'Picking', required=True, ondelete='cascade'),
-        
+        'indent_id': fields.many2one('indent.indent', 'Indent', ondelete='cascade'),
+        'picking_id': fields.many2one('stock.picking', 'Picking', ondelete='cascade'),
         'name': fields.many2one('res.users', 'Authority', required=True),
         'document': fields.selection([('indent', 'Indent'), ('order', 'Purchase Order'), ('picking', 'Picking')], 'Document', required=True),
         'priority': fields.integer('Priority'),
@@ -691,21 +699,22 @@ document_authority_instance()
 class stock_picking(osv.Model):
     _inherit = 'stock.picking'
 
-    def _get_indent(self, cr, uid, ids, name, args, context=None):
-        result = {}
-        indent_obj = self.pool.get('indent.indent')
-        for order in self.browse(cr, uid, ids, context=context):
-            indent_id = False
-            if order.origin:
-                indent_ids = indent_obj.search(cr, uid, [('name', '=', order.origin)], context=context)
-                indent_id = indent_ids and indent_ids[0] or False
-            result[order.id] = indent_id
-        return result
+#     def _get_indent(self, cr, uid, ids, name, args, context=None):
+#         result = {}
+#         indent_obj = self.pool.get('indent.indent')
+#         for order in self.browse(cr, uid, ids, context=context):
+#             indent_id = False
+#             if order.origin:
+#                 indent_ids = indent_obj.search(cr, uid, [('name', '=', order.origin)], context=context)
+#                 indent_id = indent_ids and indent_ids[0] or False
+#             result[order.id] = indent_id
+#         return result
 
     _columns = {
-        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
-        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
+#        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
+#        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
+#        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
+
         'picking_authority_ids': fields.one2many('document.authority.instance', 'picking_id', 'Authority', domain=[('document','=','picking')]),
         'maize': fields.char('Maize', size=256, readonly=True),
         'maize_in': fields.char('Maize', size=256, readonly=True),
@@ -750,24 +759,14 @@ class stock_picking(osv.Model):
     def action_confirm(self, cr, uid, ids, context=None):
         picking_authority_obj = self.pool.get('document.authority.instance')
         for picking in self.browse(cr, uid, ids, context=context):
-            if picking.type == 'internal':
-                if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.coach_id and picking.indent_id.employee_id.coach_id.user_id and picking.indent_id.employee_id.coach_id.user_id.id:
-                    res = {
-                       'name': picking.indent_id.employee_id.coach_id.user_id.id, 
-                       'document': 'picking', 
-                       'picking_id': picking.id, 
-                       'priority': 1
-                    }
-                    picking_authority_obj.create(cr, uid, res, context=context)
-                
-                if picking.indent_id and picking.indent_id.employee_id and picking.indent_id.employee_id.user_id and picking.indent_id.employee_id.user_id.id:
-                    res = {
-                       'name': picking.indent_id.employee_id.user_id.id, 
-                       'document': 'picking', 
-                       'picking_id': picking.id, 
-                       'priority': 2
-                    }
-                    picking_authority_obj.create(cr, uid, res, context=context)
+            res = {
+#              'name': picking.indent_id.employee_id.user_id.id,
+               'name': uid, 
+               'document': 'picking', 
+               'picking_id': picking.id, 
+               'priority': 2
+            }
+            picking_authority_obj.create(cr, uid, res, context=context)
         return super(stock_picking, self).action_confirm(cr, uid, ids, context=context)
 
     def check_approval(self, cr, uid, ids):
@@ -1064,7 +1063,6 @@ class res_users(osv.Model):
     _columns = {
         'sign': fields.binary("Sign", help="This field holds the image used for the signature, limited to 1024x1024px."),
     }
-
 res_users()
 
 class product_order_series(osv.Model):
@@ -1078,7 +1076,7 @@ class product_order_series(osv.Model):
         'type': fields.selection([('indent', 'Indent'), ('purchase', 'Purchase')], 'Type', required=True),
         'seq_id': fields.many2one('ir.sequence', 'Sequence'),
         'seq_type_id': fields.many2one('ir.sequence.type', 'Sequence Type'),
-        }
+    }
 
     _sql_constraints = [
         ('code_uniq', 'unique (code,type)', 'The code of the product order series must be unique!')
@@ -1195,14 +1193,13 @@ class stock_location(osv.Model):
 
 stock_location()
 
-# class stock_move(osv.Model):
-#     _inherit = 'stock.move'
-#     _columns = {
-#         'indent': fields.many2one('indent.indent', 'Indent'),
-#         'indentor': fields.many2one('res.users', 'Indentor'),
-#         'department_id': fields.many2one('stock.location', 'Department'),
-#     }
-# 
-# stock_move()
+class stock_move(osv.Model):
+    _inherit = 'stock.move'
+    _columns = {
+        'indent': fields.many2one('indent.indent', 'Indent'),
+        'indentor': fields.many2one('res.users', 'Indentor'),
+        'department_id': fields.many2one('stock.location', 'Department'),
+    }
+stock_move()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -326,7 +326,9 @@ class purchase_order_line(osv.Model):
         'po_series_id': fields.related('order_id', 'po_series_id', type="many2one", relation="product.order.series", string="PO Sr", store=True),
         'po_payment_term_id': fields.related('order_id', 'payment_term_id', type="many2one", relation='account.payment.term', string="Payment Term", store=True),
         'po_delivery': fields.related('order_id', 'delivey', type="many2one", relation="purchase.delivery",string="Mill Delivery/Ex-Godown",store=True),
-        'po_indentor_id': fields.related('indentor_id', 'indentor_id', type="many2one", relation="res.users", string="Indentor",store=True),
+
+#        'po_indentor_id': fields.related('indent_id', 'indentor_id', type="many2one", relation="res.users", string="Indentor",store=True),
+        
         'po_excise': fields.function(_amount_line, multi="tax", string='Excise', digits_compute= dp.get_precision('Account'),
             store={
                 'purchase.order': (_get_po_order, ['service_ids','other_tax_ids','excies_ids', 'vat_ids', 'insurance', 'insurance_type', 'freight_type','freight','packing_type','package_and_forwording','commission','other_discount', 'discount_percentage', 'order_line'], 10),
@@ -1225,15 +1227,17 @@ class stock_picking(osv.Model):
     _inherit = "stock.picking"
     _order = "id desc"
     _columns = {
-            'type': fields.selection([('out', 'Sending Goods'), ('receipt', 'Receipt'),('in', 'Getting Goods'), ('internal', 'Internal')], 'Shipping Type', required=True, select=True, help="Shipping type specify, goods coming in or going out."),
-            'ac_code_id': fields.many2one('ac.code', 'AC Code', help="AC Code"),
-            'mc_code_id': fields.related('indent_id','analytic_account_id', relation='account.analytic.account', type='many2one', string="Project"),
-            'tr_code_id': fields.many2one('tr.code', 'TR Code', help="TR Code"),
-            'cylinder': fields.char('Cylinder Number', size=50),
-            'excisable_item': fields.boolean('Excisable Item'),
-            'warehouse_id': fields.related('purchase_id', 'warehouse_id', type='many2one', relation='stock.warehouse', string='Destination Warehouse'),
-            'voucher_id': fields.many2one('account.voucher', 'Payment'),
-                }
+        'type': fields.selection([('out', 'Sending Goods'), ('receipt', 'Receipt'),('in', 'Getting Goods'), ('internal', 'Internal')], 'Shipping Type', required=True, select=True, help="Shipping type specify, goods coming in or going out."),
+        'ac_code_id': fields.many2one('ac.code', 'AC Code', help="AC Code"),
+        
+#        'mc_code_id': fields.related('indent_id','analytic_account_id', relation='account.analytic.account', type='many2one', string="Project"),
+
+        'tr_code_id': fields.many2one('tr.code', 'TR Code', help="TR Code"),
+        'cylinder': fields.char('Cylinder Number', size=50),
+        'excisable_item': fields.boolean('Excisable Item'),
+        'warehouse_id': fields.related('purchase_id', 'warehouse_id', type='many2one', relation='stock.warehouse', string='Destination Warehouse'),
+        'voucher_id': fields.many2one('account.voucher', 'Payment'),
+    }
 
     def create(self, cr, uid, vals, context=None):
         vals['name'] = False

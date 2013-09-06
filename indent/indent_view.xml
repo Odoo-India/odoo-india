@@ -260,9 +260,6 @@
             <field name="arch" type="xml">
                 <field name="origin" position="replace">
                     <field name="origin" invisible="1"/>
-                    <field name="indent_id" invisible="1"/>
-                    <field name="indentor_id" invisible="1"/>
-                    <field name="indent_date" invisible="1"/>
                     <field name="maize" groups="indent.group_maize_data"/>
                 </field>
                 <xpath expr="//button[@name='draft_validate']" position="replace"/>

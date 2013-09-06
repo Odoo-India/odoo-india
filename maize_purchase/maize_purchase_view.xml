@@ -34,6 +34,7 @@
 					position='after'>
 					<field name="contract" invisible="1" />
 					<field name="person" attrs="{'invisible': [('contract', '!=', True)]}" />
+					<field name="indent_id"/>
 				</xpath>
 			</field>
 		</record>
@@ -159,6 +160,7 @@
 					position="before">
 					<field name="contract" invisible="1" />
 					<field name="person" attrs="{'readonly':[('contract','!=',True)]}" />
+					<field name="indent_id"/>
 					<field name="discount" />
 				</xpath>
 				<xpath expr="//field[@name='partner_ref']" position='after'>
@@ -953,7 +955,7 @@
 			<field name="arch" type="xml">
 				<field name="partner_id" position="after">
 					<field name="ac_code_id" />
-					<field name="mc_code_id" />
+					<!--  field name="mc_code_id" /-->
 					<field name="tr_code_id" />
 					<field name="cylinder" />
 				</field>
@@ -1294,7 +1296,6 @@
 					<field name="po_series_id" invisible="context.get('po_series_id_view',False)" />
 					<field name="advance_no" />
 					<field name="advance_date" />
-					<field name="po_indentor_id" invisible="context.get('po_indentor_id_view',False)" />
 					<field name="po_supplier_id" invisible="context.get('po_supplier_id_view',False)" />
 					<field name="po_excise" />
 					<field name="po_cess" />

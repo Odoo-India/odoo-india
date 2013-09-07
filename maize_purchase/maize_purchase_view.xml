@@ -91,7 +91,6 @@
 							<field name="voucher_id" invisible="1" />
 							<field name="dispatch_id" />
 						</group>
-
 						<group>
 							<separator string="Excise and VAT" colspan="2" />
 							<field name="amount_untaxed" widget="monetary"
@@ -108,7 +107,6 @@
 							<label string="" />
 							<button name="%(action_update_excise)d" string="Update Taxes"
 								type="action" class="oe_edit_only oe_link" />
-
 							<separator string="Insurance, Freight and Service"
 								colspan="2" />
 							<field name="service_ids" widget="many2many_tags"
@@ -133,7 +131,6 @@
 								<label string="₹"
 									attrs="{'invisible':[('freight_type','=','percentage')]}" />
 							</div>
-
 							<separator string="Others options" colspan="2" />
 							<field name="other_charges" widget="monetary"
 								options="{'currency_field': 'currency_id'}" />
@@ -174,7 +171,6 @@
 					<field name="is_copy" invisible="1" />
 					<field name="is_template"
 						attrs="{'invisible': ['|', ('is_copy', '=', True),('state', '!=', 'draft')]}" />
-					<field name="indent_ids" widget="many2many_tags"/>
 				</xpath>
 				<xpath expr="//field[@name='warehouse_id']" position='after'>
 					<field name="your_ref" />
@@ -1240,7 +1236,6 @@
 					<field name="partner_id" />
 					<field name="date_order" />
 					<field name="minimum_planned_date" invisible="context.get('quotation_only', False)" />
-					<field name="indent_ids" />
 					<field name="company_id" groups="base.group_multi_company"
 						widget="selection" />
 					<field name="amount_untaxed" sum="Total Untaxed amount"

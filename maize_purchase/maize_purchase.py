@@ -879,7 +879,8 @@ class purchase_order(osv.Model):
         return res
 
     _columns = {
-        'indent_ids':fields.many2many('indent.indent', 'rel_purchase_indent', 'purchase_id', 'indent_id', 'Indents'),
+        'indent_ids': fields.related('order_line','indent_id', type='many2one', relation='indent.indent', string='Indents'),
+
         #fields from contract
         'contract': fields.boolean('Contract'),
         
@@ -987,25 +988,9 @@ class purchase_order(osv.Model):
             self._order = 'name DESC'
         return super(purchase_order, self).search(cr, user, args, offset, limit, order, context, count)
 
-    def create(self, cr, uid, vals, context=None):
-        indents = []
-        if vals.get('order_line', []):
-            for line in vals.get('order_line', []):
-                line = line[2]
-                if line:
-                    indents += [line.get('indent_id')]
-            vals.update({'indent_ids':[(6, 0, indents)]})
-        return super(purchase_order, self).create(cr, uid, vals, context=context)
-
     def write(self, cr, uid, ids, vals, context=None):
         orders = self.browse(cr, uid, ids, context=context)
-        indents = []
-        for order in orders:
-            for line in order.order_line:
-                if line.indent_id:
-                    indents += [line.indent_id.id]
-            vals.update({'indent_ids':[(6, 0, indents)]})
-            res = super(purchase_order, self).write(cr, uid, [order.id], vals, context=context)
+        res = super(purchase_order, self).write(cr, uid, ids, vals, context=context)
         
         line_obj = self.pool.get('purchase.order.line')
         if isinstance(ids, (int, long)):

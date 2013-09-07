@@ -167,6 +167,8 @@ class indent_indent(osv.Model):
         'maize': fields.char('Maize', size=256, readonly=True),
         'fiscalyear': fields.char('Year', readonly=True),
 
+        'series_id':fields.many2one('product.order.series', 'Series'),
+        
         'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
         'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
@@ -313,8 +315,9 @@ class indent_indent(osv.Model):
             for authority in indent.indent_authority_ids:
                 if authority.name and authority.name.partner_id and authority.name.partner_id.id not in indent.message_follower_ids:
                     self.write(cr, uid, [indent.id], {'message_follower_ids': [(4, authority.name.partner_id.id)]}, context=context)
-
-        self.write(cr, uid, ids, {'state': 'waiting_approval'}, context=context)
+        
+        name = self.pool.get('ir.sequence').get(cr, uid, indent.series_id.seq_id.code)
+        self.write(cr, uid, ids, {'state': 'waiting_approval', 'name':name}, context=context)
         return True
 
     def action_picking_create(self, cr, uid, ids, context=None):

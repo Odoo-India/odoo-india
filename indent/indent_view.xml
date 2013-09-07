@@ -28,29 +28,32 @@
                         </div>
                         <group>
                             <group>
-                                <field name="indent_date" />
-                                <field name="maize" groups="indent.group_maize_data"/>
-                            </group>
-                            <group>
-                                <field name="required_date"/>
-                                <field name="attachment_id" invisible="1"/>
-                                <field name="print_report" readonly="1" attrs="{'invisible': [('print_report', '=', False)]}"/>
-                            </group>
-                        </group>
-                        <group>
-                            <group string="Details">
                                 <field name="item_for" on_change="onchange_item(item_for)"/>
                                 <field name="analytic_account_id" attrs="{'invisible': [('item_for', '!=', 'capital')], 'required': [('item_for', '=', 'capital')]}"/>
                                 <field name="requirement"/>
                                 <field name="type"/>
                                 <field name="company_id" invisible="1"/>
                             </group>
-                            <group string="Indentor">
+                            <group>
+                                <field name="indent_date" />
+                                <field name="required_date"/>
+                                <field name="fiscalyear"/>
+                                <field name="attachment_id" invisible="1"/>
+                                <field name="print_report" readonly="1" attrs="{'invisible': [('print_report', '=', False)]}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="series_id"/>
+                                <field name="maize" groups="indent.group_maize_data"/>
+                                <field name="contract" invisible="1"/>
+                            </group>
+                            <group>
                                 <field name="indentor_id" readonly="1"/>
                                 <field name="employee_id" groups="indent.group_maize_data" invisible="1"/>
                                 <field name="employee_department_id" groups="indent.group_maize_data" invisible="1"/>
                                 <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view'), ('maize_location', '=', True)]" context="{'default_maize_location': True}"/>
-                                <field name="fiscalyear"/>
+                                
                             </group>
                         </group>
                         <notebook>
@@ -115,8 +118,10 @@
                                 </field>
                             </page>
                         </notebook>
-                        <label for="description"/>
-                        <field name="description"/>
+                        <div class="oe_clear">
+                            <label for="description"/>
+                        </div>
+                        <field name="description" class="oe_inline" placeholder="Additional note..."/>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>

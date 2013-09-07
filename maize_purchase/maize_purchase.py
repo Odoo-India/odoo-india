@@ -869,8 +869,17 @@ class purchase_order(osv.Model):
             'move_lines' : [],
             'voucher_id': order.voucher_id.id,
         }
+        
+    def _get_indent_ids(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for po in self.browse(cr, uid, ids, context):
+            for line in po.line_ids:
+                print line 
+        
+        return res
 
     _columns = {
+        'indent_ids':fields.many2many('indent.indent', 'rel_purchase_indent', 'purchase_id', 'indent_id', 'Indents'),
         #fields from contract
         'contract': fields.boolean('Contract'),
         
@@ -978,12 +987,30 @@ class purchase_order(osv.Model):
             self._order = 'name DESC'
         return super(purchase_order, self).search(cr, user, args, offset, limit, order, context, count)
 
+    def create(self, cr, uid, vals, context=None):
+        indents = []
+        if vals.get('order_line', []):
+            for line in vals.get('order_line', []):
+                line = line[2]
+                if line:
+                    indents += [line.get('indent_id')]
+            vals.update({'indent_ids':[(6, 0, indents)]})
+        return super(purchase_order, self).create(cr, uid, vals, context=context)
+
     def write(self, cr, uid, ids, vals, context=None):
-        res = super(purchase_order, self).write(cr, uid, ids, vals, context=context)
+        orders = self.browse(cr, uid, ids, context=context)
+        indents = []
+        for order in orders:
+            for line in order.order_line:
+                if line.indent_id:
+                    indents += [line.indent_id.id]
+            vals.update({'indent_ids':[(6, 0, indents)]})
+            res = super(purchase_order, self).write(cr, uid, [order.id], vals, context=context)
+        
         line_obj = self.pool.get('purchase.order.line')
         if isinstance(ids, (int, long)):
             ids = [ids]
-        for order in self.browse(cr, uid, ids, context=context):
+        for order in orders:
             excies_ids = [excies_id.id for excies_id in order.excies_ids]
             vat_ids = [vat_id.id for vat_id in order.vat_ids]
             service_ids = [service_id.id for service_id in order.service_ids]
@@ -998,6 +1025,7 @@ class purchase_order(osv.Model):
                 vat_ids = vals.get('vat_ids') and vals.get('vat_ids')[0][2] or []
             if 'service_ids' in vals:
                 service_ids = vals.get('service_ids') and vals.get('service_ids')[0][2] or []
+            
             for line in order.order_line:
                 line_obj.write(cr, uid, [line.id], {'taxes_id': [(6, 0, excies_ids + vat_ids+ service_ids)]}, context=context)
         return res

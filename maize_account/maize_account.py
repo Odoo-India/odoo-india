@@ -45,6 +45,9 @@ class account_tax(osv.Model):
          ('other', 'Other'),
         ], 'Tax Category', required=True)
     }
+    _defaults = {
+        'tax_type':'other'
+    }
 
     def onchange_tax_type(self, cr, uid, ids, name, tax_type=False, context=None):
         record = self.browse(cr, uid, ids, context)

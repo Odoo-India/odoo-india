@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Change in the Purchase order line attributes -->
+        <record id="view_purchase_order_form_editable_list" model="ir.ui.view">
+            <field name="name">purchase.order.form.editable.list</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form" />
+            <field name="groups_id"
+                eval="[(6, 0, [ref('product.group_uom'), ref('purchase.group_analytic_accounting')])]" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']/tree" position="attributes">
+                    <attribute name="editable">False</attribute>
+                    <attribute name="width">550</attribute>
+                    <attribute name="height">350</attribute>
+                    <attribute name="colspan">4</attribute>
+                </xpath>
+            </field>
+        </record>
+        
+        <!-- Purchase Order Inherit -->
+        <record id="maize_view_maize_purchase_order_form" model="ir.ui.view">
+            <field name="name">purchase.order.inherit.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="replace" >
+                    <field name="contract"/>
+                </xpath>
+                <xpath
+                    expr="//notebook/page[@string='Purchase Order']/field/tree/field[@name='taxes_id']"
+                    position="replace">
+                    <field name="taxes_id" widget="many2many_tags"
+                        domain="[('parent_id','=',False),('type_tax_use','!=','sale')]"
+                        invisible="1" />
+                </xpath>
+                <xpath expr="//notebook/page[@string='Purchase Order']/group"
+                    position="replace">
+                    <group>
+                        <group>
+                            <separator string="Other Charges" colspan="2" />
+                            <label for="package_and_forwording" />
+                            <div>
+                                <field name="packing_type"
+                                    on_change="onchange_reset(insurance_type,freight_type,packing_type)" />
+                                <field name="package_and_forwording" class="oe_inline" />
+                                <label string="%%"
+                                    attrs="{'invisible':['|','|',('packing_type','=','fix'),('packing_type','=','include'),('packing_type', '=', 'per_unit')]}" />
+                                <label string="₹"
+                                    attrs="{'invisible':[('packing_type','=','percentage')]}" />
+                            </div>
+                            <field name="commission" />
+                            <separator string="Terms and Conditions" colspan="2" />
+                            <field name="payment_term_id" />
+                            <field name="delivey" />
+                            <field name="voucher_id" invisible="1" />
+                            <field name="dispatch_id" />
+                        </group>
+                        <group>
+                            <separator string="Excise and VAT" colspan="2" />
+                            <field name="amount_untaxed" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+                            <field name="amount_tax" invisible="1" />
+                            <field name="excies_ids" widget="many2many_tags"
+                                domain="[('tax_type','=','excise')]" attrs="{'invisible': [('contract', '=', True)]}" />
+                            <field name="excise_amount" attrs="{'invisible': [('contract', '=', True)]}" />
+                            <field name="excise_total" attrs="{'invisible': [('contract', '=', True)]}" />
+                            <field name="vat_ids" widget="many2many_tags" domain="[('tax_type','=','vat')]"
+                                attrs="{'invisible': [('contract', '=', True)]}" />
+                            <field name="vat_amount" attrs="{'invisible': [('contract', '=', True)]}" />
+                            <field name="vat_total" attrs="{'invisible': [('contract', '=', True)]}" />
+                            <label string="" />
+                            <button name="%(action_update_excise)d" string="Update Taxes"
+                                type="action" class="oe_edit_only oe_link" />
+                            <separator string="Insurance, Freight and Service"
+                                colspan="2" />
+                            <field name="service_ids" widget="many2many_tags"
+                                domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}" />
+                            <label for="insurance" />
+                            <div>
+                                <field name="insurance_type"
+                                    on_change="onchange_reset(insurance_type,freight_type,packing_type)" />
+                                <field name="insurance" class="oe_inline" />
+                                <label string="%%"
+                                    attrs="{'invisible':['|',('insurance_type','=','fix'),('insurance_type','=','include')]}" />
+                                <label string="₹"
+                                    attrs="{'invisible':[('insurance_type','=','percentage')]}" />
+                            </div>
+                            <label for="freight" />
+                            <div>
+                                <field name="freight_type"
+                                    on_change="onchange_reset(insurance_type,freight_type,packing_type)" />
+                                <field name="freight" class="oe_inline" />
+                                <label string="%%"
+                                    attrs="{'invisible':['|','|',('freight_type','=','fix'),('freight_type','=','include'),('freight_type', '=', 'per_unit')]}" />
+                                <label string="₹"
+                                    attrs="{'invisible':[('freight_type','=','percentage')]}" />
+                            </div>
+                            <separator string="Others options" colspan="2" />
+                            <field name="other_charges" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+                            <field name="other_discount" />
+                            <field name="discount_percentage" />
+                            <field name="other_tax_ids" widget="many2many_tags"
+                                domain="[('tax_type','=','other')]" />
+                            <h2>
+                                <label for="amount_total" style="color: #FF0000;" />
+                            </h2>
+                            <h2>
+                                <field name="amount_total" style="color: #FF0000;"
+                                    nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}" />
+                            </h2>
+                            <group colspan="4">
+                                <button name="button_dummy" states="draft" string="(update)"
+                                    type="object" class="oe_edit_only oe_link" />
+                            </group>
+                        </group>
+                    </group>
+                </xpath>
+                <xpath
+                    expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']"
+                    position="before">
+                    <!-- field name="person" attrs="{'invisible':[('contract','=',False)]}" / -->
+                    <field name="indent_id"/>
+                    <field name="discount" />
+                </xpath>
+                <xpath expr="//field[@name='partner_ref']" position='after'>
+                    <field name="our_ref" />
+                    <field name="your_ref" />
+                    <field name="ref_date"/>
+                </xpath>
+                <xpath expr="//field[@name='warehouse_id']" position='after'>
+                    <field name='po_series_id' string="PO Series"
+                        attrs="{'invisible': [('contract', '=', True)]}" domain="[('type', '=', 'purchase')]"
+                        widget="selection" />
+                    <field name='contract_id' string="Contract Series"
+                        attrs="{'invisible': [('contract', '=', False)]}" domain="[('type', '=', 'indent')]"
+                        widget="selection" />
+                </xpath>
+                <xpath
+                    expr="//notebook/page[@string='Incoming Shipments &amp; Invoices']"
+                    position='after'>
+                    <page string="Tenders">
+                        <field name="requisition_ids" widget="one2many_list" />
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        
+        <!-- Purchase Order Tree View -->
+        <record id="purchase.purchase_order_tree" model="ir.ui.view">
+            <field name="name">purchase.order.tree</field>
+            <field name="model">purchase.order</field>
+            <field name="arch" type="xml">
+                <tree fonts="bold:message_unread==True"
+                    colors="grey:state=='cancel';blue:state in ('wait','confirmed');red:state in ('except_invoice','except_picking')"
+                    string="Purchase Order">
+                    <field name="message_unread" invisible="1" />
+                    <field name="maize" />
+                    <field name="name" string="Number" />
+                    <field name="po_series_id" />
+                    <field name="supplier_code" invisible="1" />
+                    <field name="partner_id" />
+                    <field name="date_order" />
+                    <field name="minimum_planned_date" invisible="context.get('quotation_only', False)" />
+                    <field name="company_id" groups="base.group_multi_company"
+                        widget="selection" />
+                    <field name="amount_untaxed" sum="Total Untaxed amount"
+                        string="Untaxed" />
+                    <field name="amount_total" sum="Total amount" />
+                    <field name="freight_type" invisible="1" />
+                    <field name="insurance_type" invisible="1" />
+                    <field name="origin" invisible="1" />
+                    <field name="state" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- Purchase Order Search View -->
+        <record id="view_purchase_order_filter_inherited" model="ir.ui.view">
+            <field name="name">purchase.order.filter.inherited</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter" />
+            <field name="arch" type="xml">
+                <field name="name" position="replace">
+                    <field name="name" string="Purchase Order"
+                        filter_domain="['|', '|', ('name', 'ilike', self), ('indentor_code', 'ilike', self), ('supplier_code', 'ilike', self)]" />
+                </field>
+                <field name="partner_id" position="replace">
+                    <field name="partner_id"/>
+                    <field name="indent_id"/>
+                    <field name="indentor_id"/>
+                    <field name="department_id"/>
+                    <field name="po_series_id"/>
+                    <field name="create_uid"/>
+                </field>
+                <filter string="Supplier" position="after">
+                    <filter string="Series" icon="terp-partner" domain="[]"
+                        context="{'group_by':'po_series_id'}" />
+                    <filter string="Maize PO" icon="terp-partner" domain="[]"
+                        context="{'group_by':'maize'}" />
+                    <filter string="Insurance Type" icon="terp-partner" domain="[]"
+                        context="{'group_by':'insurance_type'}" />
+                    <filter string="Freight Type" icon="terp-partner" domain="[]"
+                        context="{'group_by':'freight_type'}" />
+                </filter>
+            </field>
+        </record>
+        
+        <!-- Purchase Order Advance Payment Form View -->
+        <record id="view_purchase_order_advance_payment_form" model="ir.ui.view">
+            <field name="name">purchase.order.advance.payment.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_2_stock_picking" />
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='invoice_open']" position="after">
+                    <button name="open_advance_payment" string="Advance Payment"
+                        type="object" attrs="{'invisible': [('voucher_id', '=', False)]}" />
+                </xpath>
+            </field>
+        </record>
+        
+    </data>
+</openerp>

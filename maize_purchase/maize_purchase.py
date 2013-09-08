@@ -306,7 +306,9 @@ class purchase_order_line(osv.Model):
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'indentor_id':fields.related('indent_id', 'indentor_id', relation='res.users', string='Indentor', type='many2one', store=True, readonly=True),        
         'department_id': fields.related('indent_id', 'department_id', relation='stock.location', string='Department', type='many2one', store=True, readonly=True), 
-
+        
+        'contract': fields.related('order_id', 'contract', type='boolean', relation='purchase.order', string='Contract', store=True),
+        
         'discount': fields.float('Discount (%)'),
         'price_subtotal': fields.function(_amount_line, multi="tax", string='Subtotal', digits_compute= dp.get_precision('Account'),
             store={
@@ -314,7 +316,7 @@ class purchase_order_line(osv.Model):
                 'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
             }),
         'person': fields.integer('Person',help="Number of Person work for this task"),
-        'contract': fields.related('order_id', 'contract', type='boolean', relation='purchase.order', string='Contract', store=True, readonly=True),
+        
         'po_name': fields.related('order_id', 'name', type='char', size=64, relation='purchase.order', string='PO No', store=True, readonly=True),
         'po_date': fields.related('order_id', 'date_order', type='date', relation='purchase.order', string='PO Date', store=True, readonly=True),
         'po_supplier_id': fields.related('order_id', 'partner_id', type='many2one', relation='res.partner', string='Supplier Name', store=True, readonly=True),
@@ -882,6 +884,8 @@ class purchase_order(osv.Model):
 
     _columns = {
         'indent_id': fields.related('order_line','indent_id', type='many2one', relation='indent.indent', string='Indents'),
+        'indentor_id': fields.related('order_line','indentor_id', type='many2one', relation='res.users', string='Indentor'),
+        'department_id': fields.related('order_line','department_id', type='many2one', relation='stock.location', string='Department'),
 
         #fields from contract
         'contract': fields.boolean('Contract'),
@@ -902,9 +906,11 @@ class purchase_order(osv.Model):
         'retention': fields.selection([('leived', 'CONTRACTOR\'S RETENTION TO BE LEIVED'),('not_leived', 'CONTRACTOR\'S RETENTION NOT TO BE LEIVED')], "Retention Type"),
 
         #fields from indent
-        'maize': fields.char('Maize PO Number', size=256, readonly=True),
+        'maize': fields.char('Maize #', size=256, readonly=True),
         'contract_name': fields.char('Contract Name', size=256, readonly=True),
         'voucher_id': fields.many2one('account.voucher', 'Payment'),
+        
+        'ref_date':fields.date('Reference Date'),
         
         'package_and_forwording': fields.float('Packing & Forwarding', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'insurance': fields.float('Insurance',  states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
@@ -962,7 +968,6 @@ class purchase_order(osv.Model):
         'voucher_id': fields.many2one('account.voucher', 'Payment', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'contract_id': fields.many2one('product.order.series', 'Contract Series'),
         'supplier_code': fields.related('partner_id', 'supp_code', type='char', string='Supplier Code', store=True, readonly=True),
-#        'indentor_code': fields.related('indentor_id', 'login', type='char', string='Indentor Code', store=True, readonly=True),
         'dispatch_id': fields.many2one('purchase.dispatch', 'Dispatch', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'other_discount': fields.float('Discount / Round Off', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in fix amount", track_visibility='always'),
         'discount_percentage':  fields.float('Discount (%)', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}, help="Discount in %", track_visibility='always'),
@@ -972,8 +977,6 @@ class purchase_order(osv.Model):
         'our_ref': fields.char('Our Reference',size=250, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'your_ref': fields.char('Your Reference',size=250, states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'other_tax_ids': fields.many2many('account.tax', 'purchase_order_other', 'other_tax_id', 'tax_id', 'Other Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
-        'is_template': fields.boolean('Is Template', help="If it's check means this PO is template and use for recreate same PO from it."),
-        'is_copy': fields.boolean('Is Copy', help="If it's check means this PO is Copy from Template"),
     }
 
     _defaults = {
@@ -1045,18 +1048,18 @@ class purchase_order(osv.Model):
         for po in self.browse(cr, uid, ids, context=context):
             sequence = po.name
             
+            if not po.maize:
+                if not po.po_series_id:
+                    raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
+                seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
+                sequence = seq_obj.get(cr, uid, seq)
+            
 #             if po.indent_id and po.indent_id.contract and not po.maize:
 #                 if not po.contract_id:
 #                     raise osv.except_osv(_("Warning !"),_('Please select a contract series.'))
-#                 
-#                 contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
-#                 sequence = seq_obj.get(cr, uid, contract_seq)
-#             if not po.maize:
-#                 if not po.po_series_id:
-#                     raise osv.except_osv(_("Warning !"), _('Please select a purchase order series.'))
-#                 seq = series_obj.browse(cr, uid, po.po_series_id.id, context=context).seq_id.code
-#                 sequence = seq_obj.get(cr, uid, seq)
-            
+#                contract_seq = series_obj.browse(cr, uid, po.contract_id.id, context=context).seq_id.code
+#                sequence = seq_obj.get(cr, uid, contract_seq)
+             
             voucher_id = False
             totlines = []
             total_amt = 0.0

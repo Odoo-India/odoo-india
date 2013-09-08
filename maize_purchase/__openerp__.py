@@ -47,6 +47,9 @@ This module inherits the base product module which maintains some product histor
         'wizard/stock_move_split_view.xml',
         'wizard/department_excise_percentage_view.xml',
         
+        
+        'purchase_requisition_view.xml',
+        'purchase_order_view.xml',
         'maize_purchase_view.xml',
         
 #         'maize_report.xml',

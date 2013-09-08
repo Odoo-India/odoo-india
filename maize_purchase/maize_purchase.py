@@ -304,9 +304,9 @@ class purchase_order_line(osv.Model):
     _columns = {
         # 'purchase.order.line'
         'indent_id': fields.many2one('indent.indent', 'Indent'),
-        'indentor_id': fields.many2one('res.users', 'Indentor'),
-        'department_id': fields.many2one('stock.location', 'Department'),
-        
+        'indentor_id':fields.related('indent_id', 'indentor_id', relation='res.users', string='Indentor', type='many2one', store=True, readonly=True),        
+        'department_id': fields.related('indent_id', 'department_id', relation='stock.location', string='Department', type='many2one', store=True, readonly=True), 
+
         'discount': fields.float('Discount (%)'),
         'price_subtotal': fields.function(_amount_line, multi="tax", string='Subtotal', digits_compute= dp.get_precision('Account'),
             store={
@@ -433,6 +433,8 @@ class purchase_requisition(osv.osv):
     _columns = {
         'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
         'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
+        'department_id': fields.related('indent_id', 'department_id', relation='stock.location', string='Department', type='many2one', store=True, readonly=True), 
+        
         'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
         'maize': fields.char('Maize', size=256, readonly=True),
         'purchase_ids' : fields.many2many('purchase.order','purchase_requisition_rel11','requisition_id','purchase_id','Latest Requisition')
@@ -879,7 +881,7 @@ class purchase_order(osv.Model):
         return res
 
     _columns = {
-        'indent_ids': fields.related('order_line','indent_id', type='many2one', relation='indent.indent', string='Indents'),
+        'indent_id': fields.related('order_line','indent_id', type='many2one', relation='indent.indent', string='Indents'),
 
         #fields from contract
         'contract': fields.boolean('Contract'),
@@ -981,12 +983,12 @@ class purchase_order(osv.Model):
         'date_from': lambda *a: datetime.now().strftime('%Y-%m-%d'),
      }
     
-    def search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False):
-        if order is None:
-            self._order = 'amount_total'
-        else:
-            self._order = 'name DESC'
-        return super(purchase_order, self).search(cr, user, args, offset, limit, order, context, count)
+#     def search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False):
+#         if order is None:
+#             self._order = 'amount_total'
+#         else:
+#             self._order = 'name DESC'
+#         return super(purchase_order, self).search(cr, user, args, offset, limit, order, context, count)
 
     def write(self, cr, uid, ids, vals, context=None):
         orders = self.browse(cr, uid, ids, context=context)
@@ -1097,7 +1099,7 @@ class purchase_order(osv.Model):
 
     def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
         res = super(purchase_order, self)._prepare_order_line_move(cr, uid, order, order_line, picking_id, context=context)
-        res = dict(res, indent = order_line.indent_id.id, indentor = order_line.indentor_id.id, department_id = order_line.department_id.id)
+        res = dict(res, indent_id = order_line.indent_id.id)
         return res
 
     def open_advance_payment(self, cr, uid, ids, context=None):
@@ -1595,8 +1597,6 @@ class stock_move(osv.osv):
         'po_name': fields.related('picking_id', 'purchase_id','name', type="char", size=64, relation='puchase.order', string="PO Number", store=True),
         'payment_id': fields.related('picking_id', 'purchase_id', 'payment_term_id','name', type="char", size=64, relation='account.payment.term',string="Payment", store=True),
         'po_series_id': fields.related('picking_id', 'purchase_id', 'po_series_id', type="many2one", relation='product.order.series', string="PO series", store=True),
-        
-        #'indent_id': fields.related('picking_id', 'purchase_id', 'indent_id', type="many2one", relation='indent.indent', string="Indent", store=True),
         
         'inward_year':fields.function(_get_year, multi="year", string="Inward Year",store=True),
         'puchase_year':fields.function(_get_year, multi="year", string="Puchase Year", store=True),

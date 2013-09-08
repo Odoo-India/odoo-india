@@ -28,12 +28,12 @@
                         </div>
                         <group>
                             <group>
-                                <field name="item_for" on_change="onchange_item(item_for)"/>
-                                <field name="analytic_account_id" attrs="{'invisible': [('item_for', '!=', 'capital')], 'required': [('item_for', '=', 'capital')]}"/>
-                                <field name="requirement"/>
-                                <field name="type"/>
-                                <field name="company_id" invisible="1"/>
+                                <field name="indentor_id" readonly="1"/>
+                                <field name="employee_id" groups="indent.group_maize_data" invisible="1"/>
+                                <field name="employee_department_id" groups="indent.group_maize_data" invisible="1"/>
+                                <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view'), ('maize_location', '=', True)]" context="{'default_maize_location': True}"/>
                             </group>
+                            
                             <group>
                                 <field name="indent_date" />
                                 <field name="required_date"/>
@@ -44,16 +44,17 @@
                         </group>
                         <group>
                             <group>
-                                <field name="series_id"/>
-                                <field name="maize" groups="indent.group_maize_data"/>
-                                <field name="contract" invisible="1"/>
+                                <field name="item_for" on_change="onchange_item(item_for)"/>
+                                <field name="analytic_account_id" attrs="{'invisible': [('item_for', '!=', 'capital')], 'required': [('item_for', '=', 'capital')]}"/>
+                                <field name="requirement"/>
+                                <field name="type"/>
+                                <field name="company_id" invisible="1"/>
                             </group>
                             <group>
-                                <field name="indentor_id" readonly="1"/>
-                                <field name="employee_id" groups="indent.group_maize_data" invisible="1"/>
-                                <field name="employee_department_id" groups="indent.group_maize_data" invisible="1"/>
-                                <field name="department_id" domain="[('location_id', '!=', False), ('usage', '!=', 'view'), ('maize_location', '=', True)]" context="{'default_maize_location': True}"/>
-                                
+                                <field name="indent_equipment_id"/>
+                                <field name="indent_section_id"/>
+                                <field name="maize" groups="indent.group_maize_data"/>
+                                <field name="contract" invisible="1"/>
                             </group>
                         </group>
                         <notebook>

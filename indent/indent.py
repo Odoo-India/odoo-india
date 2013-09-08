@@ -167,10 +167,9 @@ class indent_indent(osv.Model):
         'maize': fields.char('Maize', size=256, readonly=True),
         'fiscalyear': fields.char('Year', readonly=True),
 
-        'series_id':fields.many2one('product.order.series', 'Series'),
-        
         'indent_section_id': fields.many2one('indent.section','Section', help="Indent Section", readonly=True, states={'draft': [('readonly', False)]}),
         'indent_equipment_id': fields.many2one('indent.equipment','Equipment', help="Indent Equipment", readonly=True, states={'draft': [('readonly', False)]}),
+        
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
         'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
@@ -316,7 +315,7 @@ class indent_indent(osv.Model):
                 if authority.name and authority.name.partner_id and authority.name.partner_id.id not in indent.message_follower_ids:
                     self.write(cr, uid, [indent.id], {'message_follower_ids': [(4, authority.name.partner_id.id)]}, context=context)
         
-        name = self.pool.get('ir.sequence').get(cr, uid, indent.series_id.seq_id.code)
+        name = self.pool.get('ir.sequence').get(cr, uid, 'indent.indent')
         self.write(cr, uid, ids, {'state': 'waiting_approval', 'name':name}, context=context)
         return True
 
@@ -1199,9 +1198,9 @@ stock_location()
 class stock_move(osv.Model):
     _inherit = 'stock.move'
     _columns = {
-        'indent': fields.many2one('indent.indent', 'Indent'),
-        'indentor': fields.many2one('res.users', 'Indentor'),
-        'department_id': fields.many2one('stock.location', 'Department'),
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'indentor_id':fields.related('indent_id', 'indentor_id', relation='res.users', type='many2one', string='Indentor', store=True, readonly=True),        
+        'department_id': fields.related('indent_id', 'department_id', relation='stock.location', type='many2one', string='Department', store=True, readonly=True), 
     }
 stock_move()
 

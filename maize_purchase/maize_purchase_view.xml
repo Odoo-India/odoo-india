@@ -16,6 +16,39 @@
 				</xpath>
 			</field>
 		</record>
+		
+		<!-- Purchase Requisition search view -->
+		<record id="view_inherit_purchase_requisition_search" model="ir.ui.view">
+            <field name="name">inherit.purchase.requisition.search</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_filter" />
+            <field name="arch" type="xml">
+                <filter string="Responsible" position="after">
+                    <filter string="Indent" icon="terp-personal" domain="[]" context="{'group_by':'indent_id'}"/>
+                    <filter string="Indentor" icon="terp-personal" domain="[]" context="{'group_by':'indentor_id'}"/>
+                    <filter string="Department" icon="terp-personal" domain="[]" context="{'group_by':'department_id'}"/>
+                </filter>
+                <field name="exclusive" position="after">
+                    <field name="indent_id"/>
+                    <field name="indentor_id"/>
+                    <field name="department_id"/>
+                </field>
+            </field>
+        </record>
+        
+        <record id="view_inherit_purchase_requisition_list" model="ir.ui.view">
+            <field name="name">inherit.purchase.requisition.list</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_tree" />
+            <field name="arch" type="xml">
+                <field name="origin" position="after">
+                    <field name="indent_id" invisible="1"/>
+                    <field name="indentor_id" invisible="1"/>
+                    <field name="department_id" invisible="1"/>
+                </field>
+            </field>
+        </record>
+		<!-- End -->
 
 		<!-- Purchase Order Line Form Inherit for add field -->
 		<record id="view_maize_purchase_order_line_form" model="ir.ui.view">
@@ -35,6 +68,7 @@
 					<field name="contract" invisible="1" />
 					<field name="person" attrs="{'invisible': [('contract', '!=', True)]}" />
 					<field name="indent_id"/>
+					<field name="indentor_id"/>
 				</xpath>
 			</field>
 		</record>
@@ -476,8 +510,8 @@
 						attrs="{'invisible': [('line_ids','=',False),('state', 'not in', ('in_progress'))]}" />
 				</xpath>
 			</field>
-
 		</record>
+		
 		<!-- inherit create quatation wizard view -->
 		<record id="inherit_view_purchase_requisition_partner" model="ir.ui.view">
 			<field name="name">purchase.requisition.partner.inherit.view</field>
@@ -490,6 +524,7 @@
 				</xpath>
 			</field>
 		</record>
+		
 		<record id="inherit_view_employee_form" model="ir.ui.view">
 			<field name="name">hr.employee.inherit.view</field>
 			<field name="model">hr.employee</field>
@@ -503,6 +538,7 @@
 				</xpath>
 			</field>
 		</record>
+		
 		<record id="maize_view_stock_picking_in_inherit_form" model="ir.ui.view">
 			<field name="name">maize,stock.picking.in.inherit</field>
 			<field name="model">stock.picking.in</field>
@@ -572,6 +608,8 @@
 					<field name="qty_available" invisible="1" />
 					<field name="challan_qty" sum="Total Challan Quantity"
 						attrs="{'invisible': [('type', '=', 'out')]}" />
+					<field name="indent_id" />
+					<field name="indentor_id"/>
 				</xpath>
 				<xpath expr="//tree[@string='Stock Moves']" position="attributes">
 					<attribute name="editable">bottom</attribute>
@@ -588,6 +626,8 @@
 			<field name="arch" type="xml">
 				<xpath expr="//field[@name='product_id']" position="after">
 					<field name="challan_qty" />
+					<field name="indent_id" />
+					<field name="indentor_id"/>
 				</xpath>
 			</field>
 		</record>
@@ -600,6 +640,8 @@
 				<xpath expr="//field[@name='product_id']" position="after">
 					<field name="type" invisible="1" />
 					<field name="challan_qty" attrs="{'invisible': [('type', '=', 'out')]}" />
+					<field name="indent_id" />
+					<field name="indentor_id"/>
 				</xpath>
 			</field>
 		</record>
@@ -723,6 +765,8 @@
 							<field name="diff_amount" invisible="1" />
 							<field name="product_qty" sum="Total Quantity" />
 							<field name="challan_qty" sum="Total Challan Quantity" />
+							<field name="indent_id" />
+							<field name="indentor_id"/>
 							<field name="diff"
 								on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)"
 								sum="Total Diff" />
@@ -781,6 +825,8 @@
 									<field name="product_qty"
 										on_change="onchange_quantity(product_id, product_qty, product_uom, product_uos)" />
 									<field name="challan_qty" />
+									<field name="indent_id" />
+									<field name="indentor_id"/>
 									<field name="diff"
 										on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)" />
 									<field name="less_diff"
@@ -1260,7 +1306,7 @@
 				</field>
 				<field name="partner_id" position="replace">
 					<field name="partner_id"/>
-					<field name="indent_ids"/>
+					<field name="indent_id"/>
 					<field name="po_series_id"/>
                     <field name="create_uid"/>
 				</field>
@@ -1278,8 +1324,8 @@
 				</filter>
 			</field>
 		</record>
+		
 		<!-- Advance Note Report -->
-
 		<record id="view_maize_purchase_order_line_tree" model="ir.ui.view">
 			<field name="name">maize.purchase.order.line.tree</field>
 			<field name="model">purchase.order.line</field>

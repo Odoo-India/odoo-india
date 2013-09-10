@@ -34,22 +34,17 @@ The user will raise an indent form to the stores, The store keeper checks for th
 """,
     'depends' : ['purchase_requisition', 'account_voucher', 'hr'],
     'data' : [
-        'indent_data.xml',
-        'security/indent_security.xml'
-    ],
-    'update_xml' : [
         'indent_view.xml',
-#        'maize_contract_view.xml',
-        'security/ir.model.access.csv', 
-        
+        'indent_data.xml',
         'indent_workflow.xml',
         'stock_workflow.xml',
-        
         'purchase_report.xml',
         'wizard/import_indent_data.xml',
         'wizard/import_indent_data_line.xml',
         'wizard/datestart_from_view.xml',
     ],
+    'update_xml' : ['security/ir.model.access.csv', 'security/indent_security.xml'],
+
     'demo': [],
 
     'installable' : True,

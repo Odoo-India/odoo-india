@@ -113,6 +113,7 @@ class indent(report_sxw.rml_parse):
         if po_line_id:
             po_line = po_line_obj.browse(self.cr, self.uid, po_line_id[0])
             for tax in po_line.taxes_id:
+                print "tax.tax_typetax.tax_typetax.tax_type>>>>>>.", tax.tax_type
                 if tax.tax_type == 'excise' or tax.tax_type == 'cess' or tax.tax_type == 'hedu_cess':
                     excise += ' '+tax.name.split('(')[0]
                 if tax.tax_type == 'vat' or tax.tax_type == 'add_vat':

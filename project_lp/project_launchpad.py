@@ -20,12 +20,13 @@
 ##############################################################################
 
 import logging
+import datetime
 from bzrlib.branch import Branch
 from launchpadlib.launchpad import Launchpad
 from launchpadlib.credentials import Credentials
 
-from openerp.osv import fields, osv
-from openerp.tools.translate import _
+from osv import osv
+from osv import fields
 
 CACHE_PATH = "~/.launchpadlib/cache/"
 
@@ -88,7 +89,15 @@ def get_launchpad():
     launchpad = Launchpad(credentials, None, None, service_root="production", cache=CACHE_PATH)
     return launchpad
 
-class res_users(osv.Model):
+class project_project(osv.osv):
+    _inherit = 'project.project'
+    _columns = {
+        'action_id': fields.many2one('ir.actions.server', 'Email Notification', ondelete='set null', help="Configure email action to get log after each launchpad data process."),
+        'log':fields.text('Logs')
+    }
+project_project()
+
+class res_users(osv.osv):
     _inherit = 'res.users'
     _columns = {
         'lp_user':fields.char('Launchpad User', size=64),
@@ -148,21 +157,10 @@ def get_user(self, cr, uid, lp_user, context=None):
         user_pool.write(cr, uid, [user_id], vals, context)
     return user_id
 
-class project_branch(osv.Model):
+class project_branch(osv.osv):
     _name = 'project.branch'
     _description = 'Project Branch'
     _order = 'date_created desc'
-    _inherit = ['mail.thread', 'ir.needaction_mixin']
-
-#     _track = {
-#         'state': {
-#             'project.branch.development': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'Development',
-#             'project.branch.mature': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'Mature',
-#             'project.branch.merged': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'Merged',
-#             'project.branch.adandoned': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'Abandoned',
-#             'project.branch.experimental': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'Experimental'
-#         },
-#     }
 
     _columns = {
         'name':fields.char('Branch', size=512),
@@ -170,11 +168,10 @@ class project_branch(osv.Model):
         'project_id':fields.many2one('project.project', 'Project'),
         'state':fields.selection(BRANCH_STATUS, 'State'),
         'date_created':fields.datetime('Created'),
-        'date_last_modified':fields.datetime('Last Modified', track_visibility='onchange'),
-        'rev_no':fields.integer('Revision', track_visibility='onchange'),
+        'date_last_modified':fields.datetime('Last Modified'),
+        'rev_no':fields.integer('Revision'),
         'history':fields.boolean("History ?"),
-        'branch_type':fields.selection([('fix','Bug Fix'), ('feature','Feature'), ('improvement','Improvements'), \
-                                        ('junk','Need Review'), ('not_clean','Junk'), ('removed','Deleted')], 'Type', track_visibility='onchange'),
+        'branch_type':fields.selection([('fix','Bug Fix'), ('feature','Feature'), ('improvement','Improvements'), ('junk','Need Review'), ('not_clean','Junk'), ('removed','Deleted')], 'Type'),
         'description':fields.text('Description'),
         'web_link':fields.char('Link', size=2048),
         'branch_format':fields.char('Branch Format', size=2048),
@@ -347,15 +344,32 @@ class project_branch(osv.Model):
                 _logger.info('Branch %s : imported %s in project %s' % (counter, branch, oeproject.name))
                 if counter % 10 == 0:
                     cr.commit()
-        return True
+        if oeproject.action_id:
+            message = """Hello !,
+We have just processed %(project)s project to get the new branches and we get %(total)s new merge proposals.
 
-print 'INIT Class', project_branch()
+List of projects processed :
+%(projects)s
+
+Here are the list of new merge proposals :
+%(message)s
+
+Regards,
+OpenERP Development Team"""
+            msg = '\n'.join(str(v) for v in new_branch)
+            projects = '\n'.join(str(v) for v in new_project)
+            message = message % {'project':len(new_project), 'projects':projects, 'total':str(len(new_branch)), 'message':msg}
+            project_pool.write(cr, uid, [oeproject.id], {'log':message})
+            cr.commit()
+            self.pool.get('ir.actions.server').run(cr, uid, [oeproject.action_id.id], {'active_id':oeproject.id, 'active_ids':[oeproject.id], 'active_model':'project.project'})
+
+        return True
+project_branch()
 
 class project_branch_merge_proposal(osv.osv):
     _name = 'project.branch.merge'
     _description = 'Merge Proposal'
     _order = 'date_created desc'
-    _inherit = ['mail.thread', 'ir.needaction_mixin']
 
     _columns = {
         'project_id':fields.many2one('project.project', 'Project'),
@@ -584,6 +598,25 @@ class project_branch_merge_proposal(osv.osv):
                 _logger.info('Merge %s : processed %s' % (counter, merge))
                 if (counter % 10)== 0:
                     cr.commit()
+        if oeproject.action_id:
+            message = """Hello !,
+We have just processed %(project)s project to get the new merge proposal and we get %(total)s new merge proposals.
+
+List of projects processed :
+%(projects)s
+
+Here are the list of new merge proposals :
+%(message)s
+
+Regards,
+OpenERP Development Team"""
+            msg = '\n'.join(str(v) for v in new_merge)
+            projects = '\n'.join(str(v) for v in new_project)
+            message = message % {'project':len(new_project), 'projects':projects, 'total':str(len(new_merge)), 'message':msg}
+            project_pool.write(cr, uid, [oeproject.id], {'log':message})
+            cr.commit()
+            self.pool.get('ir.actions.server').run(cr, uid, [oeproject.action_id.id], {'active_id':oeproject.id, 'active_ids':[oeproject.id], 'active_model':'project.project'})
+
         return True
 
 project_branch_merge_proposal()
@@ -893,6 +926,25 @@ class project_bug(osv.osv):
 
                 if counter % 10 == 0:
                     cr.commit()
+
+        if oeproject.action_id:
+            message = """Hello !,
+We have just processed %(project)s project to get the new bugs and we get %(total)s new bugs reported.
+
+List of projects processed :
+%(projects)s
+
+Here are the list of new Bugs reported :
+%(message)s
+
+Regards,
+OpenERP Development Team"""
+            msg = '\n'.join(str(v) for v in new_bugs)
+            projects = '\n'.join(str(v) for v in new_project)
+            message = message % {'project':len(new_project), 'projects':projects, 'total':str(len(new_bugs)), 'message':msg}
+            project_pool.write(cr, uid, [oeproject.id], {'log':message})
+            cr.commit()
+            self.pool.get('ir.actions.server').run(cr, uid, [oeproject.action_id.id], {'active_id':oeproject.id, 'active_ids':[oeproject.id], 'active_model':'project.project'})
 
         return True
 

@@ -31,38 +31,44 @@
 This module inherits the base product module which maintains some product history data like last purchase order number, last supplier rate etc.
 ================================================================================================================================================================ 
 """,
-    'depends' : ['maize_product','maize_partner','maize_account'],
-    
+    'depends' : ['maize_product','maize_partner','maize_account', 'maize_contract'],
     'data' : [
-        'maize_tax_data.xml',
-        'code_data.xml',
-        'purchase_dispatch_data.xml',
-        'email_template_data.xml',
         'security/ir.model.access.csv',
-    ],
-    'update_xml' : [
         'wizard/comparison_report_view.xml',
+        'wizard/import_po_data.xml',
+        'wizard/import_po_line_data.xml',
+        'wizard/import_po_contract_data.xml',
+        'wizard/import_inward_data.xml',
+        'wizard/import_inward_line_data.xml',
+        'wizard/import_reciept_data.xml',
+        'wizard/import_reciept_line_data.xml',
+        'wizard/import_issue_data.xml',
+        'wizard/import_issue_line_data.xml',
+        'wizard/import_gatepass_data.xml',
+        'wizard/import_gatepass_line_data.xml',
         'wizard/inventory_control_view.xml',
+        'wizard/import_inward_data.xml',
+        'wizard/import_inward_line_data.xml',
         'wizard/update_excise_wizard.xml',
         'wizard/stock_move_split_view.xml',
         'wizard/department_excise_percentage_view.xml',
-        
-        
-        'purchase_requisition_view.xml',
-        'purchase_order_view.xml',
         'maize_purchase_view.xml',
-        
-#         'maize_report.xml',
-#         'report/indent_report_view.xml',
-#         'report/indent_purchase_report_view.xml',
-#         'report/indentor_wise_indent_report_view.xml',
-#         'report/project_cost_report_view.xml',
-#         'report/product_major_group_stock_view.xml',
-#         'report/purchase_order_information_view.xml',
-#         'report/inputs_consumed_by_department_view.xml',
-#         'report/format_rg_23a_part1_view.xml',
-#         'report/indentorwise_purchase_report_view.xml'
+        'maize_tax_data.xml',
+        'code_data.xml',
+        'purchase_dispatch_data.xml',
+        'maize_report.xml',
+        'email_template_data.xml',
+        'report/indent_report_view.xml',
+        'report/indent_purchase_report_view.xml',
+        'report/indentor_wise_indent_report_view.xml',
+        'report/project_cost_report_view.xml',
+        'report/product_major_group_stock_view.xml',
+        'report/purchase_order_information_view.xml',
+        'report/inputs_consumed_by_department_view.xml',
+        'report/format_rg_23a_part1_view.xml',
+        'report/indentorwise_purchase_report_view.xml'
     ],
+    'update_xml' : [],
 
     'demo': [],
 

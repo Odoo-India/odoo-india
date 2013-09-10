@@ -19,15 +19,31 @@
 #
 ##############################################################################
 
-import comparison_report
-import issue_report
-import indent_report
-import indent_purchase_report
-import indentor_wise_indent_report
-import project_cost_report
-import product_major_group_stock
-import purchase_order_information
-import inputs_consumed_by_department
-import format_rg_23a_part1
-import indentorwise_purchase_report
+{
+    'name' : 'Maize Contract',
+    'version' : '0.1',
+    'author' : 'OpenERP S.A.',
+    'sequence': 110,
+    'category': 'Warehouse Management',
+    'website' : 'http://www.openerp.com',
+    'summary' : 'Managing Contract',
+    'description' : """
+The user will create an contract 
+================================================================================================================================================================ 
+""",
+    'depends' : ['indent'],
+    'data' : [
+        'security/ir.model.access.csv',
+        'contract_data.xml',
+        'contract_report.xml',
+        'maize_contract_view.xml',
+    ],
+    'update_xml' : [],
+
+    'demo': [],
+
+    'installable' : True,
+    'application' : True,
+}
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

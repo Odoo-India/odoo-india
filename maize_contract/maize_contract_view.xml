@@ -26,6 +26,8 @@
                             </h1>
                         </div>
                         <div class="oe_right oe_inline" name="buttons">
+                            <button name="%(indent.action_purchase_requisition_indent_view)d" string="Enquiry" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': ['|', '|', ('contract', '=', True),('type', '=', 'existing'), ('state', '!=', 'inprogress')]}"/>
+                            <button name="%(indent.action_purchase_order_indent_view)d" string="Purchase Orders" type="action" groups="purchase.group_purchase_user" attrs="{'invisible': [('state', '!=', 'inprogress'),'|',('type', '!=', 'existing'),]}"/>
                         </div>
                         <group>
                             <group>
@@ -221,6 +223,59 @@
         </record>
         
         <menuitem action="action_contract_view" name="Contracts" parent="indent.menu_indent_indent_main" id="menu_contract_main" sequence="2"/>
-
+    
+        <!-- Purchase Order Form View -->
+        <record id="view_contract_purchase_order_form" model="ir.ui.view">
+            <field name="name">contract.purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="before">
+                    <group attrs="{'invisible': [('contract', '=', False)]}" col="6"  string="Number Of Days For Contract">
+                        <group>
+                            <field name="date_from" on_change="onchange_compute_days1(date_from, date_to,no_of_days2,no_of_days3,no_of_days4)"/>
+                            <field name="extended_date_from1" on_change="onchange_compute_days2(extended_date_from1, extended_date_to1, no_of_days1, no_of_days3, no_of_days4)"/>
+                            <field name="extended_date_from2" on_change="onchange_compute_days3(extended_date_from2, extended_date_to2, no_of_days1, no_of_days2, no_of_days4)"/>
+                            <field name="extended_date_from3" on_change="onchange_compute_days4(extended_date_from3, extended_date_to3, no_of_days1, no_of_days2, no_of_days3)"/>
+                        </group>
+                        <group>
+                            <field name="date_to" on_change="onchange_compute_days1(date_from, date_to,no_of_days2,no_of_days3,no_of_days4)"/>
+                            <field name="extended_date_to1" on_change="onchange_compute_days2(extended_date_from1, extended_date_to1, no_of_days1,no_of_days3,no_of_days4)"/>
+                            <field name="extended_date_to2" on_change="onchange_compute_days3(extended_date_from2, extended_date_to2, no_of_days1,no_of_days2,no_of_days4)"/>
+                            <field name="extended_date_to3" on_change="onchange_compute_days4(extended_date_from3, extended_date_to3, no_of_days1,no_of_days2,no_of_days3)"/>
+                        </group>
+                        <group>
+                            <field name="contract" invisible="1"/>
+                            <field name="no_of_days1"/>
+                            <field name="no_of_days2"/>
+                            <field name="no_of_days3"/>
+                            <field name="no_of_days4"/>
+                            <field name="total_days"/>
+                        </group>
+                    </group>
+                    <group string="Retention" attrs="{'invisible': [('contract', '=', False)]}">
+                        <group>
+                            <field name="retention"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        
+        <!--  Inherit for remove incoming shipments button from PO -->
+        <record id="view_inherit_purchase_order_2_stock_picking" model="ir.ui.view">
+            <field name="name">inherit.purchase.order.2.stock.picking</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_2_stock_picking"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='buttons']/button[@string='Incoming Shipments']" position="replace">
+                    <button type="object"
+                            name="view_picking"
+                            string="Incoming Shipments" attrs="{'invisible': ['|',('contract', '=', True),('state', '!=', 'approved')]}"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </openerp>

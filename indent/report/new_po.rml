@@ -358,8 +358,6 @@
             <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Our Reference:- [[ order.our_ref or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Your Reference:- [[ order.your_ref or removeParentNode('para')]] </para>
                 <!--blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>
@@ -465,8 +463,6 @@
             <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Our Reference:- [[ order.our_ref or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Your Reference:- [[ order.your_ref or removeParentNode('para')]] </para>
                 <!--blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>
@@ -936,8 +932,6 @@
             <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Our Reference:- [[ order.our_ref or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Your Reference:- [[ order.your_ref or removeParentNode('para')]] </para>
                 <!--blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>
@@ -1046,8 +1040,6 @@
             <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Our Reference:- [[ order.our_ref or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Your Reference:- [[ order.your_ref or removeParentNode('para')]] </para>
                 <!--blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>
@@ -1517,8 +1509,6 @@
             <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Our Reference:- [[ order.our_ref or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Your Reference:- [[ order.your_ref or removeParentNode('para')]] </para>
                 <!--blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>
@@ -1627,8 +1617,6 @@
             <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Our Reference:- [[ order.our_ref or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Your Reference:- [[ order.your_ref or removeParentNode('para')]] </para>
                 <!--blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>

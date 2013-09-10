@@ -19,22 +19,17 @@
 #
 ##############################################################################
 {
-    'name': 'Launchpad Project Analysis',
+    'name': 'Launchpad Integration',
     'version': '7.0',
     'category': 'Generic Modules/Project Management',
     'description': """
-Launchpad Integration
+Integration with Launchpad
 ======================================================================================
-Provides integration between OpenERP and Launchpad. so that we can get the data launchpad project data in to OpenERP such as
+Provides integration between OpenERP and Launchpad.
 
-- Branches
-- Merge proposals 
-- Reported Bugs 
-- Linked Users.
+Thanks to https://launchpad.net/~nhomar for migrate it to 7.0.
 
-So, that we can do analysis on the branch, merge proposals, and bugs for the related proejcts.
-To generate the launchpad credentials token, run the program lp-token.py with required parameters.
-""",
+    """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'depends': ["project"],
@@ -42,6 +37,8 @@ To generate the launchpad credentials token, run the program lp-token.py with re
     'update_xml': [
         "project_launchpad_view.xml",
         "project_scheduler.xml",
+        "wizard/project_launchpad.xml",
+        "report/report_project_branch_merge_view.xml"
     ],
     'test':[],
     'installable': True,

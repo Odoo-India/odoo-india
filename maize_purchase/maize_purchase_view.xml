@@ -117,7 +117,7 @@
 							<separator string="Insurance, Freight and Service"
 								colspan="2" />
 							<field name="service_ids" widget="many2many_tags"
-								domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}" />
+								domain="[('tax_type','=','service')]"/>
 							<label for="insurance" />
 							<div>
 								<field name="insurance_type"
@@ -685,7 +685,7 @@
 					<field name="inward_date" attrs="{'readonly':[('state','=','done')]}"/>
 					<field name="challan_no" attrs="{'readonly':[('state','=','done')]}" />
 					<field name="tr_code" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="party_id" domain="[('supp_code', '=like', '309%%')]" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="party_id"/>
 				</xpath>
 				<xpath expr="//field[@name='origin']" position="after">
 					<field name="excisable_item" attrs="{'readonly':[('state','=','done')]}"/>
@@ -853,7 +853,8 @@
 				<xpath expr="//field[@name='date_done']" position="replace">
 				</xpath>
 				<xpath expr="//field[@name='origin']" position="before">
-					<field name="date_done" string="Receipt Date" />
+					<!--field name="date_done" string="Receipt Date" /-->
+					<field name="receipt_date"/>
 				</xpath>
 				<xpath expr="//field[@name='date']" position="attributes">
 					<attribute name="invisible">True</attribute>
@@ -1281,10 +1282,13 @@
 				</field>
 				<field name="partner_id" position="replace">
 				    <field name="partner_id"/>
+				    <field name="product_search"/>
+				    <field name="indent_search"/>
+				    <field name="search_indent"/>
 			    </field>
 				<field name="partner_id" position="after">
 					<field name="po_series_id" />
-					<field name="product_id" />
+					<field name="product_id" /> 
 					<field name="create_uid" />
 				</field>
 				<filter string="Supplier" position="after">

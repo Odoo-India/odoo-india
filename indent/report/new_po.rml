@@ -190,6 +190,7 @@
         </td>
         <td>
           <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
+          <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
         </td>
         <td>
           <para style="terp_default_9"></para>
@@ -199,7 +200,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
+            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -211,7 +212,7 @@
             <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-            <para style="terp_default_9">: [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','')]]</para>
+            <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
@@ -414,10 +415,10 @@
           <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Quantity</para>
+          <para style="terp_tblheader_Details_Centre">Quantity &amp; Unit</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Unit Rate(Rs.)</para>
+          <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
@@ -519,10 +520,10 @@
           <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Quantity</para>
+          <para style="terp_tblheader_Details_Centre">Quantity &amp; Unit</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Unit Rate(Rs.)</para>
+          <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
@@ -552,9 +553,9 @@
             <para style="terp_default_9">
                 [[ formatLang(order_line.product_qty )]]
             </para>
+            <para style="terp_default_left_new">[[ order_line.product_uom.name or 'NO']]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[ order_line.product_uom.name or 'NO']]</para>
             <para style="terp_default_Centre_9">[[ order_line.price_unit or '0.0']]</para>
           </td>
           <td>
@@ -600,6 +601,7 @@
         </td>
         <td>
           <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
+          <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
         </td>
         <td>
           <para style="terp_default_9"></para>
@@ -609,7 +611,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
+            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -621,7 +623,7 @@
             <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-            <para style="terp_default_9">: [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','')]]</para>
+            <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
@@ -764,6 +766,7 @@
         </td>
         <td>
           <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
+          <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
         </td>
         <td>
           <para style="terp_default_9"></para>
@@ -773,7 +776,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
+            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -785,7 +788,7 @@
             <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-            <para style="terp_default_9">: [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','')]]</para>
+            <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
@@ -988,10 +991,10 @@
           <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Quantity</para>
+          <para style="terp_tblheader_Details_Centre">Quantity  &amp; Unit</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Unit Rate(Rs.)</para>
+          <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
@@ -1096,10 +1099,10 @@
           <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Quantity</para>
+          <para style="terp_tblheader_Details_Centre">Quantity &amp; Unit</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Unit Rate(Rs.)</para>
+          <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
@@ -1129,9 +1132,9 @@
             <para style="terp_default_9">
                 [[ formatLang(order_line.product_qty )]]
             </para>
+            <para style="terp_default_left_new">[[ order_line.product_uom.name or 'NO']]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[ order_line.product_uom.name or 'NO']]</para>
             <para style="terp_default_Centre_9">[[ order_line.price_unit or '0.0']]</para>
           </td>
           <td>
@@ -1177,6 +1180,7 @@
         </td>
         <td>
           <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
+          <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
         </td>
         <td>
           <para style="terp_default_9"></para>
@@ -1186,7 +1190,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
+            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]] </font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -1198,7 +1202,7 @@
             <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-            <para style="terp_default_9">: [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','')]]</para>
+            <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
@@ -1341,6 +1345,7 @@
         </td>
         <td>
           <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
+          <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
         </td>
         <td>
           <para style="terp_default_9"></para>
@@ -1350,7 +1355,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('font')]]</font> Service Tax </para>
+            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -1362,7 +1367,7 @@
             <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-            <para style="terp_default_9">: [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','')]]</para>
+            <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
@@ -1565,10 +1570,10 @@
           <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Quantity</para>
+          <para style="terp_tblheader_Details_Centre">Quantity &amp; Unit</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Unit Rate(Rs.)</para>
+          <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
@@ -1673,10 +1678,10 @@
           <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Quantity</para>
-        </td>
+          <para style="terp_tblheader_Details_Centre">Quantity &amp; Unit</para>
+      </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Unit Rate(Rs.)</para>
+          <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
@@ -1706,9 +1711,9 @@
             <para style="terp_default_9">
                 [[ formatLang(order_line.product_qty )]]
             </para>
+            <para style="terp_default_left_new">[[ order_line.product_uom.name or 'NO']]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">[[ order_line.product_uom.name or 'NO']]</para>
             <para style="terp_default_Centre_9">[[ order_line.price_unit or '0.0']]</para>
           </td>
           <td>
@@ -1754,6 +1759,7 @@
         </td>
         <td>
           <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
+          <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
         </td>
         <td>
           <para style="terp_default_9"></para>
@@ -1763,7 +1769,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> <font>[[ (order.contract == True or removeParentNode('para')) and not order.service_ids and removeParentNode('para')]] </font>Service Tax </para>
+            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]] </font>Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -1775,7 +1781,7 @@
             <para style="terp_default_9"> Despatch </para>
         </td>
         <td>
-            <para style="terp_default_9">: [[ (order.contract == True or removeParentNode('para')) and tax(order).get('service','')]]</para>
+            <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>

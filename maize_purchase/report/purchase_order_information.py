@@ -166,7 +166,7 @@ class purchase_order_information_report(osv.osv):
                     al.receipt_qty as receipt_qty,
                     al.pending_qty as pending_qty,
                     al.default_code as default_code,
-                    al.date_order 
+                    al.date_order as date_order
                 from
                 (select distinct(l.id) as id,
             l.product_qty as product_uom_qty,
@@ -224,8 +224,7 @@ class purchase_order_information_report(osv.osv):
                     left join product_template t on (p.product_tmpl_id=t.id)
                     left join product_order_series ps on (po.po_series_id = ps.id)
                     left join stock_move sm on (sm.indent=i.id)
-                where po.state != 'cancel' and po.contract != True and sm.product_id=p.id and sm.indent=i.id and sm.state = 'done'
-                and sm.product_id=p.id and sm.state = 'done' and sm.type not in ('out', 'internal')
+                where po.contract != True and sm.product_id=p.id and sm.state = 'done' and sm.type not in ('out', 'internal')
                 group by po.id,sm.type,sm.state,po.id,
                     i.id,
                     i.name,

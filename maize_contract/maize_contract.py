@@ -97,9 +97,9 @@ class indent_product_lines(osv.Model):
             return {'value': {'product_uom_qty': 1.0, 'product_uom': False, 'price_unit': 0.0, 'qty_available': 0.0, 'virtual_available': 0.0, 'name': '', 'delay': 0.0}}
         if analytic_account_id:
             if contract == False:
-                prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0152')], context=context)
+                prod_ids = product_obj.search(cr, uid, ['|',('default_code', '=like', '%s%%' % '0152'),('default_code', '=like', '%s%%' % '0192')], context=context)
                 if product_id not in prod_ids:
-                    raise osv.except_osv(_("Warning !"), _("You must select a product whose code start with '0152'."))
+                    raise osv.except_osv(_("Warning !"), _("You must select a product whose code start with '0152' or '0192'."))
             else:
                 prod_ids = product_obj.search(cr, uid, [('default_code', '=like', '%s%%' % '0192')], context=context)
                 if product_id not in prod_ids:

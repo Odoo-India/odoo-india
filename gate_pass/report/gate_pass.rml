@@ -220,7 +220,7 @@
                 <para style="terp_default_2"> REMARK :</para>
             </td>
             <td>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> [[ (gate.description) or ' ']]</para>
                 <para style="terp_default_2"> Please give estimate on receipt of goods for repairing and start work only on receipt of Purchase</para>
                 <para style="terp_default_2"> Order.Payment shall not be given if work is done without purchase order. </para>
             </td>
@@ -272,9 +272,11 @@
     <!-- Page 2 -->
     
     <story>
+    
     <para style="terp_tblheader_General_Right"> Party Copy </para>
     <para style="terp_default_9">[[repeatIn(objects,'gate')]]</para>
     <para style="Index"> GATE PASS </para>
+    <para style="Index"> [[ reset_serial_no()]] </para>
     <para style="Index"> [[ gate.company_id.name or removeParentNode('para')]] </para>
     <para style="Index"> [[ gate.company_id.street or removeParentNode('para')]] </para>
     <para style="Index"> [[ gate.company_id.street2 or '']] </para>
@@ -384,7 +386,7 @@
                 <para style="terp_default_2"> REMARK :</para>
             </td>
             <td>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> [[ (gate.description) or ' ']]</para>
                 <para style="terp_default_2"> Please give estimate on receipt of goods for repairing and start work only on receipt of Purchase</para>
                 <para style="terp_default_2"> Order.Payment shall not be given if work is done without purchase order. </para>
             </td>
@@ -434,6 +436,7 @@
     <para style="terp_tblheader_General_Right"> Purchase Copy </para>
     <para style="terp_default_9">[[repeatIn(objects,'gate')]]</para>
     <para style="Index"> GATE PASS </para>
+    <para style="Index"> [[ reset_serial_no()]] </para>
     <para style="Index"> [[ gate.company_id.name or removeParentNode('para')]] </para>
     <para style="Index"> [[ gate.company_id.street or removeParentNode('para')]] </para>
     <para style="Index"> [[ gate.company_id.street2 or '']] </para>
@@ -543,7 +546,7 @@
                 <para style="terp_default_2"> REMARK :</para>
             </td>
             <td>
-                <para style="terp_default_2"> <font color="white"> </font> </para>
+                <para style="terp_default_2"> [[ (gate.description) or ' ']]</para>
                 <para style="terp_default_2"> Please give estimate on receipt of goods for repairing and start work only on receipt of Purchase</para>
                 <para style="terp_default_2"> Order.Payment shall not be given if work is done without purchase order. </para>
             </td>

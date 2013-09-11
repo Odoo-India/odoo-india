@@ -82,8 +82,8 @@ class inventory_control(osv.osv_memory):
         action = self.pool.get(action_model).read(cr, uid, action_id, context=context)
         
         domain = [
-                  ('date', '>=', date_from),
-                  ('date', '<=', date_to), 
+                  ('date_order', '>=', date_from),
+                  ('date_order', '<=', date_to), 
                   ('po_series_id', '=', po_series_id), 
                   ('default_code', '>=', item_code_from),
                   ('default_code', '<=', item_code_to), 

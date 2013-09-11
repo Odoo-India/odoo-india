@@ -46,28 +46,41 @@ class account_tax(osv.Model):
         ], 'Tax Category', required=True)
     }
 
+    _defaults = {
+                 'name':'per unit (Edu.cess 2% + H.Edu cess 1%)',
+                 'type':'fixed',
+         }
+
     def onchange_tax_type(self, cr, uid, ids, name, tax_type=False, context=None):
         record = self.browse(cr, uid, ids, context)
         result = {}
         vals = []
         if tax_type == 'excise':
+            base_code_id = self.pool.get('account.tax.code').create(cr,uid,{'name':'Edu.cess 2% on '+name})
             vals = [(0,0, {'name':'Edu.cess 2% on '+name,
                     'tax_type':'cess',
-                    'sequence':1,
+                    'sequence':11,
                     'type':'percent',
                     'amount':0.02,
                     'include_base_amount':False,
                     'type_tax_use':'all',
+                    'base_code_id':base_code_id,
+                    'tax_code_id':base_code_id,
                    }),(0, 0, {'name':'H. Edu.cess 1% on '+name,
                     'tax_type':'hedu_cess',
-                    'sequence':1,
+                    'sequence':12,
                     'type':'percent',
                     'amount':0.01,
                     'include_base_amount':False,
                     'type_tax_use':'all',
+                    'base_code_id':base_code_id,
+                    'tax_code_id':base_code_id,
                     })]
         result['child_ids'] = vals
+        base_code_parent_id = self.pool.get('account.tax.code').create(cr,uid,{'name':name})
         result['include_base_amount'] = True
+        result['base_code_id'] = base_code_parent_id
+        result['tax_code_id'] = base_code_parent_id
         return {'value': result}
     
     def _unit_compute(self, cr, uid, taxes, price_unit, product=None, partner=None, quantity=0):

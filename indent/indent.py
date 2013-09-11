@@ -464,7 +464,7 @@ class indent_product_lines(osv.Model):
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
         'name': fields.text('Description', required=True),
-        'product_id': fields.many2one('product.product', 'Product', required=True),
+        'product_id': fields.many2one('product.product', 'Product', required=True, domain=[('state','=','done')]),
         'original_product_id': fields.many2one('product.product', 'Original Product'),
         'type': fields.selection([('make_to_stock', 'Assign from stock'), ('make_to_order', 'Make new purchase order')], 'Procurement Method', required=True,
          help="From stock: When needed, the product is taken from the stock or we wait for replenishment.\nOn order: When needed, the product is purchased or produced."),

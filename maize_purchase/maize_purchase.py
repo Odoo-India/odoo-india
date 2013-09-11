@@ -735,6 +735,9 @@ class purchase_order(osv.Model):
         'other_tax_ids': fields.many2many('account.tax', 'purchase_order_other', 'other_tax_id', 'tax_id', 'Other Tax', states={'confirmed':[('readonly',True)], 'approved':[('readonly',True)],'done':[('readonly',True)]}),
         'is_template': fields.boolean('Is Template', help="If it's check means this PO is template and use for recreate same PO from it."),
         'is_copy': fields.boolean('Is Copy', help="If it's check means this PO is Copy from Template"),
+        'product_search' : fields.text('Product Search'),
+        'indent_search' : fields.text('Indentor Search'),
+        'search_indent' : fields.text('Indent Search'),
     }
 
     _defaults = {
@@ -1234,6 +1237,7 @@ class stock_picking_receipt(osv.Model):
         'voucher_id': fields.many2one('account.voucher', 'Payment'),
         'bill_no': fields.integer('Bill No'),
         'bill_date': fields.date('Bill Date'),
+        'receipt_date':fields.datetime('Receipt Date'),
     }
     _defaults = {
         'type': 'receipt',

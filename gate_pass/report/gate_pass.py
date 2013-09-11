@@ -45,6 +45,7 @@ class gate_pass(report_sxw.rml_parse):
               'sign':self._user_sign,
               'manager_sign':self._manager_sign,
               'user_name': self._user_name,
+              'reset_serial_no': self._reset_serial_no,
               })
         self.context = context
         
@@ -55,6 +56,10 @@ class gate_pass(report_sxw.rml_parse):
 
     def _serial_no(self, line):
         self.sr_no += 1 
+        return self.sr_no
+        
+    def _reset_serial_no(self):
+        self.sr_no = 0
         return self.sr_no
     
     def _type(self, order, retenstion_type):

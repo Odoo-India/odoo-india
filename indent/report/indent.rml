@@ -410,13 +410,13 @@
             <para style="terp_default_Centre_9">[[  formatLang(order.required_date, date = True) or '']]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9">Rate: [[ (order_line.product_id.last_supplier_rate) or '0.0']]</para>
+            <para style="terp_default_Left_9">Rate: [[ (order_line.product_id.last_supplier_rate) or '0.0']]</para>
+            <para style="terp_default_Left_9">Dis: [[ check_discount(order_line.product_id.last_po_no.id).get('discount') or removeParentNode('para')]]</para>
             <para style="terp_default_Left_9">Service: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('service') or removeParentNode('para')]] %</para>
             <para style="terp_default_Left_9">Excise: [[ get_value().get('excise') or removeParentNode('para')]]</para>
             <para style="terp_default_Left_9">VAT: [[ get_value().get('vat') or removeParentNode('para')]]</para>
             <para style="terp_default_Left_9">Edu.Cess: [[ get_value().get('cess') or removeParentNode('para')]] </para>
             <para style="terp_default_Left_9">Add.Tax: [[ get_value().get('add') or removeParentNode('para')]]</para>
-            <para style="terp_default_Left_9">Dis: [[ check_discount(order_line.product_id.last_po_no.id).get('discount') or removeParentNode('para')]]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_uom_qty * order_line.product_id.last_supplier_rate) or '0.0']]</para>
@@ -424,6 +424,7 @@
           <td>
             <para style="terp_default_Centre_9">[[  last_supplier((order_line.product_id and (order_line.product_id.last_supplier_code))) or '']]</para>
             <para style="terp_default_Centre_9">[[  order_line.product_id and order_line.product_id.last_po_no and order_line.product_id.last_po_no.payment_term_id and order_line.product_id.last_po_no.payment_term_id.name or '']]</para>
+            <para style="terp_default_Left_9">Ph.No: [[  (order_line.product_id and order_line.product_id.last_po_no and order_line.product_id.last_po_no.partner_id and order_line.product_id.last_po_no.partner_id.phone) or removeParentNode('para')]]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9"> [[ last_consumption_qty(order_line.product_id).get('last_year_qty') or '0']] </para>
@@ -436,6 +437,7 @@
           <td>
             <para style="terp_default_Centre_9">[[ (order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.name[:8])) or '-']]</para>
             <para style="terp_default_Centre_9">[[ (order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.name[9:])) or '-']]</para>
+            <para style="terp_default_Centre_9">[[ formatLang(order_line.product_id and order_line.product_id.last_po_no and order_line.product_id.last_po_no.date_order,date=True) or removeParentNode('para')]]</para>
           </td>
         </tr>
       </blockTable>

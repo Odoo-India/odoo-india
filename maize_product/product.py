@@ -247,7 +247,7 @@ class product_product(osv.Model):
     def _default_uom_id(self, cr, uid,context=None):
         product_uom = self.pool.get('product.uom')
         uom_id = product_uom.search(cr,uid,[('name','=','NO')],context=context)
-        return uom_id
+        return uom_id and uom_id[-1]
 
     _columns = {
         'last_supplier_code': fields.related('last_po_no','partner_id',type="many2one",relation='res.partner', string='Last Supplier Code',readonly=True),

@@ -15,7 +15,7 @@
                     <field name="puchase_total" sum="PO Total"/>
                     <field name="receipt_total" sum="Receipt Total"/>
                     <!-- field name="payment"/> -->
-                    <field name="difference"/>
+                    <field name="difference" invisible="1"/>
                     <field name="nbr" sum="# of Lines" invisible="1"/>
                     <field name="analytic_account_id" groups="analytic.group_analytic_accounting" invisible="context.get('analytic_account_id',True)"/>
                     <field name="state" invisible="1"/>

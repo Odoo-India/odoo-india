@@ -1100,7 +1100,9 @@ class stock_picking(osv.Model):
                         'inward_date': datetime.today().strftime('%m-%d-%Y'),
                         'purchase_id': pick.purchase_id.id or False,
                         'voucher_id': pick.voucher_id.id,
-                        'move_lines': [(6,0, move_line)]
+                        'move_lines': [(6, 0, move_line)],
+                        'challan_no': pick.challan_no,
+                        'date_done': pick.date_done,
 
                         })
             receipt_obj.create(cr, uid, vals, context=context)

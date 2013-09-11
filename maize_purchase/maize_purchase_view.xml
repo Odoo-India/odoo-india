@@ -320,7 +320,7 @@
 										<separator string="Insurance, Freight and Service"
 											colspan="2" />
 										<field name="service_ids" widget="many2many_tags"
-											domain="[('tax_type','=','service')]" attrs="{'invisible': [('contract', '!=', True)]}" />
+											domain="[('tax_type','=','service')]"/>
 										<label for="insurance" />
 										<div>
 											<field name="insurance_type"

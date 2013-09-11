@@ -852,7 +852,7 @@ class purchase_order(osv.Model):
 
     def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
         res = super(purchase_order, self)._prepare_order_line_move(cr, uid, order, order_line, picking_id, context=context)
-        res = dict(res, indent = order_line.indent_id.id, indentor = order_line.indentor_id.id, department_id = order_line.department_id.id)
+        res = dict(res, indent = order_line.indent_id.id, indentor = order_line.indentor_id.id, department_id = order_line.department_id.id, discount=order_line.discount)
         return res
 
     def open_advance_payment(self, cr, uid, ids, context=None):
@@ -1020,6 +1020,19 @@ class stock_picking(osv.Model):
             package_and_forwording += move.packing_unit * move.product_qty
             vat_amount += move.vat_unit * move.product_qty
         res = dict(res, freight = freight, insurance = insurance, package_and_forwording = package_and_forwording, vat_amount = vat_amount, voucher_id = picking.voucher_id.id, advance_amount = advance_amount)
+        return res
+
+    def _prepare_invoice_line(self, cr, uid, group, picking, move_line, invoice_id, invoice_vals, context=None):
+        """ Builds the dict containing the values for the invoice line
+            @param group: True or False
+            @param picking: picking object
+            @param: move_line: move_line object
+            @param: invoice_id: ID of the related invoice
+            @param: invoice_vals: dict used to created the invoice
+            @return: dict that will be used to create the invoice line
+        """
+        res = super(stock_picking, self)._prepare_invoice_line(cr, uid, group, picking, move_line, invoice_id, invoice_vals, context=context)
+        res = dict(res, discount=move_line.discount)
         return res
 
     def _get_taxes_invoice(self, cr, uid, move_line, type):
@@ -1369,7 +1382,8 @@ class stock_move(osv.osv):
             'packing_unit': fields.float('Packing Unit', digits_compute= dp.get_precision('Account')),
             'insurance_unit': fields.float('Insurance Unit', digits_compute= dp.get_precision('Account')),
             'freight_unit': fields.float('Freight Unit', digits_compute= dp.get_precision('Account')),
-                }
+            'discount': fields.float('Discount (%)'),
+        }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, add_diff, less_diff,rate, import_duty, tax_cal, context=None):
         tax = ''

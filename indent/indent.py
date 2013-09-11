@@ -76,8 +76,45 @@ class indent_indent(osv.Model):
         for line in self.pool.get('indent.product.lines').browse(cr, uid, ids, context=context):
             result[line.indent_id.id] = True
         return result.keys()
+    
+    def _get_lines(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('document.authority.instance').browse(cr, uid, ids, context=context):
+            result[line.indent_id.id] = True
+        return result.keys()
+    
+    def _compute_authority(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for indent in self.browse(cr, uid, ids, context=context):
+            wait_auth_id = False
+            priority = 0
+            for oint in indent.indent_authority_ids:
+                if oint.state == 'pending':
+                    wait_auth_id = oint.name.id
+                    if oint.priority > priority:
+                        priority = oint.priority
+                    else:
+                        break
+            
+            res[indent.id] = {
+                'authority_id': wait_auth_id,
+                'authority_state': 'pending',
+            }
+        return res
 
     _columns = {
+        'authority_id': fields.function(_compute_authority, type='many2one', relation='res.users', string='Authority',
+            store={
+                'indent.indent': (lambda self, cr, uid, ids, c={}: ids, ['indent_authority_ids', 'state'], 10),
+                'document.authority.instance': (_get_lines, None, 10),
+            }, multi="sums", help="The amount without tax", track_visibility='always'),
+       
+       'authority_state': fields.function(_compute_authority, type='selection', selection=[('pending', 'Pending'), ('approve', 'Approved'), ('reject', 'Rejected')], string='State',
+            store={
+                'indent.indent': (lambda self, cr, uid, ids, c={}: ids, ['indent_authority_ids', 'state'], 10),
+                'document.authority.instance': (_get_lines, None, 10),
+            }, multi="sums", help="The amount without tax", track_visibility='always'),
+       
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
         'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),

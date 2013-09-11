@@ -118,7 +118,7 @@ class indent_indent(osv.Model):
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
         'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
-        'approve_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'approve_date': fields.datetime('Approved Date', readonly=True),
         'attachment_id': fields.many2one('ir.attachment', 'Attachment'),
         'print_report': fields.related('attachment_id', 'datas', type='binary', string='Indent Report'),
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),

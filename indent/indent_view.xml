@@ -78,6 +78,7 @@
                             </group>
                             <group>
                                 <field name="required_date"/>
+                                <field name="approve_date"/>
                                 <field name="attachment_id" invisible="1"/>
                                 <field name="print_report" readonly="1" attrs="{'invisible': [('print_report', '=', False)]}"/>
                             </group>

@@ -118,6 +118,7 @@ class indent_indent(osv.Model):
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
         'indent_date': fields.datetime('Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'approve_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'attachment_id': fields.many2one('ir.attachment', 'Attachment'),
         'print_report': fields.related('attachment_id', 'datas', type='binary', string='Indent Report'),
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
@@ -269,7 +270,7 @@ class indent_indent(osv.Model):
         indent = self.browse(cr, uid, ids[0], context=context)
         if indent.product_lines:
             picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
-        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress'}, context=context)
+        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress', 'approve_date':datetime.datetime.now().strftime('%Y-%m-%d')}, context=context)
         wf_service = netsvc.LocalService("workflow")
 
         move_ids = move_obj.search(cr,uid,[('picking_id','=',picking_id)])

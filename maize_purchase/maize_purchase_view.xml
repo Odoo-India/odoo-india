@@ -685,7 +685,7 @@
 					<field name="inward_date" attrs="{'readonly':[('state','=','done')]}"/>
 					<field name="challan_no" attrs="{'readonly':[('state','=','done')]}" />
 					<field name="tr_code" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="party_id"/>
+                    <field name="party_id" domain="['|', ('supp_code', '=like', '309%%'), ('supp_code', '=like', '302%%')]" attrs="{'readonly': [('state', '=', 'done')]}"/>
 				</xpath>
 				<xpath expr="//field[@name='origin']" position="after">
 					<field name="excisable_item" attrs="{'readonly':[('state','=','done')]}"/>

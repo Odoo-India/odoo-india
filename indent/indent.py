@@ -20,7 +20,6 @@
 ##############################################################################
 
 import time
-import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
@@ -159,7 +158,7 @@ class indent_indent(osv.Model):
         return stock_location.id
 
     def _get_required_date(self, cr, uid, context=None):
-        return datetime.datetime.strftime(datetime.datetime.today() + timedelta(days=7), DEFAULT_SERVER_DATETIME_FORMAT)
+        return datetime.strftime(datetime.today() + timedelta(days=7), DEFAULT_SERVER_DATETIME_FORMAT)
 
     _defaults = {
         'state': 'draft',
@@ -291,7 +290,7 @@ class indent_indent(osv.Model):
         indent = self.browse(cr, uid, ids[0], context=context)
         if indent.product_lines:
             picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
-        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress', 'approve_date':datetime.datetime.now().strftime('%Y-%m-%d')}, context=context)
+        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress', 'approve_date': datetime.now().strftime('%Y-%m-%d')}, context=context)
         wf_service = netsvc.LocalService("workflow")
 
         move_ids = move_obj.search(cr,uid,[('picking_id','=',picking_id)])
@@ -460,7 +459,7 @@ class indent_indent(osv.Model):
         return res
 
     def _get_date_planned(self, cr, uid, indent, line, start_date, context=None):
-        date_planned = datetime.datetime.strptime(start_date, DEFAULT_SERVER_DATETIME_FORMAT) + relativedelta(days=line.delay or 0.0)
+        date_planned = datetime.strptime(start_date, DEFAULT_SERVER_DATETIME_FORMAT) + relativedelta(days=line.delay or 0.0)
         return date_planned
 
     def _create_pickings_and_procurements(self, cr, uid, indent, product_lines, picking_id=False, context=None):
@@ -568,7 +567,7 @@ class indent_product_lines(osv.Model):
             raise osv.except_osv(_("Warning !"), _("You must define at least one supplier for this product."))
         result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
         result['product_uom'] = product.uom_id.id
-        result['price_unit'] = product.standard_price
+        result['price_unit'] = product.last_supplier_rate
         result['qty_available'] = product.qty_available
         result['virtual_available'] = product.virtual_available
         result['delay'] = product.seller_ids[0].delay

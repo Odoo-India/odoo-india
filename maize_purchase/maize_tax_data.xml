@@ -123,14 +123,6 @@
             <field name="include_base_amount">False</field>
         </record>
 
-        <record id="maize_vat_child_15" model="account.tax">
-            <field name="name">VAT @ 2.5%</field>
-            <field name="parent_id" eval="False"/>
-            <field name="tax_type">vat</field>
-            <field name="sequence">15</field>
-            <field name="amount">0.025</field>
-        </record>
-
         <record id="maize_vat_17" model="account.tax">
             <field name="name">VAT @ 15%</field>
             <field name="tax_type">vat</field>

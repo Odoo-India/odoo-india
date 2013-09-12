@@ -294,15 +294,19 @@ class product_product(osv.Model):
             track_visibility='onchange'),
         'min_qty': fields.related('orderpoint_ids', 'product_min_qty', type="float", relation="stock.warehouse.orderpoint", help="Minimum Qantity for this Product"),
         'max_qty': fields.related('orderpoint_ids', 'product_max_qty', type="float", relation="stock.warehouse.orderpoint", help="Maximum Qantity for this Product"),
-        
         }
 
+    def _get_default_supplier(self, cr, uid, context=None):
+        supplier_ids = self.pool.get('res.partner').search(cr, uid, [('supp_code', '=', '1111111')], context=context)
+        return [({'name': supplier_ids and supplier_ids[0] or False})]
+
     _defaults = {
-        'sale_ok':False,
-        'type':'product',
-        'purchase_requisition':True,
-        'state':'draft',
+        'sale_ok': False,
+        'type': 'product',
+        'purchase_requisition': True,
+        'state': 'draft',
         'uom_id': _default_uom_id,
+        'seller_ids': _get_default_supplier,
     }
 
     def set_to_confirm(self, cr, uid, ids, context=None):

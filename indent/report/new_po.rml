@@ -464,6 +464,8 @@
             <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
+            <para style="P1"><font color="white"> ..</font>Your Reference:- [[ (order.your_ref) or '' ]] </para>
+            <para style="P1"><font color="white"> ..</font>Our Reference:- [[ (order.our_ref) or '' ]] </para>
                 <!--blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>
@@ -621,6 +623,7 @@
             <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
             <para style="terp_default_9"> Delivery </para>
             <para style="terp_default_9"> Despatch </para>
+            <para style="terp_default_9"> Packaging and Forwarding </para>
         </td>
         <td>
             <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
@@ -633,6 +636,7 @@
             <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
+            <para style="terp_default_9">: [[ (order.package_and_forwording or '')]]</para> <para>([[ (order.packing_type == 'percentage' and (order.package_and_forwording)) or removeParentNode('para')]] %)</para>
         </td>
         <td>
           <para style="terp_default_8">
@@ -1043,6 +1047,8 @@
             <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
+            <para style="P1"><font color="white"> ..</font>Your Reference:- [[ (order.your_ref) or '' ]] </para>
+            <para style="P1"><font color="white"> ..</font>Our Reference:- [[ (order.our_ref) or '' ]] </para>
                 <!--blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>
@@ -1200,6 +1206,7 @@
             <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
             <para style="terp_default_9"> Delivery </para>
             <para style="terp_default_9"> Despatch </para>
+            <para style="terp_default_9"> Packaging and Forwarding </para>
         </td>
         <td>
             <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
@@ -1212,6 +1219,7 @@
             <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
+            <para style="terp_default_9">: [[ (order.package_and_forwording or '')]]</para> <para>([[ (order.packing_type == 'percentage' and (order.package_and_forwording)) or removeParentNode('para')]] %)</para>
         </td>
         <td>
           <para style="terp_default_8">
@@ -1622,6 +1630,8 @@
             <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
             <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
+            <para style="P1"><font color="white"> ..</font>Your Reference:- [[ (order.your_ref) or '' ]] </para>
+            <para style="P1"><font color="white"> ..</font>Our Reference:- [[ (order.our_ref) or '' ]] </para>
                 <!--blockTable colWidths="100.0,115.0" style="Tableau2">
                     <tr>
                         <td>
@@ -1779,6 +1789,7 @@
             <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
             <para style="terp_default_9"> Delivery </para>
             <para style="terp_default_9"> Despatch </para>
+            <para style="terp_default_9"> Packaging and Forwarding </para>
         </td>
         <td>
             <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
@@ -1791,6 +1802,7 @@
             <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
             <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
             <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
+            <para style="terp_default_9">: [[ (order.package_and_forwording or '')]]</para> <para>([[ (order.packing_type == 'percentage' and (order.package_and_forwording)) or removeParentNode('para')]] %)</para>
         </td>
         <td>
           <para style="terp_default_8">

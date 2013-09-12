@@ -202,8 +202,12 @@
                     <field name="name" string="Indent Name"/>
                     <field name="indent_date"/>
                     <field name="required_date"/>
+                    <separator/>
+                    <filter string="Today" name="today" domain="[]" help="Today's Indents"/>
+                    <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Indents"/>
+                    <separator/>
                     <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
-                    <separator />
+                    <separator/>
                     <filter string="Waiting For Approval" name="waiting" domain="[('state','=','waiting_approval')]"/>
                     <filter string="Waiting For Me" name="waiting_for_me" domain="[('state','=','waiting_approval'), ('authority_state','=','pending'), ('authority_id','=',uid)]"/>
                     <separator />

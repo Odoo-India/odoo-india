@@ -23,6 +23,8 @@ import time
 import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
+from lxml import etree
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
@@ -171,6 +173,25 @@ class indent_indent(osv.Model):
         'active': True,
         'fiscalyear': str(time.strptime(time.strftime('%Y', time.localtime()),'%Y').tm_year)+str(time.strptime(time.strftime('%Y', time.localtime()),'%Y').tm_year+1)
     }
+
+    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+        res = super(indent_indent, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
+        if view_type == 'search':
+            doc = etree.XML(res['arch'])
+            for node in doc.xpath("//filter[@name='today']"):
+                today = datetime.today().strftime('%Y-%m-%d')
+                today_from = today + ' 00:00:00'
+                today_to = today + ' 23:59:59'
+                node.set('string', 'Today ('+ today+')')
+                node.set('domain', str(['&', ('indent_date', '>', today_from), ('indent_date', '<', today_to)]))
+            for node in doc.xpath("//filter[@name='yesterday']"):
+                yesterday = (datetime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d')
+                yesterday_from = yesterday + ' 00:00:00'
+                yesterday_to = yesterday + ' 23:59:59'
+                node.set('string', 'Yesterday ('+ yesterday +')')
+                node.set('domain', str(['&', ('indent_date', '>' ,yesterday_from), ('indent_date', '<', yesterday_to)]))
+            res['arch'] = etree.tostring(doc)
+        return res
 
     def create(self, cr, uid, vals, context=None):
         if vals.get('department_id'):

@@ -5,8 +5,8 @@
         <record id="seq_type_picking_receipt" model="ir.sequence.type">
             <field name="name">Picking Receipt</field>
             <field name="code">stock.picking.receipt</field>
-        </record>  
-        
+        </record> 
+
         <record id="seq_picking_receipt" model="ir.sequence">
             <field name="name">Picking Receipt</field>
             <field name="code">stock.picking.receipt</field>
@@ -23,80 +23,90 @@
         </record>
 
         <record id="maize_excise_include" model="account.tax">
-            <field name="name"> Excise Duty paid</field>
+            <field name="name">Excise Duty paid</field>
             <field name="tax_type">excise</field>
             <field name="price_include">True</field>
             <field name="amount">0.0</field>
         </record>
+
         <record id="maize_child_tax2" model="account.tax">
-            <field name="name"> Excise 2%</field>
+            <field name="name">Excise 2%</field>
             <field name="tax_type">cess</field>
             <field name="amount">0.02</field>
         </record>
+
         <record id="maize_child_tax1" model="account.tax">
-            <field name="name"> Excise 1%</field>
+            <field name="name">Excise 1%</field>
             <field name="tax_type">hedu_cess</field>
             <field name="amount">0.01</field>
         </record>
+
         <record id="maize_excise_12" model="account.tax">
-            <field name="name"> Excise @ 12.36% (Edu Cess 2% + H. Edu Cess 1%)</field>
+            <field name="name">Excise @ 12.36% (Edu Cess 2% + H. Edu Cess 1%)</field>
             <field name="tax_type">excise</field>
             <field name="amount">0.12</field>
             <field name="include_base_amount">True</field>
-            <field name="child_ids" eval="[(6,0,[ref('maize_child_tax2'), ref('maize_child_tax1')])]"/>
+            <field name="child_ids" eval="[(6, 0, [ref('maize_child_tax2'), ref('maize_child_tax1')])]"/>
         </record>
+
         <record id="maize_vat_include" model="account.tax">
             <field name="name">Tax paid</field>
             <field name="tax_type">other</field>
             <field name="price_include">True</field>
             <field name="amount">0.0</field>
         </record>
-        
+
         <record id="maize_vat_c_form" model="account.tax">
             <field name="name">2.00 % C Form to be Issued</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.02</field>
         </record>
+
         <record id="maize_vat_h_form" model="account.tax">
             <field name="name">'H' form to be Issued</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.00</field>
         </record>
+
         <record id="maize_vat_paid_form" model="account.tax">
             <field name="name">VAT Paid</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.00</field>
         </record>
+
         <record id="maize_vat_cst_form" model="account.tax">
             <field name="name">C.S.T</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.02</field>
         </record>
+
         <record id="maize_vat_extra_form" model="account.tax">
             <field name="name">Tax Extra</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.00</field>
         </record>
+
         <record id="maize_vat_1" model="account.tax">
             <field name="name">Add VAT @ 1%</field>
             <field name="parent_id" eval="False"/>
-            <field name="tax_type">vat</field>
+            <field name="tax_type">add_vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.01</field>
         </record>
+
         <record id="vat_parent_5" model="account.tax">
-            <field name="name"> VAT @ 4%</field>
+            <field name="name">VAT @ 4%</field>
             <field name="tax_type">vat</field>
             <field name="amount">0.04</field>
             <field name="sequence">15</field>
             <field name="include_base_amount">False</field>
         </record>
-        
+
         <record id="maize_vat_child_12" model="account.tax">
             <field name="name">VAT @ 2.5%</field>
             <field name="parent_id" eval="False"/>
@@ -104,34 +114,38 @@
             <field name="sequence">15</field>
             <field name="amount">0.025</field>
         </record>
+
         <record id="maize_vat_12" model="account.tax">
-            <field name="name"> VAT @ 12%</field>
+            <field name="name">VAT @ 12%</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.12</field>
             <field name="include_base_amount">False</field>
         </record>
-        
+
         <record id="maize_vat_child_15" model="account.tax">
-            <field name="name"> VAT @ 2.5%</field>
+            <field name="name">VAT @ 2.5%</field>
             <field name="parent_id" eval="False"/>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.025</field>
         </record>
+
         <record id="maize_vat_17" model="account.tax">
-            <field name="name"> VAT @ 15%</field>
+            <field name="name">VAT @ 15%</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.15</field>
             <field name="include_base_amount">False</field>
         </record>
+
         <record id="maize_vat_12_5" model="account.tax">
-            <field name="name"> VAT @ 12.5%</field>
+            <field name="name">VAT @ 12.5%</field>
             <field name="tax_type">vat</field>
             <field name="sequence">15</field>
             <field name="amount">0.125</field>
             <field name="include_base_amount">False</field>
         </record>
+
     </data>
 </openerp>

@@ -1105,7 +1105,7 @@ class stock_picking(osv.Model):
                         if move.product_id and move.product_id.ex_chapter:
                             vals.update({'excisable_item': True})
                     vals.update({'inward_id': pick.backorder_id and pick.backorder_id.id or False})
-                vals.update({'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
+                vals.update({'name': False,
                         'partner_id': pick.partner_id.id,
                         'stock_journal_id': pick.stock_journal_id or False,
                         'origin': pick.origin or False,

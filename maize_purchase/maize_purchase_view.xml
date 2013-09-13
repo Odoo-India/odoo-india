@@ -1285,6 +1285,10 @@
 				    <field name="product_search"/>
 				    <field name="indent_search"/>
 				    <field name="search_indent"/>
+                <separator />
+                    <filter string="Today" name="today" domain="[]" help="Today's Purchase Orders"/>
+                    <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Purchase Orders"/>
+                <separator />
 			    </field>
 				<field name="partner_id" position="after">
 					<field name="po_series_id" />

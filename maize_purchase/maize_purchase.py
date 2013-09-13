@@ -518,7 +518,22 @@ purchase_requisition_partner()
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
     _order = 'id desc'
-    
+
+    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+        res = super(purchase_order, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
+        if view_type == 'search':
+            doc = etree.XML(res['arch'])
+            for node in doc.xpath("//filter[@name='today']"):
+                today = datetime.today().strftime('%Y-%m-%d')
+                node.set('string', 'Today ('+ today+')')
+                node.set('domain', str([('date_order', '=', today)]))
+            for node in doc.xpath("//filter[@name='yesterday']"):
+                yesterday = (datetime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d')
+                node.set('string', 'Yesterday ('+ yesterday +')')
+                node.set('domain', str([('date_order', '=', yesterday)]))
+            res['arch'] = etree.tostring(doc)
+        return res
+
     def wkf_send_rfq(self, cr, uid, ids, context=None):
         ir_model_data = self.pool.get('ir.model.data')
         res = super(purchase_order, self).wkf_send_rfq(cr, uid, ids, context=context)

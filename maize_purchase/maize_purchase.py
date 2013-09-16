@@ -48,9 +48,6 @@ class stock_picking_in(osv.osv):
     _inherit = "stock.picking.in"
     _order = "id desc"
 
-    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
-        return self.pool.get('stock.picking').fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
-
     _columns = {
         'lr_no': fields.char("LR No",size=64),
         'lr_date': fields.date("LR Date"),
@@ -116,9 +113,6 @@ class stock_picking_out(osv.Model):
     def create(self, cr, uid, vals, context=None):
         vals['name'] = False
         return super(stock_picking_out, self).create(cr, uid, vals, context=context)
-
-    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
-        return self.pool.get('stock.picking').fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
 
 stock_picking_out()
 
@@ -1017,25 +1011,6 @@ class stock_picking(osv.Model):
     _inherit = "stock.picking"
     _order = "id desc"
 
-    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
-        res = super(stock_picking, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
-        if view_type == 'search':
-            doc = etree.XML(res['arch'])
-            for node in doc.xpath("//filter[@name='today']"):
-                today = datetime.today().strftime('%Y-%m-%d')
-                today_from = today + ' 00:00:00'
-                today_to = today + ' 23:59:59'
-                node.set('string', 'Today ('+ today+')')
-                node.set('domain', str([('date', '>', today_from), ('date', '<', today_to)]))
-            for node in doc.xpath("//filter[@name='yesterday']"):
-                yesterday = (datetime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d')
-                yesterday_from = yesterday + ' 00:00:00'
-                yesterday_to = yesterday + ' 23:59:59'
-                node.set('string', 'Yesterday ('+ yesterday +')')
-                node.set('domain', str([('date', '>', yesterday_from), ('date', '<', yesterday_to)]))
-            res['arch'] = etree.tostring(doc)
-        return res
-
     _columns = {
             'type': fields.selection([('out', 'Sending Goods'), ('receipt', 'Receipt'),('in', 'Getting Goods'), ('internal', 'Internal')], 'Shipping Type', required=True, select=True, help="Shipping type specify, goods coming in or going out."),
             'ac_code_id': fields.many2one('ac.code', 'AC Code', help="AC Code"),
@@ -1045,7 +1020,6 @@ class stock_picking(osv.Model):
             'excisable_item': fields.boolean('Excisable Item'),
             'warehouse_id': fields.related('purchase_id', 'warehouse_id', type='many2one', relation='stock.warehouse', string='Destination Warehouse'),
             'voucher_id': fields.many2one('account.voucher', 'Payment'),
-            'inward_id': fields.many2one('stock.picking', 'Inward', ondelete='set null'),
                 }
 
     def create(self, cr, uid, vals, context=None):
@@ -1199,9 +1173,6 @@ class stock_picking_receipt(osv.Model):
     _table = "stock_picking"
     _order = "id desc"
     _description = "Receipt"
-
-    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
-        return self.pool.get('stock.picking').fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
 
     def check_access_rights(self, cr, uid, operation, raise_exception=True):
         #override in order to redirect the check of acces rights on the stock.picking object

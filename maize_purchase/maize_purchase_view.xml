@@ -648,11 +648,7 @@
         <field name="arch" type="xml">
             <field name="partner_id" position="replace">
                 <field name="partner_id"/>
-                <separator/>
-                    <filter string="Today" name="today" domain="[]" help="Today's Inwards"/>
-                    <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Inwards"/>
-                <separator/>
-                </field>
+            </field>
             </field>
         </record>
 
@@ -877,10 +873,6 @@
 				<search string="Picking list">
 					<field name="name" string="Picking List"
 						filter_domain="['|',('name','ilike', self),('origin','ilike',self)]"/>
-                    <separator/>
-                        <filter string="Today" name="today" domain="[]" help="Today's Receipts"/>
-                        <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Receipts"/>
-                     <separator/>
 					<filter icon="terp-check" name="available" string="Ready"
 						domain="[('state','=','assigned')]" help="Assigned Delivery Orders" />
 					<filter icon="terp-camera_test" name="confirmed" string="Waiting"
@@ -988,20 +980,6 @@
 			</field>
 		</record>
 
-        <record id="inherit_view_stock_picking_search" model="ir.ui.view">
-            <field name="name">stock.picking.search.inherit</field>
-            <field name="model">stock.picking</field>
-            <field name="inherit_id" ref="stock.view_picking_internal_search" />
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='product_id']" position="after">
-                    <separator/>
-                        <filter string="Today" name="today" domain="[]" help="Today's Issues"/>
-                        <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Issues"/>
-                    <separator/>
-                </xpath>
-            </field>
-        </record>
-
 		<!--  Split Serial Number Wizard inherit -->
 		<record id="maize_inherit_split_serial_form" model="ir.ui.view">
 			<field name="model">stock.move.split</field>
@@ -1042,10 +1020,6 @@
 			<field name="arch" type="xml">
 			    <field name="partner_id" position="replace">
 			        <field name="partner_id"/>
-                <separator/>
-                    <filter string="Today" name="today" domain="[]" help="Today's Delivery Orders"/>
-                    <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Delivery Orders"/>
-                <separator/>
 			    </field>
 			</field>
 		</record>
@@ -1312,10 +1286,6 @@
 				    <field name="product_search"/>
 				    <field name="indent_search"/>
 				    <field name="search_indent"/>
-                <separator />
-                    <filter string="Today" name="today" domain="[]" help="Today's Purchase Orders"/>
-                    <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Purchase Orders"/>
-                <separator />
 			    </field>
 				<field name="partner_id" position="after">
 					<field name="po_series_id" />

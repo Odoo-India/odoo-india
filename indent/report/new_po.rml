@@ -162,273 +162,9 @@
     <images/>
   </stylesheet>
   <story>
-  <pto>
+  
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
-  <pto_trailer>
-    <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_default_9">Sub Total : [[ formatLang(order.amount_untaxed) or '0.0' ]]</para>
-        </td>
-        <td>
-          <para style="terp_default_left_new"></para>
-        </td>
-      </tr>
-     </blockTable>
-     <blockTable colWidths="300.0,240.0,30.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
-          <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
-        </td>
-        <td>
-          <para style="terp_default_9"></para>
-        </td>
-      </tr>
-    </blockTable>
-     <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
-      <tr>
-        <td>
-            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
-            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
-            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
-            <para style="terp_default_9"> Insurance </para>
-            <para style="terp_default_9"> Freight </para>
-            <para style="terp_default_9"> Discount (%)</para>
-            <para style="terp_default_9"> Discount / Round Off </para>
-            <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
-            <para style="terp_default_9"> Delivery </para>
-            <para style="terp_default_9"> Despatch </para>
-        </td>
-        <td>
-            <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
-            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.freight_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
-            <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
-            <para style="terp_default_9">: [[ order.other_discount or '']]</para>
-            <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
-            <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
-        </td>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-        </td>
-      </tr>
-     </blockTable>
-     <blockTable colWidths="300.0,240.0,30.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_default_9"> <font color="white">[[ order.voucher_id.id or removeParentNode('para')]]</font> Advance Payment NO: [[order.voucher_id.id]] Amount [[ order.voucher_id.amount]]</para>
-          <para style="terp_default_9"> [[ (get_value().get('excisable', '')) ]]</para>
-        </td>
-        <td>
-          <para style="terp_default_9"></para>
-        </td>
-      </tr>
-    </blockTable>
-     <blockTable colWidths="300.0,200.0,70.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details">Total Amount : [[ formatLang(order.amount_total) or '0.0' ]]</para>
-        </td>
-        <td>
-          <para style="terp_default_9"></para>
-        </td>
-      </tr>
-    </blockTable>
-    <blockTable colWidths="570.0" style="Tableau3">
-      <tr>
-        <td>
-        <para style="terp_default_9">[[ amount_to_word(order.amount_total) or 'NULL' ]]</para>
-        <para style="terp_default_8">
-            <font color="white"> </font>
-        </para>
-        </td>
-      </tr>
-    </blockTable>
-    <blockTable colWidths="400.0,170.0" style="Table9">
-        <tr>
-            <td>
-                <para style="terp_default_left_7"> Excise Gate Pass (Duplicate for Transporter's Copy) must accompany with the Consignment</para>
-                <para style="terp_default_left_7"> where applicable. <b>Please quote Order No. supplier Code No. &amp; Our Item Code No.</b></para>
-                <para style="terp_default_left_7"> <b>on Delivery Challan.</b>Unless expressly desired by the management suppliers are</para>
-                <para style="terp_default_left_7"> hereby notified to deliver goods only between 8:00 A.M. to 4:00 P.M.</para>
-                <para style="terp_default_left_7"><b>If you are booking through Transport Co., Please mention our name as consignee</b></para>
-                <para style="terp_default_left_7"><b>"MAIZE PRODUCTS, Kathwada delivery from Kathwada/Odhav</b></para>
-                <para style="terp_default_left_7"><font color="white"> </font></para>
-                <para style="terp_default_left_7">Bankers : Punjab National Bank, Vanijya Bhavan,</para>
-                <para style="terp_default_left_7">Kankaria, Ahmedabad-380 022.</para>
-            </td>
-            <td>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="terp_default_Right_8"><font color="white"> ........ </font>For, <b> Maize Products</b></para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <image x="14.0cm" y="27.6cm" height="40.0" width="150">[[ order.validator.sign or removeParentNode('image') ]]</image>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="terp_default_Right_8">Ex. V.P.Purchase</para>
-            </td>
-        </tr>
-    </blockTable>
-  </pto_trailer>
-  <pto_header>
-  <blockTable colWidths="285.0,285.0" style="Standard_Outline">
-    <tr>
-        <td>
-            <para style="terp_tblheader_General_Right"> PURCHASE ORDER </para>
-        </td>
-        <td>
-            <para style="terp_tblheader_General_Right"> VENDOR (SUPPLIER COPY) </para>
-        </td>
-    </tr>
-  </blockTable>
-  <para style="terp_header_Centre"> [[order.state == 'cancel' and 'CANCELLED']] </para>
-    <blockTable colWidths="295.0,275.0" style="Tableau1">
-        <tr>
-        <td>
-            <blockTable colWidths="65.0,200.0" style="Standard_Outline">
-            <tr>
-                <td>
-                    <image  width="65.0" height="65.0" >[[ company.logo or removeParentNode('image') ]]</image>
-                </td>
-                <td>
-                    <para style="Horizontal Line"> Subject to Ahmedabad Jurisdiction </para>
-                    <para style="company_head"> [[ order.company_id.name or removeParentNode('para')]] </para>
-                    <para style="terp_default_9"> <font color="white"> </font> </para>
-                    <para style="Heading 10"> [[ order.company_id.street or removeParentNode('para')]] </para>
-                    <para style="Horizontal Line"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
-                    <para style="Horizontal Line"> Phone : [[ order.company_id.phone or '']] <font color="white"> ..</font>Fax : [[ order.company_id.fax or '']]</para>
-                    <para style="Horizontal Line"> Email : [[ order.company_id.email or removeParentNode('para')]] </para>
-                </td>
-            </tr>
-            </blockTable>
-        </td>
-        <td>
-            <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
-                <!--blockTable colWidths="100.0,115.0" style="Tableau2">
-                    <tr>
-                        <td>
-                            <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                </blockTable-->
-        </td>
-      </tr>
-    </blockTable>
-    <blockTable colWidths="200.0,120.0,250.0" style="Table1">
-    <tr>
-        <td>
-            <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
-            <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
-            <para style="P1"><font>Phone : [[ order.partner_id and order.partner_id.phone or removeParentNode('font')]]</font> <font color="white"> .....</font><font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('font')]]</font></para>
-            <para style="P1"><font>Email : [[ order.partner_id and order.partner_id.email or removeParentNode('font')]]</font> </para>
-        </td>
-        <td>
-            <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="terp_default_9"> Mobile : [[ (order.partner_id and order.partner_id.mobile) or removeParentNode('para') ]]</para>
-        </td>
-        <td>
-            <para style="terp_default_Right_new">S.T.TIN No.: 24075101425 Dt. 01-10-2005</para>
-            <para style="terp_default_Right_new">C.S.T TIN No.: 24575101425 Dt. 01-10-2005</para>
-            <para style="terp_default_Right_new">ECC No. : AADCS 0861 RXM 002</para>
-            <para style="terp_default_Right_new">Range - I, Division - III</para>
-            <para style="terp_default_Right_new">Ahmedabad - II</para>
-            <para style="terp_default_Right_new">S.T.R No. AADCS 0861 RST 001</para>
-            <para style="terp_default_Right_new">IT PAN No. : AADCS 0861 R</para>
-            
-        </td>
-    </tr>
-    </blockTable>
-    <blockTable colWidths="570.0" style="Table10">
-        <tr>
-            <td>
-                <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition below.</para>
-            </td>
-        </tr>
-    </blockTable>
-    <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" repeatRows="1" style="Table_Product_Header_Title">
-      <tr>
-        <td>
-          <para style="terp_tblheader_General_Centre">Sr.No.</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Quantity &amp; Unit</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Disc(%)</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Delivery Date Indent No</para>
-        </td>
-      </tr>
-    </blockTable>
-  </pto_header>
   <blockTable colWidths="285.0,285.0" style="Standard_Outline">
     <tr>
         <td>
@@ -737,173 +473,11 @@
             </td>
         </tr>
     </blockTable>
-    </pto>
   </story>
   
-  <!-- 2nd copy -->
-  <story>
-  <pto>
+<story>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
-  <pto_trailer>
-    <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_default_9">Sub Total : [[ formatLang(order.amount_untaxed) or '0.0' ]]</para>
-        </td>
-        <td>
-          <para style="terp_default_left_new"></para>
-        </td>
-      </tr>
-     </blockTable>
-     <blockTable colWidths="300.0,240.0,30.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
-          <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
-        </td>
-        <td>
-          <para style="terp_default_9"></para>
-        </td>
-      </tr>
-    </blockTable>
-     <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
-      <tr>
-        <td>
-            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
-            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
-            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
-            <para style="terp_default_9"> Insurance </para>
-            <para style="terp_default_9"> Freight </para>
-            <para style="terp_default_9"> Discount (%)</para>
-            <para style="terp_default_9"> Discount / Round Off </para>
-            <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
-            <para style="terp_default_9"> Delivery </para>
-            <para style="terp_default_9"> Despatch </para>
-        </td>
-        <td>
-            <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
-            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.freight_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
-            <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
-            <para style="terp_default_9">: [[ order.other_discount or '']]</para>
-            <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
-            <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
-        </td>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-        </td>
-      </tr>
-     </blockTable>
-     <blockTable colWidths="300.0,240.0,30.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_default_9"> <font color="white">[[ order.voucher_id.id or removeParentNode('para')]]</font> Advance Payment NO: [[order.voucher_id.id]] Amount [[ order.voucher_id.amount]]</para>
-          <para style="terp_default_9"> [[ (get_value().get('excisable', '')) ]]</para>
-        </td>
-        <td>
-          <para style="terp_default_9"></para>
-        </td>
-      </tr>
-    </blockTable>
-     <blockTable colWidths="300.0,200.0,70.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details">Total Amount : [[ formatLang(order.amount_total) or '0.0' ]]</para>
-        </td>
-        <td>
-          <para style="terp_default_9"></para>
-        </td>
-      </tr>
-    </blockTable>
-    <blockTable colWidths="570.0" style="Tableau3">
-      <tr>
-        <td>
-        <para style="terp_default_9">[[ amount_to_word(order.amount_total) or 'NULL' ]]</para>
-        <para style="terp_default_8">
-            <font color="white"> </font>
-        </para>
-        </td>
-      </tr>
-    </blockTable>
-    <blockTable colWidths="400.0,170.0" style="Table9">
-        <tr>
-            <td>
-                <para style="terp_default_left_7"> Excise Gate Pass (Duplicate for Transporter's Copy) must accompany with the Consignment</para>
-                <para style="terp_default_left_7"> where applicable. <b>Please quote Order No. supplier Code No. &amp; Our Item Code No.</b></para>
-                <para style="terp_default_left_7"> <b>on Delivery Challan.</b>Unless expressly desired by the management suppliers are</para>
-                <para style="terp_default_left_7"> hereby notified to deliver goods only between 8:00 A.M. to 4:00 P.M.</para>
-                <para style="terp_default_left_7"><b>If you are booking through Transport Co., Please mention our name as consignee</b></para>
-                <para style="terp_default_left_7"><b>"MAIZE PRODUCTS, Kathwada delivery from Kathwada/Odhav</b></para>
-                <para style="terp_default_left_7"><font color="white"> </font></para>
-                <para style="terp_default_left_7">Bankers : Punjab National Bank, Vanijya Bhavan,</para>
-                <para style="terp_default_left_7">Kankaria, Ahmedabad-380 022.</para>
-            </td>
-            <td>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="terp_default_Right_8"> <font color="white"> ........</font>For, <b> Maize Products</b></para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <image x="14.0cm" y="27.6cm" height="40.0" width="150">[[ order.validator.sign or removeParentNode('image') ]]</image>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="terp_default_Right_8"><font color="white"> ............. </font>Ex. V.P.Purchase</para>
-            </td>
-        </tr>
-    </blockTable>
-  </pto_trailer>
-  <pto_header>
   <blockTable colWidths="285.0,285.0" style="Standard_Outline">
     <tr>
         <td>
@@ -914,114 +488,6 @@
         </td>
     </tr>
   </blockTable>
-  <para style="terp_header_Centre"> [[order.state == 'cancel' and 'CANCELLED']] </para>
-    <blockTable colWidths="295.0,275.0" style="Tableau1">
-        <tr>
-        <td>
-            <blockTable colWidths="65.0,200.0" style="Standard_Outline">
-            <tr>
-                <td>
-                    <image  width="65.0" height="65.0" >[[ company.logo or removeParentNode('image') ]]</image>
-                </td>
-                <td>
-                    <para style="Horizontal Line"> Subject to Ahmedabad Jurisdiction </para>
-                    <para style="company_head"> [[ order.company_id.name or removeParentNode('para')]] </para>
-                    <para style="terp_default_9"> <font color="white"> </font> </para>
-                    <para style="Heading 10"> [[ order.company_id.street or removeParentNode('para')]] </para>
-                    <para style="Horizontal Line"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
-                    <para style="Horizontal Line"> Phone : [[ order.company_id.phone or '']] <font color="white"> ..</font>Fax : [[ order.company_id.fax or '']]</para>
-                    <para style="Horizontal Line"> Email : [[ order.company_id.email or removeParentNode('para')]] </para>
-                </td>
-            </tr>
-            </blockTable>
-        </td>
-        <td>
-            <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
-                <!--blockTable colWidths="100.0,115.0" style="Tableau2">
-                    <tr>
-                        <td>
-                            <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                </blockTable-->
-        </td>
-      </tr>
-    </blockTable>
-    <blockTable colWidths="200.0,120.0,250.0" style="Table1">
-    <tr>
-        <td>
-            <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
-            <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
-            <para style="P1"><font>Phone : [[ order.partner_id and order.partner_id.phone or removeParentNode('font')]]</font> <font color="white"> .....</font><font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('font')]]</font></para>
-            <para style="P1"><font>Email : [[ order.partner_id and order.partner_id.email or removeParentNode('font')]]</font> </para>
-        </td>
-        <td>
-            <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="terp_default_9"> Mobile : [[ (order.partner_id and order.partner_id.mobile) or removeParentNode('para') ]]</para>
-        </td>
-        <td>
-            <para style="terp_default_Right_new">S.T.TIN No.: 24075101425 Dt. 01-10-2005</para>
-            <para style="terp_default_Right_new">C.S.T TIN No.: 24575101425 Dt. 01-10-2005</para>
-            <para style="terp_default_Right_new">ECC No. : AADCS 0861 RXM 002</para>
-            <para style="terp_default_Right_new">Range - I, Division - III</para>
-            <para style="terp_default_Right_new">Ahmedabad - II</para>
-            <para style="terp_default_Right_new">S.T.R No. AADCS 0861 RST 001</para>
-            <para style="terp_default_Right_new">IT PAN No. : AADCS 0861 R</para>
-            
-        </td>
-    </tr>
-    </blockTable>
-    <blockTable colWidths="570.0" style="Table10">
-        <tr>
-            <td>
-                <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition below.</para>
-            </td>
-        </tr>
-    </blockTable>
-    <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" repeatRows="1" style="Table_Product_Header_Title">
-      <tr>
-        <td>
-          <para style="terp_tblheader_General_Centre">Sr.No.</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Quantity  &amp; Unit</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Disc(%)</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Delivery Date Indent No</para>
-        </td>
-      </tr>
-    </blockTable>
-  </pto_header>
-  <blockTable colWidths="285.0,285.0" style="Standard_Outline">
-    <tr>
-        <td>
-            <para style="terp_tblheader_General_Right"> PURCHASE ORDER </para>
-        </td>
-        <td>
-            <para style="terp_tblheader_General_Right"> STORE COPY </para>
-        </td>
-    </tr>
-  </blockTable>
-    <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
-  	<para style="terp_tblheader_General_Right"> [[ reset_no(order)  ]] </para>
-    <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
     <para style="terp_header_Centre"> [[order.state == 'cancel' and 'CANCELLED']] </para>
     <blockTable colWidths="295.0,275.0" style="Tableau1">
         <tr>
@@ -1130,7 +596,7 @@
             <para style="terp_default_9">[[ order_line.product_id.name ]] </para>
             <para style="terp_default_9">[[ order_line.product_id.desc2 or removeParentNode('para')]]</para>
             <para style="terp_default_9">[[ order_line.product_id.desc3 or removeParentNode('para') ]] </para>
-            <para style="terp_default_9">[[ order_line.product_id.desc4 or removeParentNode('para') ]] </para>            
+            <para style="terp_default_9">[[ order_line.product_id.desc4 or removeParentNode('para') ]] </para>
             <para style="terp_default_8"> <font color="white"> </font> </para>
             <para style="terp_default_9"> [[order_line.name]] </para>
           </td>
@@ -1196,7 +662,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]] </font> Service Tax </para>
+            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -1320,291 +786,23 @@
             </td>
         </tr>
     </blockTable>
-    </pto>
   </story>
-  
-  <!-- 3rd copy -->
-  <story>
-  <pto>
+
+
+
+<story>
     <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
     <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
-  <pto_trailer>
-    <blockTable colWidths="400.0,150.0,20.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_default_9">Sub Total : [[ formatLang(order.amount_untaxed) or '0.0' ]]</para>
-        </td>
-        <td>
-          <para style="terp_default_left_new"></para>
-        </td>
-      </tr>
-     </blockTable>
-     <blockTable colWidths="300.0,240.0,30.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details">Payment Term: [[ (order.payment_term_id.name) or ' ' ]]</para>
-          <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
-        </td>
-        <td>
-          <para style="terp_default_9"></para>
-        </td>
-      </tr>
-    </blockTable>
-     <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
-      <tr>
-        <td>
-            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
-            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
-            <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
-            <para style="terp_default_9"> Insurance </para>
-            <para style="terp_default_9"> Freight </para>
-            <para style="terp_default_9"> Discount (%)</para>
-            <para style="terp_default_9"> Discount / Round Off </para>
-            <para style="terp_default_9"> <font>[[ not order.other_tax_ids and removeParentNode('font') ]] </font>Other Tax </para>
-            <para style="terp_default_9"> Delivery </para>
-            <para style="terp_default_9"> Despatch </para>
-        </td>
-        <td>
-            <para style="terp_default_9">: [[ tax(order).get('service','') and get_value().get('service') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ tax(order).get('excise','') and get_value().get('excise') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.contract == True and removeParentNode('para')) ]] [[ get_value().get('vat') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.insurance) ]] [[((order.insurance_type == 'fix' and order.insurance == 0.00 and 'N I L') or (order.insurance_type == 'fix' and 'Rs.') or (order.insurance_type == 'percentage' and '%') or  'Include in Price') ]] </para>
-            <para style="terp_default_9">: [[ (order.freight) ]] [[((order.freight_type == 'fix' and order.freight == 0.00 and 'N I L') or (order.freight_type == 'fix' and 'Rs.') or (order.freight_type == 'percentage' and '%') or (order.freight_type == 'extra' and 'EXTRA') or  'Include in Price') ]]</para>
-            <para style="terp_default_9">: [[ order.discount_percentage or '']]</para>
-            <para style="terp_default_9">: [[ order.other_discount or '']]</para>
-            <para style="terp_default_9">: [[ get_value().get('other') or removeParentNode('para')]]</para>
-            <para style="terp_default_9">: [[ (order.delivey.name ) or '']]</para>
-            <para style="terp_default_9">: [[ (order.dispatch_id.name or '')]]</para>
-        </td>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-          <para style="Standard">  <font color="white"> </font> </para>
-        </td>
-      </tr>
-     </blockTable>
-     <blockTable colWidths="300.0,240.0,30.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_default_9"> <font color="white">[[ order.voucher_id.id or removeParentNode('para')]]</font> Advance Payment NO: [[order.voucher_id.id]] Amount [[ order.voucher_id.amount]]</para>
-          <para style="terp_default_9"> [[ (get_value().get('excisable', '')) ]]</para>
-        </td>
-        <td>
-          <para style="terp_default_9"></para>
-        </td>
-      </tr>
-    </blockTable>
-     <blockTable colWidths="300.0,200.0,70.0" style="Tableau2">
-      <tr>
-        <td>
-          <para style="terp_default_8">
-            <font color="white"> </font>
-          </para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details">Total Amount : [[ formatLang(order.amount_total) or '0.0' ]]</para>
-        </td>
-        <td>
-          <para style="terp_default_9"></para>
-        </td>
-      </tr>
-    </blockTable>
-    <blockTable colWidths="570.0" style="Tableau3">
-      <tr>
-        <td>
-        <para style="terp_default_9">[[ amount_to_word(order.amount_total) or 'NULL' ]]</para>
-        <para style="terp_default_8">
-            <font color="white"> </font>
-        </para>
-        </td>
-      </tr>
-    </blockTable>
-    <blockTable colWidths="400.0,170.0" style="Table9">
-        <tr>
-            <td>
-                <para style="terp_default_left_7"> Excise Gate Pass (Duplicate for Transporter's Copy) must accompany with the Consignment</para>
-                <para style="terp_default_left_7"> where applicable. <b>Please quote Order No. supplier Code No. &amp; Our Item Code No.</b></para>
-                <para style="terp_default_left_7"> <b>on Delivery Challan.</b>Unless expressly desired by the management suppliers are</para>
-                <para style="terp_default_left_7"> hereby notified to deliver goods only between 8:00 A.M. to 4:00 P.M.</para>
-                <para style="terp_default_left_7"><b>If you are booking through Transport Co., Please mention our name as consignee</b></para>
-                <para style="terp_default_left_7"><b>"MAIZE PRODUCTS, Kathwada delivery from Kathwada/Odhav</b></para>
-                <para style="terp_default_left_7"><font color="white"> </font></para>
-                <para style="terp_default_left_7">Bankers : Punjab National Bank, Vanijya Bhavan,</para>
-                <para style="terp_default_left_7">Kankaria, Ahmedabad-380 022.</para>
-            </td>
-            <td>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="terp_default_Right_8"> <font color="white"> ........</font>For, <b> Maize Products</b></para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <image x="14.0cm" y="27.6cm" height="40.0" width="150">[[ order.validator.sign or removeParentNode('image') ]]</image>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="Space bet user and signature">
-                    <font color="white"> </font>
-                </para>
-                <para style="terp_default_Right_8"><font color="white"> ............. </font>Ex. V.P.Purchase</para>
-            </td>
-        </tr>
-    </blockTable>
-  </pto_trailer>
-  <pto_header>
   <blockTable colWidths="285.0,285.0" style="Standard_Outline">
     <tr>
         <td>
             <para style="terp_tblheader_General_Right"> PURCHASE ORDER </para>
         </td>
         <td>
-            <para style="terp_tblheader_General_Right"> FILE COPY </para>
+            <para style="terp_tblheader_General_Right"> FILE COPY </para> 
         </td>
     </tr>
   </blockTable>
-    <para style="terp_header_Centre"> [[order.state == 'cancel' and 'CANCELLED']] </para>
-    <blockTable colWidths="295.0,275.0" style="Tableau1">
-        <tr>
-        <td>
-            <blockTable colWidths="65.0,200.0" style="Standard_Outline">
-            <tr>
-                <td>
-                    <image  width="65.0" height="65.0" >[[ company.logo or removeParentNode('image') ]]</image>
-                </td>
-                <td>
-                    <para style="Horizontal Line"> Subject to Ahmedabad Jurisdiction </para>
-                    <para style="company_head"> [[ order.company_id.name or removeParentNode('para')]] </para>
-                    <para style="terp_default_9"> <font color="white"> </font> </para>
-                    <para style="Heading 10"> [[ order.company_id.street or removeParentNode('para')]] </para>
-                    <para style="Horizontal Line"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
-                    <para style="Horizontal Line"> Phone : [[ order.company_id.phone or '']] <font color="white"> ..</font>Fax : [[ order.company_id.fax or '']]</para>
-                    <para style="Horizontal Line"> Email : [[ order.company_id.email or removeParentNode('para')]] </para>
-                </td>
-            </tr>
-            </blockTable>
-        </td>
-        <td>
-            <para style="P11"><font color="white"> ..</font>PO Number:- [[(order.name) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>PO Date:- [[formatLang(order.date_order, date = True) or removeParentNode('para')]] </para>
-            <para style="P1"><font color="white"> ..</font>Last Change Date:- [[ formatLang(change_date(order.id), date = True) or removeParentNode('para')]] </para>
-                <!--blockTable colWidths="100.0,115.0" style="Tableau2">
-                    <tr>
-                        <td>
-                            <para style="P1"> [[ order.notes or removeParentNode('para')]] </para>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                </blockTable-->
-        </td>
-      </tr>
-    </blockTable>
-    <blockTable colWidths="200.0,120.0,250.0" style="Table1">
-    <tr>
-        <td>
-            <para style="P1">[[ (order .partner_id and order.partner_id.title and order.partner_id.title.name) or '' ]] [[ (order .partner_id and order.partner_id.name) or '' ]] </para>
-            <para style="P1">[[ order.partner_id and display_address(order .partner_id) ]] </para>
-            <para style="P1"><font>Phone : [[ order.partner_id and order.partner_id.phone or removeParentNode('font')]]</font> <font color="white"> .....</font><font>Fax : [[order.partner_id and order.partner_id.fax or removeParentNode('font')]]</font></para>
-            <para style="P1"><font>Email : [[ order.partner_id and order.partner_id.email or removeParentNode('font')]]</font> </para>
-        </td>
-        <td>
-            <para style="terp_default_9"> Code : [[ (order.partner_id and order.partner_id.supp_code) or removeParentNode('para') ]]</para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="Standard">  <font color="white"> </font> </para>
-            <para style="terp_default_9"> Mobile : [[ (order.partner_id and order.partner_id.mobile) or removeParentNode('para') ]]</para>
-        </td>
-        <td>
-            <para style="terp_default_Right_new">S.T.TIN No.: 24075101425 Dt. 01-10-2005</para>
-            <para style="terp_default_Right_new">C.S.T TIN No.: 24575101425 Dt. 01-10-2005</para>
-            <para style="terp_default_Right_new">ECC No. : AADCS 0861 RXM 002</para>
-            <para style="terp_default_Right_new">Range - I, Division - III</para>
-            <para style="terp_default_Right_new">Ahmedabad - II</para>
-            <para style="terp_default_Right_new">S.T.R No. AADCS 0861 RST 001</para>
-            <para style="terp_default_Right_new">IT PAN No. : AADCS 0861 R</para>
-            
-        </td>
-    </tr>
-    </blockTable>
-    <blockTable colWidths="570.0" style="Table10">
-        <tr>
-            <td>
-                <para style="terp_header"> Please supply the following goods in accordance with the terms &amp; condition below.</para>
-            </td>
-        </tr>
-    </blockTable>
-    <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" repeatRows="1" style="Table_Product_Header_Title">
-      <tr>
-        <td>
-          <para style="terp_tblheader_General_Centre">Sr.No.</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Item Code &amp; Description of Materital</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Quantity &amp; Unit</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Disc(%)</para>
-        </td>
-        <td>
-          <para style="terp_tblheader_Details_Centre">Delivery Date Indent No.</para>
-        </td>
-      </tr>
-    </blockTable>
-  </pto_header>
-  <blockTable colWidths="285.0,285.0" style="Standard_Outline">
-    <tr>
-        <td>
-            <para style="terp_tblheader_General_Right"> PURCHASE ORDER </para>
-        </td>
-        <td>
-            <para style="terp_tblheader_General_Right"> FILE COPY </para>
-        </td>
-    </tr>
-  </blockTable>
-    <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
-  	<para style="terp_tblheader_General_Right"> [[ reset_no(order)  ]] </para>
-    <para style="terp_default_9">[[ setLang(order.partner_id.lang) ]]</para>
     <para style="terp_header_Centre"> [[order.state == 'cancel' and 'CANCELLED']] </para>
     <blockTable colWidths="295.0,275.0" style="Tableau1">
         <tr>
@@ -1689,7 +887,7 @@
         </td>
         <td>
           <para style="terp_tblheader_Details_Centre">Quantity &amp; Unit</para>
-      </td>
+        </td>
         <td>
           <para style="terp_tblheader_Details_Centre">Rate(Rs.)</para>
         </td>
@@ -1697,10 +895,10 @@
           <para style="terp_tblheader_Details_Centre">Disc(%)</para>
         </td>
         <td>
-          <para style="terp_tblheader_Details_Centre">Delivery Date Indent No.</para>
+          <para style="terp_tblheader_Details_Centre">Delivery Date Indent No</para>
         </td>
       </tr>
-    </blockTable>mobile
+    </blockTable>
     <section>
       <para style="terp_default_9">[[ repeatIn(order.order_line,'order_line') ]]</para>
       <blockTable colWidths="30.0,300.0,55.0,55.0,40.0,90.0" style="Table_Product_Line">
@@ -1713,7 +911,7 @@
             <para style="terp_default_9">[[ order_line.product_id.name ]] </para>
             <para style="terp_default_9">[[ order_line.product_id.desc2 or removeParentNode('para')]]</para>
             <para style="terp_default_9">[[ order_line.product_id.desc3 or removeParentNode('para') ]] </para>
-            <para style="terp_default_9">[[ order_line.product_id.desc4 or removeParentNode('para') ]] </para>            
+            <para style="terp_default_9">[[ order_line.product_id.desc4 or removeParentNode('para') ]] </para>
             <para style="terp_default_8"> <font color="white"> </font> </para>
             <para style="terp_default_9"> [[order_line.name]] </para>
           </td>
@@ -1727,7 +925,7 @@
             <para style="terp_default_Centre_9">[[ order_line.price_unit or '0.0']]</para>
           </td>
           <td>
-            <para style="terp_default_Centre_9"> [[ formatLang(order_line.discount) or '0.00']]</para>
+            <para style="terp_default_Centre_9"> [[ order_line.discount or '0']]</para>
           </td>
           <td>
             <para style="terp_default_Centre_9">[[ formatLang(order_line.date_planned, date = True) ]]</para>
@@ -1779,7 +977,7 @@
      <blockTable colWidths="110.0,440.0,20.0" style="Tableau2">
       <tr>
         <td>
-            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]] </font>Service Tax </para>
+            <para style="terp_default_9"> <font>[[ not order.service_ids and removeParentNode('font') ]]</font> Service Tax </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para')) or not order.excies_ids and removeParentNode('font')]] </font>Excise </para>
             <para style="terp_default_9"> <font>[[ (order.contract == True and removeParentNode('para'))  or not order.vat_ids and removeParentNode('font') ]] </font>VAT </para>
             <para style="terp_default_9"> Insurance </para>
@@ -1903,6 +1101,6 @@
             </td>
         </tr>
     </blockTable>
-    </pto>
   </story>
+
 </document>

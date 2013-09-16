@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="company_qc_trigger_template_rule" model="ir.rule">
+            <field name="name">Quality Control Template Triggers by Company multi-company</field>
+            <field model="ir.model" name="model_id" ref="model_res_company_qc_trigger_template"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">[('company_id','child_of',[user.company_id.id])]</field>
+        </record>
+        
+        <record id="product_qc_trigger_template_rule" model="ir.rule">
+            <field name="name">Quality Control Template Triggers by Product multi-company</field>
+            <field model="ir.model" name="model_id" ref="model_product_qc_trigger_template"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]</field>
+        </record>
+    </data>
+</openerp>

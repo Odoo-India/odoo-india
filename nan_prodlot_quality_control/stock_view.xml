@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- stock.production.lot.qc.trigger.test -->
+        <record id="prodlot_qc_trigger_test_form" model="ir.ui.view">
+            <field name="name">stock.production.lot.qc.trigger.test.form</field>
+            <field name="model">stock.production.lot.qc.trigger.test</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="QC Test Trigger by Lot" col="6">
+                    <field name="prodlot_id" select="1"/>
+                    <field name="sequence"/>
+                    <field name="trigger_id" select="1"/>
+                    
+                    <field name="test_id"/>
+                    <field name="test_approved"/>
+                    <field name="test_success"/>
+                </form>
+            </field>
+        </record>
+        
+        <record id="prodlot_qc_trigger_test_tree" model="ir.ui.view">
+            <field name="name">stock.production.lot.qc.trigger.test.tree</field>
+            <field name="model">stock.production.lot.qc.trigger.test</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="QC Test Triggers by Lot">
+                    <field name="prodlot_id"/>
+                    <field name="sequence"/>
+                    <field name="trigger_id"/>
+                    <field name="test_id"/>
+                    <field name="test_approved"/>
+                    <field name="test_success"/>
+                </tree>
+            </field>
+        </record>
+        
+        
+        <!-- stock.production.lot -->
+        <record id="view_production_lot_qc_form" model="ir.ui.view">
+            <field name="name">stock.production.lot.quality_control.form</field>
+            <field name="model">stock.production.lot</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="stock.view_production_lot_form" />
+            <field name="arch" type="xml">
+                <field name="product_id" position="replace">
+                    <field name="product_id" on_change="onchange_product_id(product_id,context)"/>
+                </field>
+                
+                <field name="date" position="replace">
+                    <field name="date"/>
+                    <field name="active"/>
+                </field>
+                <notebook position="inside">
+                    <page string="Quality Control">
+                        <separator string="Quality Control Triggers" colspan="4"/>
+                        <field name="qc_test_trigger_ids" nolabel="1" colspan="4" groups="nan_quality_control.group_quality_control_manager">
+                            <tree string="Quality Control Triggers" editable="bottom">
+                                <field name="sequence"/>
+                                <field name="trigger_id"/>
+                                <field name="test_id"/>
+                                <field name="test_approved"/>
+                                <field name="test_success"/>
+                            </tree>
+                        </field>
+                        <field name="qc_test_trigger_ro_ids" nolabel="1" colspan="4" groups="nan_quality_control.group_quality_control_user">
+                            <tree string="Quality Control Triggers">
+                                <field name="sequence"/>
+                                <field name="trigger_id"/>
+                                <field name="test_id"/>
+                                <field name="test_approved"/>
+                                <field name="test_success"/>
+                            </tree>
+                        </field>
+                        
+                        <field name="current_qc_test_trigger_id" groups="nan_quality_control.group_quality_control_manager"/>
+                        <field name="current_qc_test_id"/>
+                    </page>
+                </notebook>
+                <form position="inside">
+                    <group col="7" colspan="4">
+                        <field name="state"/>
+                        
+                        <button name="draft" states="cancel" string="Set To Draft" icon="gtk-new"/>
+                        <button name="confirm" states="draft" string="Confirm" icon="gtk-ok"/>
+                        <button name="next_test" states="valid" string="Next Test" icon="gtk-ok"/>
+                        <button name="cancel" states="valid" string="Cancel" icon="gtk-cancel"/>
+                        <button name="action_force_cancel" type="object" states="pending_test,test_failed" string="Force Cancel" icon="gtk-cancel"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_production_lot_qc_tree" model="ir.ui.view">
+            <field name="name">stock.production.lot.quality_control.tree</field>
+            <field name="model">stock.production.lot</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="stock.view_production_lot_tree" />
+            <field name="arch" type="xml">
+                <field name="date" position="after">
+                    <field name="current_qc_test_id"/>
+                    <field name="state"/>
+                </field>
+            </field>
+        </record>
+        
+        <record id="search_product_lot_filter" model="ir.ui.view">
+            <field name="name">stock.production.lot.quality_control.filter</field>
+            <field name="model">stock.production.lot</field>
+            <field name="type">search</field>
+            <field name="inherit_id" ref="stock.search_product_lot_filter"/>
+            <field name="arch" type="xml">
+                <filter name="available" position="after">
+                    <filter icon="terp-dialog-close" name="inactive" string="Inactive" domain="[('active', '=', False)]"/>
+                </filter>
+                <filter string="Product" position="after">
+                    <filter string="State" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                </filter>
+            </field>
+        </record>
+        
+        <!--<record id="action_prodlot_test_popup" model="ir.actions.act_window">
+            <field name="name">Tests</field>
+            <field name="src_model">stock.production.lot</field>
+            <field name="res_model">qc.test</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('id', 'in', [x.test_id.id for x in qc_test_trigger_ids])]</field>
+        </record>-->
+    </data>
+</openerp>

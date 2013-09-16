@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- res.company.qc.trigger.template -->
+        <record id="company_qc_trigger_template_form" model="ir.ui.view">
+            <field name="name">res.company.qc.trigger.template.form</field>
+            <field name="model">res.company.qc.trigger.template</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="QC Template Trigger by Company">
+                    <field name="company_id" select="1"/>
+                    <field name="sequence"/>
+                    <field name="trigger_id" select="1"/>
+                    <field name="template_id"/>
+                </form>
+            </field>
+        </record>
+        
+        <record id="company_qc_trigger_template_tree" model="ir.ui.view">
+            <field name="name">res.company.qc.trigger.template.tree</field>
+            <field name="model">res.company.qc.trigger.template</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="QC Template Triggers by Company">
+                    <field name="company_id"/>
+                    <field name="sequence"/>
+                    <field name="trigger_id"/>
+                    <field name="template_id"/>
+                </tree>
+            </field>
+        </record>
+        
+        
+        <!-- res.company -->
+        <record id="company_prodlot_qc_form" model="ir.ui.view">
+            <field name="name">res.company.prodlot.quality_control.form</field>
+            <field name="model">res.company</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <page string="Configuration" position="inside">
+                    <group name="prodlot_qc" colspan="2" col="2">
+                        <separator string="Quality Control Triggers" colspan="2"/>
+                        <field name="qc_template_trigger_ids" nolabel="1" colspan="2">
+                            <tree string="Quality Control Triggers" editable="bottom">
+                                <field name="sequence"/>
+                                <field name="trigger_id"/>
+                                <field name="template_id"/>
+                            </tree>
+                            <form string="Quality Control Trigger">
+                                <field name="trigger_id"/>
+                                <field name="template_id"/>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+            </field>
+        </record>
+    </data>
+</openerp>

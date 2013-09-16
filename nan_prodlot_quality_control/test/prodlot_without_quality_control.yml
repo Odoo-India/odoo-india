@@ -1,0 +1,90 @@
+- 
+  ------  Prodlot Quality Control without Quality Control ------
+- 
+  In order to test the workflow and functionality of Production Lots without 
+  Quality Control, I create  lot and move it with all workflow, from Draft to 
+  Valid passing by the Cancel state.
+
+- 
+  I create a Production Lot of Product without Quality Control (Lot1)
+- 
+  !record {model: stock.production.lot, id: prodlot_wo_qc0}:
+    product_id: nan_prodlot_quality_control.product_wo_qc0
+
+-
+  Checking the Lot1 exists, it hasn't Trigger Tests and it's in 'Draft' state 
+  and inactive
+-
+  !assert {model: stock.production.lot, id: prodlot_wo_qc0, string: The Lot1 doesn't have the expected values/state!}:
+    - state == 'draft'
+    - active == False
+    - len(qc_test_trigger_ids) == 0
+    - not current_qc_test_id
+
+- 
+  I confirm the Lot1
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    netsvc.LocalService("workflow").trg_validate(uid, 'stock.production.lot', 
+        ref('prodlot_wo_qc0'), 'confirm', cr)
+
+-
+  Checking the Lot1 is in 'Valid' state and Active
+-
+  !assert {model: stock.production.lot, id: prodlot_wo_qc0, string: The Lot1 doesn't have the expected state!}:
+    - state == 'valid'
+    - active == True
+
+- 
+  I cancel the Lot1
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    netsvc.LocalService("workflow").trg_validate(uid, 'stock.production.lot', 
+        ref('prodlot_wo_qc0'), 'cancel', cr)
+
+-
+  Checking the Lot1 is in 'Cancel' state and is inactive
+-
+  !assert {model: stock.production.lot, id: prodlot_wo_qc0, string: The Lot1 doesn't have the expected state!}:
+    - state == 'cancel'
+    - active == False
+
+- 
+  I set to Draft the Lot1
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    netsvc.LocalService("workflow").trg_validate(uid, 'stock.production.lot', 
+        ref('prodlot_wo_qc0'), 'draft', cr)
+
+-
+  Checking the Lot1 is in 'Draft' state and inactive
+-
+  !assert {model: stock.production.lot, id: prodlot_wo_qc0, string: The Lot1 doesn't have the expected state!}:
+    - state == 'draft'
+    - active == False
+
+- 
+  I confirm the Lot1
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    netsvc.LocalService("workflow").trg_validate(uid, 'stock.production.lot', 
+        ref('prodlot_wo_qc0'), 'confirm', cr)
+
+-
+  Checking the Lot1 is in 'Valid' state and active.
+  If it's Ok, the workflow is correct for the simple case.
+-
+  !assert {model: stock.production.lot, id: prodlot_wo_qc0, string: The Lot1 doesn't have the expected state!}:
+    - state == 'valid'
+    - active == True
+
+-
+  ------  Prodlot Quality Control END OK  ------
+-
+  !python {model: stock.production.lot}: |
+    print "THE END"
+

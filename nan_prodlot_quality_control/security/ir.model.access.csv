@@ -1,0 +1,13 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_qc_trigger_all","qc.trigger all","model_qc_trigger",,1,0,0,0
+"access_company_qc_trigger_template_employee","res.company.qc.trigger.template employee","model_res_company_qc_trigger_template","base.group_user",1,0,0,0
+"access_company_qc_trigger_template_stock_user","res.company.qc.trigger.template stock user","model_res_company_qc_trigger_template","stock.group_stock_user",1,0,0,0
+"access_company_qc_trigger_template_stock_manager","res.company.qc.trigger.template stock manager","model_res_company_qc_trigger_template","stock.group_stock_manager",1,1,1,1
+"access_company_qc_trigger_template_qc_manager","res.company.qc.trigger.template qc manager","model_res_company_qc_trigger_template","nan_quality_control.group_quality_control_manager",1,1,1,1
+"access_product_qc_trigger_template_employee","product.qc.trigger.template employee","model_product_qc_trigger_template","base.group_user",1,0,0,0
+"access_product_qc_trigger_template_stock_user","product.qc.trigger.template stock user","model_product_qc_trigger_template","stock.group_stock_user",1,0,0,0
+"access_product_qc_trigger_template_stock_manager","product.qc.trigger.template stock manager","model_product_qc_trigger_template","stock.group_stock_manager",1,1,1,1
+"access_product_qc_trigger_template_qc_manager","product.qc.trigger.template qc manager","model_product_qc_trigger_template","nan_quality_control.group_quality_control_manager",1,1,1,1
+"access_prodlot_qc_trigger_test_employee","stock.production.lot.qc.trigger.test employee","model_stock_production_lot_qc_trigger_test","base.group_user",1,0,0,0
+"access_prodlot_qc_trigger_test_stock_user","stock.production.lot.qc.trigger.test stock user","model_stock_production_lot_qc_trigger_test","stock.group_stock_user",1,0,1,0
+"access_prodlot_qc_trigger_test_stock_manager","stock.production.lot.qc.trigger.test stock manager","model_stock_production_lot_qc_trigger_test","stock.group_stock_manager",1,1,1,1

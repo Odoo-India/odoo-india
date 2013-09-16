@@ -1,0 +1,287 @@
+- 
+  ------  Prodlot Quality Control with One Trigger Test ------
+- 
+  In order to test the workflow and functionality of Production Lots with one 
+  Trigger Test, it create a Lot with a trigger test and move it with all 
+  workflow, from Draft to Valid and to Test Failed, passing by the Cancel state 
+  (and reusing it after that).
+
+- 
+  I create a Production Lot of Product with one QC Test (Lot2)
+- 
+  !record {model: stock.production.lot, id: prodlot_w_1qctest0}:
+    product_id: nan_prodlot_quality_control.product_w_1qctest0
+
+-
+  I create its Trigger Test calling function 'create_qc_test_triggers' but not 
+  setting the 'next test' (param of function)
+-
+  !python {model: stock.production.lot}: |
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    self.create_qc_test_triggers(cr, uid, lot, 
+        ref('nan_prodlot_quality_control.qc_trigger_demo0'), False, context)
+
+-
+  Checking the Lot2 exists, it has one Trigger Tests with expected trigger and 
+  Test Template and it's in 'Draft' state
+-
+  !python {model: stock.production.lot}: |
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    assert lot.state == 'draft', "The Lot2 doesn't have the expected 'Draft' " \
+        "state: %s" % lot.state
+    assert len(lot.qc_test_trigger_ids) == 1, "The Lot2 doesn't have exactly " \
+        "one Test Trigger as expected: %d" % len(lot.qc_test_trigger_ids)
+    assert (lot.qc_test_trigger_ids[0].test_id.test_template_id.id == 
+        ref('qc_test_template_generic0')), "The Lot2 doesn't have the " \
+        "expected test template 'Generic Template' in its Trigger Test: %s " \
+            % lot.qc_test_trigger_ids[0].test_id.test_template_id.name
+    assert lot.qc_test_trigger_ids[0].trigger_id.id == ref('qc_trigger_demo0'),\
+        "The Lot2 doesn't have the expected Trigger 'Demo Trigger 1' in its " \
+        "Trigger Test: %s " % lot.qc_test_trigger_ids[0].trigger_id.name
+
+-
+  I set the current Test manually and confirm the Lot2
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    self.write(cr, uid, [ref('prodlot_w_1qctest0')], 
+        {'current_qc_test_trigger_id': lot.qc_test_trigger_ids[0].id}, context)
+        
+    netsvc.LocalService("workflow").trg_validate(uid, 'stock.production.lot', 
+        ref('prodlot_w_1qctest0'), 'confirm', cr)
+
+-
+  Checking the 'Current Test Trigger' of Lot2 is the expected and it's in 
+  'Pending Test' state
+-
+  !python {model: stock.production.lot}: |
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    assert lot.state == 'pending_test', "The Lot2 doesn't have the expected " \
+        "'pending_test' state: %s" % lot.state
+    assert lot.current_qc_test_trigger_id.id == lot.qc_test_trigger_ids[0].id,\
+        "The Lot2 doesn't have its Trigger test as 'Current Trigger Test': " \
+        "%d != %d" % (lot.current_qc_test_trigger_id.id, 
+            lot.qc_test_trigger_ids[0].id)
+
+-
+  I fill up the current Quality Test with INVALID values and I confirm it
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    test_line_id = lot.current_qc_test_id.test_line_ids[0].id
+    
+    self.pool.get('qc.test.line').write(cr, uid, [test_line_id],
+        {'actual_value_ql': ref('qc_posible_value_no0')}, context)
+    
+    netsvc.LocalService("workflow").trg_validate(uid, 'qc.test', 
+        lot.current_qc_test_id.id, 'confirm', cr)
+
+- 
+  Checking the Lot2 remains in 'pending_test' state and it's current test is in 
+  'waiting' state and not 'success' 
+-
+  !python {model: stock.production.lot}: |
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    assert lot.state == 'pending_test', "The Lot2 doesn't have the expected " \
+        "'pending_test' state: %s" % lot.state
+    assert lot.current_qc_test_id.state == 'waiting', "The Current Test of " \
+        "Lot2 doesn't have the expected 'waiting' state: %s" \
+            % lot.current_qc_test_id.state
+    assert lot.current_qc_test_id.success == False, "The Current Test of Lot2 "\
+        "is, unexpectly, successful: %s" % str(lot.current_qc_test_id.success)
+
+-
+  I aprove the current Quality Test of Lot2 
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    netsvc.LocalService("workflow").trg_validate(uid, 'qc.test', 
+        lot.current_qc_test_id.id, 'approve', cr)
+
+- 
+  Checking Lot2 is in 'test_failed' state because its current QC Test is in 
+  'fail' state. 
+-
+  !assert {model: stock.production.lot, id: prodlot_w_1qctest0, string: The Lot2 or its current QC Test aren't in the expected state!}:
+    - state == 'test_failed'
+    - current_qc_test_id.state == 'failed'
+
+-
+  I cancel the current Quality Test of Lot2 
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    netsvc.LocalService("workflow").trg_validate(uid, 'qc.test', 
+        lot.current_qc_test_id.id, 'cancel', cr)
+
+- 
+  Checking Lot2 is in 'pending_test' state because its current QC Test is in 
+  'draft' state. 
+-
+  !assert {model: stock.production.lot, id: prodlot_w_1qctest0, string: The Lot2 or its current QC Test aren't in the expected state!}:
+    - state == 'pending_test'
+    - current_qc_test_id.state == 'draft'
+
+-
+  I Confirm and Aprove the current Quality Test of Lot2 
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    netsvc.LocalService("workflow").trg_validate(uid, 'qc.test', 
+        lot.current_qc_test_id.id, 'confirm', cr)
+    netsvc.LocalService("workflow").trg_validate(uid, 'qc.test', 
+        lot.current_qc_test_id.id, 'approve', cr)
+
+- 
+  Checking Lot2 is in 'test_failed' state because its current QC Test is in 
+  'fail' state. 
+-
+  !assert {model: stock.production.lot, id: prodlot_w_1qctest0, string: The Lot2 or its current QC Test aren't in the expected state!}:
+    - state == 'test_failed'
+    - current_qc_test_id.state == 'failed'
+
+-
+  I cancel the Lot2 using the function 'action_force_cancel'
+-
+  !python {model: stock.production.lot}: |
+    self.action_force_cancel(cr, uid, [ref('prodlot_w_1qctest0')], context) 
+
+- 
+  Checking Lot2 is in 'cancel' state and inactive.
+-
+  !assert {model: stock.production.lot, id: prodlot_w_1qctest0, string: The Lot2 isn't in the expected state!}:
+    - state == 'cancel'
+    - active == False
+
+- 
+  Checking that now I can't cancel the Test of Lot3 because the Lot must to 
+  be in 'Draft' state
+-
+  !python {model: stock.production.lot}: |
+    from osv import osv
+    import netsvc
+    
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    try:
+      cr.execute('SAVEPOINT not_allwed_cancel')
+      
+      netsvc.LocalService("workflow").trg_validate(uid, 'qc.test', 
+          lot.qc_test_trigger_ids[0].test_id.id, 'cancel', cr)
+      
+      raise Exception("ERROR: We can cancel the First Test of Lot3 (%s) but it "
+                      "shouldn't be able." % str(qc_test_trigger_ids[0])) 
+    except osv.except_osv, e:
+      print "OK: We can't cancel the Test of Lot2: %s" % str(e.value)
+      cr.execute('ROLLBACK TO SAVEPOINT not_allwed_cancel')
+
+-
+  I set to Draft the Lot2.
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    
+    netsvc.LocalService("workflow").trg_validate(uid, 'stock.production.lot', 
+        ref('prodlot_w_1qctest0'), 'draft', cr)
+
+-
+  I cancel the Quality Test of Lot2 
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    netsvc.LocalService("workflow").trg_validate(uid, 'qc.test', 
+        lot.qc_test_trigger_ids[0].test_id.id, 'cancel', cr)
+
+-
+  I set the Current Test Trigger and I Confirm it.
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    self.write(cr, uid, [ref('prodlot_w_1qctest0')], 
+        {'current_qc_test_trigger_id': lot.qc_test_trigger_ids[0].id}, context)
+    
+    netsvc.LocalService("workflow").trg_validate(uid, 'stock.production.lot', 
+        ref('prodlot_w_1qctest0'), 'confirm', cr)
+
+-
+  Checking the 'Current Test Trigger' of Lot2 is the expected and it's in 
+  'Pending Test' state
+-
+  !python {model: stock.production.lot}: |
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    assert lot.state == 'pending_test', "The Lot2 doesn't have the expected " \
+        "'pending_test' state: %s" % lot.state
+    assert lot.current_qc_test_trigger_id.id == lot.qc_test_trigger_ids[0].id,\
+        "The Lot2 doesn't have its Trigger test as 'Current Trigger Test': " \
+        "%d != %d" % (lot.current_qc_test_trigger_id.id, 
+            lot.qc_test_trigger_ids[0].id)
+
+
+-
+  I change the value of current Quality Test with valid value and Confirm and 
+  Aprove it.
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    test_line_id = lot.current_qc_test_id.test_line_ids[0].id
+    
+    self.pool.get('qc.test.line').write(cr, uid, [test_line_id],
+        {'actual_value_ql': ref('qc_posible_value_yes0')}, context)
+    
+    netsvc.LocalService("workflow").trg_validate(uid, 'qc.test', 
+        lot.current_qc_test_id.id, 'confirm', cr)
+    netsvc.LocalService("workflow").trg_validate(uid, 'qc.test', 
+        lot.current_qc_test_id.id, 'approve', cr)
+
+- 
+  Checking Lot2 is in 'valid' state because its QC Test is 'success' and now it 
+  doesn't have 'Current Test (Trigger)'.
+-
+  !python {model: stock.production.lot}: |
+    lot = self.browse(cr, uid, ref('prodlot_w_1qctest0'), context)
+    assert lot.state == 'valid', "The Lot2 doesn't have the expected 'valid' " \
+        "state: %s" % lot.state
+    assert lot.qc_test_trigger_ids[0].test_success == True, "The Trigger " \
+        "Test of Lot2 is, unexpectly, not successful: %s" \
+            % str(lot.qc_test_trigger_ids[0].test_success)
+    assert lot.qc_test_trigger_ids[0].test_id.state == 'success', \
+        "The QC Test of Lot2 doesn't have the expected 'success' state: %s" \
+            % lot.qc_test_trigger_ids[0].test_id.state
+    assert not lot.current_qc_test_trigger_id, "The Lot2 has, unexpectly, a " \
+        "current Trigger Test: %s" % str(lot.current_qc_test_trigger_id)
+
+-
+  I cancel the Lot2 
+-
+  !python {model: stock.production.lot}: |
+    import netsvc
+    netsvc.LocalService("workflow").trg_validate(uid, 'stock.production.lot', 
+        ref('prodlot_w_1qctest0'), 'cancel', cr)
+
+- 
+  Checking Lot2 is in 'cancel' state.
+-
+  !assert {model: stock.production.lot, id: prodlot_w_1qctest0, string: The Lot2 isn't in the expected state!}:
+    - state == 'cancel'
+
+-
+  ------  Prodlot Quality Control END OK  ------
+-
+  !python {model: stock.production.lot}: |
+    print "THE END"
+

@@ -640,17 +640,22 @@
 				</xpath>
 			</field>
 		</record>
-		
-		<record id="view_stock_picking_in_search_inherit" model="ir.ui.view">
-			<field name="name">maize.inherit.stock.picking.in.search</field>
-			<field name="model">stock.picking.in</field>
-			<field name="inherit_id" ref="stock.view_picking_in_search" />
-			<field name="arch" type="xml">
-				<field name="partner_id" position="replace">
-					<field name="partner_id"/>
-				</field>
-			</field>
-		</record>
+
+        <record id="view_stock_picking_in_search_inherit" model="ir.ui.view">
+        <field name="name">maize.inherit.stock.picking.in.search</field>
+        <field name="model">stock.picking.in</field>
+        <field name="inherit_id" ref="stock.view_picking_in_search" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="replace">
+                <field name="partner_id"/>
+                <separator/>
+                    <filter string="Today" name="today" domain="[]" help="Today's Inwards"/>
+                    <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Inwards"/>
+                <separator/>
+                </field>
+            </field>
+        </record>
+
 		<!-- RECEIPT FORM -->
 		<record id="view_picking_receipt_tree" model="ir.ui.view">
 			<field name="name">stock.picking.receipt.tree</field>
@@ -871,7 +876,11 @@
 			<field name="arch" type="xml">
 				<search string="Picking list">
 					<field name="name" string="Picking List"
-						filter_domain="['|',('name','ilike', self),('origin','ilike',self)]" />
+						filter_domain="['|',('name','ilike', self),('origin','ilike',self)]"/>
+                    <separator/>
+                        <filter string="Today" name="today" domain="[]" help="Today's Receipts"/>
+                        <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Receipts"/>
+                     <separator/>
 					<filter icon="terp-check" name="available" string="Ready"
 						domain="[('state','=','assigned')]" help="Assigned Delivery Orders" />
 					<filter icon="terp-camera_test" name="confirmed" string="Waiting"
@@ -979,6 +988,20 @@
 			</field>
 		</record>
 
+        <record id="inherit_view_stock_picking_search" model="ir.ui.view">
+            <field name="name">stock.picking.search.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_internal_search" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <separator/>
+                        <filter string="Today" name="today" domain="[]" help="Today's Issues"/>
+                        <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Issues"/>
+                    <separator/>
+                </xpath>
+            </field>
+        </record>
+
 		<!--  Split Serial Number Wizard inherit -->
 		<record id="maize_inherit_split_serial_form" model="ir.ui.view">
 			<field name="model">stock.move.split</field>
@@ -1019,6 +1042,10 @@
 			<field name="arch" type="xml">
 			    <field name="partner_id" position="replace">
 			        <field name="partner_id"/>
+                <separator/>
+                    <filter string="Today" name="today" domain="[]" help="Today's Delivery Orders"/>
+                    <filter string="Yesterday" name="yesterday" domain="[]" help="Yesterday's Delivery Orders"/>
+                <separator/>
 			    </field>
 			</field>
 		</record>

@@ -1479,12 +1479,12 @@ class stock_move(osv.osv):
         else:
             return {'value': {'less_diff': round((less_amount * 100)/ amount,2)}}
 
-    def onchange_rate(self,cr, uid, ids, product_qty, price, add_diff, less_diff, context=None):
-        amount = (product_qty * price)
-        diff =  amount * add_diff / 100 if add_diff != 0 else -amount * less_diff / 100
-        if not diff:
-            return {'value': {'amount': amount}}
-        return {'value': {'amount': amount + diff}}
+#     def onchange_rate(self,cr, uid, ids, product_qty, price, add_diff, less_diff, context=None):
+#         amount = (product_qty * price)
+#         diff =  amount * add_diff / 100 if add_diff != 0 else -amount * less_diff / 100
+#         if not diff:
+#             return {'value': {'amount': amount}}
+#         return {'value': {'amount': amount + diff}}
     
     def onchange_excise(self, cr, uid, ids, excise, cess, high_cess,import_duty, context=None):
         return {'value': {'excise': excise or 0.0, 'cenvat':excise or 0.0, 'cess': cess or 0.0, 'c_cess': cess or 0.0, 'high_cess': high_cess or 0.0, 'c_high_cess': high_cess or 0.0, 'import_duty': import_duty or 0.0, 'import_duty1': import_duty or 0.0}}

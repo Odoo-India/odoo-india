@@ -529,6 +529,9 @@
 				<!--xpath expr="//field[@name='purchase_id']" position="attributes">
 				    <attribute name="attrs">{'readonly':[('state','=','done')]}</attribute>
 			    </xpath--> 
+               <xpath expr="/form/header//button[@name='%(stock.action_stock_invoice_onshipping)d']" position="replace">
+                   <button name="%(stock.action_stock_invoice_onshipping)d" string="Create Invoice/Refund" attrs="{'invisible': ['|','|','|',('state','&lt;&gt;','done'),('invoice_state','=','invoiced'),('invoice_state','=','none'),('type','=','in')]}"  type="action" class="oe_highlight" groups="base.group_user"/>
+               </xpath>
 				<xpath expr="//group" position="after">
 					<group col="12" string="Inward Details"  >
 						<group colspan="4" >

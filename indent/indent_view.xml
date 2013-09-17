@@ -371,9 +371,9 @@
                     <field name="maize" groups="indent.group_maize_data"/>
                 </field>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
-                    <field name="indent_id" readonly="1"/>
-                    <field name="indentor_id" readonly="1"/>
-                    <field name="department_id" readonly="1"/>
+                    <field name="indent_id"/>
+                    <field name="indentor_id"/>
+                    <field name="department_id"/>
                 </xpath>
             </field>
         </record>

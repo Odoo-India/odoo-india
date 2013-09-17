@@ -23,13 +23,16 @@ import time
 import datetime
 from openerp.osv import fields, osv
 import csv
+import os
 import logging
 from openerp import netsvc
 _logger = logging.getLogger("Indent Indent")
 
 class import_issue_data(osv.osv_memory):
     _name = "import.issue.data"
-
+    _columns = {
+       'file_path': fields.char('File Path', required=True, size=256),
+    }
     def _read_csv_data(self, cr, uid, path, context=None):
         """
             Reads CSV from given path and Return list of dict with Mapping
@@ -43,9 +46,29 @@ class import_issue_data(osv.osv_memory):
             data_lines.append(items)
         return fields,data_lines
 
+    def _write_bounced_issue(self, cr, uid, file_head, bounced_detail, context):
+        if not file_head:
+            _logger.warning("Can not Export bounced(Rejected) filllllllleee Inward detail to the file. ")
+            return False
+        try:
+            dtm = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
+            fname = "BOUNCED_INWARD_HEADER"+dtm+".csv"
+            _logger.info("Opening file '%s' for logging the bounced inward detail."%(fname))
+            fl= csv.writer(open(file_head+"/"+fname, 'wb'))
+            for ln in  bounced_detail:
+                fl.writerow(ln)
+            _logger.info("Successfully exported the bounced inward detail to the file %s."%(fname))
+            return True
+        except Exception, e:
+            print e
+            _logger.warning("Can not Export bounced(Rejected) Inward detail to the file. ")
+            return False
+
     #TODO:FIX ME TO FIND INDENT
     def import_isuue_data(self, cr, uid,ids, context=None):
-        file_path = "/home/ashvin/Desktop/script/ISSUEHEADER.csv"
+        print "yeppppppppppppppppppppiiiiiiiiiiiiiiiiiiiiiiiiiii"
+        data = self.read(cr, uid, ids)[0]
+        file_path = data['file_path']
         fields = data_lines = False
         try:
             fields, data_lines = self._read_csv_data(cr, uid, file_path, context)
@@ -57,13 +80,16 @@ class import_issue_data(osv.osv_memory):
         issue_pool =self.pool.get('stock.picking')
         indent = []
         rejected =[]
+        bounced_issue = [tuple(fields)]
         for data in data_lines:
             try:
-                maize = data["ISSUENO"]
+                if data['ISUYEAR'] and data['ISSUENO']:
+                    maize = data['ISUYEAR'] +'/'+data['ISSUENO']
                 tr_code = data["TRCODE"]
                 department_code = data["DEPTCODE"] or ''
-                create_date = data["ISUDATE"]
+                issue_date = data["ISUDATE"]
                 indentor = data["INDENTOR"]
+                dept_code = data["DEPTCODE"]
                 partner_id = False
                 tr = False
                 if indentor:
@@ -73,10 +99,7 @@ class import_issue_data(osv.osv_memory):
                 if tr_code:
                     tr_code = "R"+tr_code
                     tr = self.pool.get('tr.code').search(cr, uid, [('code','=',tr_code)])
-                if create_date == 'NULL' or create_date == '' or create_date == '00:00.0' or create_date == '  ':
-                    create_date = ''
-                else:
-                    create_date=datetime.datetime.strptime(create_date, '%d-%m-%y').strftime("%Y-%m-%d")
+
                 vals = {
                         #All fields depends on indent_id(maize)
                         #Just write maize number (indent_id) to origin field.
@@ -84,16 +107,21 @@ class import_issue_data(osv.osv_memory):
                         'partner_id': partner_id or False,
                         'tr_code_id':tr and tr[0] or False,
                         'maize':maize,
-                        'date':create_date,
+                        'date':issue_date,
                         'company_id':1,
                         'remark1':department_code,
+                        'note':dept_code
                         }
                 issue_pool.create(cr, uid, vals, context)
             except:
                 rejected.append(data['ISSUENO'])
+                reject = [ data.get(f, '') for f in fields]
+                bounced_issue.append(reject)
                 _logger.warning("Skipping Record with reciept code '%s'."%(data['ISSUENO']), exc_info=True)
                 continue
         print "REJECTED RECIEPTS", rejected
+        head, tail = os.path.split(file_path)
+        self._write_bounced_issue(cr, uid, head, bounced_issue, context)        
         _logger.info("Successfully completed import RECIEPT HEADER process.")
         return True
 

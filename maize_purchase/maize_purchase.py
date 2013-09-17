@@ -1400,6 +1400,8 @@ class stock_move(osv.osv):
             'insurance_unit': fields.float('Insurance Unit', digits_compute= dp.get_precision('Account')),
             'freight_unit': fields.float('Freight Unit', digits_compute= dp.get_precision('Account')),
             'discount': fields.float('Discount (%)'),
+            'add_amount': fields.float('Add Amount'),
+            'less_amount': fields.float('Less Amount'),
         }
 
     def onchange_amount(self, cr, uid, ids, purchase_id, product_id, add_diff, less_diff,rate, import_duty, tax_cal, context=None):
@@ -1468,7 +1470,15 @@ class stock_move(osv.osv):
         new_tax.update({'amount': amount + diff_amount,'rate': line.price_unit, 'new_rate': rate if rate != 0.0 else line.new_price,'diff_amount': diff_amount,'vat_unit': line.vat_unit,
                         'insurance_unit': line.insurance_unit,'freight_unit':line.freight_unit,'packing_unit':line.packing_unit})
         return {'value': new_tax}
-    
+
+    def onchange_charges(self,cr,uid, ids, product_qty, price, add_amount,less_amount,amount,context=None):
+        if add_amount <= 0 and less_amount <= 0:
+            return {'value': {'amount': (product_qty * price),'diff': 0,'less_diff':0}}
+        elif add_amount > 0:
+            return {'value': {'diff': round((add_amount * 100)/ amount,2)}}
+        else:
+            return {'value': {'less_diff': round((less_amount * 100)/ amount,2)}}
+
     def onchange_rate(self,cr, uid, ids, product_qty, price, add_diff, less_diff, context=None):
         amount = (product_qty * price)
         diff =  amount * add_diff / 100 if add_diff != 0 else -amount * less_diff / 100

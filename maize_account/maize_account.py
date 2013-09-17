@@ -400,6 +400,9 @@ class account_invoice(osv.Model):
                 'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
             },
             multi='all'),
+        'purchase_id': fields.many2one('purchase.order', 'Purchase Order'),
+        'picking_in_id': fields.many2one('stock.picking', 'Inward'),
+        'picking_receipt_id': fields.many2one('stock.picking', 'Receipt'),
     }
     def write(self, cr, uid, ids, vals, context=None):
         result = {}
@@ -442,3 +445,17 @@ class account_invoice_line(osv.Model):
                      ], 'Reason')
     }
 account_invoice_line()
+
+class stock_picking(osv.Model):
+    _inherit = 'stock.picking'
+    
+    def _prepare_invoice(self, cr, uid, picking, partner, inv_type, journal_id, context=None):
+        res = super(stock_picking, self)._prepare_invoice(cr, uid, picking, partner, inv_type, journal_id, context=context)
+        res.update({
+                'purchase_id': picking.purchase_id.id or False,
+                'picking_in_id': self.search(cr, uid, [('type','=','in'), ('purchase_id','=',picking.purchase_id.id)], context=context)[0] or False,
+                'picking_receipt_id': picking.type == 'receipt' and picking.id or False
+            })
+        return res
+
+stock_picking()

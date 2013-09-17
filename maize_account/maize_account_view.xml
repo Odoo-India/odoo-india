@@ -217,9 +217,26 @@
 						</group>
 					</group>
 				</xpath>
+				<field name="payment_term" position="after">
+				    <field name="purchase_id"/>
+				    <field name="picking_in_id"/>
+				    <field name="picking_receipt_id"/>
+				</field>
 			</field>
 		</record>
-
+		
+		<record id="view_maize_account_invoice_search" model="ir.ui.view">
+			<field name="name">maize.account.invoice.search</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.view_account_invoice_filter" />
+			<field name="arch" type="xml">
+				<field name="number" position="after">
+					<field name="purchase_id" string="Purchase Order" filter_domain="[('purchase_id', 'ilike', self)]"/>
+					<field name="picking_in_id" string="Inward or Receipt" filter_domain="['|', ('picking_in_id', 'ilike', self), ('picking_receipt_id', 'ilike', self)]"/>
+				</field>
+			</field>
+		</record>
+		
 		<!-- Advance Payment Report -->
 		<report auto="False" id="report_advance_payment" model="account.voucher"
 			name="maize.advance.payment" rml="addons/maize_account/report/advance_payment_report.rml"

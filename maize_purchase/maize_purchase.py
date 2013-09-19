@@ -1140,13 +1140,11 @@ class stock_picking(osv.Model):
             for pick in self.browse(cr, uid, ids, context=context):
                 if context.get('default_type') == 'receipt':
                     for move in pick.move_lines:
-                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,move.diff,move.less_diff,move.new_rate,move.import_duty,move.tax_cal, context)
-                        stock_move.write(cr, uid, [move.id], dict['value'])
+                        stock_move.write(cr, uid, [move.id], {})
                     if res[pick.id]['delivered_picking']:
                         for new_pick in self.browse(cr, uid, [res[pick.id]['delivered_picking']], context=context):
                             for move in new_pick.move_lines:
-                                dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id,move.diff,move.less_diff,move.new_rate,move.import_duty,move.tax_cal, context)
-                                stock_move.write(cr, uid, [move.id], dict['value'])
+                                stock_move.write(cr, uid, [move.id], {})
                         receipt_obj.write(cr,uid,[res[pick.id]['delivered_picking']], {})
                     receipt_obj.write(cr,uid,ids, {})
         return res

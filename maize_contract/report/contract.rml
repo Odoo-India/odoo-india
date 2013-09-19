@@ -220,7 +220,7 @@
             <td>
                 <para style="terp_default_2">[[ (order_line.product_id and order_line.product_id.default_code) or ' ' ]] [[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> [[ (order.notes or '')]] </para>
+                <para style="List"> [[ (order.notes or '')]] </para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
             </td>
             <td>
@@ -459,7 +459,7 @@
             <td>
                 <para style="terp_default_2">[[ (order_line.product_id and order_line.product_id.default_code) or ' ' ]] [[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> [[ (order.notes or '')]] </para>
+                <para style="List"> [[ (order.notes or '')]] </para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
             </td>
             <td>
@@ -699,7 +699,7 @@
             <td>
                 <para style="terp_default_2">[[ (order_line.product_id and order_line.product_id.default_code) or ' ' ]] [[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> [[ (order.notes or '')]] </para>
+                <para style="List"> [[ (order.notes or '')]] </para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
             </td>
             <td>
@@ -939,7 +939,7 @@
             <td>
                 <para style="terp_default_2">[[ (order_line.product_id and order_line.product_id.default_code) or ' ' ]] [[ (order_line.product_id and order_line.product_id.name) or ' ']]</para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
-                <para style="terp_default_2"> [[ (order.notes or '')]] </para>
+                <para style="List"> [[ (order.notes or '')]] </para>
                 <para style="terp_tblheader_General_Centre"> <font color="white"> </font> </para>
             </td>
             <td>

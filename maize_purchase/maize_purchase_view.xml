@@ -689,7 +689,7 @@
 					<field name="inward_date" attrs="{'readonly':[('state','=','done')]}"/>
 					<field name="challan_no" attrs="{'readonly':[('state','=','done')]}" />
 					<field name="tr_code" attrs="{'readonly':[('state','=','done')]}"/>
-                    <field name="party_id" domain="['|', ('supp_code', '=like', '309%%'), ('supp_code', '=like', '302%%')]" attrs="{'readonly': [('state', '=', 'done')]}"/>
+                    <field name="party_id" domain="['|', ('supp_code', '=like', '309%%'), ('supp_code', '=like', '302%%')]"/>
 				</xpath>
 				<xpath expr="//field[@name='origin']" position="after">
 					<field name="excisable_item" attrs="{'readonly':[('state','=','done')]}"/>
@@ -698,8 +698,8 @@
 					<field name="purchase_id" attrs="{'readonly':[('state','=','done')]}"/>
 					<field name="maize_receipt" groups="indent.group_maize_data" attrs="{'readonly':[('state','=','done')]}"/>
 					<field name="voucher_id" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="bill_no" attrs="{'readonly':[('state','=','done')]}"/>
-					<field name="bill_date" on_change="onchange_bill_date(bill_no,bill_date)" attrs="{'readonly':[('state','=','done')]}"/>
+					<field name="bill_no"/>
+					<field name="bill_date" on_change="onchange_bill_date(bill_no,bill_date)"/>
 				</xpath>
 
 				<xpath

@@ -200,33 +200,25 @@
             </field>
         </record>
 
-		<!-- Indent Window Action -->
-		<record id='action_indent_indent' model='ir.actions.act_window'>
-			<field name="name">Indents</field>
-			<field name="res_model">indent.indent</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">tree,form</field>
-			<field name="context">{'search_default_waiting':1}</field>
-			<field name="help" type="html">
-				<p class="oe_view_nocontent_create">
-					Click to create a new indent.
-				</p>
-			</field>
-		</record>
-		
-		<!-- Indent Menu -->
-		<menuitem name="Indents" parent="stock.menu_stock_root" id="menu_indent_indent_main"
-			sequence="1" />
-		<menuitem action="action_indent_indent" name="Indents"
-			parent="menu_indent_indent_main" id="menu_indent_indent" sequence="1" />
-		<menuitem id="stock.menu_stock_warehouse_mgmt" name="Receive/Deliver By Orders"
-			parent="stock.menu_stock_root" sequence="2" />
-		<menuitem id="stock.menu_stock_products_moves" name="Receive/Deliver Products"
-			parent="stock.menu_stock_root" sequence="3" />
-        
-		<!-- Document Authority Menu -->
-		<menuitem name="Indent 
-			Management" parent="stock.menu_stock_configuration"
-			id="menu_indent_configuration" sequence="41" />
-	</data>
+        <!-- Indent Window Action -->
+        <record id='action_indent_indent' model='ir.actions.act_window'>
+            <field name="name">Indents</field>
+            <field name="res_model">indent.indent</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_waiting':1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new indent.
+                </p>
+            </field>
+        </record>
+
+        <!-- Indent Menu -->
+        <menuitem name="Indents" parent="stock.menu_stock_root" id="menu_indent_indent_main" sequence="1"/>
+        <menuitem action="action_indent_indent" name="Indents" parent="menu_indent_indent_main" id="menu_indent_indent" sequence="1"/>
+        <menuitem id="stock.menu_stock_warehouse_mgmt" name="Receive/Deliver By Orders" parent="stock.menu_stock_root" sequence="2"/>
+        <menuitem id="stock.menu_stock_products_moves" name="Receive/Deliver Products" parent="stock.menu_stock_root" sequence="3"/>
+
+    </data>
 </openerp>

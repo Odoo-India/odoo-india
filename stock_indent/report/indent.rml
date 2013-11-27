@@ -1,0 +1,520 @@
+<?xml version="1.0"?>
+<document filename="indent.pdf">
+  <template pageSize="(842.0,595.0)" title="Indent" author="Martin Simon" allowSplitting="20">
+    <pageTemplate id="first">
+      <frame id="first" x1="1.0" y1="1.0" width="840" height="595"/>
+      <pageGraphics>
+          <drawString x="27.0cm" y="20.5cm">Page <pageNumber/></drawString>
+      </pageGraphics>
+    </pageTemplate>
+  </template>
+  <stylesheet>
+    <blockTableStyle id="Standard_Outline">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table1">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table3">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table2">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Tableau1">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Tableau2">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Tableau3">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table_Product_Header_Title">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table10">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table9">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table_Product_Line">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="11,-1" stop="11,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+    </blockTableStyle>
+    <initialize>
+      <paraStyle name="all" alignment="justify"/>
+    </initialize>
+    <paraStyle name="P1" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="Standard" fontName="Helvetica"/>
+    <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
+    <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="List" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
+    <paraStyle name="Table Contents" fontName="Helvetica"/>
+    <paraStyle name="Table Heading" fontName="Helvetica" alignment="CENTER"/>
+    <paraStyle name="Caption" fontName="Helvetica" fontSize="12.0" leading="15" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="Index" fontName="Helvetica"/><frame id="first" x1="23.0" y1="43.0" width="799" height="530"/>
+    <paraStyle name="Footer" fontName="Helvetica"/>
+    <paraStyle name="Horizontal Line" fontName="Helvetica" fontSize="6.0" leading="8" spaceBefore="0.0" spaceAfter="14.0"/>
+    <paraStyle name="terp_header" fontName="Helvetica-Bold" fontSize="9.0" leading="15" alignment="LEFT" spaceBefore="0.0" spaceAfter="6.0"/>
+    <paraStyle name="Heading 9" fontName="Helvetica-Bold" fontSize="75%" leading="NaN" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_tblheader_General" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_tblheader_Details" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_8" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_tblheader_General_Centre" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_tblheader_General_Right" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="RIGHT" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_tblheader_Details_Centre" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_tblheader_Details_,Right" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_default_Right_8" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Centre_8" fontName="Helvetica" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_header_Right" fontName="Helvetica-Bold" fontSize="15.0" leading="19" alignment="LEFT" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_header_Centre" fontName="Helvetica-Bold" fontSize="12.0" leading="15" alignment="CENTER" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_default_address" fontName="Helvetica" fontSize="10.0" leading="13" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_9" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Bold_9" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Centre_9" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_9" fontName="Helvetica" fontSize="9.0" leading="0" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Right_new" fontName="Helvetica-Bold" fontSize="7.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_2" fontName="Helvetica" fontSize="2.0" leading="3" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_8_italic" rightIndent="0.0" leftIndent="20.0" fontName="Helvetica-Oblique" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Note" rightIndent="0.0" leftIndent="9.0" fontName="Helvetica-Oblique" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="Space bet user and signature" fontName="Helvetica" fontSize="4.0" leading="5" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="terp_default_Left_9" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <images/>
+  </stylesheet>
+  <story>
+  <pto>
+    <para style="terp_default_9">[[repeatIn(objects,'order')]]</para>
+    <para style="terp_default_8">[[ setLang(order.indentor_id.lang) ]]</para>
+    <pto_header>
+    <para style="terp_tblheader_Details_Centre"> [[ order.company_id.name or removeParentNode('para')]]-INDENT</para>
+    <para style="Table Heading"> [[ order.company_id.street or removeParentNode('para')]] </para>
+    <para style="Table Heading"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
+    <blockTable colWidths="200.0,10.0,600.0" style="Table1">
+    <tr>
+        <td>
+            <para style="P1"> TO : </para>
+            <para style="P1"> THE PURCHASE OFFICER, </para>
+        </td>
+        <td>
+        </td>
+        <td>
+            <blockTable colWidths="80.0,260.0,10.0,90.0,160.0" style="Table9">
+            <tr>
+                <td>
+                    <para style="P1">Indentor Dept </para>
+                    <para style="P1">Department </para>
+                    <para style="P1">Indent Type </para>
+                    <para style="P1">Print Date </para>
+                    <para style="P1">Project <font color="white">[[ project_name(order.analytic_account_id)  or removeParentNode('para')]]  [[removeParentNode('font')]]</font></para>
+                </td>
+                <td>
+                    <para style="P1"> : [[ (order.employee_department_id.name) or False ]] </para>
+                    <para style="P1"> : [[(order.department_id and order.department_id.name) or False]] ([[ order.department_id and order.department_id.code or '' ]])</para>
+                    <para style="P1"> : [[(order.type == 'new' and 'New' or 'Existing') or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[time.strftime('%d/%m/%y') or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[ project_name(order.analytic_account_id) or removeParentNode('para')]] </para>
+                </td>
+                <td>
+                </td>
+                <td>
+                    <para style="P1">Indent No </para>
+                    <para style="P1">Indentor </para>
+                    <para style="P1">Indentor Code </para>
+                    <para style="P1">Indent Date </para>
+                </td>
+                <td>
+                    <para style="P1"> : [[indent_no(order.name) or removeParentNode('para')]]</para>
+                    <para style="P1"> : [[(order.indentor_id and order.indentor_id.name) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[(order.indentor_id and order.indentor_id.user_code) or False]] </para>
+                    <para style="P1"> : [[formatLang(order.indent_date, date = True) or removeParentNode('para')]] </para>
+                </td>
+            </tr>
+            </blockTable>
+        </td>
+    </tr>
+    </blockTable>
+    <para style="P1"> KINDLY ARRANGE TO PROCURE THE FOLLOWING MATERIALS AS PER GIVEN SCHEDULE.</para>
+    <para style="P1"> <font color="white"> </font> </para>
+    <blockTable colWidths="15.0,195.0,30.0,40.0,60.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
+      <tr>
+        <td>
+          <para style="terp_tblheader_Details_Centre">SR No.</para>
+          <para style="terp_tblheader_Details_Centre"> </para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">ITEM CODE</para>
+          <para style="terp_tblheader_Details_Centre">DESCRIPTION</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">UNIT</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">STOCK IN STORE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">QUANTITY REQUIRED</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">REQUIRED DATE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST RATE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">AMOUNT</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST SUPPLIER AND PAYMENT TERM</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST YR. CONS CURR. YR. CONS</para>
+          <para style="terp_tblheader_Details_Centre"></para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST ISSUE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST PO</para>
+        </td>
+      </tr>
+    </blockTable>
+    </pto_header>
+    <para style="terp_tblheader_Details_Centre"> [[ order.company_id.name or removeParentNode('para')]]-INDENT</para>
+    <para style="Table Heading"> [[ order.company_id.street or removeParentNode('para')]] </para>
+    <para style="Table Heading"> [[ order.company_id.street2 or '']] <font color="black"> ,</font> [[ order.company_id.city or '']] <font color="black"> - </font>[[ order.company_id.zip or removeParentNode('para')]] </para>
+    <blockTable colWidths="200.0,10.0,600.0" style="Table1">
+    <tr>
+        <td>
+            <para style="P1"> TO : </para>
+            <para style="P1"> THE PURCHASE OFFICER, </para>
+        </td>
+        <td>
+        </td>
+        <td>
+            <blockTable colWidths="80.0,260.0,10.0,90.0,160.0" style="Table9">
+            <tr>
+                <td>
+                    <para style="P1">Indentor Dept </para>
+                    <para style="P1">Department </para>
+                    <para style="P1">Indent Type </para>
+                    <para style="P1">Print Date </para>
+                    <para style="P1">Project <font color="white">[[ project_name(order.analytic_account_id)  or removeParentNode('para')]]  [[removeParentNode('font')]]</font></para>
+                </td>
+                <td>
+                    <para style="P1"> : [[ (order.employee_department_id.name) or False ]] </para>
+                    <para style="P1"> : [[(order.department_id and order.department_id.name) or False]] ([[ order.department_id and order.department_id.code or '' ]])</para>
+                    <para style="P1"> : [[(order.type == 'new' and 'New' or 'Existing') or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[time.strftime('%d/%m/%y') or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[ project_name(order.analytic_account_id) or removeParentNode('para')]] </para>
+                </td>
+                <td>
+                </td>
+                <td>
+                    <para style="P1">Indent No </para>
+                    <para style="P1">Indentor </para>
+                    <para style="P1">Indentor Code </para>
+                    <para style="P1">Indent Date </para>
+                </td>
+                <td>
+                    <para style="P1"> : [[indent_no(order.name) or removeParentNode('para')]]</para>
+                    <para style="P1"> : [[(order.indentor_id and order.indentor_id.name) or removeParentNode('para')]] </para>
+                    <para style="P1"> : [[(order.indentor_id and order.indentor_id.user_code) or False]] </para>
+                    <para style="P1"> : [[formatLang(order.indent_date, date = True) or removeParentNode('para')]] </para>
+                </td>
+            </tr>
+            <!--para style="P1">Indent No : [[indent_no(order.name) or False]] Indent Date: [[formatLang(order.indent_date, date = True) or False]]</para>
+            <para style="P1">Indent Date: [[formatLang(order.indent_date, date = True) or False]] </para>
+            <para style="P1">Indentor Code : [[(order.indentor_id and order.indentor_id.user_code) or False]] Indentor : [[(order.indentor_id and order.indentor_id.name) or False]] </para>
+            <para style="P1"></para>
+            <para style="P1">Indentor Dept : [[ (order.employee_department_id.name) ]] Indent Type: [[(order.type) or False]] </para>
+            <para style="P1">Indent Type: [[(order.type) or False]] </para>
+            <para style="P1">Department : [[(order.department_id and order.department_id.name) or False]] [[ project_name(order.analytic_account_id) or False]] </para>
+            <para style="P1">Project  : [[ project_name(order.analytic_account_id) or False]] </para>
+            <para style="P1">Print Date: [[formatLang(order.indent_date, date = True) or False]] </para-->
+            </blockTable>
+        </td>
+    </tr>
+    </blockTable>
+    <para style="P1"> KINDLY ARRANGE TO PROCURE THE FOLLOWING MATERIALS AS PER GIVEN SCHEDULE.</para>
+    <para style="P1"> <font color="white"> </font> </para>
+    <blockTable colWidths="15.0,195.0,30.0,40.0,60.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Header_Title">
+      <tr>
+        <td>
+          <para style="terp_tblheader_Details_Centre">SR No.</para>
+          <para style="terp_tblheader_Details_Centre"></para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">ITEM CODE</para>
+          <para style="terp_tblheader_Details_Centre">DESCRIPTION</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">UNIT</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">STOCK IN STORE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">QUANTITY REQUIRED</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">REQUIRED DATE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST RATE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">AMOUNT</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST SUPPLIER AND PAYMENT TERM</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST YR. CONS CURR. YR. CONS</para>
+          <para style="terp_tblheader_Details_Centre"></para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST ISSUE</para>
+        </td>
+        <td>
+          <para style="terp_tblheader_Details_Centre">LAST PO</para>
+        </td>
+      </tr>
+    </blockTable>
+    <section>
+      <para style="terp_default_9">[[ repeatIn(order.product_lines,'order_line') ]]</para>
+      <blockTable colWidths="15.0,195.0,30.0,40.0,60.0,60.0,90.0,50.0,90.0,70.0,70.0,50.0" style="Table_Product_Line">
+        <tr>
+          <td>
+            <para style="terp_default_Centre_9">[[ sequence(order_line) ]] </para>
+          </td>
+          <td>
+            <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.default_code) or '' ]]</para>
+            <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.name) or '' ]]</para>
+            <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.desc2) or '' ]]</para>
+            <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.desc3) or '' ]]</para>
+            <para style="terp_default_9">[[ (order_line.product_id and order_line.product_id.desc4) or '' ]]</para>
+            <!--para style="terp_default_9">Purpose: [[ (order_line.name) or '']] </para-->
+            <!--para style="terp_default_9">Specification: [[ (order_line.specification) or '' ]]</para-->
+          </td>
+          <td>
+            <para style="terp_default_9"> [[ (order_line.product_id and order_line.product_id.uom_id.name) or '' ]]</para>
+          </td>
+          <td>
+            <para style="terp_default_9"> [[ (order_line.product_id and order_line.product_id.qty_available) or '0.0' ]]</para>
+          </td>
+          <td>
+            <para style="terp_default_Centre_9">[[ qty(order_line.product_uom_qty) or '0.0' ]]</para>
+          </td>
+          <td>
+            <para style="terp_default_Centre_9">[[  formatLang(order.required_date, date = True) or '']]</para>
+          </td>
+          <td>
+            <para style="terp_default_Centre_9">Rate: [[ (order_line.product_id.last_supplier_rate) or '0.0']]</para>
+            <para style="terp_default_Left_9">Service: [[ check_tax(order_line.product_id.last_po_no and order_line.product_id.last_po_no.id, order_line.product_id.id).get('service') or removeParentNode('para')]] %</para>
+            <para style="terp_default_Left_9">Excise: [[ get_value().get('excise') or removeParentNode('para')]]</para>
+            <para style="terp_default_Left_9">VAT: [[ get_value().get('vat') or removeParentNode('para')]]</para>
+            <para style="terp_default_Left_9">Edu.Cess: [[ get_value().get('cess') or removeParentNode('para')]] </para>
+            <para style="terp_default_Left_9">Add.Tax: [[ get_value().get('add') or removeParentNode('para')]]</para>
+            <para style="terp_default_Left_9">Dis: [[ check_discount(order_line.product_id.last_po_no.id).get('discount') or removeParentNode('para')]]</para>
+          </td>
+          <td>
+            <para style="terp_default_Centre_9">[[ (order_line.product_uom_qty * order_line.product_id.last_supplier_rate) or '0.0']]</para>
+          </td>
+          <td>
+            <para style="terp_default_Centre_9">[[  last_supplier((order_line.product_id and (order_line.product_id.last_supplier_code))) or '']]</para>
+            <para style="terp_default_Centre_9">[[  order_line.product_id and order_line.product_id.last_po_no and order_line.product_id.last_po_no.payment_term_id and order_line.product_id.last_po_no.payment_term_id.name or '']]</para>
+          </td>
+          <td>
+            <para style="terp_default_Centre_9"> [[ last_consumption_qty(order_line.product_id).get('last_year_qty') or '0']] </para>
+            <para style="terp_default_Centre_9"> [[ current_consumption_qty(order_line.product_id).get('current_year_qty') or '0']] </para>
+          </td>
+          <td>
+            <para style="terp_default_Centre_9"> [[ formatLang(last_issue(order_line.product_id, order.indent_date).get('date'),date=True)]] </para>
+            <para style="terp_default_Centre_9"> [[ get_value().get('department')]] </para> 
+          </td>
+          <td>
+            <para style="terp_default_Centre_9">[[ (order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.name[:8])) or '-']]</para>
+            <para style="terp_default_Centre_9">[[ (order_line.product_id and (order_line.product_id.last_po_no and order_line.product_id.last_po_no.name[9:])) or '-']]</para>
+          </td>
+        </tr>
+      </blockTable>
+    </section>
+    <blockTable colWidths="395.0,115.0,30.0,280.0" style="Tableau2">
+      <tr>
+        <td>
+          <para style="terp_default_8">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="terp_default_9">TOTAL AMOUNT:</para>
+        </td>
+        <td>
+          <para style="terp_default_Right_9"> [[ total_amount(order) or '0.0' ]]</para>
+        </td>
+        <td>
+          <para style="terp_default_8">
+            <font color="white"> </font>
+          </para>
+        </td>
+      </tr>
+     </blockTable>
+    <para style="Space bet user and signature">
+        <font color="white"> </font>
+    </para>
+    <para style="Space bet user and signature">
+        <font color="white"> </font>
+    </para>
+    <para style="terp_default_9"> REMARK : [[ (order.description) or  '']]</para>
+    <blockTable colWidths="210.0,210.0,210.0,210.0" style="Table9">
+        <tr>
+            <td>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.indentor_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.indentor_id and order.indentor_id.name or False ]]</para>
+                <para style="terp_default_Left_9"> Indentor </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+            </td>
+            <td>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.employee_id.coach_id and order.employee_id.coach_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.employee_id.coach_id and order.employee_id.coach_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.employee_id.coach_id and order.employee_id.coach_id.job_id and order.employee_id.coach_id.job_id.name or False ]]</para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+            </td>
+            <td>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">[[ sign(order.department_id and order.department_id.manager_id and order.department_id.manager_id.user_id, order) ]]</image>
+                <para style="terp_default_Left_9">[[ order.department_id and order.department_id.manager_id and order.department_id.manager_id.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ order.department_id and order.department_id.manager_id and order.department_id.manager_id.job_id and order.department_id.manager_id.job_id.name or False ]]</para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+            </td>
+            <!--td>
+                <para style="terp_default_9"> <font color="white"> [[ authority_sign( order.indent_authority_ids, order) ]]  </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ get_value().get(1,"/9j/4AAQSkZJRgABAQEASABIAAD/7QyKUGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAAccAgAAAgAAADhCSU0EJQAAAAAAEOjxXPMvwRihontnrcVk1bo4QklNA+0AAAAAABAASAAAAAEAAQBIAAAAAQABOEJJTQQmAAAAAAAOAAAAAAAAAAAAAD+AAAA4QklNBA0AAAAAAAQAAAB4OEJJTQQZAAAAAAAEAAAAHjhCSU0D8wAAAAAACQAAAAAAAAAAAQA4QklNBAoAAAAAAAEAADhCSU0nEAAAAAAACgABAAAAAAAAAAI4QklNA/UAAAAAAEgAL2ZmAAEAbGZmAAYAAAAAAAEAL2ZmAAEAoZmaAAYAAAAAAAEAMgAAAAEAWgAAAAYAAAAAAAEANQAAAAEALQAAAAYAAAAAAAE4QklNA/gAAAAAAHAAAP////////////////////////////8D6AAAAAD/////////////////////////////A+gAAAAA/////////////////////////////wPoAAAAAP////////////////////////////8D6AAAOEJJTQQAAAAAAAACAAI4QklNBAIAAAAAAAYAAAAAAAA4QklNBDAAAAAAAAMBAQEAOEJJTQQtAAAAAAAGAAEAAAAGOEJJTQQIAAAAAAAQAAAAAQAAAkAAAAJAAAAAADhCSU0EHgAAAAAABAAAAAA4QklNBBoAAAAAA2cAAAAGAAAAAAAAAAAAAAGKAAACJgAAABkAVwBoAGkAdABlACAAQgBhAGMAawBnAHIAbwB1AG4AZAAgAFQAZQBtAHAAbABhAHQAZQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAACJgAAAYoAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAQAAAAAAAG51bGwAAAACAAAABmJvdW5kc09iamMAAAABAAAAAAAAUmN0MQAAAAQAAAAAVG9wIGxvbmcAAAAAAAAAAExlZnRsb25nAAAAAAAAAABCdG9tbG9uZwAAAYoAAAAAUmdodGxvbmcAAAImAAAABnNsaWNlc1ZsTHMAAAABT2JqYwAAAAEAAAAAAAVzbGljZQAAABIAAAAHc2xpY2VJRGxvbmcAAAAAAAAAB2dyb3VwSURsb25n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Osm5yjjKt8s2y7bMNcy1zTXNtc42zrbPN8+40DnQutE80b7SP9LB00TTxtRJ1MvVTtXR1lXW2Ndc1+DYZNjo2WzZ8dp22vvbgNwF3IrdEN2W3hzeot8p36/gNuC94UThzOJT4tvjY+Pr5HPk/OWE5g3mlucf56noMui86Ubp0Opb6uXrcOv77IbtEe2c7ijutO9A78zwWPDl8XLx//KM8xnzp/Q09ML1UPXe9m32+/eK+Bn4qPk4+cf6V/rn+3f8B/yY/Sn9uv5L/tz/bf///+EPzmh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNC4xLWMwMzYgNDYuMjc2NzIwLCBNb24gRmViIDE5IDIwMDcgMjI6NDA6MDggICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eGFwPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4YXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIiB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiBkYzpmb3JtYXQ9ImltYWdlL2pwZWciIHhhcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTMyBXaW5kb3dzIiB4YXA6Q3JlYXRlRGF0ZT0iMjAwOS0wMy0wM1QwOTo1OToyMi0wODowMCIgeGFwOk1vZGlmeURhdGU9IjIwMDktMDMtMDNUMDk6NTk6MjItMDg6MDAiIHhhcDpNZXRhZGF0YURhdGU9IjIwMDktMDMtMDNUMDk6NTk6MjItMDg6MDAiIHhhcE1NOkRvY3VtZW50SUQ9InV1aWQ6MENDMjlFMDYxRDA4REUxMTgwQzdGOTkxOUI0RDc5MUQiIHhhcE1NOkluc3RhbmNlSUQ9InV1aWQ6MERDMjlFMDYxRDA4REUxMTgwQzdGOTkxOUI0RDc5MUQiIHRpZmY6T3JpZW50YXRpb249IjEiIHRpZmY6WFJlc29sdXRpb249IjcyMDAwMC8xMDAwMCIgdGlmZjpZUmVzb2x1dGlvbj0iNzIwMDAwLzEwMDAwIiB0aWZmOlJlc29sdXRpb25Vbml0PSIyIiB0aWZmOk5hdGl2ZURpZ2VzdD0iMjU2LDI1NywyNTgsMjU5LDI2MiwyNzQsMjc3LDI4NCw1MzAsNTMxLDI4MiwyODMsMjk2LDMwMSwzMTgsMzE5LDUyOSw1MzIsMzA2LDI3MCwyNzEsMjcyLDMwNSwzMTUsMzM0MzI7NjBGMkU0MERGNDc5RDY0MUIzMUJGMjI0MUZFRDg1QUUiIGV4aWY6UGl4ZWxYRGltZW5zaW9uPSI1NTAiIGV4aWY6UGl4ZWxZRGltZW5zaW9uPSIzOTQiIGV4aWY6Q29sb3JTcGFjZT0iMSIgZXhpZjpOYXRpdmVEaWdlc3Q9IjM2ODY0LDQwOTYwLDQwOTYxLDM3MTIxLDM3MTIyLDQwOTYyLDQwOTYzLDM3NTEwLDQwOTY0LDM2ODY3LDM2ODY4LDMzNDM0LDMzNDM3LDM0ODUwLDM0ODUyLDM0ODU1LDM0ODU2LDM3Mzc3LDM3Mzc4LDM3Mzc5LDM3MzgwLDM3MzgxLDM3MzgyLDM3MzgzLDM3Mzg0LDM3Mzg1LDM3Mzg2LDM3Mzk2LDQxNDgzLDQxNDg0LDQxNDg2LDQxNDg3LDQxNDg4LDQxNDkyLDQxNDkzLDQxNDk1LDQxNzI4LDQxNzI5LDQxNzMwLDQxOTg1LDQxOTg2LDQxOTg3LDQxOTg4LDQxOTg5LDQxOTkwLDQxOTkxLDQxOTkyLDQxOTkzLDQxOTk0LDQxOTk1LDQxOTk2LDQyMDE2LDAsMiw0LDUsNiw3LDgsOSwxMCwxMSwxMiwxMywxNCwxNSwxNiwxNywxOCwyMCwyMiwyMywyNCwyNSwyNiwyNywyOCwzMDtEMUVBODhCRDlBMUNFNTJBQkZGRjg4OTYzQjgxQjU1MyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyIgcGhvdG9zaG9wOklDQ1Byb2ZpbGU9InNSR0IgSUVDNjE5NjYtMi4xIiBwaG90b3Nob3A6SGlzdG9yeT0iIj4gPHhhcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InV1aWQ6MDhBMERFMjgxNjA1REUxMTg0ODJGMEZFMUIxRDlEQUMiIHN0UmVmOmRvY3VtZW50SUQ9InV1aWQ6MDRBMERFMjgxNjA1REUxMTg0ODJGMEZFMUIxRDlEQUMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPD94cGFja2V0IGVuZD0idyI/Pv/bAEMABQMEBAQDBQQEBAUFBQYHDAgHBwcHDwsLCQwRDxISEQ8RERMWHBcTFBoVEREYIRgaHR0fHx8TFyIkIh4kHB4fHv/bAEMBBQUFBwYHDggIDh4UERQeHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHv/AABEIACQAXwMBEQACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/APsugAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKAP/9k=")]]</image>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> MANAGER(MAINTENANCE)</para>
+            </td-->
+            <td>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <image x="14.0cm" y="27.6cm" height="30.0" width="100">  [[ sign(order.indent_authority_ids and order.indent_authority_ids[0].name,order)]]</image>
+                <para style="terp_default_Left_9">[[ order.indent_authority_ids and order.indent_authority_ids[0].name.name or False ]]</para>
+                <para style="terp_default_Left_9">[[ authority_sign(order.indent_authority_ids,order)]] [[ get_value().get(0) or False ]]</para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+                <para style="terp_default_9"> <font color="white"> </font> </para>
+            </td>
+        </tr>
+    </blockTable>
+  </pto>
+  </story>
+</document>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<template>
-<t t-name="search_report">
-    <t t-foreach="widget" t-as="db">
-        <p class="search_rep"><t t-esc="db"/></p>
-    </t>
-</t>
-</template>

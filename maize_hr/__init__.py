@@ -1,2 +1,0 @@
-import maize_hr
-import wizard

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
-        <report id="report_issue_slip" model="stock.picking" name="maize.stock.issue.slip" string="Issue Slip" rml="maize_purchase/report/issue_report.rml"/>
-        <report id="report_move_labels" model="stock.move" name="maize.stock.move.new" string="Item Labels" xml="maize_purchase/report/lot_move_label.xml" xsl="maize_purchase/report/lot_move_label.xsl"/>
-    </data>
-</openerp>

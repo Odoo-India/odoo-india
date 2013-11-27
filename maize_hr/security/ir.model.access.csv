@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hr_cost_code,hr.cost.code,model_hr_cost_code,base.group_hr_user,1,1,1,1
-access_hr_grade_code,hr.grade.code,model_hr_grade_code,base.group_hr_user,1,1,1,1
-access_hr_category_code,hr.category.code,model_hr_category_code,base.group_hr_user,1,1,1,1

@@ -1,9 +1,0 @@
-.openerp p.search_rep{
-    color:#4c4c4c
-}
-@media print {
-    .openerp .oe_header_row{
-         display: block !important;
-          visibility: hidden;
-    }
-}

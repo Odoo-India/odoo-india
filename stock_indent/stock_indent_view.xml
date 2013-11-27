@@ -170,39 +170,36 @@
             </field>
         </record>
 
-		<!-- Indent Search View -->
-		<record id="view_indent_indent_search" model="ir.ui.view">
-			<field name="name">indent.indent.search</field>
-			<field name="model">indent.indent</field>
-			<field name="arch" type="xml">
-				<search string="Indents">
-					<field name="name" string="Indent Name" />
-					<field name="indent_date" />
-					<field name="required_date" />
-					<filter string="Draft" name="draft" domain="[('state','=','draft')]" />
-					<filter string="Waiting For Approval" name="waiting"
-						domain="[('state','=','waiting_approval')]" />
-					<filter string="Inprogress" name="inprogress"
-						domain="[('state','=','inprogress')]" />
-					<filter string="Received" name="received" domain="[('state','=','received')]" />
-					<filter string="Rejected" name="reject"
-						domain="[('state','=','reject'),('active','=',False)]" />
-					<field name="indentor_id" />
-					<field name="department_id" />
-					<field name="analytic_account_id" />
-					<group expand="0" string="Group By...">
-						<filter string="Indentor" context="{'group_by': 'indentor_id'}" />
-						<filter string="Department" context="{'group_by': 'department_id'}" />
-						<filter string="Project" context="{'group_by': 'analytic_account_id'}" />
-						<filter string="Requirement" context="{'group_by': 'requirement'}" />
-						<filter string="Indent Type" context="{'group_by': 'type'}" />
-						<filter string="Date" context="{'group_by': 'indent_date'}" />
-						<filter string="Status" context="{'group_by': 'state'}" />
-					</group>
-				</search>
-			</field>
-		</record>
-		
+        <!-- Indent Search View -->
+        <record id="view_indent_indent_search" model="ir.ui.view">
+            <field name="name">indent.indent.search</field>
+            <field name="model">indent.indent</field>
+            <field name="arch" type="xml">
+                <search string="Indents">
+                    <field name="name" string="Indent Name"/>
+                    <field name="indent_date"/>
+                    <field name="required_date"/>
+                    <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="Waiting For Approval" name="waiting" domain="[('state','=','waiting_approval')]"/>
+                    <filter string="Inprogress" name="inprogress" domain="[('state','=','inprogress')]"/>
+                    <filter string="Received" name="received" domain="[('state','=','received')]"/>
+                    <filter string="Rejected" name="reject" domain="[('state','=','reject'),('active','=',False)]"/>
+                    <field name="indentor_id"/>
+                    <field name="department_id"/>
+                    <field name="analytic_account_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Indentor" context="{'group_by': 'indentor_id'}"/>
+                        <filter string="Department" context="{'group_by': 'department_id'}"/>
+                        <filter string="Project" context="{'group_by': 'analytic_account_id'}"/>
+                        <filter string="Requirement" context="{'group_by': 'requirement'}"/>
+                        <filter string="Indent Type" context="{'group_by': 'type'}"/>
+                        <filter string="Date" context="{'group_by': 'indent_date'}"/>
+                        <filter string="Status" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
 		<!-- Indent Window Action -->
 		<record id='action_indent_indent' model='ir.actions.act_window'>
 			<field name="name">Indents</field>

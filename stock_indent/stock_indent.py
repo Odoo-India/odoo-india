@@ -27,6 +27,7 @@ from datetime import timedelta
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
+
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
@@ -45,11 +46,40 @@ class stock_location(osv.Model):
     }
 stock_location()
 
+class indent_equipment(osv.Model):
+    _name = 'indent.equipment'
+    _description = 'Equipment'
+    
+    _columns = {
+        'name': fields.char('Name', size=256),
+        'code': fields.char('Code', size=16),
+    }
+    
+    _sql_constraints = [
+        ('equipment_code', 'unique(code)', 'Equipment code must be unique !'),
+    ]
+indent_equipment()
+
+class indent_equipment_section(osv.Model):
+    _name = 'indent.equipment.section'
+    _description = 'Equipment Section'
+    
+    _columns = {
+        'equipment_id': fields.many2one('indent.equipment', 'Equipment', required=True),
+        'name': fields.char('Name', size=256),
+        'code': fields.char('Code', size=16),
+    }
+    
+    _sql_constraints = [
+        ('equipment_section_code', 'unique(equipment_id, code)', 'Section code must be unique per Equipment !'),
+    ]
+indent_equipment_section()
+
 class indent_indent(osv.Model):
     _name = 'indent.indent'
     _description = 'Indent'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
-    _order = "id desc"
+    _order = "name desc"
     
     _track = {
         'state': {
@@ -59,7 +89,7 @@ class indent_indent(osv.Model):
             'indent.mt_indent_rejected': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'reject'
         },
     }
-
+    
     def _total_amount(self, cr, uid, ids, name, args, context=None):
         result = {}
         for indent in self.browse(cr, uid, ids, context=context):
@@ -77,6 +107,7 @@ class indent_indent(osv.Model):
 
     _columns = {
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
+        'approve_date': fields.datetime('Approve Date', readonly=True, states={'draft': [('readonly', False)]}, track_visibility='onchange'),
         'indent_date': fields.datetime('Indent Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
@@ -84,13 +115,13 @@ class indent_indent(osv.Model):
         'department_id': fields.many2one('stock.location', 'Department', required=True, readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}, domain=[('can_request','=', True)]),
         'analytic_account_id': fields.many2one('account.analytic.account', 'Project', ondelete="cascade",readonly=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
         'requirement': fields.selection([('ordinary', 'Ordinary'), ('urgent', 'Urgent')], 'Requirement', readonly=True, required=True, track_visibility='onchange', states={'draft': [('readonly', False)]}),
-        'type': fields.selection([('new', 'Store'), ('existing', 'Repairing')], 'Type', required=True, track_visibility='onchange', readonly=True, states={'draft': [('readonly', False)]}),
+        'type': fields.selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], 'Type', required=True, track_visibility='onchange', readonly=True, states={'draft': [('readonly', False)]}),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products', readonly=True, states={'draft': [('readonly', False)], 'waiting_approval': [('readonly', False)]}),
         'picking_id': fields.many2one('stock.picking','Picking'),
         'description': fields.text('Additional Information', readonly=True, states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', readonly=True, states={'draft': [('readonly', False)]}),
         'active': fields.boolean('Active'),
-        'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item for', readonly=True, states={'draft': [('readonly', False)]}),
+        'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item for', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'amount_total': fields.function(_total_amount, type="float", string='Total',
             store={
                 'indent.indent': (lambda self, cr, uid, ids, c={}: ids, ['product_lines'], 20),
@@ -98,6 +129,13 @@ class indent_indent(osv.Model):
             }),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting For Approval'), ('inprogress', 'Inprogress'), ('received', 'Received'), ('reject', 'Rejected')], 'State', readonly=True, track_visibility='onchange'),
         'approver_id': fields.many2one('res.users', 'Authority', readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}, help="who have approve or reject indent."),
+        'product_id': fields.related('product_lines', 'product_id', string='Products', type='many2one', relation='product.product'),
+        
+        'equipment_id': fields.many2one('indent.equipment', 'Equipment'),
+        'equipment_section_id': fields.many2one('indent.equipment.section', 'Section'),
+        
+        'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', help="default warehose where inward will be taken"),
+        'move_type': fields.selection([('direct', 'Partial'), ('one', 'All at once')], 'Receive Method', required=True, states={'done':[('readonly', True)], 'cancel':[('readonly',True)]}, help="It specifies goods to be deliver partially or all at once"),    
     }
     
     def _default_stock_location(self, cr, uid, context=None):
@@ -123,9 +161,17 @@ class indent_indent(osv.Model):
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c),
         'name':"/",
         'active': True,
-        'approver_id':False
+        'approver_id':False,
+        'move_type':'one'
     }
-
+    
+    def _check_purchase_limit(self, cr, uid, ids, context=None):
+        return True
+    
+    _constraints = [
+        (_check_purchase_limit, 'You have exided your purchase limit for the current period !.', ['amount_total']),
+    ]
+    
     def onchange_requirement(self, cr, uid, ids, indent_date, requirement='urgent', context=None):
         vals = {}
         days_delay = 7
@@ -197,7 +243,7 @@ class indent_indent(osv.Model):
             'location_id': location_id,
             'procure_method': line.type,
             'move_id': move_id,
-            'note': line.name,
+            'note': line.name
         }
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
@@ -235,6 +281,7 @@ class indent_indent(osv.Model):
             'origin': indent.name,
             'date': indent.indent_date,
             'type': 'internal',
+            'move_type':indent.move_type
         }
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
@@ -273,16 +320,19 @@ class indent_indent(osv.Model):
         move_obj = self.pool.get('stock.move')
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'
         picking_id = False
+        
         indent = self.browse(cr, uid, ids[0], context=context)
         if indent.product_lines:
             picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
-        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress'}, context=context)
+        
         wf_service = netsvc.LocalService("workflow")
 
         move_ids = move_obj.search(cr,uid,[('picking_id','=',picking_id)])
         pro_ids = proc_obj.search(cr,uid,[('move_id','in',move_ids)])
         for pro in pro_ids:
             wf_service.trg_validate(uid, 'procurement.order', pro, 'button_check', cr)
+    
+        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress'}, context=context)
         return picking_id
 
     def check_reject(self, cr, uid, ids):
@@ -294,7 +344,8 @@ class indent_indent(osv.Model):
 
     def check_approval(self, cr, uid, ids, context=None):
         res = {
-           'approver_id':uid
+           'approver_id':uid,
+           'approve_date':time.strftime('%Y-%m-%d %H:%M:%S')
         }
         self.write(cr, uid, ids, res)
         return True
@@ -398,13 +449,13 @@ class indent_product_lines(osv.Model):
         if product.qty_available and product.virtual_available > 0:
             result['type'] = 'make_to_stock'
         
-        result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
+        #result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
         result['product_uom'] = product.uom_id.id
         result['price_unit'] = product.standard_price
         result['qty_available'] = product.qty_available
         result['virtual_available'] = product.virtual_available
         result['delay'] = product.seller_ids[0].delay
-        result['specification'] = product.description_purchase
+        result['specification'] = product_obj.name_get(cr, uid, [product.id])[0][1]
         return {'value': result}
     
 indent_product_lines()

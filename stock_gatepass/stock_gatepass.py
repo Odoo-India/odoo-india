@@ -224,6 +224,9 @@ class stock_gatepass(osv.Model):
         picking_ids = self.create_delivery_order(cr, uid, ids, context=context)
         picking_obj = self.pool.get('stock.picking')
         wf_service = netsvc.LocalService("workflow")
+        for gatepass in self.browse(cr, uid, ids, context=context):
+            if not gatepass.line_ids:
+                raise osv.except_osv(_('Warning!'),_('You cannot confirm a gate pass which has no line.'))
         for picking in picking_ids:
             wf_service.trg_validate(uid, 'stock.picking', picking, 'button_confirm', cr)
             picking_obj.action_move(cr, uid, [picking], context=context)

@@ -118,31 +118,30 @@
             </field>
         </record>
 
-		<!-- Gate Pass Search View -->
-		<record id="view_gate_pass_search" model="ir.ui.view">
-			<field name="name">stock.gatepass.search</field>
-			<field name="model">stock.gatepass</field>
-			<field name="arch" type="xml">
-				<search string="Gate Passes">
-					<field name="name" filter_domain="[('name', 'ilike', self)]"
-						string="Gate Pass" />
-					<field name="date" />
-					<filter string="Confirm" name="state_confirm" domain="[('state','=','confirm')]" />
-					<filter string="Pending" name="state_pending" domain="[('state','=','pending')]" />
-					<filter string="Done" name="state_done" domain="[('state','=','done')]" />
-					<field name="type_id" />
-					<field name="partner_id" />
-					<group expand="0" string="Group By...">
-						<filter string="Series" context="{'group_by': 'series'}" />
-						<filter string="Type" context="{'group_by': 'gate_pass_type'}" />
-						<filter string="Supplier" context="{'group_by': 'partner_id'}" />
-						<filter string="Return Type" context="{'group_by': 'return_type'}" />
-						<filter string="Date" context="{'group_by': 'date'}" />
-						<filter string="Status" context="{'group_by': 'state'}" />
-					</group>
-				</search>
-			</field>
-		</record>
+        <!-- Gate Pass Search View -->
+        <record id="view_gate_pass_search" model="ir.ui.view">
+            <field name="name">stock.gatepass.search</field>
+            <field name="model">stock.gatepass</field>
+            <field name="arch" type="xml">
+                <search string="Gate Passes">
+                    <field name="name" filter_domain="[('name', 'ilike', self)]" string="Gate Pass"/>
+                    <field name="date"/>
+                    <filter string="Confirm" name="state_confirm" domain="[('state','=','confirm')]"/>
+                    <filter string="Pending" name="state_pending" domain="[('state','=','pending')]"/>
+                    <filter string="Done" name="state_done" domain="[('state','=','done')]"/>
+                    <field name="type_id"/>
+                    <field name="partner_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Series" context="{'group_by': 'series'}"/>
+                        <filter string="Type" context="{'group_by': 'gate_pass_type'}"/>
+                        <filter string="Supplier" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Return Type" context="{'group_by': 'return_type'}"/>
+                        <filter string="Date" context="{'group_by': 'date'}"/>
+                        <filter string="Status" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
 
 		<!-- Gate Pass Action -->
 		<record id='action_gate_pass' model='ir.actions.act_window'>

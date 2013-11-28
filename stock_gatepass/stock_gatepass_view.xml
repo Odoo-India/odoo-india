@@ -103,20 +103,20 @@
             </field>
         </record>
 
-		<!-- Gate Pass Tree View -->
-		<record id='view_gate_pass_tree' model='ir.ui.view'>
-			<field name="name">stock.gatepass.tree</field>
-			<field name="model">stock.gatepass</field>
-			<field name="arch" type="xml">
-				<tree string="Gate Passes">
-					<field name="name" />
-					<field name="partner_id" />
-					<field name="type_id" />
-					<field name="date" />
-					<field name="state" />
-				</tree>
-			</field>
-		</record>
+        <!-- Gate Pass Tree View -->
+        <record id='view_gate_pass_tree' model='ir.ui.view'>
+            <field name="name">stock.gatepass.tree</field>
+            <field name="model">stock.gatepass</field>
+            <field name="arch" type="xml">
+                <tree string="Gate Passes">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="type_id"/>
+                    <field name="date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
 
 		<!-- Gate Pass Search View -->
 		<record id="view_gate_pass_search" model="ir.ui.view">

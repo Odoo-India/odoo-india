@@ -143,27 +143,23 @@
             </field>
         </record>
 
-		<!-- Gate Pass Action -->
-		<record id='action_gate_pass' model='ir.actions.act_window'>
-			<field name="name">Gate Passes</field>
-			<field name="res_model">stock.gatepass</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">tree,form</field>
-			<field name="help" type="html">
-				<p class="oe_view_nocontent_create">
-					Click to create a new gate pass.
-				</p>
-			</field>
-		</record>
+        <!-- Gate Pass Action -->
+        <record id='action_gate_pass' model='ir.actions.act_window'>
+            <field name="name">Gate Passes</field>
+            <field name="res_model">stock.gatepass</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new gate pass.
+                </p>
+            </field>
+        </record>
 
-		<!-- Gate Pass Menu -->
-		<menuitem name="Gate Passes" parent="stock.menu_stock_root"
-			id="menu_gate_pass_main" sequence="1" />
-		<menuitem action="action_gate_pass" name="Gate Passes"
-			parent="menu_gate_pass_main" id="menu_gate_pass" sequence="1" />
+        <!-- Gate Pass Menu -->
+        <menuitem name="Gate Passes" parent="stock.menu_stock_root" id="menu_gate_pass_main" sequence="1"/>
+        <menuitem action="action_gate_pass" name="Gate Passes" parent="menu_gate_pass_main" id="menu_gate_pass" sequence="1"/>
+        <menuitem action="stock.action_picking_tree" id="stock.menu_action_picking_tree" parent="menu_gate_pass_main" sequence="5"/>
 
-		<menuitem action="stock.action_picking_tree" id="stock.menu_action_picking_tree"
-			parent="menu_gate_pass_main" sequence="5" />
-
-	</data>
+    </data>
 </openerp>

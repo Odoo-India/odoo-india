@@ -283,7 +283,7 @@ class stock_gatepass_line(osv.Model):
         result = {}
         if product_id:
             product = self.pool.get('product.product').browse(cr, uid, product_id)
-            result = dict(value=dict(name=product.name, product_uom=product.uom_id and product.uom_id.id or False, app_rate=product.list_price))
+            result = dict(value=dict(name=product.name, uom_id=product.uom_id and product.uom_id.id or False, price_unit=product.list_price))
         return result
 
 stock_gatepass_line()

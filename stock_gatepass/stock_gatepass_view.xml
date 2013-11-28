@@ -113,8 +113,8 @@
             <field name="arch" type="xml">
                 <tree string="Gate Passes">
                     <field name="name"/>
-                    <field name="partner_id"/>
                     <field name="type_id"/>
+                    <field name="partner_id" string="Party"/>
                     <field name="date"/>
                     <field name="state"/>
                 </tree>

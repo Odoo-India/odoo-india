@@ -1,39 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-    <data>
-        <!-- Purchase Order Inherit -->
-        <record id="l10n_in_purchase_order_inherit_form" model="ir.ui.view">
-            <field name="name">l10n_in_purchase.order.inherit.form</field>
-            <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.purchase_order_form" />
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='amount_tax']" position="after" >
-                    <field name="package_and_forwording_type" on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)" class="oe_inline oe_edit_only"/>
-                    <field name="package_and_forwording" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_inline" attrs="{'invisible':[('package_and_forwording_type','=','include')]}"/>
-                    <field name="freight_type" on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)" class="oe_inline oe_edit_only"/>
-                    <field name="freight" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_inline" attrs="{'invisible':[('freight_type','=','include')]}"/>
-                    <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)" class="oe_inline oe_edit_only"/>
-                    <field name="insurance" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_inline" attrs="{'invisible':[('insurance_type','=','include')]}"/>
-                    <field name="round_off" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_inline"/>
-                </xpath>
-                <xpath expr="//field[@name='payment_term_id']" position="replace">
-                </xpath>
-                <xpath expr="//field[@name='minimum_planned_date']" position="replace">
-                </xpath>
-                <xpath expr="//field[@name='notes']" position="before">
-                    <group>
-                        <group>
-                            <field name="payment_term_id"/>
-                            <field name="delivery_id"/>
-                        </group>
-                        <group></group>
-                    </group>
-                </xpath>
-                <xpath expr="//field[@name='origin']" position="before">
-                    <field name="minimum_planned_date"/>
-                </xpath>
-            </field>
-        </record>
+	<data>
+		<!-- Purchase Order Inherit -->
+		<record id="l10n_in_purchase_order_inherit_form" model="ir.ui.view">
+			<field name="name">l10n_in_purchase.order.inherit.form</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//group[@class='oe_subtotal_footer oe_right']"
+					position="replace">
+					<group>
+						<group>
+							<label for="package_and_forwording" />
+							<div>
+								<field name="package_and_forwording_type"
+									on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
+									class="oe_inline oe_edit_only" />
+								<field name="package_and_forwording" widget="monetary"
+									options="{'currency_field': 'currency_id'}" class="oe_inline"
+									attrs="{'invisible':[('package_and_forwording_type','=','include')]}" />
+							</div>
+							
+							<label for="freight" />
+                            <div>
+								<field name="freight_type"
+									on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
+									class="oe_inline oe_edit_only" />
+								<field name="freight" widget="monetary"
+									options="{'currency_field': 'currency_id'}" class="oe_inline"
+									attrs="{'invisible':[('freight_type','=','include')]}" />
+							</div>
+                            
+                            <label for="insurance" />
+                            <div>
+								<field name="insurance_type"
+									on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
+									class="oe_inline oe_edit_only" />
+								<field name="insurance" widget="monetary" class="oe_inline"
+									options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('insurance_type','=','include')]}" />
+                            </div>
+                            
+							
+						</group>
 
-    </data>
+						<group class="oe_subtotal_footer oe_right">
+							<field name="amount_untaxed" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="amount_tax" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+							<field name="round_off" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+							<div class="oe_subtotal_footer_separator oe_inline">
+								<label for="amount_total" />
+								<button name="button_dummy" states="draft" string="(update)"
+									type="object" class="oe_edit_only oe_link" />
+							</div>
+							<field name="amount_total" nolabel="1"
+								class="oe_subtotal_footer_separator" widget="monetary"
+								options="{'currency_field': 'currency_id'}" />
+						</group>
+					</group>
+				</xpath>
+
+				<xpath expr="//field[@name='payment_term_id']" position="replace">
+				</xpath>
+				<xpath expr="//field[@name='minimum_planned_date']" position="replace">
+				</xpath>
+				<xpath expr="//field[@name='notes']" position="before">
+					<group>
+						<group>
+							<field name="payment_term_id" class="oe_inline"/>
+							<field name="delivery_id" class="oe_inline"/>
+						</group>
+						<group></group>
+					</group>
+				</xpath>
+				<xpath expr="//field[@name='origin']" position="before">
+					<field name="minimum_planned_date" />
+				</xpath>
+			</field>
+		</record>
+
+	</data>
 </openerp>

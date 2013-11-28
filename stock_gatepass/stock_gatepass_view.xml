@@ -159,6 +159,29 @@
             </field>
         </record>
 
+        <!-- Gate Pass Type Form View -->
+        <record id='view_gatepass_type_form' model='ir.ui.view'>
+            <field name="name">stock.gatepass.type.form</field>
+            <field name="model">gatepass.type</field>
+            <field name="arch" type="xml">
+                <form string="Gate Pass Type" version="7.0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="return_type"/>
+                            </group>
+                            <group>
+                                <field name="code"/>
+                                <field name="approval_required"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <!-- Gate Pass Menu -->
         <menuitem name="Gate Passes" parent="stock.menu_stock_root" id="menu_gate_pass_main" sequence="1"/>
         <menuitem action="action_gate_pass" name="Gate Passes" parent="menu_gate_pass_main" id="menu_gate_pass" sequence="1"/>

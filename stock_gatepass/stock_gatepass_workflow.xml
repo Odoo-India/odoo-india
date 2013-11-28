@@ -5,7 +5,7 @@
         <!-- General structure of a workflow XML file -->
         <record model="workflow" id="wkf_gate_pass">
             <field name="name">workflow.gate.pass</field>
-            <field name="osv">gate.pass</field>
+            <field name="osv">stock.gatepass</field>
             <field name="on_create">True</field>
         </record>
 

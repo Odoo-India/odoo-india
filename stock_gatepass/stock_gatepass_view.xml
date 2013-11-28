@@ -9,13 +9,11 @@
 			<field name="arch" type="xml">
 				<form string="Gate Pass" version="7.0">
 					<header>
-						<button name="gate_pass_confirm" string="Confirm" states="draft"
-							class="oe_highlight" />
-						<button name="gate_pass_pending" string="Validate" class="oe_highlight" />
-						<button name="gate_pass_done" string="Validate" class="oe_highlight" />
-						<button name="open_incoming_shipment" string="Receive Product(s)"
-							states="pending" class="oe_highlight" type="object" />
-						<field name="state" widget="statusbar" statusbar_visible="draft, confirm, pending, done" />
+                        <button name="gate_pass_confirm" string="Confirm" states="draft" class="oe_highlight"/>
+                        <button name="gate_pass_pending" string="Validate" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'confirm'), ('return_type', '=', 'non_return')]}"/>
+                        <button name="gate_pass_done" string="Validate" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'confirm'), ('return_type', '=', 'return')]}"/>
+                        <button name="open_incoming_shipment" string="Receive Product(s)" states="pending" class="oe_highlight" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft, confirm, pending, done"/>
 					</header>
 					<sheet>
 						<div class="oe_title">
@@ -30,7 +28,7 @@
 							<button name="open_delivery_order" string="Delivery Order"
 								type="object" attrs="{'invisible': [('state', '=', 'draft')]}" />
 							<button name="open_incoming_shipment" string="Inward"
-								type="object" attrs="{'invisible': [('picking_in_id', '=', False)]}" />
+								type="object" attrs="{'invisible': [('in_picking_id', '=', False)]}" />
 						</div>
 						<group>
 							<group>
@@ -53,8 +51,8 @@
 								<field name="driver_id" />
 							</group>
 							<group>
-								<field name="picking_in_id" invisible="1" />
-								<field name="picking_out_id" invisible="1" />
+								<field name="in_picking_id" invisible="1" />
+								<field name="out_picking_id" invisible="1" />
 							</group>
 						</group>
 						<notebook>

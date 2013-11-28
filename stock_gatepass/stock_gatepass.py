@@ -122,7 +122,7 @@ class stock_gatepass(osv.Model):
         location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_stock')
         location = location_id and location_id[1] or False
         for product in products:
-            vals = dict(product_id=product.original_product_id.id or product.product_id.id or False, product_qty=product.product_qty, product_uom=product.product_uom.id, name=product.product_id.name, location_id=location, location_dest_id=location, app_rate=product.price_unit)
+            vals = dict(product_id=product.original_product_id.id or product.product_id.id or False, product_qty=product.product_uom_qty, uom_id=product.product_uom.id, name=product.product_id.name, location_id=location, location_dest_id=location, app_rate=product.price_unit)
             lines.append(vals)
         result['line_ids'] = lines
         return {'value': result}
@@ -142,7 +142,6 @@ class stock_gatepass(osv.Model):
         'date': fields.datetime('Date', required=True),
         'approve_date': fields.datetime('Approve Date'),
         'type_id': fields.many2one('gatepass.type', 'Type', required=True),
-        'purchase_id': fields.many2one('purchase.order', 'Order'),
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'partner_id':fields.many2one('res.partner', 'Supplier', required=True),
         'line_ids': fields.one2many('stock.gatepass.line', 'gatepass_id', 'Products'),
@@ -158,7 +157,6 @@ class stock_gatepass(osv.Model):
     }
 
     _defaults = {
-        'name': lambda obj, cr, uid, context:obj.pool.get('ir.sequence').get(cr, uid, 'stock.gatepass'),
         'state': 'draft',
         'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'gate.pass', context=c)
@@ -226,15 +224,18 @@ class stock_gatepass(osv.Model):
         picking_ids = self.create_delivery_order(cr, uid, ids, context=context)
         picking_obj = self.pool.get('stock.picking')
         wf_service = netsvc.LocalService("workflow")
+        seq_obj = self.pool.get('ir.sequence')
         for gatepass in self.browse(cr, uid, ids, context=context):
             if not gatepass.line_ids:
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm a gate pass which has no line.'))
+            name = seq_obj.get(cr, uid, 'stock.gatepass')
+            self.write(cr, uid, [gatepass.id], {'state': 'confirm', 'name': name}, context=context)
         for picking in picking_ids:
             wf_service.trg_validate(uid, 'stock.picking', picking, 'button_confirm', cr)
             picking_obj.action_move(cr, uid, [picking], context=context)
             wf_service.trg_validate(uid, 'stock.picking', picking, 'button_done', cr)
 
-        return self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
+        return True
 
     def action_picking_create(self, cr, uid, ids, context=None):
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'

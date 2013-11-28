@@ -84,19 +84,20 @@ from openerp import netsvc
 class gate_pass_type(osv.Model):
     _name = 'gatepass.type'
     _description = 'Gate Pass Type'
-    
+
     _columns = {
         'name': fields.char('Name', size=256, select=1),
         'code': fields.char('Code', size=16, select=1),
         'approval_required': fields.boolean('Approval State'),
-        'return_type': fields.selection([('Returnable', 'Returnable'), ('Non-Returnable', 'Non-Returnable')], 'Return Type', required=True),
+        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non-Returnable')], 'Return Type', required=True),
         'active': fields.boolean('Active')
     }
-    
+
     _defaults = {
         'active': True,
-        'return_type': 'Returnable'
+        'return_type': 'return'
     }
+
 gate_pass_type()
 
 class stock_gatepass(osv.Model):
@@ -116,11 +117,7 @@ class stock_gatepass(osv.Model):
 
     def onchange_indent(self, cr, uid, ids, indent=False, *args, **kw):
         result = {'line_ids': []}
-        line_obj = self.pool.get('gate.pass.line')
         lines = []
-  
-        for gatepass in self.browse(cr, uid, ids):
-            line_ids = [line.id for line in gatepass.line_ids]
 
         if not indent:
             return {'value': result}
@@ -133,32 +130,32 @@ class stock_gatepass(osv.Model):
         result['line_ids'] = lines
         return {'value': result}
 
+    def onchange_type(self, cr, uid, ids, type_id=False):
+        result = {}
+        if type_id:
+            type = self.pool.get('gatepass.type').browse(cr, uid, type_id)
+            result['return_type'] = type.return_type
+        return {'value': result}
+
     _columns = {
         'name': fields.char('Name', size=256, readonly=True),
         'driver_id': fields.many2one('res.partner', 'Driver'),
         'person_id': fields.many2one('res.partner', 'Delivery Person'),
-        
         'picking_in_id': fields.many2one('stock.picking.in', 'Inward'),
         'picking_out_id': fields.many2one('stock.picking.out', 'Delivery Order'),
-        
         'date': fields.datetime('Date', required=True),
         'approve_date': fields.datetime('Approve Date'),
         'type_id': fields.many2one('gatepass.type', 'Type', required=True),
         'purchase_id': fields.many2one('purchase.order', 'Order'),
-        
         'indent_id': fields.many2one('indent.indent', 'Indent'),
         'partner_id':fields.many2one('res.partner', 'Supplier', required=True),
-        
         'line_ids': fields.one2many('stock.gatepass.line', 'gatepass_id', 'Products'),
-        
         'description': fields.text('Remarks'),
         'company_id': fields.many2one('res.company', 'Company', required=True),
-        
         'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True),
-
         'location_id': fields.many2one('stock.location', 'Source Location'),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('pending', 'Pending'), ('done', 'Done')], 'State', readonly=True),
-        'return_type': fields.related('type_id', 'return_type', type='selection', selection=[('Returnable', 'Returnable'), ('Non-Returnable', 'Non-Returnable')], string='Return Type', store=True),
+        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non Returnable')], 'Return Type', required=True),
     }
 
     _defaults = {

@@ -34,8 +34,8 @@
 						</div>
 						<group>
 							<group>
-								<field name="type_id" />
-								<field name="return_type" invisible="1" />
+								<field name="type_id" on_change="onchange_type(type_id)"/>
+								<field name="return_type"/>
 								<field name="partner_id" string="Party" />
 							</group>
 

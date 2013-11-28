@@ -229,7 +229,7 @@ class stock_gatepass(osv.Model):
             if not gatepass.line_ids:
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm a gate pass which has no line.'))
             name = seq_obj.get(cr, uid, 'stock.gatepass')
-            self.write(cr, uid, [gatepass.id], {'state': 'confirm', 'name': name}, context=context)
+            self.write(cr, uid, [gatepass.id], {'state': 'confirm', 'name': name, 'approve_date': time.strftime('%Y-%m-%d %H:%M:%S')}, context=context)
         for picking in picking_ids:
             wf_service.trg_validate(uid, 'stock.picking', picking, 'button_confirm', cr)
             picking_obj.action_move(cr, uid, [picking], context=context)

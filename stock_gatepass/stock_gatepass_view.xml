@@ -39,8 +39,9 @@
                                 <field name="company_id" groups="base.group_multi_company"/>
                             </group>
                             <group>
-                                <field name="indent_id" on_change="onchange_indent(indent_id)" attrs="{'invisible':[('return_type','=','Non-Returnable')]}"/>
-                                <field name="purchase_id" string="Contract"/>
+                                <field name="approval_required"/>
+                                <field name="indent_id" on_change="onchange_indent(indent_id)"
+                                    attrs="{'invisible': [('approval_required', '=', False)], 'required': [('approval_required', '=', True)]}" domain="[('type', '=', 'existing'), ('state', '=', 'inprogress')]"/>
                             </group>
                             <group>
                                 <field name="person_id"/>

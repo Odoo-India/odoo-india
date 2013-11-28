@@ -132,6 +132,7 @@ class stock_gatepass(osv.Model):
         if type_id:
             type = self.pool.get('gatepass.type').browse(cr, uid, type_id)
             result['return_type'] = type.return_type
+            result['approval_required'] = type.approval_required
         return {'value': result}
 
     _columns = {
@@ -153,6 +154,7 @@ class stock_gatepass(osv.Model):
         'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non Returnable')], 'Return Type', required=True),
         'out_picking_id': fields.many2one('stock.picking.out', 'Delivery Order'),
         'in_picking_id': fields.many2one('stock.picking.in', 'Incoming Shipment'),
+        'approval_required': fields.boolean('Approval State'),
     }
 
     _defaults = {

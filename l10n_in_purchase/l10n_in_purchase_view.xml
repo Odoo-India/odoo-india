@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Purchase Order Inherit -->
+        <record id="l10n_in_purchase_order_inherit_form" model="ir.ui.view">
+            <field name="name">l10n_in_purchase.order.inherit.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='amount_tax']" position="after" >
+                    <field name="package_and_forwording_type" on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)" class="oe_inline oe_edit_only"/>
+                    <field name="package_and_forwording" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_inline" attrs="{'invisible':[('package_and_forwording_type','=','include')]}"/>
+                    <field name="freight_type" on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)" class="oe_inline oe_edit_only"/>
+                    <field name="freight" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_inline" attrs="{'invisible':[('freight_type','=','include')]}"/>
+                    <field name="insurance_type" on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)" class="oe_inline oe_edit_only"/>
+                    <field name="insurance" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_inline" attrs="{'invisible':[('insurance_type','=','include')]}"/>
+                    <field name="round_off" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_inline"/>
+                </xpath>
+                <xpath expr="//field[@name='payment_term_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='minimum_planned_date']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='notes']" position="before">
+                    <group>
+                        <group>
+                            <field name="payment_term_id"/>
+                            <field name="delivery_id"/>
+                        </group>
+                        <group></group>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='origin']" position="before">
+                    <field name="minimum_planned_date"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

@@ -36,6 +36,7 @@ Allows you to track serial based on the current locations on every transactions.
     'data' : [
     ],
     'update_xml' : [
+        'stock_serial_tracking_view.xml',
     ],
 
     'demo': [],

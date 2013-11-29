@@ -139,6 +139,7 @@ class stock_gatepass(osv.Model):
         'name': fields.char('Name', size=256, readonly=True, states={'draft': [('readonly', False)]}),
         'driver_id': fields.many2one('res.partner', 'Driver', readonly=True, states={'draft': [('readonly', False)]}),
         'person_id': fields.many2one('res.partner', 'Delivery Person', readonly=True, states={'draft': [('readonly', False)]}),
+        'user_id': fields.many2one('res.users', 'User', required=True, readonly=True),
         'date': fields.datetime('Create Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'approve_date': fields.datetime('Approve Date', readonly=True, states={'draft': [('readonly', False)]}),
         'type_id': fields.many2one('gatepass.type', 'Type', required=True, readonly=True, states={'draft': [('readonly', False)]}),
@@ -159,7 +160,8 @@ class stock_gatepass(osv.Model):
     _defaults = {
         'state': 'draft',
         'date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
-        'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'gate.pass', context=c)
+        'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'gate.pass', context=c),
+        'user_id': lambda self, cr, uid, context: uid,
     }
 
     def create_delivery_order(self, cr, uid, ids, context=None):

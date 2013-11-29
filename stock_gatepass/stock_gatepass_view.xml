@@ -50,6 +50,7 @@
 								<field name="indent_id" on_change="onchange_indent(indent_id)"
 									attrs="{'invisible': [('approval_required', '=', False)], 'required': [('approval_required', '=', True)]}"
 									domain="[('type', '=', 'existing'), ('state', '=', 'inprogress')]" />
+								<field name="user_id" />
 							</group>
 							<group>
 								<field name="person_id" />
@@ -88,11 +89,11 @@
 									</form>
 									<tree string="Products">
 										<field name="product_id" />
-										<field name="uom_id" />
-										<field name="product_qty" />
-										<field name="price_unit" />
 										<field name="location_id" />
+										<field name="product_qty" />
+										<field name="uom_id" />
 										<field name="prodlot_id" />
+										<field name="price_unit" />
 									</tree>
 								</field>
 								<group class="oe_subtotal_footer oe_right">

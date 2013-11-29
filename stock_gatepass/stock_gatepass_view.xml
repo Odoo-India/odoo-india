@@ -25,7 +25,7 @@
 								<label string="Gate Pass"
 									attrs="{'invisible': [('state','in',('draft', 'confirm', 'pending'))]}" />
 								<label string="Draft Gate Pass" attrs="{'invisible': [('state','=','done')]}" />
-								<field name="name" class="oe_inline" readonly="1"/>
+								<field name="name" class="oe_inline" readonly="1" />
 							</h1>
 						</div>
 						<div class="oe_right oe_inline" name="buttons">
@@ -47,9 +47,11 @@
 								<field name="company_id" groups="base.group_multi_company" />
 							</group>
 							<group>
-								<field name="indent_id" on_change="onchange_indent(indent_id)"
-									attrs="{'invisible': [('approval_required', '=', False)], 'required': [('approval_required', '=', True)]}"
-									domain="[('type', '=', 'existing'), ('state', '=', 'inprogress')]" />
+								<!-- <field name="indent_id" on_change="onchange_indent(indent_id)" -->
+								<!-- attrs="{'invisible': [('approval_required', '=', False)], 'required': 
+									[('approval_required', '=', True)]}" -->
+								<!-- domain="[('type', '=', 'existing'), ('state', '=', 'inprogress')]" 
+									/> -->
 								<field name="user_id" />
 							</group>
 							<group>
@@ -108,12 +110,12 @@
 							<page string="Others">
 								<group>
 									<group>
-										<field name="return_type"/>
-										<field name="approval_required"/>
+										<field name="return_type" />
+										<field name="approval_required" />
 									</group>
 									<group>
-										<field name="out_picking_id" readonly="1"/>
-										<field name="in_picking_id" readonly="1"/>
+										<field name="out_picking_id" readonly="1" />
+										<field name="in_picking_id" readonly="1" />
 									</group>
 								</group>
 							</page>
@@ -134,11 +136,11 @@
 			<field name="arch" type="xml">
 				<tree string="Gate Passes">
 					<field name="name" />
-					<field name="type_id" />
+					<field name="type_id" invisible="context.get('type_view', False)"/>
 					<field name="partner_id" string="Party" />
 					<field name="date" />
 					<field name="approve_date" />
-					<field name="return_type" />
+					<field name="return_type" invisible="context.get('type_view', False)"/>
 					<field name="out_picking_id" invisible="1" />
 					<field name="in_picking_id" invisible="1" />
 					<field name="state" />
@@ -163,6 +165,7 @@
 					<field name="type_id" />
 					<field name="partner_id" />
 					<group expand="0" string="Group By...">
+						<filter string="Gatepass Type" context="{'group_by': 'type_id', 'type_view':True}" />
 						<filter string="Party" context="{'group_by': 'partner_id'}" />
 						<filter string="Return Type" context="{'group_by': 'return_type'}" />
 						<filter string="Status" context="{'group_by': 'state'}" />

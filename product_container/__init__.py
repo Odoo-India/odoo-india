@@ -18,35 +18,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name' : 'Gate Pass',
-    'version' : '0.1',
-    'author' : 'OpenERP S.A.',
-    'sequence': 110,
-    'category': 'Warehouse Management',
-    'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Gate Passes',
-    'description' : """
-Managing Gate Passes.
-===================== 
-* Document that allows gate keeper to pass the out going material, products, etc..
-* Support returnable and non returnable gatepass, inform to warehouse for returning items automatically 
-* Reports that allows you to track the pending gatepass
-""",
-    'depends' : ['stock'],
-    'data' : [
-        'stock_gatepass_sequence.xml'
-    ],
-    'update_xml' : [
-        'stock_gatepass_view.xml',
-        'stock_gatepass_workflow.xml',
-        'stock_gatepass_report.xml',
-    ],
 
-    'demo': [],
-
-    'installable' : True,
-    'application' : False,
-}
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+import product_container

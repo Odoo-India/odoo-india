@@ -126,7 +126,6 @@ class stock_picking_receipt(osv.Model):
         'type': 'receipt',
         'invoice_state': '2binvoiced',
     }
-
 stock_picking_receipt()
 
 class stock_move(osv.osv):
@@ -169,11 +168,10 @@ class stock_move(osv.osv):
         'c_cess': fields.float('Cess.', digits_compute=dp.get_precision('Stock Picking Receipt')),
         'c_high_cess': fields.float('High Cess.', digits_compute=dp.get_precision('Stock Picking Receipt')),
         'tax_cal': fields.float('Tax Cal', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'tr_code_id': fields.related('picking_id', 'tr_code_id', type='many2one', relation='tr.code', string="TR Code", store=True, readonly=True),
-        'ac_code_id': fields.related('picking_id', 'ac_code_id', type='many2one', relation='ac.code', string="AC Code", store=True, readonly=True),
+
         'total_cost': fields.float('Total', digits_compute=dp.get_precision('Account')),
 
-        'excisable_item': fields.related('picking_id', 'excisable_item', type="boolean", relation='stock.picking', string="Excisable Item", store=True),
+        #'excisable_item': fields.related('picking_id', 'excisable_item', type="boolean", relation='stock.picking', string="Excisable Item", store=True),
         'vat_unit': fields.float('VAT Unit', digits_compute=dp.get_precision('Account')),
         'packing_unit': fields.float('Packing Unit', digits_compute=dp.get_precision('Account')),
         'insurance_unit': fields.float('Insurance Unit', digits_compute=dp.get_precision('Account')),

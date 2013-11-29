@@ -18,45 +18,31 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
 {
-    'name' : 'Indent Management',
-    'version' : '1.0',
+    'name' : 'Product Container',
+    'version' : '0.1',
     'author' : 'OpenERP S.A.',
-    'sequence': 120,
+    'sequence': 110,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Manage and track internal material requests',
+    'summary' : 'Managing the container products',
     'description' : """
-Indent Management
-================================================================================================================================================================ 
-Usually big companies setup and maintain internal requisition to be raised by Engineer, Plant Managers or Authorised Employees. 
-
-Using Indent Management you can control the purchase and issue of material to employees with in company warehouse.
-
-- Indents
-- Store purchase
-- Capital Purchase
-- Project Costing
-- Valuation
-- Etc
+Managing the container products
+=================================
+* Useful for to track and deal of containers which is going to take back from customer in which product delivered (i.e. Oxygen Gas delivered in Bottle)
 """,
-    'depends' : ['stock', 'purchase', 'product_container'],
+    'depends' : ['product'],
     'data' : [
-        "stock_indent_data.xml",
-        "stock_indent_sequence.xml"
+        
     ],
     'update_xml' : [
-        'stock_indent_view.xml',
-        'stock_indent_workflow.xml',
-        'stock_workflow_change.xml',
-        'stock_indent_report.xml'
+        'product_container_view.xml'
     ],
 
     'demo': [],
 
     'installable' : True,
-    'application' : True,
+    'application' : False,
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

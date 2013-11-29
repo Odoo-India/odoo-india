@@ -112,21 +112,6 @@ class stock_gatepass(osv.Model):
             result[gatepass.id] = total
         return result
 
-    def onchange_indent(self, cr, uid, ids, indent=False, *args, **kw):
-        result = {'line_ids': []}
-        lines = []
-
-        if not indent:
-            return {'value': result}
-        products = self.pool.get('indent.indent').browse(cr, uid, indent).product_lines
-        location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_stock')
-        location = location_id and location_id[1] or False
-        for product in products:
-            vals = dict(product_id=product.original_product_id.id or product.product_id.id or False, product_qty=product.product_uom_qty, uom_id=product.product_uom.id, name=product.product_id.name, location_id=location, location_dest_id=location, price_unit=product.price_unit)
-            lines.append(vals)
-        result['line_ids'] = lines
-        return {'value': result}
-
     def onchange_type(self, cr, uid, ids, type_id=False):
         result = {}
         if type_id:
@@ -143,12 +128,11 @@ class stock_gatepass(osv.Model):
         'date': fields.datetime('Create Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'approve_date': fields.datetime('Approve Date', readonly=True, states={'draft': [('readonly', False)]}),
         'type_id': fields.many2one('gatepass.type', 'Type', required=True, readonly=True, states={'draft': [('readonly', False)]}),
-        'indent_id': fields.many2one('indent.indent', 'Indent', readonly=True, states={'draft': [('readonly', False)]}),
         'partner_id':fields.many2one('res.partner', 'Supplier', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'line_ids': fields.one2many('stock.gatepass.line', 'gatepass_id', 'Products', readonly=True, states={'draft': [('readonly', False)]}),
         'description': fields.text('Remarks', readonly=True, states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', required=True, readonly=True, states={'draft': [('readonly', False)]}),
-        'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True, readonly=True),
         'location_id': fields.many2one('stock.location', 'Source Location', readonly=True, states={'draft': [('readonly', False)]}),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('pending', 'Pending'), ('done', 'Done')], 'State', readonly=True),
         'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non Returnable')], 'Return Type'),
@@ -180,7 +164,15 @@ class stock_gatepass(osv.Model):
             picking_ids.append(out_picking_id)
             self.write(cr, uid, [gatepass.id], {'out_picking_id': out_picking_id}, context=context)
             for line in gatepass.line_ids:
-                result = dict(name=line.product_id.name, product_id=line.product_id.id, product_qty=line.product_qty, product_uom=line.uom_id.id, location_id=line.location_id.id, location_dest_id=line.location_dest_id.id, picking_id=out_picking_id)
+                result = dict(name=line.product_id.name, 
+                    product_id=line.product_id.id, 
+                    product_qty=line.product_qty, 
+                    product_uom=line.uom_id.id, 
+                    location_id=line.location_id.id, 
+                    location_dest_id=line.location_dest_id.id, 
+                    picking_id=out_picking_id,
+                    prodlot_id = line.prodlot_id.id
+                )
                 move_obj.create(cr, uid, result, context=context)
         return picking_ids
 

@@ -110,6 +110,7 @@
                                                 <field name="product_id" groups="base.group_user"
                                                     on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, 
             name, parent.analytic_account_id, parent.type)" />
+                                                <field name="original_product_id"/>
                                                 <label for="product_uom_qty" />
                                                 <div>
                                                     <field name="product_uom_qty" class="oe_inline" />

@@ -20,37 +20,36 @@
 ##############################################################################
 
 {
-    'name' : 'Indent Management',
-    'version' : '1.0',
+    'name' : 'Store & Purchase Management',
+    'version' : '1.1',
     'author' : 'OpenERP S.A.',
     'sequence': 120,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Manage and track internal material requests',
+    'summary' : 'Manage warehouse and purchase, Indian localization',
     'description' : """
-Indent Management
+Store & Purchase Management
 ================================================================================================================================================================ 
-Usually big companies setup and maintain internal requisition to be raised by Engineer, Plant Managers or Authorised Employees. 
-
-Using Indent Management you can control the purchase and issue of material to employees with in company warehouse.
-
-- Indents
-- Store purchase
-- Capital Purchase
-- Project Costing
-- Valuation
-- Etc
+* Indent management
+* Gatepass management
+* Serial number tracking
+* Product containers 
+* Excise Receipts
+* Freight, Insurance, Packing & Forwarding changes on Purchase Order
 """,
-    'depends' : ['stock', 'purchase', 'product_container'],
+    'depends' : [
+        'stock_indent', 
+        'stock_gatepass', 
+        'product_container', 
+        'stock_indent_gatepass', 
+        'stock_serial_tracking', 
+        'l10n_in_purchase'
+    ],
     'data' : [
-        "stock_indent_data.xml",
-        "stock_indent_sequence.xml"
+        
     ],
     'update_xml' : [
-        'stock_indent_view.xml',
-        'stock_indent_workflow.xml',
-        'stock_workflow_change.xml',
-        'stock_indent_report.xml'
+        
     ],
 
     'demo': [],

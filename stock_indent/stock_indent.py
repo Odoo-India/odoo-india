@@ -428,9 +428,9 @@ class indent_product_lines(osv.Model):
     }
     
     def _check_stock_available(self, cr, uid, ids, context=None):
-        for move in self.browse(cr, uid, ids, context):
-            if move.type == 'make_to_stock' and move.product_uom_qty > move.qty_available:
-                return False
+#         for move in self.browse(cr, uid, ids, context):
+#             if move.type == 'make_to_stock' and move.product_uom_qty > move.qty_available:
+#                 return False
         return True
     
     _constraints = [
@@ -444,11 +444,9 @@ class indent_product_lines(osv.Model):
             return {'value': {'product_uom_qty': 1.0, 'product_uom': False, 'price_unit': 0.0, 'qty_available': 0.0, 'virtual_available': 0.0, 'name': '', 'delay': 0.0}}
 
         product = product_obj.browse(cr, uid, product_id, context=context)
-        if indent_type and indent_type == 'existing' and product.type != 'service':
-            raise osv.except_osv(_("Warning !"), _("You must select a service type product."))
         
         if not product.seller_ids:
-            raise osv.except_osv(_("Warning !"), _("You must define at least one supplier for this product."))
+            raise osv.except_osv(_("Warning !"), _("You must define at least one supplier for this product"))
         
         if product.qty_available and product.virtual_available > 0:
             result['type'] = 'make_to_stock'

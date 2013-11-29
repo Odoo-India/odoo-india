@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
-#
+#    
 #    OpenERP, Open Source Management Solution
 #    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
@@ -15,9 +15,19 @@
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.     
 #
 ##############################################################################
 
-import stock_gatepass
-import report
+import time
+from openerp.report import report_sxw
+
+class stock_gatepass_report(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(stock_gatepass_report, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({'time': time})
+
+report_sxw.report_sxw('report.stock.gatepass','stock.gatepass','addons/stock_gatepass/report/gatepass.rml',parser=stock_gatepass_report)
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

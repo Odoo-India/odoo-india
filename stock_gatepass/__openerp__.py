@@ -39,7 +39,8 @@ Managing Gate Passes.
     ],
     'update_xml' : [
         'stock_gatepass_view.xml',
-        'stock_gatepass_workflow.xml'
+        'stock_gatepass_workflow.xml',
+        'stock_gatepass_report.xml',
     ],
 
     'demo': [],

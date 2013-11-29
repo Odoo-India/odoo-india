@@ -19,5 +19,4 @@
 #
 ##############################################################################
 
-import stock_gatepass
-import report
+import stock_gatepass_report

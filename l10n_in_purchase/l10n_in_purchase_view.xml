@@ -10,25 +10,29 @@
 				<xpath expr="//group[@class='oe_subtotal_footer oe_right']"
 					position="replace">
 					<group>
-						<group>
+						<group width="800%%">
 							<label for="package_and_forwording" />
 							<div>
 								<field name="package_and_forwording_type"
 									on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
 									class="oe_inline oe_edit_only" />
-								<field name="package_and_forwording" widget="monetary"
-									options="{'currency_field': 'currency_id'}" class="oe_inline"
-									attrs="{'invisible':[('package_and_forwording_type','=','include')]}" />
+								<field name="package_and_forwording" class="oe_inline" attrs="{'invisible':[('package_and_forwording_type','=','include')]}"/>
+								<label string="Per Unit" class="oe_inline"
+                                    attrs="{'invisible':[('package_and_forwording_type','!=','per_unit')]}" />
+                                <label string="%%" class="oe_inline"
+                                    attrs="{'invisible':[('package_and_forwording_type','!=','percentage')]}" />
 							</div>
-							
 							<label for="freight" />
                             <div>
 								<field name="freight_type"
 									on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
 									class="oe_inline oe_edit_only" />
-								<field name="freight" widget="monetary"
-									options="{'currency_field': 'currency_id'}" class="oe_inline"
+								<field name="freight" class="oe_inline"
 									attrs="{'invisible':[('freight_type','=','include')]}" />
+                                <label string="Per Unit" class="oe_inline"
+                                    attrs="{'invisible':[('freight_type','!=','per_unit')]}" />
+                                <label string="%%" class="oe_inline"
+                                    attrs="{'invisible':[('freight_type','!=','percentage')]}" />
 							</div>
                             
                             <label for="insurance" />
@@ -36,8 +40,12 @@
 								<field name="insurance_type"
 									on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
 									class="oe_inline oe_edit_only" />
-								<field name="insurance" widget="monetary" class="oe_inline"
-									options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('insurance_type','=','include')]}" />
+								<field name="insurance" class="oe_inline"
+									attrs="{'invisible':[('insurance_type','=','include')]}" />
+                                <label string="Per Unit" class="oe_inline"
+                                    attrs="{'invisible':[('insurance_type','!=','per_unit')]}" />
+                                <label string="%%" class="oe_inline"
+                                    attrs="{'invisible':[('insurance_type','!=','percentage')]}" />
                             </div>
                             
 							
@@ -48,6 +56,8 @@
 								options="{'currency_field': 'currency_id'}" />
 							<field name="amount_tax" widget="monetary"
 								options="{'currency_field': 'currency_id'}" />
+                            <field name="other_charges" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
 							<field name="round_off" widget="monetary"
                                 options="{'currency_field': 'currency_id'}" />
 							<div class="oe_subtotal_footer_separator oe_inline">
@@ -66,6 +76,10 @@
 				</xpath>
 				<xpath expr="//field[@name='minimum_planned_date']" position="replace">
 				</xpath>
+                <xpath expr="//field[@name='date_approve']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='validator']" position="replace">
+                </xpath>
 				<xpath expr="//field[@name='notes']" position="before">
 					<group>
 						<group>
@@ -78,6 +92,12 @@
 				<xpath expr="//field[@name='origin']" position="before">
 					<field name="minimum_planned_date" />
 				</xpath>
+                <xpath expr="//field[@name='minimum_planned_date']" position="before">
+                    <field name="date_approve" />
+                </xpath>
+                <xpath expr="//field[@name='partner_ref']" position="after">
+                    <field name="validator" />
+                </xpath>                
 			</field>
 		</record>
 

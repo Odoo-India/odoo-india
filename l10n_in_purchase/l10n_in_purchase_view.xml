@@ -48,7 +48,15 @@
                                     attrs="{'invisible':[('insurance_type','!=','percentage')]}" />
                             </div>
                             
-							
+                            <label for="payment_term_id"/>
+                            <div>
+							<field name="payment_term_id" class="oe_inline"/>
+                            </div>
+                            
+                            <label for="delivery_id"/>
+                            <div>
+                            <field name="delivery_id" class="oe_inline"/>
+                            </div>
 						</group>
 
 						<group class="oe_subtotal_footer oe_right">
@@ -83,8 +91,7 @@
 				<xpath expr="//field[@name='notes']" position="before">
 					<group>
 						<group>
-							<field name="payment_term_id" class="oe_inline"/>
-							<field name="delivery_id" class="oe_inline"/>
+							
 						</group>
 						<group></group>
 					</group>

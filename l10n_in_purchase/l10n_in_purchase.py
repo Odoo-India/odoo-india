@@ -177,15 +177,17 @@ class purchase_order_line(osv.Model):
 #             if line.order_id.freight_type == 'per_unit':
 #                 freight += line.order_id.freight * line.product_qty
             #res[line.id]['price_subtotal'] = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            
             val1 = res[line.id]['price_subtotal']
-            if line.order_id.package_and_forwording_type == 'per_unit':
-                res[line.id]['pkg_frwrd'] = line.order_id.package_and_forwording
-            elif line.order_id.package_and_forwording_type == 'percentage':
-                package_amount = ((line.order_id.package_and_forwording * val1) / 100)
-                res[line.id]['pkg_frwrd'] = package_amount / line.product_qty
-            elif line.order_id.package_and_forwording_type == 'fix':
-                package_amount = ((line.order_id.package_and_forwording)*res[line.id]['price_subtotal'])/ line.order_id.amount_untaxed
-                res[line.id]['pkg_frwrd'] = package_amount
+            if line.order_id.package_and_forwording > 0:
+                if line.order_id.package_and_forwording_type == 'per_unit':
+                    res[line.id]['pkg_frwrd'] = line.order_id.package_and_forwording
+                elif line.order_id.package_and_forwording_type == 'percentage':
+                    package_amount = ((line.order_id.package_and_forwording * val1) / 100)
+                    res[line.id]['pkg_frwrd'] = package_amount / line.product_qty
+                elif line.order_id.package_and_forwording_type == 'fix':
+                    package_amount = ((line.order_id.package_and_forwording)*res[line.id]['price_subtotal'])/ line.order_id.amount_untaxed
+                    res[line.id]['pkg_frwrd'] = package_amount
         return res
 
     def _get_po_order(self, cr, uid, ids, context=None):

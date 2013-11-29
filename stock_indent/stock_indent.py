@@ -32,12 +32,6 @@ from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
-SERIES = [
-    ('repair', 'Repair'),
-    ('purchase', 'Purchase'),
-    ('store', 'Store')
-]
-
 class stock_location(osv.Model):
     _inherit = 'stock.location'
     _columns = {
@@ -107,7 +101,7 @@ class indent_indent(osv.Model):
 
     _columns = {
         'name': fields.char('Indent #', size=256, readonly=True, track_visibility='always'),
-        'approve_date': fields.datetime('Approve Date', readonly=True, states={'draft': [('readonly', False)]}, track_visibility='onchange'),
+        'approve_date': fields.datetime('Approve Date', readonly=True, track_visibility='onchange'),
         'indent_date': fields.datetime('Indent Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'required_date': fields.datetime('Required Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'indentor_id': fields.many2one('res.users', 'Indentor', required=True, readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}),
@@ -131,11 +125,11 @@ class indent_indent(osv.Model):
         'approver_id': fields.many2one('res.users', 'Authority', readonly=True, track_visibility='always', states={'draft': [('readonly', False)]}, help="who have approve or reject indent."),
         'product_id': fields.related('product_lines', 'product_id', string='Products', type='many2one', relation='product.product'),
         
-        'equipment_id': fields.many2one('indent.equipment', 'Equipment'),
-        'equipment_section_id': fields.many2one('indent.equipment.section', 'Section'),
+        'equipment_id': fields.many2one('indent.equipment', 'Equipment',  readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}),
+        'equipment_section_id': fields.many2one('indent.equipment.section', 'Section', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}),
         
-        'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', help="default warehose where inward will be taken"),
-        'move_type': fields.selection([('direct', 'Partial'), ('one', 'All at once')], 'Receive Method', required=True, states={'done':[('readonly', True)], 'cancel':[('readonly',True)]}, help="It specifies goods to be deliver partially or all at once"),    
+        'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', help="default warehose where inward will be taken", readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}),
+        'move_type': fields.selection([('direct', 'Partial'), ('one', 'All at once')], 'Receive Method', track_visibility='onchange', readonly=True, required=True, states={'draft':[('readonly', False)], 'cancel':[('readonly',True)]}, help="It specifies goods to be deliver partially or all at once"),    
     }
     
     def _default_stock_location(self, cr, uid, context=None):
@@ -432,7 +426,17 @@ class indent_product_lines(osv.Model):
         'type': 'make_to_order',
         'delay': 0.0,
     }
-
+    
+    def _check_stock_available(self, cr, uid, ids, context=None):
+        for move in self.browse(cr, uid, ids, context):
+            if move.type == 'make_to_stock' and move.product_uom_qty > move.qty_available:
+                return False
+        return True
+    
+    _constraints = [
+        (_check_stock_available, 'You can not procure more quantity form stock then the available !.', ['Quantity Required']),
+    ]
+    
     def onchange_product_id(self, cr, uid, ids, product_id=False, product_uom_qty=0.0, product_uom=False, price_unit=0.0, qty_available=0.0, virtual_available=0.0, name='', analytic_account_id=False, indent_type=False, context=None):
         result = {}
         product_obj = self.pool.get('product.product')

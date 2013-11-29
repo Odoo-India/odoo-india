@@ -195,11 +195,11 @@
                     <field name="indentor_id" />
                     <field name="department_id" />
                     <field name="analytic_account_id" />
+                    <field name="amount_total" />
+                    <field name="type" />
                     <field name="indent_date" />
                     <field name="required_date" />
                     <field name="approve_date" />
-                    <field name="amount_total" />
-                    <field name="type" />
                     <field name="state" />
                 </tree>
             </field>

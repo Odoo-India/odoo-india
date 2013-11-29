@@ -105,7 +105,13 @@ class purchase_order(osv.Model):
                 'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['round_off','insurance', 'insurance_type', 'freight_type', 'freight', 'package_and_forwording_type', 'package_and_forwording', 'order_line'], 10),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums",help="The total amount"),
-        }
+    }
+    
+    _defaults = {
+        'package_and_forwording_type':'fix',
+        'insurance_type':'fix',
+        'freight_type':'fix'
+    }
     
     def onchange_reset(self, cr, uid, ids, insurance_type, freight_type, packing_type):
         res = {}

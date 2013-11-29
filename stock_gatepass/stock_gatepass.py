@@ -57,7 +57,7 @@ class stock_picking(osv.Model):
                 picking = picking.id
             self.pool.get('stock.gatepass').write(cr, uid, [gate_pass_id], {'in_picking_id': picking}, context=context)
         return picking
- 
+
 stock_picking()
  
 class stock_picking_in(osv.Model):
@@ -136,24 +136,24 @@ class stock_gatepass(osv.Model):
         return {'value': result}
 
     _columns = {
-        'name': fields.char('Name', size=256, readonly=True),
-        'driver_id': fields.many2one('res.partner', 'Driver'),
-        'person_id': fields.many2one('res.partner', 'Delivery Person'),
-        'date': fields.datetime('Date', required=True),
-        'approve_date': fields.datetime('Approve Date'),
-        'type_id': fields.many2one('gatepass.type', 'Type', required=True),
-        'indent_id': fields.many2one('indent.indent', 'Indent'),
-        'partner_id':fields.many2one('res.partner', 'Supplier', required=True),
-        'line_ids': fields.one2many('stock.gatepass.line', 'gatepass_id', 'Products'),
-        'description': fields.text('Remarks'),
-        'company_id': fields.many2one('res.company', 'Company', required=True),
-        'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True),
-        'location_id': fields.many2one('stock.location', 'Source Location'),
+        'name': fields.char('Name', size=256, readonly=True, states={'draft': [('readonly', False)]}),
+        'driver_id': fields.many2one('res.partner', 'Driver', readonly=True, states={'draft': [('readonly', False)]}),
+        'person_id': fields.many2one('res.partner', 'Delivery Person', readonly=True, states={'draft': [('readonly', False)]}),
+        'date': fields.datetime('Create Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'approve_date': fields.datetime('Approve Date', readonly=True, states={'draft': [('readonly', False)]}),
+        'type_id': fields.many2one('gatepass.type', 'Type', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'indent_id': fields.many2one('indent.indent', 'Indent', readonly=True, states={'draft': [('readonly', False)]}),
+        'partner_id':fields.many2one('res.partner', 'Supplier', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'line_ids': fields.one2many('stock.gatepass.line', 'gatepass_id', 'Products', readonly=True, states={'draft': [('readonly', False)]}),
+        'description': fields.text('Remarks', readonly=True, states={'draft': [('readonly', False)]}),
+        'company_id': fields.many2one('res.company', 'Company', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'location_id': fields.many2one('stock.location', 'Source Location', readonly=True, states={'draft': [('readonly', False)]}),
         'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('pending', 'Pending'), ('done', 'Done')], 'State', readonly=True),
-        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non Returnable')], 'Return Type', required=True),
-        'out_picking_id': fields.many2one('stock.picking.out', 'Delivery Order'),
-        'in_picking_id': fields.many2one('stock.picking.in', 'Incoming Shipment'),
-        'approval_required': fields.boolean('Approval State'),
+        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non Returnable')], 'Return Type'),
+        'out_picking_id': fields.many2one('stock.picking.out', 'Delivery Order', readonly=True, states={'draft': [('readonly', False)]}),
+        'in_picking_id': fields.many2one('stock.picking.in', 'Incoming Shipment', readonly=True, states={'draft': [('readonly', False)]}),
+        'approval_required': fields.boolean('Approval State', readonly=True, states={'draft': [('readonly', False)]}),
     }
 
     _defaults = {

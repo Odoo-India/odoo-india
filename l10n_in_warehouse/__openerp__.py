@@ -29,7 +29,7 @@
     'summary' : 'Manage warehouse and purchase, Indian localization',
     'description' : """
 Store & Purchase Management
-================================================================================================================================================================ 
+================================================================================ 
 * Indent management
 * Gatepass management
 * Serial number tracking

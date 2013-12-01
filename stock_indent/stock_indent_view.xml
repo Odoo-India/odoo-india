@@ -78,8 +78,7 @@
                                 <field name="indentor_id" readonly="1" />
                                 <field name="department_id"
                                     domain="[('location_id', '!=',False), ('usage', '!=', 'view'), ('can_request','=',True)]" />
-                                <field name="manager_id" readonly="1" />
-                                <field name="approver_id" readonly="1" />
+                                
                             </group>
                             <group>
                                 <field name="indent_date" />
@@ -89,16 +88,15 @@
                             <group>
                                 <field name="item_for" />
                                 <field name="analytic_account_id" attrs="{'required': [('item_for', '=', 'capital')]}" />
-                                <field name="requirement"
-                                    on_change="onchange_requirement(indent_date, requirement)" />
+                                
 
                             </group>
                             <group>
+                                <field name="requirement"
+                                    on_change="onchange_requirement(indent_date, requirement)" />
                                 <field name="type" />
                                 <field name="company_id" groups="base.group_multi_company"
                                     readonly="1" />
-                                <field name="equipment_id" />
-                                <field name="equipment_section_id" domain="[('equipment_id','=',equipment_id)]" />
                             </group>
                         </group>
                         <notebook>
@@ -167,10 +165,16 @@
                             <page string="Others">
                                 <group>
                                     <group>
-                                        <field name="move_type" />
+                                        <field name="equipment_id" />
+                                        <field name="equipment_section_id" domain="[('equipment_id','=',equipment_id)]" />
                                     </group>
                                     <group>
+                                        <field name="move_type" />
                                         <field name="warehouse_id" />
+                                    </group>
+                                    <group>
+                                        <field name="manager_id" readonly="1" />
+                                        <field name="approver_id" readonly="1" />
                                     </group>
                                 </group>
                             </page>

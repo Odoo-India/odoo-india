@@ -43,7 +43,7 @@ class res_partner(osv.osv):
         ]
         member_id = self.pool.get('res.users').browse(cr, uid, uid).partner_id.id
         if uid in allow_users or member_id in ids:
-            res = super(res_partner, self).write(cr, uid, [member_id], vals, context)
+            res = super(res_partner, self).write(cr, uid, ids, vals, context)
         else:
             raise osv.except_osv(_('Error!'),_('You are not allows to change details of other member !'))
         return res

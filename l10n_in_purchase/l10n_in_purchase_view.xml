@@ -25,11 +25,13 @@
 									on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
 									class="oe_inline oe_edit_only" />
 								<field name="package_and_forwording" class="oe_inline"
-									attrs="{'invisible':[('package_and_forwording_type','=','include')]}" />
+									attrs="{'invisible':[('package_and_forwording_type','=','actual')]}" />
 								<label string="Per Unit" class="oe_inline"
 									attrs="{'invisible':[('package_and_forwording_type','!=','per_unit')]}" />
 								<label string="%%" class="oe_inline"
 									attrs="{'invisible':[('package_and_forwording_type','!=','percentage')]}" />
+								<label string="At Actual" class="oe_inline"
+                                    attrs="{'invisible':[('package_and_forwording_type','!=','actual')]}" />
 							</div>
 							<label for="freight" />
 							<div>
@@ -37,11 +39,13 @@
 									on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
 									class="oe_inline oe_edit_only" />
 								<field name="freight" class="oe_inline"
-									attrs="{'invisible':[('freight_type','=','include')]}" />
+									attrs="{'invisible':[('freight_type','=','actual')]}" />
 								<label string="Per Unit" class="oe_inline"
 									attrs="{'invisible':[('freight_type','!=','per_unit')]}" />
 								<label string="%%" class="oe_inline"
 									attrs="{'invisible':[('freight_type','!=','percentage')]}" />
+                                <label string="At Actual" class="oe_inline"
+                                    attrs="{'invisible':[('freight_type','!=','actual')]}" />									
 							</div>
 
 							<label for="insurance" />

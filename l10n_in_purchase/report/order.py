@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
-#
+#    
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2013 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -15,33 +15,21 @@
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.     
 #
 ##############################################################################
-{
-    'name' : 'l10n_in_purchase',
-    'version' : '0.1',
-    'author' : 'OpenERP S.A.',
-    'sequence': 111,
-    'category': 'Purchase Management',
-    'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Purchase',
-    'description' : """
-Managing Purchase.
-===================== 
 
-""",
-    'depends' : ['purchase'],
-    'data' : [
-    ],
-    'update_xml' : ['l10n_in_purchase_view.xml',
-                    'purchase_report.xml',
-    ],
+import time
+from openerp.report import report_sxw
+from openerp.osv import osv
+from openerp import pooler
 
-    'demo': [],
+class order(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(order, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({'time': time})
 
-    'installable' : True,
-    'application' : False,
-}
+report_sxw.report_sxw('report.l10n_in.purchase.order','purchase.order','addons/purchase/report/order.rml',parser=order)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

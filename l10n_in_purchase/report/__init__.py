@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2013 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,30 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name' : 'l10n_in_purchase',
-    'version' : '0.1',
-    'author' : 'OpenERP S.A.',
-    'sequence': 111,
-    'category': 'Purchase Management',
-    'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Purchase',
-    'description' : """
-Managing Purchase.
-===================== 
 
-""",
-    'depends' : ['purchase'],
-    'data' : [
-    ],
-    'update_xml' : ['l10n_in_purchase_view.xml',
-                    'purchase_report.xml',
-    ],
-
-    'demo': [],
-
-    'installable' : True,
-    'application' : False,
-}
+import order
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

@@ -45,6 +45,9 @@
                                 <field name="name" class="oe_inline" />
                             </h1>
                         </div>
+                        <div class="oe_right oe_inline" name="buttons">
+                             <button name="view_purchase_orders" string="Purchase Orders" type="object" attrs="{'invisible': ['|', '|', ('state', '=', 'draft'), ('state', '=', 'confirm'), ('state', '=', 'waiting_approval')]}"/>
+                         </div>
                         <group>
                             <group>
                                 <field name="indentor_id" readonly="1" />

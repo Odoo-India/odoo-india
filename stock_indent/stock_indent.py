@@ -223,8 +223,6 @@ class indent_indent(osv.Model):
             'name': line.name,
             'origin': indent.name,
             'indent_id': indent.id,
-            'indentor_id': indent.indentor_id.id,
-            'department_id': indent.department_id.id,
             'analytic_account_id': indent.analytic_account_id.id,
             'date_planned': date_planned,
             'product_id': line.product_id.id,
@@ -365,27 +363,6 @@ class indent_indent(osv.Model):
         return result
 indent_indent()
 
-class purchase_order(osv.Model):
-    _inherit = 'purchase.order'
-
-    def _get_indent(self, cr, uid, ids, name, args, context=None):
-        result = {}
-        indent_obj = self.pool.get('indent.indent')
-        for order in self.browse(cr, uid, ids, context=context):
-            indent_id = False
-            if order.origin:
-                indent_ids = indent_obj.search(cr, uid, [('name', '=', order.origin)], context=context)
-                indent_id = indent_ids and indent_ids[0] or False
-            result[order.id] = indent_id
-        return result
-
-    _columns = {
-        'indent_id': fields.function(_get_indent, relation='indent.indent', type="many2one", string='Indent', store=True),
-        'indentor_id': fields.related('indent_id', 'indentor_id', type='many2one', relation='res.users', string='Indentor', store=True, readonly=True),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True, readonly=True),
-    }
-purchase_order()
-
 class indent_product_lines(osv.Model):
     _name = 'indent.product.lines'
     _description = 'Indent Product Lines'
@@ -469,6 +446,106 @@ class indent_product_lines(osv.Model):
     
 indent_product_lines()
 
+class procurement_order(osv.osv):
+    _inherit = 'procurement.order'
+    _columns = {
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'analytic_account_id': fields.many2one('account.analytic.account', 'Project'),
+        'price': fields.float('Price'),
+    }
+
+    def _prepare_line_purchase(self, cr, uid, name, procurement, qty, uom_id, price, schedule_date, taxes):
+        line_vals = {
+            'name': name,
+            'indent_id': procurement.indent_id and procurement.indent_id.id or False,
+            'account_analytic_id': procurement.analytic_account_id and procurement.analytic_account_id.id or False,
+            'product_qty': qty,
+            'product_id': procurement.product_id.id,
+            'product_uom': uom_id,
+            'price_unit': price or 0.0,
+            'date_planned': schedule_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'move_dest_id': False,
+            'taxes_id': [(6, 0, taxes)],
+        }
+        return line_vals
+
+    def make_po(self, cr, uid, ids, context=None):
+        """ Make purchase order from procurement
+        @return: New created Purchase Orders procurement wise
+        """
+        res = {}
+        if context is None:
+            context = {}
+        company = self.pool.get('res.users').browse(cr, uid, uid, context=context).company_id
+        uom_obj = self.pool.get('product.uom')
+        prod_obj = self.pool.get('product.product')
+        acc_pos_obj = self.pool.get('account.fiscal.position')
+        seq_obj = self.pool.get('ir.sequence')
+        warehouse_obj = self.pool.get('stock.warehouse')
+        requisition_obj = self.pool.get('purchase.requisition')
+        for procurement in self.browse(cr, uid, ids, context=context):
+            partner = procurement.product_id.seller_id  # Taken Main Supplier of Product of Procurement.
+            seller_qty = procurement.product_id.seller_qty
+            partner_id = partner.id
+            pricelist_id = partner.property_product_pricelist_purchase.id
+            warehouse_id = warehouse_obj.search(cr, uid, [('company_id', '=', procurement.company_id.id or company.id)], context=context)
+            uom_id = procurement.product_id.uom_po_id.id
+
+            qty = uom_obj._compute_qty(cr, uid, procurement.product_uom.id, procurement.product_qty, uom_id)
+            if seller_qty:
+                qty = max(qty, seller_qty)
+
+            schedule_date = self._get_purchase_schedule_date(cr, uid, procurement, company, context=context)
+            purchase_date = self._get_purchase_order_date(cr, uid, procurement, company, schedule_date, context=context)
+
+            # Passing partner_id to context for purchase order line integrity of Line name
+            new_context = context.copy()
+            new_context.update({'lang': partner.lang, 'partner_id': partner_id})
+
+            product = prod_obj.browse(cr, uid, procurement.product_id.id, context=new_context)
+            taxes_ids = procurement.product_id.supplier_taxes_id
+            taxes = acc_pos_obj.map_tax(cr, uid, partner.property_account_position, taxes_ids)
+
+            name = ''
+            if product.description_purchase:
+                name = product.description_purchase
+            line_vals = self._prepare_line_purchase(cr, uid, name, procurement, qty, uom_id, procurement.price, schedule_date, taxes)
+            name = seq_obj.get(cr, uid, 'purchase.order') or _('PO: %s') % procurement.name
+            po_vals = {
+                'name': name,
+                'origin': procurement.origin,
+                'partner_id': partner_id,
+                'location_id': procurement.location_id.id,
+                'warehouse_id': warehouse_id and warehouse_id[0] or False,
+                'pricelist_id': pricelist_id,
+                'date_order': purchase_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                'company_id': procurement.company_id.id,
+                'fiscal_position': partner.property_account_position and partner.property_account_position.id or False,
+                'payment_term_id': partner.property_supplier_payment_term.id or False,
+            }
+            res[procurement.id] = self.create_procurement_purchase_order(cr, uid, procurement, po_vals, line_vals, context=new_context)
+
+            requisition_id = False
+            if 'purchase_requisition' in prod_obj._columns and procurement.product_id.purchase_requisition:
+                requisition_id = requisition_obj.create(cr, uid,
+                    {
+                        'origin': procurement.origin,
+                        'date_end': procurement.date_planned,
+                        'warehouse_id':warehouse_id and warehouse_id[0] or False,
+                        'company_id':procurement.company_id.id,
+                        'line_ids': [(0, 0, {
+                            'product_id': procurement.product_id.id,
+                            'product_uom_id': procurement.product_uom.id,
+                            'product_qty': procurement.product_qty
+                        })],
+                    })
+                requisition_obj.write(cr, uid, [requisition_id], {'purchase_ids': [(6, 0, res.values())]}, context=context)
+            self.write(cr, uid, [procurement.id], {'state': 'running', 'purchase_id': res[procurement.id], 'requisition_id': requisition_id})
+        self.message_post(cr, uid, ids, body=_("Draft Purchase Order created"), context=context)
+        return res
+
+procurement_order()
+
 class stock_picking(osv.Model):
     _inherit = 'stock.picking'
  
@@ -481,3 +558,14 @@ class stock_picking(osv.Model):
         return True
      
 stock_picking()
+
+class purchase_order_line(osv.Model):
+    _inherit = 'purchase.order.line'
+
+    _columns = {
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+    }
+
+purchase_order_line()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -98,10 +98,9 @@
     <paraStyle name="P1" fontName="Helvetica" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="P2" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P3" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P4" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P5" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P6" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
-    <paraStyle name="P7" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P4" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="P5" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="9.0" leading="11" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P6" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="List" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
@@ -150,13 +149,9 @@
           </para>
         </td>
         <td>
-          <para style="P5">
-            <font face="Helvetica" size="8.0">[[o.indentor_id and o.indentor_id.name]]</font>
-          </para>
-          <para style="P5">
-            <font face="Helvetica" size="8.0">[[ o.department_id and o.department_id.name ]]</font>
-          </para>
-          <para style="P4">[[o.department_id and o.department_id.partner_id and display_address(o.department_id.partner_id) or '']]</para>
+          <para style="P3">[[o.indentor_id and o.indentor_id.name]]</para>
+          <para style="P3">[[ o.department_id and o.department_id.name ]]</para>
+          <para style="P3">[[o.department_id and o.department_id.partner_id and display_address(o.department_id.partner_id) or '']]</para>
         </td>
       </tr>
     </blockTable>
@@ -167,26 +162,26 @@
     <blockTable colWidths="159.0,159.0,212.0" style="Table1">
       <tr>
         <td>
-          <para style="P6">Product For</para>
+          <para style="P4">Product For</para>
         </td>
         <td>
-          <para style="P6">Project</para>
+          <para style="P4">Project</para>
         </td>
         <td>
-          <para style="P6">Type</para>
+          <para style="P4">Type</para>
         </td>
       </tr>
     </blockTable>
     <blockTable colWidths="159.0,159.0,212.0" style="Table2">
       <tr>
         <td>
-          <para style="P7">[[o.item_for == 'store' and 'Store' or 'Capital']]</para>
+          <para style="P5">[[o.item_for == 'store' and 'Store' or 'Capital']]</para>
         </td>
         <td>
-          <para style="P7">[[ o.analytic_account_id and o.analytic_account_id.name or '' ]]</para>
+          <para style="P5">[[ o.analytic_account_id and o.analytic_account_id.name or '' ]]</para>
         </td>
         <td>
-          <para style="P7">[[ o.type == 'new' and 'Purchase Indent' or 'Repairing Indent' ]]</para>
+          <para style="P5">[[ o.type == 'new' and 'Purchase Indent' or 'Repairing Indent' ]]</para>
         </td>
       </tr>
     </blockTable>
@@ -196,7 +191,7 @@
     <blockTable colWidths="159.0,159.0,212.0" style="Table3">
       <tr>
         <td>
-          <para style="P6">Indent Date</para>
+          <para style="P4">Indent Date</para>
         </td>
         <td>
           <para style="terp_tblheader_General_Centre">Required Date</para>
@@ -209,7 +204,7 @@
     <blockTable colWidths="159.0,159.0,212.0" style="Table4">
       <tr>
         <td>
-          <para style="P7">[[ formatLang(o.indent_date,date=True)]]</para>
+          <para style="P5">[[ formatLang(o.indent_date,date=True)]]</para>
         </td>
         <td>
           <para style="P2">[[ formatLang(o.required_date,date=True)]]</para>
@@ -247,7 +242,7 @@
             <para style="terp_default_9">[[ l.name ]]</para>
           </td>
           <td>
-            <para style="P7">[[ l.product_uom_qty]] [[ l.product_uom and l.product_uom.name or '']]</para>
+            <para style="P5">[[ l.product_uom_qty]] [[ l.product_uom and l.product_uom.name or '']]</para>
           </td>
           <td>
             <para style="terp_default_Right_9">[[ l.price_unit ]]</para>

@@ -89,10 +89,10 @@
     <paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P3" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P4" fontName="Helvetica" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P5" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="10.0" leading="13" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0" textColor="#404040"/>
-    <paraStyle name="P6" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="10.0" leading="13" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0" textColor="#404040"/>
-    <paraStyle name="P7" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
-    <paraStyle name="P8" fontName="Helvetica" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P5" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P6" fontName="Helvetica" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P7" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="10.0" leading="13" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0" textColor="#404040"/>
+    <paraStyle name="P8" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="10.0" leading="13" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0" textColor="#404040"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
     <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
@@ -250,62 +250,50 @@
     <blockTable colWidths="155.0,216.0,89.0,74.0" style="Table_All_Total_Detail">
       <tr>
         <td>
-          <para style="P5">
-            <font face="Helvetica">Packaging &amp; Forwarding :- </font>
-          </para>
+          <para style="P7">Packaging &amp; Forwarding :</para>
         </td>
         <td>
-          <para style="P6">
-            <font face="Helvetica">[[o.package_and_forwording or 0.00]] [[o.package_and_forwording_type == 'per_unit' and 'per unit' or o.package_and_forwording_type == 'fix' and o.pricelist_id.currency_id. symbol or o.freight_type == 'percentage' and '%' or o.package_and_forwording_type == 'actual' and 'At Actual' or o.package_and_forwording_type ]]</font>
-          </para>
+          <para style="P8">[[ formatLang(o.package_and_forwording , digits=get_digits(dp='Account')) ]] [[o.package_and_forwording_type == 'per_unit' and 'per unit' or o.package_and_forwording_type == 'fix' and o.pricelist_id.currency_id. symbol or o. package_and_forwording_type == 'percentage' and '%' or o.package_and_forwording_type == 'actual' and 'At Actual' or o.package_and_forwording_type ]]</para>
         </td>
         <td>
           <para style="P3">Net Total :</para>
         </td>
         <td>
-          <para style="P8">[[ formatLang(o.amount_untaxed, digits=get_digits(dp='Account') ) ]] [[ o.pricelist_id.currency_id. symbol ]]</para>
+          <para style="P6">[[ formatLang(o.amount_untaxed, digits=get_digits(dp='Account') ) ]] [[ o.pricelist_id.currency_id. symbol ]]</para>
         </td>
       </tr>
       <tr>
         <td>
-          <para style="P5">
-            <font face="Helvetica">Freight :-</font>
-          </para>
+          <para style="P7">Freight :</para>
         </td>
         <td>
-          <para style="P5">
-            <font face="Helvetica">[[o.freight or 0.00]] [[ o.freight_type == 'per_unit' and 'per unit' or o.freight_type == 'percentage' and '%' or o.freight_type == 'fix' and o.pricelist_id.currency_id. symbol or o.freight_type == 'actual' and 'At Actual' or o.freight_type]]</font>
-          </para>
+          <para style="P7"><font face="Helvetica">[[ formatLang(o.freight , digits=get_digits(dp='Account')) ]]</font> [[ o.freight_type == 'per_unit' and 'per unit' or o.freight_type == 'percentage' and '%' or o.freight_type == 'fix' and o.pricelist_id.currency_id. symbol or o.freight_type == 'actual' and 'At Actual' or o.freight_type]]</para>
         </td>
         <td>
           <para style="P3">Taxes :</para>
         </td>
         <td>
-          <para style="P8">[[ formatLang(o.amount_tax, digits=get_digits(dp='Account')) ]] [[ o.pricelist_id.currency_id. symbol ]]</para>
+          <para style="P6">[[ formatLang(o.amount_tax, digits=get_digits(dp='Account')) ]] [[ o.pricelist_id.currency_id. symbol ]]</para>
         </td>
       </tr>
       <tr>
         <td>
-          <para style="P5">
-            <font face="Helvetica">Insurance :- </font>
-          </para>
+          <para style="P7">Insurance :</para>
         </td>
         <td>
-          <para style="P5">
-            <font face="Helvetica">[[ o.insurance or 0.00]] [[ o.insurance_type == 'percentage' and '%' or o.insurance_type == 'fix' and o.pricelist_id.currency_id. symbol or o.insurance_type]]</font>
-          </para>
+          <para style="P7"><font face="Helvetica">[[ formatLang(o. insurance , digits=get_digits(dp='Account')) ]]</font> [[ o.insurance_type == 'percentage' and '%' or o.insurance_type == 'fix' and o.pricelist_id.currency_id. symbol or o.insurance_type]]</para>
         </td>
         <td>
-          <para style="P3">Other Charges</para>
+          <para style="P3">Other Charges :</para>
         </td>
         <td>
-          <para style="P8">[[ formatLang(o.other_charges, digits=get_digits(dp='Account')) ]] [[ o.pricelist_id.currency_id. symbol ]]</para>
+          <para style="P6">[[ formatLang(o.other_charges, digits=get_digits(dp='Account')) ]] [[ o.pricelist_id.currency_id. symbol ]]</para>
         </td>
       </tr>
       <tr>
         <td>
-          <para style="P5">
-            <font face="Helvetica"/>
+          <para style="P7">
+            <font color="white"> </font>
           </para>
         </td>
         <td>
@@ -317,7 +305,7 @@
           <para style="P3">Round Off</para>
         </td>
         <td>
-          <para style="P8">[[ formatLang(o.round_off, digits=get_digits(dp='Account')) ]] [[ o.pricelist_id.currency_id. symbol ]]</para>
+          <para style="P6">[[ formatLang(o.round_off, digits=get_digits(dp='Account')) ]] [[ o.pricelist_id.currency_id. symbol ]]</para>
         </td>
       </tr>
       <tr>
@@ -327,19 +315,21 @@
           </para>
         </td>
         <td>
-          <para style="P7">
+          <para style="P5">
             <font color="white"> </font>
           </para>
         </td>
         <td>
-          <para style="P7">Total :</para>
+          <para style="P5">Total :</para>
         </td>
         <td>
           <para style="terp_default_Bold_9_Right">[[ formatLang(o.amount_total, digits=get_digits(dp='Account') ) ]] [[ o.pricelist_id.currency_id. symbol ]]</para>
         </td>
       </tr>
     </blockTable>
-    <para style="terp_default_8"/>
+    <para style="terp_default_8">
+      <font color="white"> </font>
+    </para>
     <blockTable colWidths="535.0" style="Table_Outer_Notes">
       <tr>
         <td>

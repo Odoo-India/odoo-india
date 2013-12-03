@@ -155,7 +155,7 @@
         </td>
       </tr>
     </blockTable>
-    <para style="terp_default_8">
+    <para style="List">
       <font color="white"> </font>
     </para>
     <para style="terp_header">Indent No : [[o.name]]</para>
@@ -185,7 +185,7 @@
         </td>
       </tr>
     </blockTable>
-    <para style="Standard">
+    <para style="List">
       <font color="white"> </font>
     </para>
     <blockTable colWidths="159.0,159.0,212.0" style="Table3">
@@ -214,7 +214,7 @@
         </td>
       </tr>
     </blockTable>
-    <para style="Standard">
+    <para style="List">
       <font color="white"> </font>
     </para>
     <blockTable colWidths="233.0,125.0,79.0,92.0" style="Table6">

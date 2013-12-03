@@ -588,4 +588,13 @@ class purchase_order_line(osv.Model):
 
 purchase_order_line()
 
+class purchase_order(osv.Model):
+    _inherit = 'purchase.order'
+    _order = 'id desc'
+    
+    _columns = {
+        'indent_id': fields.related('order_line', 'indent_id', type='many2one', relation='indent.indent', string='Indent')
+    }
+purchase_order()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -342,26 +342,6 @@ class indent_indent(osv.Model):
         self.write(cr, uid, ids, res)
         return True
 
-    def view_purchase_orders(self, cr, uid, ids, context=None):
-        '''
-        This function returns an action that display purchase orders of given indent ids.
-        '''
-        assert len(ids) == 1, 'This option should only be used for a single id at a time'
-        mod_obj = self.pool.get('ir.model.data')
-        act_obj = self.pool.get('ir.actions.act_window')
-        line_obj = self.pool.get('purchase.order.line')
-        order_ids = []
-
-        line_ids = line_obj.search(cr, uid, [('indent_id', '=', ids[0])], context=context)
-        for line in line_obj.browse(cr, uid, line_ids, context=context):
-            order_ids.append(line.order_id and line.order_id.id or [])
-
-        result = mod_obj.get_object_reference(cr, uid, 'purchase', 'purchase_rfq')
-        action_id = result and result[1] or False
-        result = act_obj.read(cr, uid, [action_id], context=context)[0]
-        result['domain'] = "[('id', 'in', ["+', '.join(map(str, order_ids))+"])]"
-        return result
-
     def action_receive_products(self, cr, uid, ids, context=None):
         '''
         This function returns an action that display internal move of given indent ids.

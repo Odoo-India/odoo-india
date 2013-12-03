@@ -2,6 +2,29 @@
 <openerp>
     <data>
 
+        <!-- Purchase Order Search View -->
+        <record id="view_purchase_order_inherited_search" model="ir.ui.view">
+            <field name="name">purchase.order.search.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <filter string="Source" position="attributes">
+                    <attribute name="string">Indent</attribute>
+                </filter>
+                <field name="create_uid" position="after">
+                    <field name="indent_id"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Purchase Order Link with Indent action -->
+        <record model="ir.actions.act_window" id="action_purchase_order_indent_view">
+            <field name="context">{'search_default_indent_id': active_id}</field>
+            <field name="name">Purchase Order</field>
+            <field name="res_model">purchase.order</field>
+            <field name="search_view_id" ref="view_purchase_order_inherited_search"/>
+        </record>
+
         <!-- Stock Location Form View -->
         <record id="view_indent_stock_location_form" model="ir.ui.view">
             <field name="name">indent.stock.location.form</field>
@@ -46,7 +69,7 @@
                             </h1>
                         </div>
                         <div class="oe_right oe_inline" name="buttons">
-                             <button name="view_purchase_orders" string="Purchase Orders" type="object" attrs="{'invisible': ['|', '|', ('state', '=', 'draft'), ('state', '=', 'confirm'), ('state', '=', 'waiting_approval')]}"/>
+                            <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" attrs="{'invisible': ['|', '|', ('state', '=', 'draft'), ('state', '=', 'confirm'), ('state', '=', 'waiting_approval')]}"/>
                          </div>
                         <group>
                             <group>

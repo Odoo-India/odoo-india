@@ -73,7 +73,7 @@ class indent_indent(osv.Model):
     _name = 'indent.indent'
     _description = 'Indent'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
-    _order = "name desc"
+    _order = "approve_date desc"
     
     _track = {
         'state': {
@@ -565,12 +565,10 @@ class purchase_order_line(osv.Model):
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent'),
     }
-
 purchase_order_line()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
-    _order = 'id desc'
     
     _columns = {
         'indent_id': fields.related('order_line', 'indent_id', type='many2one', relation='indent.indent', string='Indent')

@@ -112,7 +112,7 @@ class purchase_order(osv.Model):
                 'purchase.order': (lambda self, cr, uid, ids, c={}: ids, ['round_off','insurance', 'insurance_type', 'freight_type', 'freight', 'package_and_forwording_type', 'package_and_forwording', 'order_line'], 11),
                 'purchase.order.line': (_get_order, None, 10),
             }, multi="sums", help="Computed as Packing & Forwarding + Freight + Insurance"),
-        }
+    }
     
     _defaults = {
         'package_and_forwording_type':'fix',

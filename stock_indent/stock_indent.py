@@ -183,6 +183,7 @@ class indent_indent(osv.Model):
     def copy(self, cr, uid, id, default=None, context=None):
         if default is None:
             default = {}
+        required_date = datetime.datetime.strftime(datetime.datetime.today() + timedelta(days=7), DEFAULT_SERVER_DATETIME_FORMAT)
         default.update({
             'name': "/",
             'indent_date': time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -190,7 +191,9 @@ class indent_indent(osv.Model):
             'picking_id': False,
             'indent_authority_ids': [],
             'state': 'draft',
-            'approver_id':False
+            'approver_id':False,
+            'approve_date':False,
+            'required_date':required_date
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
 

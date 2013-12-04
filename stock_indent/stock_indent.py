@@ -262,9 +262,9 @@ class indent_indent(osv.Model):
         location_id = self._default_stock_location(cr, uid, context=context)
         res = {
             'name': line.name,
-            'indent': indent.id,
-            'indentor': indent.indentor_id.id,
-            'department_id': indent.department_id.id,
+#             'indent': indent.id,
+#             'indentor': indent.indentor_id.id,
+#             'department_id': indent.department_id.id,
             'picking_id': picking_id,
             'product_id': line.product_id.id,
             'date': date_planned,
@@ -279,6 +279,14 @@ class indent_indent(osv.Model):
             'state': 'draft',
             'price_unit': line.product_id.standard_price or 0.0
         }
+        
+        if line.product_id.type in ('service'):
+            upd_res = {
+                'product_id':line.original_product_id.id,
+                'product_uom': line.original_product_id.uom_id.id
+            }
+            res.update(upd_res)
+        
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
         return res
@@ -306,13 +314,13 @@ class indent_indent(osv.Model):
             date_planned = self._get_date_planned(cr, uid, indent, line, indent.indent_date, context=context)
 
             if line.product_id:
-                if line.product_id.type in ('product', 'consu'):
-                    if not picking_id:
-                        picking_id = picking_obj.create(cr, uid, self._prepare_indent_picking(cr, uid, indent, context=context))
+#                if line.product_id.type in ('product', 'consu'):
+                if not picking_id:
+                    picking_id = picking_obj.create(cr, uid, self._prepare_indent_picking(cr, uid, indent, context=context))
                     move_id = move_obj.create(cr, uid, self._prepare_indent_line_move(cr, uid, indent, line, picking_id, date_planned, context=context), context=context)
-                else:
-                    # a service has no stock move
-                    move_id = False
+#                 else:
+#                     # a service has no stock move
+#                     move_id = False
                 proc_id = procurement_obj.create(cr, uid, self._prepare_indent_line_procurement(cr, uid, indent, line, move_id, date_planned, context=context))
                 proc_ids.append(proc_id)
 

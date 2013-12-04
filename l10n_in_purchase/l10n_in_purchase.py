@@ -26,6 +26,25 @@ class purchase_order(osv.Model):
     _inherit = 'purchase.order'
     _order = 'id desc'
 
+    def _prepare_inv_line(self, cr, uid, account_id, order_line, context=None):
+        """Collects require data from purchase order line that is used to create invoice line
+        for that purchase order line
+        :param account_id: Expense account of the product of PO line if any.
+        :param browse_record order_line: Purchase order line browse record
+        :return: Value for fields of invoice lines.
+        :rtype: dict
+        """
+        return {
+            'name': order_line.name,
+            'account_id': account_id,
+            'price_unit': order_line.price_unit or 0.0,
+            'quantity': order_line.product_qty,
+            'product_id': order_line.product_id.id or False,
+            'uos_id': order_line.product_uom.id or False,
+            'invoice_line_tax_id': [(6, 0, [x.id for x in order_line.taxes_id])],
+            'account_analytic_id': order_line.account_analytic_id.id or False,
+            'discount':order_line.discount or 0.0,
+        }
     def _get_order(self, cr, uid, ids, context=None):
         result = {}
         for line in self.pool.get('purchase.order.line').browse(cr, uid, ids, context=context):
@@ -155,56 +174,15 @@ class purchase_order_line(osv.Model):
 
     def _amount_line(self, cr, uid, ids, prop, arg, context=None):
         res = {}
-        cur_obj = self.pool.get('res.currency')
+        cur_obj=self.pool.get('res.currency')
         tax_obj = self.pool.get('account.tax')
-        total_qty = package_amount = insurance_amount =packing_and_forwading= freight_amount =freight= 0.0
         for line in self.browse(cr, uid, ids, context=context):
-            res[line.id] = {
-                'pkg_frwrd':0.0,
-                'insurance':0.0,
-                'freight':0.0,
-                'price_subtotal':0.0
-            }
-            taxes = tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, line.product_id, line.order_id.partner_id)
+            taxes = tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit*(1-(line.discount or 0.0)/100.0), line.product_qty, line.product_id, line.order_id.partner_id)
             cur = line.order_id.pricelist_id.currency_id
-            res[line.id]['price_subtotal'] = cur_obj.round(cr, uid, cur, taxes['total'])
-            
-            val1 = res[line.id]['price_subtotal']
-            if line.order_id.package_and_forwording_type == 'per_unit':
-                res[line.id]['pkg_frwrd'] = line.order_id.package_and_forwording
-            elif line.order_id.package_and_forwording_type == 'percentage':
-                package_amount = ((line.order_id.package_and_forwording * val1) / 100)
-                res[line.id]['pkg_frwrd'] = package_amount / line.product_qty
-            elif line.order_id.package_and_forwording_type == 'fix' and line.order_id.amount_untaxed > 0:
-                package_amount = ((line.order_id.package_and_forwording)*res[line.id]['price_subtotal'])/line.order_id.amount_untaxed
-                res[line.id]['pkg_frwrd'] = package_amount
+            res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
         return res
-
-    def _get_po_order(self, cr, uid, ids, context=None):
-        cr.execute("""SELECT DISTINCT pol.id FROM purchase_order_line pol JOIN
-                                                  purchase_order po ON (pol.order_id = %s)
-                                    """, (tuple(ids),))
-        return [i[0] for i in cr.fetchall()]
     
     _columns = {
         'discount': fields.float('Discount (%)'),
-        'pkg_frwrd': fields.function(_amount_line, multi="pkg", string='Packing Unit', digits_compute=dp.get_precision('Account'),
-            store={
-                'purchase.order': (_get_po_order, ['round_off','insurance', 'insurance_type', 'freight_type', 'freight', 'package_and_forwording_type', 'package_and_forwording',], 11),
-                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, [], 10),
-            }),
-        'insurance': fields.function(_amount_line, multi="pkg", string='Insurance Unit', digits_compute=dp.get_precision('Account'),
-            store={
-                'purchase.order': (_get_po_order, ['round_off','insurance', 'insurance_type', 'freight_type', 'freight', 'package_and_forwording_type', 'package_and_forwording',], 11),
-                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
-            }),
-        'freight': fields.function(_amount_line, multi="pkg", string='Freight Unit', digits_compute=dp.get_precision('Account'),
-            store={
-                'purchase.order': (_get_po_order, ['round_off','insurance', 'insurance_type', 'freight_type', 'freight', 'package_and_forwording_type', 'package_and_forwording',], 11),
-                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
-            }),
-        'price_subtotal': fields.function(_amount_line, multi="pkg", store={
-                'purchase.order': (_get_po_order, ['round_off','insurance', 'insurance_type', 'freight_type', 'freight', 'package_and_forwording_type', 'package_and_forwording',], 11),
-                'purchase.order.line': (lambda self, cr, uid, ids, c={}: ids, None, 10),
-            }, string='Subtotal', digits_compute= dp.get_precision('Account')),
+        'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
         }

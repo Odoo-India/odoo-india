@@ -69,6 +69,20 @@ class indent_equipment_section(osv.Model):
     ]
 indent_equipment_section()
 
+class account_analytic_account(osv.Model):
+    _inherit = 'account.analytic.account'
+    _columns = {
+        'indent_close': fields.boolean('Close Indents'),
+        'purchase_close': fields.boolean('Close Purchase'),
+    }
+    
+    _defaults = {
+        'indent_close': False,
+        'purchase_close': False
+    }
+    
+account_analytic_account()
+
 class indent_indent(osv.Model):
     _name = 'indent.indent'
     _description = 'Indent'

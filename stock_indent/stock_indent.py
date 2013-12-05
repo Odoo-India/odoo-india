@@ -31,6 +31,7 @@ import openerp.addons.decimal_precision as dp
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
+import stock_indent
 
 class stock_location(osv.Model):
     _inherit = 'stock.location'
@@ -394,6 +395,13 @@ class indent_indent(osv.Model):
             'res_id': picking_id,
         }
         return result
+    
+    def unlink(self, cr, uid, ids, context=None):
+        for indent in self.browse(cr, uid, ids):
+            if indent.state != 'draft':
+                raise osv.except_osv(_('Invalid Action!'), _('You cannot delete this indent'))
+        return super(indent_indent, self).unlink(cr, uid, ids, context=context)
+
 indent_indent()
 
 class indent_product_lines(osv.Model):
@@ -468,6 +476,8 @@ class indent_product_lines(osv.Model):
         
         if product.qty_available > 0:
             result['type'] = 'make_to_stock'
+        else:
+            result['type'] = 'make_to_order'
         
         #result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]
         result['product_uom'] = product.uom_id.id

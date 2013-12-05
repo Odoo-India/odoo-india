@@ -16,7 +16,7 @@
                     <field name="date" invisible="1"/>
                     <field name="invoice_state" groups="account.group_account_invoice" invisible="1" />
                     <field name="stock_journal_id" widget="selection" groups="account.group_account_user" invisible="1" />
-                    <field name="amount_total" />
+                    <field name="amount_total"/>
                     <field name="origin"/>
                     <field name="state"/>
                 </tree>
@@ -72,7 +72,6 @@
                                 <field name="date" invisible="True"/>
                                 <field name="date_done" string="Receipt Date"/>
                                 <field name="origin" placeholder="e.g. PO0032" class="oe_inline"/>
-                                <field name="excisable_item" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
                         </group>
                         <group>
@@ -87,37 +86,21 @@
                                         <field name="product_id"/>
                                         <field name="new_rate" attrs="{'readonly':[('state','in',('done','cancel'))]}"/>
                                         <field name="rate" invisible="1"/>
-                                        <field name="diff_amount" invisible="1"/>
                                         <field name="product_qty" sum="Total Quantity"/>
                                         <button name="%(stock.track_line)d" string="Split in Serial Number"
                                             groups="stock.group_production_lot" type="action" icon="gtk-justify-fill"
                                             states="draft,waiting,confirmed,assigned"/>
-                                        <field name="diff"
-                                            on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)"
-                                            sum="Total Diff" invisible="1"/>
-                                        <field name="less_diff"
-                                            on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)"
-                                            sum="Total Diff" invisible="1"/>
-                                        <field name="amount" sum="Total Amount"
-                                            attrs="{'readonly':[('state','in',('done','cancel'))]}"/>
-                                        <field name="tax_cal"
-                                            on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)"
-                                            invisible="1"/>
-                                        <field name="excies" sum="Total Excise"
-                                            on_change="onchange_excise(excies, cess, high_cess, import_duty)"/>
-                                        <field name="cess" sum="Total Cess"
-                                            on_change="onchange_excise(excies, cess, high_cess,import_duty)"/>
-                                        <field name="high_cess" sum="Total High Cess"
-                                            on_change="onchange_excise(excies, cess, high_cess,import_duty)"/>
+                                        <field name="excies" sum="Total Excise" on_change="onchange_excise(excies, cess, higher_cess, import_duty)"/>
+                                        <field name="cess" sum="Total Cess" on_change="onchange_excise(excies, cess, higher_cess,import_duty)"/>
+                                        <field name="higher_cess" sum="Total Higher Cess" on_change="onchange_excise(excies, cess, higher_cess, import_duty)"/>
                                         <field name="import_duty"
-                                            on_change="onchange_excise(excies, cess, high_cess,import_duty)" sum="Total Import Duty"/>
-                                        <field name="cenvat" sum="Total CENVAT" invisible="1"/>
-                                        <field name="c_cess" sum="Total Cess" invisible="1"/>
-                                        <field name="c_high_cess" sum="Total High Cess" invisible="1"/>
-                                        <field name="import_duty1"
-                                            on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)"
-                                            sum="Total Import Duty" invisible="1"/>
-                                        <field name="state" invisible="1" />
+                                            on_change="onchange_excise(excies, cess, higher_cess, import_duty)" sum="Total Import Duty"/>
+                                        <field name="exe_excies" sum="Total CENVAT" invisible="1"/>
+                                        <field name="exe_cess" sum="Total Cess" invisible="1"/>
+                                        <field name="exe_higher_cess" sum="Total Higher Cess" invisible="1"/>
+                                        <field name="exe_import_duty" sum="Total Import Duty" invisible="1"/>
+                                        <field name="total_cost"/>
+                                        <field name="state" invisible="1"/>
                                     </tree>
                                     <form string="Receipt" version="7.0">
                                         <header>
@@ -139,64 +122,40 @@
                                             <group>
                                                 <field name="product_id"
                                                     on_change="onchange_product_id(product_id,location_id,location_dest_id, False)" />
-                                                <field name="product_uom" />
+                                                <field name="product_uom"/>
                                                 <field name="new_rate"
                                                     on_change="onchange_rate(product_qty,new_rate, diff,less_diff)" />
-                                                <field name="rate" string="Rate(Before Taxes)" />
+                                                <field name="rate" string="Rate(Before Taxes)"/>
                                                 <field name="location_id" groups="stock.group_locations" invisible="1"/>
                                                 <field name="location_dest_id" groups="stock.group_locations" invisible="1"/>
                                                 <field name="product_uos" invisible="1"/>
-                                                <field name="diff_amount" invisible="1"/>
                                             </group>
                                             <group>
                                                 <field name="product_qty"/>
-                                                <field name="amount"/>
-                                            </group>
-                                            <group>
-                                                <field name="location_id" />
-                                                <field name="location_dest_id" />
+                                                <field name="location_id"/>
+                                                <field name="location_dest_id"/>
                                             </group>
                                         </group>
                                         <group>
                                             <group>
-                                                <field name="tax_cal"
-                                                    on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)"
-                                                    attrs="{'readonly': [('excisable_item', '=', False)]}"/>
-                                                <label string="Enter a new excise which you get from supplier" colspan="2"/>
+                                                <field name="excies" on_change="onchange_excise(excies, cess, higher_cess, import_duty)"/>
+                                                <field name="cess" on_change="onchange_excise(excies, cess, higher_cess,import_duty)"/>
+                                                <field name="higher_cess" on_change="onchange_excise(excies, cess, higher_cess,import_duty)"/>
+                                                <field name="import_duty" on_change="onchange_excise(excies, cess, higher_cess,import_duty)"/>
                                             </group>
                                             <group>
-                                                <field name="diff"
-                                                    on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)"/>
-                                                <field name="less_diff"
-                                                    on_change="onchange_amount(parent.purchase_id, product_id,diff,less_diff,new_rate,import_duty,tax_cal)"/>
-                                                <field name="excisable_item" invisible="1"/>
-                                            </group>
-                                            <group>
-                                                <field name="excies"
-                                                    on_change="onchange_excise(excies, cess, high_cess, import_duty)"/>
-                                                <field name="cess"
-                                                    on_change="onchange_excise(excies, cess, high_cess,import_duty)"/>
-                                                <field name="high_cess"
-                                                    on_change="onchange_excise(excies, cess, high_cess,import_duty)"/>
-                                                <field name="import_duty"
-                                                    on_change="onchange_excise(excies, cess, high_cess,import_duty)"/>
-                                            </group>
-                                            <group>
-                                                <field name="cenvat"/>
-                                                <field name="c_cess"/>
-                                                <field name="c_high_cess"/>
-                                                <field name="import_duty1"/>
+                                                <field name="exe_excies"/>
+                                                <field name="exe_cess"/>
+                                                <field name="exe_higher_cess"/>
+                                                <field name="exe_import_duty"/>
                                             </group>
                                         </group>
                                     </form>
                                 </field>
                                 <group class="oe_subtotal_footer oe_right">
-                                    <field name="amount_subtotal" widget="monetary"
-                                        options="{'currency_field': 'currency_id'}"/>
-                                    <field name="total_diff" widget="monetary"
-                                        options="{'currency_field': 'currency_id'}"/>
-                                    <field name="import_duty" widget="monetary"
-                                        options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="total_diff" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="import_duty" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <div class="oe_subtotal_footer_separator oe_inline">
                                         <label for="amount_total"/>
                                         <button name="button_dummy" states="draft,assigned,approved,confirmed"
@@ -275,8 +234,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('type','=','receipt')]</field>
-            <field name="context">{'contact_display': 'partner_address',
-                'default_type': 'receipt'}
+            <field name="context">{'contact_display': 'partner_address', 'default_type': 'receipt'}
             </field>
             <field name="search_view_id" ref="view_picking_receipt_search_ref"/>
             <field name="help" type="html">

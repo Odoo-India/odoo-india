@@ -615,4 +615,16 @@ class purchase_order(osv.Model):
     }
 purchase_order()
 
+class stock_move(osv.Model):
+    _inherit = 'stock.move'
+
+    _columns = {
+        'indent_id': fields.many2one('indent.indent', 'Indent'),
+        'indentor_id':fields.related('indent_id', 'indentor_id', relation='res.users', type='many2one', string='Indentor', store=True, readonly=True),
+        'department_id': fields.many2one('stock.location', string='Department'), 
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', readonly=True),
+    }
+
+stock_move()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

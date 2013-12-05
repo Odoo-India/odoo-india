@@ -86,7 +86,7 @@ class stock_picking_receipt(osv.Model):
             total = 0.0
             for move in receipt.move_lines:
                 total += move.amount
-
+ 
             per_unit = receipt.freight / total if total else 1.0
             if receipt.freight > 0:
                 for move in receipt.move_lines:
@@ -101,14 +101,16 @@ class stock_picking_receipt(osv.Model):
     _columns = {
         'freight':fields.float('Freight', track_visibility='onchange'),
         'product_id': fields.related('move_lines', 'product_id', type='many2one', relation='product.product', string='Products'),
-        'inward_id': fields.many2one('stock.picking.in', 'Inward', ondelete='set null', domain=[('type','=','in'), ('date_done','>','2013-04-01')]),
+        'inward_id': fields.many2one('stock.picking.in', 'Inward', ondelete='set null', domain=[('type','=','in')]),
         'inward_date': fields.related('inward_id', 'date_done', type='datetime', string='Inward Date', readonly=True, store=True),
-        'tr_code': fields.integer('TR Code'),
-        'excisable_item': fields.boolean('Excisable Item', track_visibility='onchange'),
-        'amount_total': fields.function(_total_amount, multi="cal", type="float", string='Total', store=True),
-        'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff", store=True),
-        'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
-        'import_duty': fields.function(_total_amount, multi="cal", type="float", string='Import Duty', help="Total Import Duty", store=True),
+#         'amount_total': fields.function(_total_amount, multi="cal", type="float", string='Total', store=True),
+        'amount_total': fields.float('Total'),
+#         'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff", store=True),
+        'total_diff': fields.float('Total Diff'),
+#         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
+        'amount_subtotal': fields.float('Total Amount'),
+#         'import_duty': fields.function(_total_amount, multi="cal", type="float", string='Import Duty', help="Total Import Duty", store=True),
+        'import_duty': fields.float('Import Duty'),
         'date_done': fields.datetime('Date of Transfer', help="Date of Completion", track_visibility='onchange'),
         'state': fields.selection([
                 ('draft', 'Draft'),
@@ -119,146 +121,40 @@ class stock_picking_receipt(osv.Model):
                 ('done', 'Transferred'),
             ], 'Status', readonly=True, select=True, track_visibility='onchange'
         ),
-        'date_done': fields.datetime('Date of Transfer', help="Date of Completion", track_visibility='onchange'),
     }
 
     _defaults = {
         'type': 'receipt',
         'invoice_state': '2binvoiced',
     }
+
 stock_picking_receipt()
 
 class stock_move(osv.osv):
     _inherit = "stock.move"
 
-    def _get_stock(self, cr, uid, ids, name, args, context=None):
-        res = {}
-        product_obj = self.pool.get('product.product')
-        for move in self.browse(cr, uid, ids, context=context):
-            product = product_obj.browse(cr, uid, [move.product_id.id])[0]
-            res[move.id] = product and product.qty_available or 0.0
-        return res 
-
     _columns = {
-        #Fields to check with development team
         'rate': fields.float('Rate', digits_compute=dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
-        'supplier_id': fields.related('picking_id', 'purchase_id', 'partner_id', type='many2one', relation='res.partner', string="Supplier", store=True),
-        'payment_id': fields.related('picking_id', 'purchase_id', 'payment_term_id', 'name', type="char", size=64, relation='account.payment.term', string="Payment", store=True),
-#        'name': fields.char('Description', select=True),
-        'avg_price': fields.float('Average Price', digits_compute=dp.get_precision('Account')),
-
-        #Fields required for all Stock movement 
         'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'), ('receipt', 'Receipt'), ('opening', 'Opening')], string='Shipping Type', store=True),
-        'amount': fields.float('Amount.', digits_compute=dp.get_precision('Stock Picking Receipt'), help="Total Amount"),
-        'qty_available': fields.float("Stock"),
-
-        #Fields required for Receipts
-        'bill_no': fields.char('Bill No', size=256),
-        'bill_date': fields.date('Bill Date'),
         'new_rate': fields.float('Rate', help="Rate for the product which is calculate after adding all tax"),
-        'diff': fields.float('Add (%)', digits_compute=dp.get_precision('Account'), help="Amount to be add"),
-        'less_diff': fields.float('Less (%)', digits_compute=dp.get_precision('Account'), help="Amount to be less"),
-        'diff_amount': fields.float('Diff amount', digits_compute=dp.get_precision('Account'), help="Difference Amount"),
-        'excies': fields.float('Excies.', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'cess': fields.float('Cess.', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'high_cess': fields.float('High cess.', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'import_duty': fields.float('Import Duty.', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'import_duty1': fields.float('Import Duty.', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'cenvat': fields.float('CenVAT.', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'c_cess': fields.float('Cess.', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'c_high_cess': fields.float('High Cess.', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'tax_cal': fields.float('Tax Cal', digits_compute=dp.get_precision('Stock Picking Receipt')),
-
-        'total_cost': fields.float('Total', digits_compute=dp.get_precision('Account')),
-
-        #'excisable_item': fields.related('picking_id', 'excisable_item', type="boolean", relation='stock.picking', string="Excisable Item", store=True),
-        'vat_unit': fields.float('VAT Unit', digits_compute=dp.get_precision('Account')),
+        'excies': fields.float('Excies'),
+        'cess': fields.float('Cess'),
+        'higher_cess': fields.float('Higher Cess'),
+        'import_duty': fields.float('Import Duty'),
+        'exe_excies': fields.float('Exempted Excies'),
+        'exe_cess': fields.float('Exempted Cess'),
+        'exe_higher_cess': fields.float('Exempted Higher Cess'),
+        'exe_import_duty': fields.float('Exempted Import Duty'),
+        'total_cost': fields.float('Sub Total', digits_compute=dp.get_precision('Account')),
         'packing_unit': fields.float('Packing Unit', digits_compute=dp.get_precision('Account')),
         'insurance_unit': fields.float('Insurance Unit', digits_compute=dp.get_precision('Account')),
         'freight_unit': fields.float('Freight Unit', digits_compute=dp.get_precision('Account')),
-        'retention_unit': fields.float('Retention Unit', digits_compute=dp.get_precision('Account')),
-        'analytic_account_id':fields.many2one('account.analytic.account','M/C Code'),
-        'cylinder':fields.char('Cylinder', size=256),
-        'advance_adjustment': fields.float('Advance Adjustment', digits_compute=dp.get_precision('Stock Picking Receipt')),
-        'name': fields.char('Description'),
+        'analytic_account_id':fields.many2one('account.analytic.account','Project'),
         'discount': fields.float('Discount'),
-        #Fields required for Issue
     }
 
-    def onchange_amount(self, cr, uid, ids, purchase_id, product_id, add_diff, less_diff, rate, import_duty, tax_cal, context=None):
-        tax = ''
-        child_tax = 0
-        if not context:
-            context = {}
-
-        purchase_obj = self.pool.get('purchase.order')
-        purchase_line_obj = self.pool.get('purchase.order.line')
-        line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])
-        line_id = line_id and line_id[0] or False
-        if not line_id:
-            return {'value':{}}
-            # raise osv.except_osv(_('Configuration Error!'), _('Puchase Order don\'t  have line'))
-        line = purchase_line_obj.browse(cr, uid, line_id, context=context)
-        move = [move for move in self.browse(cr, uid, ids, context=context) if move.id][0]
-
-        order = purchase_obj.browse(cr, uid, purchase_id, context)
-        amount = rate * move.product_qty if rate != 0.0 else line.new_price * move.product_qty
-        diff_amount = amount * add_diff / 100 if add_diff != 0.0 else -(amount * less_diff / 100)
-        if order.excies_ids:
-            tax = order.excies_ids[0]
-
-        if not tax:
-            return {'value': {'amount': amount + diff_amount, 'rate': line.new_price, 'new_rate': rate if rate != 0.0 else line.new_price, 'diff_amount': diff_amount, 'vat_unit': line.vat_unit,
-                              'insurance_unit': line.insurance_unit, 'freight_unit':line.freight_unit, 'packing_unit':line.packing_unit}}
-
-        base_tax = tax.amount
-        total_tax = base_tax
-        for ctax in tax.child_ids:
-            total_tax = total_tax + (base_tax * ctax.amount)
-
-        new_tax = { 
-            'excies':0.0,
-            'cess': 0.0,
-            'high_cess': 0.0,
-            'cenvat':0.0,
-            'c_cess': 0.0,
-            'c_high_cess': 0.0,
-        }
-
-        if tax_cal == 0:
-            tax_main = (line.price_unit * move.product_qty) * base_tax if tax.type not in ['fixed'] else move.product_qty * base_tax
-        else:
-            tax_main = (tax_cal * base_tax) / total_tax
-        new_tax.update({'excies':tax_main, 'cenvat':tax_main})
-
-        for ctax in tax.child_ids:
-            cess = tax_main * ctax.amount
-            child_tax += cess
-            if ctax.tax_type == 'cess':
-                new_tax.update({'cess':cess, 'c_cess':cess})
-            if ctax.tax_type == 'hedu_cess':
-                new_tax.update({'high_cess':cess, 'c_high_cess':cess})
-        if tax_cal == 0:
-            new_tax.update({'amount': amount + diff_amount, 'rate': line.price_unit, 'new_rate': rate if rate != 0.0 else line.new_price, 'diff_amount': diff_amount, 'vat_unit': line.vat_unit,
-                            'insurance_unit': line.insurance_unit, 'freight_unit':line.freight_unit, 'packing_unit':line.packing_unit})
-        new_tax.update({'amount': amount + diff_amount, 'rate': line.price_unit, 'new_rate': rate if rate != 0.0 else line.new_price, 'diff_amount': diff_amount, 'vat_unit': line.vat_unit,
-                        'insurance_unit': line.insurance_unit, 'freight_unit':line.freight_unit, 'packing_unit':line.packing_unit})
-        return {'value': new_tax}
-
-    def onchange_quantity(self, cr, uid, ids, product_id, product_qty, product_uom, product_uos):
-        res = super(stock_move, self).onchange_quantity(cr, uid, ids, product_id, product_qty, product_uom, product_uos)
-        res['value'].update({'challan_qty':product_qty})
-        return res
-
-    def onchange_rate(self, cr, uid, ids, product_qty, price, add_diff, less_diff, context=None):
-        amount = (product_qty * price)
-        diff = amount * add_diff / 100 if add_diff != 0 else -amount * less_diff / 100
-        if not diff:
-            return {'value': {'amount': amount}}
-        return {'value': {'amount': amount + diff}}
-
-    def onchange_excise(self, cr, uid, ids, excise, cess, high_cess, import_duty, context=None):
-        return {'value': {'excise': excise or 0.0, 'cenvat':excise or 0.0, 'cess': cess or 0.0, 'c_cess': cess or 0.0, 'high_cess': high_cess or 0.0, 'c_high_cess': high_cess or 0.0, 'import_duty': import_duty or 0.0, 'import_duty1': import_duty or 0.0}}
+    def onchange_excise(self, cr, uid, ids, excise, cess, higher_cess, import_duty, context=None):
+        return {'value': {'excise': excise or 0.0, 'exe_excies':excise or 0.0, 'cess': cess or 0.0, 'exe_cess': cess or 0.0, 'higher_cess': higher_cess or 0.0, 'exe_higher_cess': higher_cess or 0.0, 'import_duty': import_duty or 0.0, 'exe_import_duty': import_duty or 0.0}}
 
 stock_move()
 

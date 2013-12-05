@@ -19,6 +19,7 @@
 #
 ##############################################################################
 
+import l10n_in_excise_inward
 import l10n_in_excise_receipt
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

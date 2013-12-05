@@ -115,14 +115,14 @@
 						</group>
 						<notebook>
 							<page string="Products">
-								<field name="product_lines">
+								<field name="product_lines" context="{'indent_type':type}">
 									<form string="Products" version="7.0">
 										<group>
 											<group>
 												<field name="product_id" groups="base.group_user"
 													on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, 
             name, parent.analytic_account_id, parent.type)" />
-												<field name="original_product_id" />
+												<field name="original_product_id" attrs="{'invisible':[('indent_type','=','new')], 'required':[('indent_type','=','existing')]}"/>
 												<label for="product_uom_qty" />
 												<div>
 													<field name="product_uom_qty" class="oe_inline" />
@@ -139,6 +139,7 @@
 											</group>
 											<group>
 												<field name="type" />
+												<field name="indent_type" invisible="1"/>
 												<field name="qty_available"
 													on_change="onchange_product_id(product_id, 
             product_uom_qty, product_uom, price_unit, qty_available, virtual_available, 
@@ -156,6 +157,7 @@
 										<field name="specification" />
 									</form>
 									<tree string="Products">
+									    <field name="sequence" widget="handle"/>
 										<field name="type" />
 										<field name="product_id" />
 										<field name="qty_available" />

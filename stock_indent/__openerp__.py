@@ -53,7 +53,9 @@ Using Indent Management you can control the purchase and issue of material to em
         'stock_indent_report.xml'
     ],
 
-    'demo': [],
+    'demo': [
+        "stock_indent_demo.xml"
+    ],
 
     'installable' : True,
     'application' : True,

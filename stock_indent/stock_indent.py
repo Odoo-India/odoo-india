@@ -129,7 +129,7 @@ class indent_indent(osv.Model):
         'description': fields.text('Additional Information', readonly=True, states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', readonly=True, states={'draft': [('readonly', False)]}),
         'active': fields.boolean('Active'),
-        'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Item for', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Purchase for', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'amount_total': fields.function(_total_amount, type="float", string='Total',
             store={
                 'indent.indent': (lambda self, cr, uid, ids, c={}: ids, ['product_lines'], 20),
@@ -147,7 +147,7 @@ class indent_indent(osv.Model):
     }
     
     def _default_stock_location(self, cr, uid, context=None):
-        stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_stock')
+        stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock_indent', 'location_production1')
         return stock_location.id
 
     def _get_required_date(self, cr, uid, context=None):
@@ -281,9 +281,13 @@ class indent_indent(osv.Model):
         }
         
         if line.product_id.type in ('service'):
+            if not line.original_product_id:
+                raise osv.except_osv(_("Warning !"), _("You must define material or parts that you are sending for repairing !"))
+        
             upd_res = {
                 'product_id':line.original_product_id.id,
-                'product_uom': line.original_product_id.uom_id.id
+                'product_uom': line.original_product_id.uom_id.id,
+                'product_uos':line.original_product_id.uom_id.id
             }
             res.update(upd_res)
         
@@ -314,13 +318,12 @@ class indent_indent(osv.Model):
             date_planned = self._get_date_planned(cr, uid, indent, line, indent.indent_date, context=context)
 
             if line.product_id:
-#                if line.product_id.type in ('product', 'consu'):
+                move_id = False
                 if not picking_id:
                     picking_id = picking_obj.create(cr, uid, self._prepare_indent_picking(cr, uid, indent, context=context))
-                    move_id = move_obj.create(cr, uid, self._prepare_indent_line_move(cr, uid, indent, line, picking_id, date_planned, context=context), context=context)
-#                 else:
-#                     # a service has no stock move
-#                     move_id = False
+                
+                move_id = move_obj.create(cr, uid, self._prepare_indent_line_move(cr, uid, indent, line, picking_id, date_planned, context=context), context=context)
+
                 proc_id = procurement_obj.create(cr, uid, self._prepare_indent_line_procurement(cr, uid, indent, line, move_id, date_planned, context=context))
                 proc_ids.append(proc_id)
 
@@ -402,7 +405,6 @@ class indent_product_lines(osv.Model):
         'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
         'name': fields.text('Description', required=True),
         'product_id': fields.many2one('product.product', 'Product', required=True, domain=[('supply_method','=','buy')]),
-
         'original_product_id': fields.many2one('product.product', 'Product to be Repair'),
         'type': fields.selection([('make_to_stock', 'Stock'), ('make_to_order', 'Purchase')], 'Procure', required=True,
          help="From stock: When needed, the product is taken from the stock or we wait for replenishment.\nOn order: When needed, the product is purchased or produced."),
@@ -417,17 +419,25 @@ class indent_product_lines(osv.Model):
         'delay': fields.float('Lead Time', required=True),
         'name': fields.text('Purpose', required=True),
         'specification': fields.text('Specification'),
+        'sequence':fields.integer('Sequence'),
+        
+        'indent_type': fields.selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], 'Type')
     }
 
     def _get_uom_id(self, cr, uid, *args):
         result = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'product', 'product_uom_unit')
         return result and result[1] or False
-
+    
+    def _get_default_type(self, cr, uid, *args):
+        context = args[0]
+        return context.get('indent_type')
+    
     _defaults = {
         'product_uom_qty': 1,
         'product_uos_qty': 1,
         'type': 'make_to_order',
         'delay': 0.0,
+        'indent_type':_get_default_type
     }
     
     def _check_stock_available(self, cr, uid, ids, context=None):

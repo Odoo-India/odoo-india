@@ -20,4 +20,5 @@
 ##############################################################################
 
 import l10n_in_purchase
+import l10n_in_account
 import report

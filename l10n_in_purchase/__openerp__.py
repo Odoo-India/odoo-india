@@ -35,6 +35,7 @@ Managing Purchase.
     'data' : [
     ],
     'update_xml' : ['l10n_in_purchase_view.xml',
+                    'l10n_in_account_view.xml',
                     'purchase_report.xml',
     ],
 

@@ -186,3 +186,4 @@ class purchase_order_line(osv.Model):
         'discount': fields.float('Discount (%)'),
         'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
         }
+purchase_order_line()

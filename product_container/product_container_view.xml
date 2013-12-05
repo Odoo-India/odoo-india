@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
-
 		<record id='view_product_container_form' model='ir.ui.view'>
 			<field name="name">product.product.container.form</field>
 			<field name="model">product.product</field>
@@ -12,10 +11,9 @@
 			         <label for="container_ok"/>
 			      </label>
 				<field name="type" position="before">
-				    <field name="container_id"/>
+				    <field name="container_id" attrs="{'invisible':[('container_ok','=',True)]}"/>
 				</field>
 			</field>
 		</record>
 	</data>
 </openerp>
-              

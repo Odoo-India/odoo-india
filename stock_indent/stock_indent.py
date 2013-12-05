@@ -157,6 +157,13 @@ class indent_indent(osv.Model):
         date_planned = datetime.datetime.strptime(start_date, DEFAULT_SERVER_DATETIME_FORMAT) + relativedelta(days=line.delay or 0.0)
         return date_planned
 
+    def _get_default_warehouse(self, cr, uid, context=None):
+        warehouse_obj = self.pool.get('stock.warehouse')
+        company_id = self.pool.get('res.users').browse(cr, uid, uid).company_id.id
+        warehouse_ids = warehouse_obj.search(cr, uid, [('company_id', '=', company_id)], context=context)
+        warehouse_id = warehouse_ids and warehouse_ids[0] or False
+        return warehouse_id
+    
     _defaults = {
         'state': 'draft',
         'indent_date': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -170,7 +177,8 @@ class indent_indent(osv.Model):
         'name':"/",
         'active': True,
         'approver_id':False,
-        'move_type':'one'
+        'move_type':'one',
+        'warehouse_id':_get_default_warehouse
     }
     
     def _check_purchase_limit(self, cr, uid, ids, context=None):
@@ -231,11 +239,9 @@ class indent_indent(osv.Model):
         return True
     
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
-        warehouse_obj = self.pool.get('stock.warehouse')
-        company_id = indent.company_id.id
-        warehouse_ids = warehouse_obj.search(cr, uid, [('company_id', '=', company_id)], context=context)
-        warehouse_id = warehouse_ids and warehouse_ids[0] or False
-        location_id = warehouse_obj.browse(cr, uid, warehouse_id, context=context).lot_input_id.id
+        
+        location_id = indent.warehouse_id.lot_stock_id.id
+        
         res = {
             'name': line.name,
             'origin': indent.name,
@@ -259,12 +265,11 @@ class indent_indent(osv.Model):
         return res
     
     def _prepare_indent_line_move(self, cr, uid, indent, line, picking_id, date_planned, context=None):
-        location_id = self._default_stock_location(cr, uid, context=context)
+        
+        location_id = indent.warehouse_id.lot_stock_id.id
+        
         res = {
             'name': line.name,
-#             'indent': indent.id,
-#             'indentor': indent.indentor_id.id,
-#             'department_id': indent.department_id.id,
             'picking_id': picking_id,
             'product_id': line.product_id.id,
             'date': date_planned,
@@ -461,7 +466,7 @@ class indent_product_lines(osv.Model):
         if not product.seller_ids:
             raise osv.except_osv(_("Warning !"), _("You must define at least one supplier for this product"))
         
-        if product.qty_available and product.virtual_available > 0:
+        if product.qty_available > 0:
             result['type'] = 'make_to_stock'
         
         #result['name'] = product_obj.name_get(cr, uid, [product.id])[0][1]

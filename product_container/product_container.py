@@ -25,7 +25,7 @@ class product_product(osv.Model):
     _inherit = 'product.product'
  
     _columns = {
-        'container_ok': fields.boolean('Container'),
-        'container_id': fields.many2one('product.product', 'Container', domain=[('container_ok','=',True)])
+        'container_ok': fields.boolean('Container / Repair Service'),
+        'container_id': fields.many2one('product.product', 'Container / Repair Product', domain=[('container_ok','=',True)])
     }
 product_product()

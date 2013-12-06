@@ -53,8 +53,7 @@
                                 <field name="insurance_type"
                                     on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
                                     class="oe_inline oe_edit_only" />
-                                <field name="insurance" class="oe_inline"
-                                    attrs="{'invisible':[('insurance_type','=','include')]}" />
+                                <field name="insurance" class="oe_inline" />
                                 <label string="Per Unit" class="oe_inline"
                                     attrs="{'invisible':[('insurance_type','!=','per_unit')]}" />
                                 <label string="%%" class="oe_inline"

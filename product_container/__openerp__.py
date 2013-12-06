@@ -27,9 +27,15 @@
     'website' : 'http://www.openerp.com',
     'summary' : 'Managing the container products',
     'description' : """
-Managing the container products
-=================================
-* Useful for to track and deal of containers which is going to take back from customer in which product delivered (i.e. Oxygen Gas delivered in Bottle)
+Manage Product Container
+==========================
+Useful to manage and track containers in which products are delivered to the customers and to be taken back from customers.  
+e.g. Oxygen Gas delivered in Bottle
+
+* Define product as container (e.g. Bottle)
+* Select container in products (e.g. Oxygen)
+* Track containers on hand
+* Track containers to be taken back from customers
 """,
     'depends' : ['product'],
     'data' : [
@@ -40,7 +46,7 @@ Managing the container products
     ],
 
     'demo': [],
-
+    'images': ['images/container1.png', 'images/container2.png', 'images/container3.png'],
     'installable' : True,
     'application' : False,
 }

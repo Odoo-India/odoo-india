@@ -117,8 +117,7 @@
                                 <field name="move_lines" context="{'address_in_id': partner_id, 'tree_view_ref':'view_move_picking_tree', 'picking_type': 'receipt'}">
                                     <tree string="Receipt">
                                         <field name="product_id"/>
-                                        <field name="new_rate" attrs="{'readonly':[('state','in',('done','cancel'))]}"/>
-                                        <field name="rate" invisible="1"/>
+                                        <field name="total_cost"/>
                                         <field name="product_qty" sum="Total Quantity"/>
                                         <button name="%(stock.track_line)d" string="Split in Serial Number"
                                             groups="stock.group_production_lot" type="action" icon="gtk-justify-fill"
@@ -156,9 +155,7 @@
                                                 <field name="product_id"
                                                     on_change="onchange_product_id(product_id,location_id,location_dest_id, False)" />
                                                 <field name="product_uom"/>
-                                                <field name="new_rate"
-                                                    on_change="onchange_rate(product_qty,new_rate, diff,less_diff)" />
-                                                <field name="rate" string="Rate(Before Taxes)"/>
+                                                <field name="total_cost"/>
                                                 <field name="location_id" groups="stock.group_locations" invisible="1"/>
                                                 <field name="location_dest_id" groups="stock.group_locations" invisible="1"/>
                                                 <field name="product_uos" invisible="1"/>
@@ -186,9 +183,6 @@
                                     </form>
                                 </field>
                                 <group class="oe_subtotal_footer oe_right">
-                                    <field name="amount_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                    <field name="total_diff" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                    <field name="import_duty" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <div class="oe_subtotal_footer_separator oe_inline">
                                         <label for="amount_total"/>
                                         <button name="button_dummy" states="draft,assigned,approved,confirmed"

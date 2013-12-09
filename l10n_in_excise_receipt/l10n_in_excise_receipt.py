@@ -48,34 +48,13 @@ class stock_picking_receipt(osv.Model):
         # instead of it's own workflow (which is not existing)
         return self.pool.get('stock.picking')._workflow_signal(cr, uid, ids, signal, context=context)
 
-    def purchase_amount(self, cr, uid, purchase_id, product_id, context=None):
-        res = {}
-        line_price = 0.0
-        purchase_line_obj = self.pool.get('purchase.order.line')
-        line_id = purchase_line_obj.search(cr, uid, [('order_id', '=', purchase_id), ('product_id', '=', product_id)])
-        if not line_id:
-            res.update({'new_price':0.0})
-            return res
-        for line in purchase_line_obj.browse(cr, uid, line_id, context=context):
-            line_price = line.new_price
-            res.update({'new_price': line_price, 'order': line.order_id})
-        return res
-
     def _total_amount(self, cr, uid, ids, name, args, context=None):
-        result = dict([(id, {'amount_total':0.0, 'total_diff':0.0, 'amount_subtotal':0.0, 'import_duty':0.0}) for id in ids])
+        result = {}
         for receipt in self.browse(cr, uid, ids, context=context):
             total = 0.0
-            diff = 0.0
-            import_duty = 0.0
-            for line in receipt.move_lines:
-                po_dict = self.purchase_amount(cr, uid, receipt.purchase_id.id, line.product_id.id, context=context)
-                diff += line.diff_amount
-                total += round(po_dict['new_price'],2) * line.product_qty
-                import_duty += line.import_duty
-            result[receipt.id]['total_diff'] = diff
-            result[receipt.id]['import_duty'] = import_duty
-            result[receipt.id]['amount_subtotal'] = total
-            result[receipt.id]['amount_total'] = total + (diff + import_duty)
+            for move in receipt.move_lines:
+                total += move.total_cost
+            result[receipt.id] = total
         return result
 
     def button_dummy(self, cr, uid, ids, context=None):
@@ -98,18 +77,20 @@ class stock_picking_receipt(osv.Model):
                     move_obj.write(cr, uid, [move.id], {'diff': 0, 'less_diff': diff}, context=context)
         return True
 
+    def create(self, cr, user, vals, context=None):
+        if ('name' not in vals) or (vals.get('name')=='/'):
+            seq_obj_name =  self._name
+            vals['name'] = self.pool.get('ir.sequence').get(cr, user, seq_obj_name)
+        return self.pool.get('stock.picking').create(cr, user, vals, context=context)
+
     _columns = {
         'freight':fields.float('Freight', track_visibility='onchange'),
         'product_id': fields.related('move_lines', 'product_id', type='many2one', relation='product.product', string='Products'),
         'inward_id': fields.many2one('stock.picking.in', 'Inward', ondelete='set null', domain=[('type','=','in')]),
         'inward_date': fields.related('inward_id', 'date_done', type='datetime', string='Inward Date', readonly=True, store=True),
-#         'amount_total': fields.function(_total_amount, multi="cal", type="float", string='Total', store=True),
-        'amount_total': fields.float('Total'),
-#         'total_diff': fields.function(_total_amount, multi="cal", type="float", string='Total Diff', help="Total Diff", store=True),
-        'total_diff': fields.float('Total Diff'),
-#         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Total Amount', help="Total Amount(computed as (Total - Total Diff))", store=True),
-        'amount_subtotal': fields.float('Total Amount'),
-#         'import_duty': fields.function(_total_amount, multi="cal", type="float", string='Import Duty', help="Total Import Duty", store=True),
+#         'other_charges': fields.function(_total_amount, multi="cal", type="float", string='Other Charges', store=True),
+#         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Sub Total', store=True),
+        'amount_total': fields.function(_total_amount, multi="cal", type="float", string='Total', store=True),
         'import_duty': fields.float('Import Duty'),
         'date_done': fields.datetime('Date of Transfer', help="Date of Completion", track_visibility='onchange'),
         'state': fields.selection([
@@ -133,10 +114,16 @@ stock_picking_receipt()
 class stock_move(osv.osv):
     _inherit = "stock.move"
 
+    def _total_cost(self, cr, uid, ids, name, args, context=None):
+        result = {}
+        for move in self.browse(cr, uid, ids, context=context):
+            other_charges = move.excies + move.cess + move.higher_cess + move.import_duty
+            subtotal = (move.product_qty * move.price_unit)
+            result[move.id] = other_charges + subtotal
+        return result
+
     _columns = {
-        'rate': fields.float('Rate', digits_compute=dp.get_precision('Account'), help="Rate for the product which is related to Purchase order"),
         'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'), ('receipt', 'Receipt'), ('opening', 'Opening')], string='Shipping Type', store=True),
-        'new_rate': fields.float('Rate', help="Rate for the product which is calculate after adding all tax"),
         'excies': fields.float('Excies'),
         'cess': fields.float('Cess'),
         'higher_cess': fields.float('Higher Cess'),
@@ -145,12 +132,16 @@ class stock_move(osv.osv):
         'exe_cess': fields.float('Exempted Cess'),
         'exe_higher_cess': fields.float('Exempted Higher Cess'),
         'exe_import_duty': fields.float('Exempted Import Duty'),
-        'total_cost': fields.float('Sub Total', digits_compute=dp.get_precision('Account')),
+        'total_cost': fields.function(_total_cost, type="float", string='Sub Total', store=True),
         'package_and_forwording': fields.float('Packing & Forwarding', digits_compute=dp.get_precision('Account')),
         'freight': fields.float('Freight', digits_compute=dp.get_precision('Account')),
         'insurance': fields.float('Insurance', digits_compute=dp.get_precision('Account')),
         'analytic_account_id':fields.many2one('account.analytic.account','Project'),
         'discount': fields.float('Discount'),
+    }
+
+    _defaults = {
+        'name': '/',
     }
 
     def onchange_excise(self, cr, uid, ids, excise, cess, higher_cess, import_duty, context=None):

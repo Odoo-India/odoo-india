@@ -90,7 +90,7 @@ class stock_picking_receipt(osv.Model):
         'inward_date': fields.related('inward_id', 'date_done', type='datetime', string='Inward Date', readonly=True, store=True),
 #         'other_charges': fields.function(_total_amount, multi="cal", type="float", string='Other Charges', store=True),
 #         'amount_subtotal': fields.function(_total_amount, multi="cal", type="float", string='Sub Total', store=True),
-        'amount_total': fields.function(_total_amount, multi="cal", type="float", string='Total', store=True),
+        'amount_total': fields.function(_total_amount, type="float", string='Total', store=True),
         'import_duty': fields.float('Import Duty'),
         'date_done': fields.datetime('Date of Transfer', help="Date of Completion", track_visibility='onchange'),
         'state': fields.selection([
@@ -115,14 +115,16 @@ class stock_move(osv.osv):
     _inherit = "stock.move"
 
     def _total_cost(self, cr, uid, ids, name, args, context=None):
-        result = {}
+        result = dict([(id, {'rate': 0.0, 'total_cost': 0.0}) for id in ids])
         for move in self.browse(cr, uid, ids, context=context):
             other_charges = move.excies + move.cess + move.higher_cess + move.import_duty
             subtotal = (move.product_qty * move.price_unit)
-            result[move.id] = other_charges + subtotal
+            result[move.id]['rate'] = subtotal
+            result[move.id]['total_cost'] = other_charges + subtotal
         return result
 
     _columns = {
+        'rate': fields.function(_total_cost, multi='cals', type='float', string='Sub Total', store=True),
         'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'), ('receipt', 'Receipt'), ('opening', 'Opening')], string='Shipping Type', store=True),
         'excies': fields.float('Excies'),
         'cess': fields.float('Cess'),
@@ -132,7 +134,7 @@ class stock_move(osv.osv):
         'exe_cess': fields.float('Exempted Cess'),
         'exe_higher_cess': fields.float('Exempted Higher Cess'),
         'exe_import_duty': fields.float('Exempted Import Duty'),
-        'total_cost': fields.function(_total_cost, type="float", string='Sub Total', store=True),
+        'total_cost': fields.function(_total_cost, multi='cals', type='float', string='Sub Total', store=True),
         'package_and_forwording': fields.float('Packing & Forwarding', digits_compute=dp.get_precision('Account')),
         'freight': fields.float('Freight', digits_compute=dp.get_precision('Account')),
         'insurance': fields.float('Insurance', digits_compute=dp.get_precision('Account')),

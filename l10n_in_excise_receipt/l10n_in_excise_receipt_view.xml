@@ -155,7 +155,8 @@
                                                 <field name="product_id"
                                                     on_change="onchange_product_id(product_id,location_id,location_dest_id, False)" />
                                                 <field name="product_uom"/>
-                                                <field name="total_cost"/>
+                                                <field name="price_unit"/>
+                                                <field name="rate"/>
                                                 <field name="location_id" groups="stock.group_locations" invisible="1"/>
                                                 <field name="location_dest_id" groups="stock.group_locations" invisible="1"/>
                                                 <field name="product_uos" invisible="1"/>

@@ -27,11 +27,11 @@
     'website' : 'http://www.openerp.com',
     'summary' : 'Managing Gate Passes',
     'description' : """
-Managing Gate Passes.
-===================== 
-* Document that allows gate keeper to pass the out going material, products, etc..
-* Support returnable and non returnable gatepass, inform to warehouse for returning items automatically 
-* Reports that allows you to track the pending gatepass
+Gate Pass
+===========
+* Document that allows gate keeper to pass the outgoing material, products, etc.
+* Supports returnable and non returnable gate pass, Track returning items automatically
+* Report that allows you to track the pending gate pass
 """,
     'depends' : ['stock'],
     'data' : [

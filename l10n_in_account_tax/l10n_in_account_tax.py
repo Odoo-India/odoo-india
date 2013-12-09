@@ -22,14 +22,19 @@
 import time
 from openerp.osv import fields, osv
 
-TAX_TYPES = [('excise', 'Excise'),
+TAX_TYPES = [('excise', 'Central Excise'),
     ('cess', 'Cess'),
     ('hedu_cess', 'Higher Education Cess'),
     ('vat', 'VAT'),
     ('add_vat','Additional VAT'),
-    ('cst', 'CST'),
-    ('other', 'Other'),
-    ('service', 'Service')
+    ('cst', 'Central Sales Tax'),
+    ('service', 'Service Tax'),
+    ('tds','Tax Deducted at Source'),
+    ('tcs','Tax Collected at Source'),
+    ('cform','C Form'),
+    ('hform','H Form'),
+    ('import_duety','Import Duety'),
+    ('other', 'Other')
 ]
 
 class account_tax(osv.osv):

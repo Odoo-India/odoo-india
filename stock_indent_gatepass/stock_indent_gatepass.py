@@ -21,6 +21,19 @@
 
 from openerp.osv import fields, osv
 
+class indent_indent(osv.Model):
+    _inherit = 'indent.indent'
+   
+    def _check_gatepass_flow(self, cr, uid, indent, context):
+        #TODO: You can check for specific product and return True which can not be sent outside company for repairing.
+        return False
+    
+    def create_repairing_gatepass(self, cr, uid, indent, context):
+        #TODO: create a gatepass based on the indent, should be in draft mode waiting for the process.
+        pass
+    
+indent_indent()
+
 class stock_gatepass(osv.Model):
     _inherit = 'stock.gatepass'
     

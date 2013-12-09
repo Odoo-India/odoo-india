@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Tax Categories',
+    'name': 'Indian Tax Category',
     'version': '1.1',
     'category': 'Indian Localization',
     'description': """Configure Indian Tax with Category

@@ -4,14 +4,17 @@
 		<record id='view_product_container_form' model='ir.ui.view'>
 			<field name="name">product.product.container.form</field>
 			<field name="model">product.product</field>
-			<field name="inherit_id" ref="product.product_normal_form_view"/>
+			<field name="inherit_id" ref="product.product_normal_form_view" />
 			<field name="arch" type="xml">
-			     <label for="sale_ok" position="after">
-			         <field name="container_ok"/>
-			         <label for="container_ok"/>
-			      </label>
-				<field name="type" position="before">
-				    <field name="container_id" attrs="{'invisible':[('container_ok','=',True)]}"/>
+				<label for="sale_ok" position="after">
+					<field name="container_ok" attrs="{'invisible':[('type','=','service')]}"/>
+					<label for="container_ok" attrs="{'invisible':[('type','=','service')]}"/>
+				</label>
+				<field name="list_price" position="after">
+					<field name="container_id"
+						attrs="{'invisible':['|', ('container_ok','=',True), ('type','=','service')]}" />
+
+					<field name="repair_id" attrs="{'invisible':[('type','!=','service')]}" />
 				</field>
 			</field>
 		</record>

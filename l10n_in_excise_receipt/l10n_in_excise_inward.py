@@ -69,6 +69,7 @@ class stock_picking(osv.Model):
         'despatch_mode': fields.many2one('dispatch.mode', 'Despatch Mode'),
 
         # Fields for receipt
+        'inward_id': fields.many2one('stock.picking.in', 'Inward', ondelete='set null', domain=[('type','=','in')]),
         'freight':fields.float('Freight', track_visibility='onchange'),
         'new_rate': fields.float('Rate', help="Rate for the product which is calculate after adding all tax"),
         'excies': fields.float('Excies'),
@@ -132,31 +133,8 @@ class stock_picking(osv.Model):
         receipt_obj = self.pool.get('stock.picking.receipt')
         stock_move = self.pool.get('stock.move')
         warehouse_obj = self.pool.get('stock.warehouse')
-        track_obj = self.pool.get('stock.move.tracking')
-
-        for pick in self.browse(cr, uid, ids, context=context):
-            total_challan_qty = 0.0
-            for move in pick.move_lines:
-                qty_variance = move.product_qty * (1+ (move.product_id.variance)/ 100)
-                if move.product_qty <= move.challan_qty and move.challan_qty > qty_variance:
-                    raise osv.except_osv(_('Error!'), _('Unable to process document as challan quantity  can not be more then ordered quantity including variance !'))
-
-                total_challan_qty += move.challan_qty
-        if total_challan_qty <= 0:
-            raise osv.except_osv(_('Error!'), _('Unable to process document as all challan quantity are 0 in this document !'))
-
-        #Does entry got the issued item with affect for the new rate and decrease qty
-        if context.get('active_model') == 'stock.picking':
-            for pick in self.browse(cr, uid, ids, context=context):
-                if pick.reverse_transfer:
-                    track_obj.create_stock_move_tracking(cr, uid, pick, context=context)
-                else:
-                    self.update_issue_rate(cr, uid, [pick.id], context)
-                    self.issue_items(cr, uid, [pick.id], context)
 
         res = super(stock_picking, self).do_partial(cr, uid, ids, partial_datas, context=context)
-        for pick in res:
-            self.write(cr, uid, [pick], {'name':False})
 
         vals = {}
         if context.get('default_type') == 'in':
@@ -176,22 +154,15 @@ class stock_picking(osv.Model):
                         raise osv.except_osv(_('Configuration Error!'), _('Unable to locate warehouse from Order or Company !'))
 
                 if pick.state == 'done':
+                    
                     for move in pick.move_lines:
-                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id, 0, 0, 0, 0, 0, context)
-                        dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id', False)[0]})
-                        move_line.append(stock_move.copy(cr, uid, move.id, dict['value'], context=context))
-                        if move.product_id and move.product_id.ex_chapter:
-                            vals.update({'excisable_item': True})
+                        dict1 = dict(location_id = warehouse_dict.get('lot_input_id', False)[0], location_dest_id = warehouse_dict.get('lot_stock_id', False)[0])
+                        move_line.append(stock_move.copy(cr, uid, move.id, dict1, context=context))
                     vals.update({'inward_id': pick.id or False})
                 else:
                     for move in pick.backorder_id.move_lines:
-                        dict = stock_move.onchange_amount(cr, uid, [move.id], pick.purchase_id.id, move.product_id.id, 0, 0, 0, 0, 0, context)
-                        dict['value'].update({'location_id': warehouse_dict.get('lot_input_id', False)[0], 'location_dest_id': warehouse_dict.get('lot_stock_id', False)[0]})
-                        move_line.append(stock_move.copy(cr, uid, move.id, dict['value'], context=context))
-                        for move in pick.move_lines:
-                            stock_move.write(cr, uid, [move.id], {'challan_qty':0.0})
-                        if move.product_id and move.product_id.ex_chapter:
-                            vals.update({'excisable_item': True})
+                        dict1 = dict(location_id = warehouse_dict.get('lot_input_id', False)[0], location_dest_id = warehouse_dict.get('lot_stock_id', False)[0])
+                        move_line.append(stock_move.copy(cr, uid, move.id, dict1, context=context))
                     vals.update({'inward_id': pick.backorder_id and pick.backorder_id.id or False})
 
                 vals.update({'name': False,
@@ -203,28 +174,9 @@ class stock_picking(osv.Model):
                     'move_lines': [(6, 0, move_line)],
                     'challan_no':pick.challan_no,
                     'date_done':pick.date_done,
-                    'lab_no': pick.lab_no,
                 })
             receipt_obj.create(cr, uid, vals, context=context)
 
-        elif context.get('default_type') == 'receipt':
-            for pick in self.browse(cr, uid, ids, context=context):
-                move_obj = self.pool.get('stock.move')
-                purchase_obj = self.pool.get('purchase.order')
-                purchase_line_obj = self.pool.get('purchase.order.line')
-                if pick.state == 'done':
-                    advance_adjustment = pick.purchase_id.advance_adjustment
-                    total_ajustment_amt = pick.purchase_id.total_ajustment_amt
-                    for move in pick.move_lines:
-                        amount = move.challan_qty * move.rate
-                        advance_amt = pick.purchase_id.advance_amount - advance_adjustment
-                        total_amt = pick.purchase_id.amount_untaxed - total_ajustment_amt
-                        advance_adjust = (amount * advance_amt) / total_amt
-                        advance_adjustment += advance_adjust
-                        total_ajustment_amt += amount
-                        purchase_line_obj.write(cr, uid, move.purchase_line_id.id, {'advance_adjust': move.purchase_line_id and move.purchase_line_id.advance_adjust or 0.0 + advance_adjust},context)
-                        move_obj.write(cr, uid, move.id, {'advance_adjustment': advance_adjust},context)
-                    purchase_obj.write(cr, uid, pick.purchase_id.id, {'advance_adjustment': advance_adjustment, 'total_ajustment_amt' : total_ajustment_amt},context)
         return res
 
 stock_picking()

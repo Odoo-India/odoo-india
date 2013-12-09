@@ -146,9 +146,9 @@ class stock_move(osv.osv):
         'exe_higher_cess': fields.float('Exempted Higher Cess'),
         'exe_import_duty': fields.float('Exempted Import Duty'),
         'total_cost': fields.float('Sub Total', digits_compute=dp.get_precision('Account')),
-        'packing_unit': fields.float('Packing Unit', digits_compute=dp.get_precision('Account')),
-        'insurance_unit': fields.float('Insurance Unit', digits_compute=dp.get_precision('Account')),
-        'freight_unit': fields.float('Freight Unit', digits_compute=dp.get_precision('Account')),
+        'package_and_forwording': fields.float('Packing & Forwarding', digits_compute=dp.get_precision('Account')),
+        'freight': fields.float('Freight', digits_compute=dp.get_precision('Account')),
+        'insurance': fields.float('Insurance', digits_compute=dp.get_precision('Account')),
         'analytic_account_id':fields.many2one('account.analytic.account','Project'),
         'discount': fields.float('Discount'),
     }
@@ -157,5 +157,15 @@ class stock_move(osv.osv):
         return {'value': {'excise': excise or 0.0, 'exe_excies':excise or 0.0, 'cess': cess or 0.0, 'exe_cess': cess or 0.0, 'higher_cess': higher_cess or 0.0, 'exe_higher_cess': higher_cess or 0.0, 'import_duty': import_duty or 0.0, 'exe_import_duty': import_duty or 0.0}}
 
 stock_move()
+
+class purchase_order(osv.Model):
+    _inherit = "purchase.order"
+
+    def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
+        res = super(super, purchase_order)._prepare_order_line_move(cr, uid, order=order, order_line=order_line, picking_id=picking_id, context=context)
+        res = dict(res, package_and_forwording=order_line.package_and_forwording, freight=order_line.freight, insurance=order_line.insurance, discount=order_line.discount)
+        return res
+
+purchase_order()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

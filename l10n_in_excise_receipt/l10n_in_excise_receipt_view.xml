@@ -117,7 +117,7 @@
                                 <field name="move_lines" context="{'address_in_id': partner_id, 'tree_view_ref':'view_move_picking_tree', 'picking_type': 'receipt'}">
                                     <tree string="Receipt">
                                         <field name="product_id"/>
-                                        <field name="total_cost"/>
+                                        <field name="price_unit"/>
                                         <field name="product_qty" sum="Total Quantity"/>
                                         <button name="%(stock.track_line)d" string="Split in Serial Number"
                                             groups="stock.group_production_lot" type="action" icon="gtk-justify-fill"
@@ -131,7 +131,7 @@
                                         <field name="exe_cess" sum="Total Cess" invisible="1"/>
                                         <field name="exe_higher_cess" sum="Total Higher Cess" invisible="1"/>
                                         <field name="exe_import_duty" sum="Total Import Duty" invisible="1"/>
-                                        <field name="total_cost"/>
+                                        <field name="rate"/>
                                         <field name="state" invisible="1"/>
                                     </tree>
                                     <form string="Receipt" version="7.0">
@@ -156,9 +156,6 @@
                                                     on_change="onchange_product_id(product_id,location_id,location_dest_id, False)" />
                                                 <field name="product_uom"/>
                                                 <field name="price_unit"/>
-                                                <field name="rate"/>
-                                                <field name="location_id" groups="stock.group_locations" invisible="1"/>
-                                                <field name="location_dest_id" groups="stock.group_locations" invisible="1"/>
                                                 <field name="product_uos" invisible="1"/>
                                             </group>
                                             <group>
@@ -181,9 +178,17 @@
                                                 <field name="exe_import_duty"/>
                                             </group>
                                         </group>
+                                        <group>
+                                            <group>
+                                                <field name="other_cost"/>
+                                            </group>
+                                        </group>
                                     </form>
                                 </field>
                                 <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="import_duty" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <div class="oe_subtotal_footer_separator oe_inline">
                                         <label for="amount_total"/>
                                         <button name="button_dummy" states="draft,assigned,approved,confirmed"

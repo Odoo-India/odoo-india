@@ -22,16 +22,21 @@
 import time
 from openerp.osv import fields, osv
 
+TAX_TYPES = [('excise', 'Excise'),
+    ('cess', 'Cess'),
+    ('hedu_cess', 'Higher Education Cess'),
+    ('vat', 'VAT'),
+    ('add_vat','Additional VAT'),
+    ('cst', 'CST'),
+    ('other', 'Other'),
+    ('service', 'Service')
+]
+
 class account_tax(osv.osv):
     _inherit = 'account.tax'
     
     _columns = {
-            'tax_categ': fields.selection([('excise', 'Excise'),
-                ('cess', 'Cess'),
-                ('vat', 'VAT'),
-                ('cst', 'CST'),
-                ('other', 'Other'),
-            ], 'Tax Category')
+        'tax_categ': fields.selection(TAX_TYPES, 'Tax Category')
     }
     
     def _unit_compute(self, cr, uid, taxes, price_unit, product=None, partner=None, quantity=0):
@@ -41,23 +46,23 @@ class account_tax(osv.osv):
         for tax in taxes:
             # we compute the amount for the current tax object and append it to the result
             data = {'id':tax.id,
-                    'name':tax.description and tax.description + " - " + tax.name or tax.name,
-                    'account_collected_id':tax.account_collected_id.id,
-                    'account_paid_id':tax.account_paid_id.id,
-                    'account_analytic_collected_id': tax.account_analytic_collected_id.id,
-                    'account_analytic_paid_id': tax.account_analytic_paid_id.id,
-                    'base_code_id': tax.base_code_id.id,
-                    'ref_base_code_id': tax.ref_base_code_id.id,
-                    'sequence': tax.sequence,
-                    'base_sign': tax.base_sign,
-                    'tax_sign': tax.tax_sign,
-                    'ref_base_sign': tax.ref_base_sign,
-                    'ref_tax_sign': tax.ref_tax_sign,
-                    'price_unit': cur_price_unit,
-                    'tax_code_id': tax.tax_code_id.id,
-                    'ref_tax_code_id': tax.ref_tax_code_id.id,
-                    'include_base_amount': tax.include_base_amount,
-                    'parent_id':tax.parent_id
+                'name':tax.description and tax.description + " - " + tax.name or tax.name,
+                'account_collected_id':tax.account_collected_id.id,
+                'account_paid_id':tax.account_paid_id.id,
+                'account_analytic_collected_id': tax.account_analytic_collected_id.id,
+                'account_analytic_paid_id': tax.account_analytic_paid_id.id,
+                'base_code_id': tax.base_code_id.id,
+                'ref_base_code_id': tax.ref_base_code_id.id,
+                'sequence': tax.sequence,
+                'base_sign': tax.base_sign,
+                'tax_sign': tax.tax_sign,
+                'ref_base_sign': tax.ref_base_sign,
+                'ref_tax_sign': tax.ref_tax_sign,
+                'price_unit': cur_price_unit,
+                'tax_code_id': tax.tax_code_id.id,
+                'ref_tax_code_id': tax.ref_tax_code_id.id,
+                'include_base_amount': tax.include_base_amount,
+                'parent_id':tax.parent_id
             }
             res.append(data)
             if tax.type == 'percent':
@@ -102,6 +107,7 @@ class account_tax(osv.osv):
                                 r[name + '_sign'] = latest[name + '_sign']
                                 r['amount'] = data['amount']
                                 latest[name + '_code_id'] = False
+            
             if tax.include_base_amount:
                 cur_price_unit += amount2
                 # Check for Child tax addition. If Tax has childrens and they have also set include in base amount we will add it for next tax calculation...
@@ -114,14 +120,8 @@ class account_invoice_tax(osv.osv):
     _inherit = 'account.invoice.tax'
     
     _columns = {
-            'tax_categ': fields.selection(
-            [('excise', 'Excise'),
-             ('cess', 'Cess'),
-             ('vat', 'VAT'),
-             ('cst', 'CST'),
-             ('other', 'Other'),
-            ], 'Tax Category')
-        }
+        'tax_categ': fields.selection(TAX_TYPES, 'Tax Category')
+    }
     
     def compute(self, cr, uid, invoice_id, context=None):
         res = super(account_invoice_tax, self).compute(cr, uid, invoice_id, context=None)

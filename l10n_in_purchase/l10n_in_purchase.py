@@ -195,7 +195,7 @@ class purchase_order_line(osv.Model):
         res = {}
         cur_obj = self.pool.get('res.currency')
         tax_obj = self.pool.get('account.tax')
-        total_qty = package_amount = insurance_amount =packing_and_forwading= freight_amount =freight= 0.0
+        total_qty = package_amount = insurance_amount = packing_and_forwading = freight_amount = freight= 0.0
         for line in self.browse(cr, uid, ids, context=context):
             res[line.id] = {
                 'package_and_forwording':0.0,
@@ -207,7 +207,7 @@ class purchase_order_line(osv.Model):
             if line.order_id.package_and_forwording_type == 'include':
                 if line.order_id.amount_untaxed > 0.0:
                     package_amount = ( line.order_id.package_and_forwording * (price * line.product_qty))/ line.order_id.amount_untaxed
-                    price = price - (package_amount/ line.product_qty)
+                    price = price - (package_amount / line.product_qty)
                 res[line.id]['package_and_forwording'] = package_amount
             if line.order_id.freight_type == 'include':
                 if line.order_id.amount_untaxed > 0.0:

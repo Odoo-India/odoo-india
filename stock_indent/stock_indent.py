@@ -127,6 +127,7 @@ class indent_indent(osv.Model):
         'type': fields.selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], 'Type', required=True, track_visibility='onchange', readonly=True, states={'draft': [('readonly', False)]}),
         'product_lines': fields.one2many('indent.product.lines', 'indent_id', 'Products', readonly=True, states={'draft': [('readonly', False)], 'waiting_approval': [('readonly', False)]}),
         'picking_id': fields.many2one('stock.picking','Picking'),
+        'in_picking_id': fields.many2one('stock.picking','Picking'),
         'description': fields.text('Additional Information', readonly=True, states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', readonly=True, states={'draft': [('readonly', False)]}),
         'active': fields.boolean('Active'),
@@ -381,6 +382,7 @@ class indent_indent(osv.Model):
         if picking_id:
             wf_service.trg_validate(uid, 'stock.picking', picking_id, 'button_confirm', cr)
         
+        self.write(cr, uid, [indent.id], {'in_picking_id': picking_id})
         return True
    
     def create_repairing_gatepass(self, cr, uid, indent, context):
@@ -400,7 +402,7 @@ class indent_indent(osv.Model):
         if self._check_gatepass_flow(cr, uid, indent, context):
             self.create_transfer_move(cr, uid, indent, context)
         else:
-            self.action_picking_create(cr, uid, ids, context)
+            self.create_repairing_gatepass(cr, uid, ids, context)
         
         if indent.product_lines:
             picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
@@ -448,6 +450,26 @@ class indent_indent(osv.Model):
         }
         return result
     
+    def action_deliver_products(self, cr, uid, ids, context=None):
+        '''
+        This function returns an action that display internal move of given indent ids.
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time'
+        picking_id = self.browse(cr, uid, ids[0], context=context).in_picking_id.id
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_form')
+        result = {
+            'name': _('Receive Product'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': res and res[1] or False,
+            'res_model': 'stock.picking',
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': picking_id,
+        }
+        return result
+
     def unlink(self, cr, uid, ids, context=None):
         for indent in self.browse(cr, uid, ids):
             if indent.state != 'draft':

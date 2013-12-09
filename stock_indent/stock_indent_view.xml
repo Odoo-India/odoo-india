@@ -68,8 +68,12 @@
 						<button name="indent_inprogress" string="Approve" states="waiting_approval"
 							class="oe_highlight" />
 						<button name="indent_reject" string="Reject" states="waiting_approval" />
-						<button name="action_receive_products" string="Receive Product(s)"
+						
+						<button name="action_deliver_products" string="Transfer for Repair"
+                            type="object" class="oe_highlight" attrs="{'invisible': ['|', ('type','=','new'), ('state','in',['draft','confirm', 'waiting_approval','received'])]}"/>
+						<button name="action_receive_products" string="Issue Product(s)"
 							states="inprogress" type="object" class="oe_highlight" />
+						
 						<field name="state" widget="statusbar"
 							statusbar_visible="draft,waiting_approval,inprogress,received"
 							statusbar_colors='{"reject":"red"}' />

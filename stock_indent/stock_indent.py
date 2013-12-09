@@ -454,8 +454,18 @@ class indent_indent(osv.Model):
         '''
         This function returns an action that display internal move of given indent ids.
         '''
+        gatepass_pool = self.pool.get('stock.gatepass')
+        
         assert len(ids) == 1, 'This option should only be used for a single id at a time'
         picking_id = self.browse(cr, uid, ids[0], context=context).in_picking_id.id
+        if not picking_id:
+            gatepass_ids = gatepass_pool.search(cr, uid, [('indent_id','=',ids[0])])
+            if gatepass_ids:
+                picking_id = gatepass_pool.browse(cr, uid, gatepass_ids[0]).out_picking_id.id
+        
+        if not picking_id:
+            raise osv.except_osv(_('Invalid Action!'), _('You have not created gatepass / delivery order for repairing !'))
+        
         res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_form')
         result = {
             'name': _('Receive Product'),

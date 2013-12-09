@@ -43,11 +43,20 @@ class stock_gatepass(osv.Model):
  
         if not indent:
             return {'value': result}
-        products = self.pool.get('indent.indent').browse(cr, uid, indent).product_lines
-        location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_stock')
-        location = location_id and location_id[1] or False
+        indent = self.pool.get('indent.indent').browse(cr, uid, indent)
+        products = indent.product_lines
+        location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_suppliers')
+        supplier_location = location_id and location_id[1] or False
         for product in products:
-            vals = dict(product_id=product.original_product_id.id or product.product_id.id or False, product_qty=product.product_uom_qty, uom_id=product.product_uom.id, name=product.product_id.name, location_id=location, location_dest_id=location, price_unit=product.price_unit)
+            vals = dict(
+                product_id=product.original_product_id.id or product.product_id.id or False, 
+                product_qty=product.product_uom_qty, 
+                uom_id=product.product_uom.id, 
+                name=product.product_id.name, 
+                location_id=indent.department_id.id, 
+                location_dest_id=supplier_location,
+                price_unit=product.price_unit
+            )
             lines.append(vals)
         result['line_ids'] = lines
         return {'value': result}

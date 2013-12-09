@@ -230,19 +230,27 @@ class indent_indent(osv.Model):
         for indent in self.browse(cr, uid, ids, context=context): 
             if not indent.product_lines:
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm an indent %s which has no line.' % (indent.name)))
-            
             res = {
                'name':self.pool.get('ir.sequence').get(cr, uid, 'stock.indent'),
                'state': 'waiting_approval'
             }
-            self.write(cr, uid, ids, res, context=context)
+            self.write(cr, uid, [indent.id], res, context=context)
+
+            # Add all authorities of the indent as followers
+            followers = []
+            if indent.indentor_id and indent.indentor_id.partner_id and indent.indentor_id.partner_id.id:
+                followers.append(indent.indentor_id.partner_id.id)
+            if indent.manager_id and indent.manager_id.partner_id and indent.manager_id.partner_id.id:
+                followers.append(indent.manager_id.partner_id.id)
+
+            for follower in followers:
+                self.write(cr, uid, [indent.id], {'message_follower_ids': [(4, follower)]}, context=context)
 
         return True
-    
+
     def _prepare_indent_line_procurement(self, cr, uid, indent, line, move_id, date_planned, context=None):
-        
         location_id = indent.warehouse_id.lot_stock_id.id
-        
+
         res = {
             'name': line.name,
             'origin': indent.name,
@@ -264,11 +272,10 @@ class indent_indent(osv.Model):
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
         return res
-    
+
     def _prepare_indent_line_move(self, cr, uid, indent, line, picking_id, date_planned, context=None):
-        
         location_id = indent.warehouse_id.lot_stock_id.id
-        
+
         res = {
             'name': line.name,
             'picking_id': picking_id,
@@ -285,18 +292,18 @@ class indent_indent(osv.Model):
             'state': 'draft',
             'price_unit': line.product_id.standard_price or 0.0
         }
-        
+
         if line.product_id.type in ('service'):
             if not line.original_product_id:
                 raise osv.except_osv(_("Warning !"), _("You must define material or parts that you are sending for repairing !"))
-        
+
             upd_res = {
                 'product_id':line.original_product_id.id,
                 'product_uom': line.original_product_id.uom_id.id,
                 'product_uos':line.original_product_id.uom_id.id
             }
             res.update(upd_res)
-        
+
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)
         return res
@@ -344,21 +351,20 @@ class indent_indent(osv.Model):
     def action_picking_create(self, cr, uid, ids, context=None):
         proc_obj = self.pool.get('procurement.order')
         move_obj = self.pool.get('stock.move')
+        wf_service = netsvc.LocalService("workflow")
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'
         picking_id = False
-        
+
         indent = self.browse(cr, uid, ids[0], context=context)
         if indent.product_lines:
             picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
-        
-        wf_service = netsvc.LocalService("workflow")
 
         move_ids = move_obj.search(cr,uid,[('picking_id','=',picking_id)])
         pro_ids = proc_obj.search(cr,uid,[('move_id','in',move_ids)])
         for pro in pro_ids:
             wf_service.trg_validate(uid, 'procurement.order', pro, 'button_check', cr)
-    
-        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress'}, context=context)
+
+        self.write(cr, uid, ids, {'picking_id': picking_id, 'state' : 'inprogress', 'message_follower_ids': [(4, indent.approver_id and indent.approver_id.partner_id and indent.approver_id.partner_id.id)]}, context=context)
         return picking_id
 
     def check_reject(self, cr, uid, ids):

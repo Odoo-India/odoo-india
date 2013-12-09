@@ -154,10 +154,21 @@ class stock_move(osv.osv):
     }
 
     def onchange_excise(self, cr, uid, ids, excise, cess, higher_cess, import_duty, context=None):
-        return {'value': {'excise': excise or 0.0, 'exe_excies':excise or 0.0, 'cess': cess or 0.0, 'exe_cess': cess or 0.0, 'higher_cess': higher_cess or 0.0, 'exe_higher_cess': higher_cess or 0.0, 'import_duty': import_duty or 0.0, 'exe_import_duty': import_duty or 0.0}}
+        res = {
+            'excise': excise or 0.0, 
+            'exe_excies':excise or 0.0, 
+            'cess': cess or 0.0, 
+            'exe_cess': cess or 0.0, 
+            'higher_cess': higher_cess or 0.0, 
+            'exe_higher_cess': higher_cess or 0.0, 
+            'import_duty': import_duty or 0.0, 
+            'exe_import_duty': import_duty or 0.0
+        }
+        return {'value': res}
 
 stock_move()
 
+#TODO: need to check why we need to change purchase order in receipt ? 
 class purchase_order(osv.Model):
     _inherit = "purchase.order"
 

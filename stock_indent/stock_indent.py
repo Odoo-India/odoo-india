@@ -464,9 +464,10 @@ class indent_indent(osv.Model):
                 picking_id = gatepass_pool.browse(cr, uid, gatepass_ids[0]).out_picking_id.id
         
         if not picking_id:
-            raise osv.except_osv(_('Invalid Action!'), _('You have not created gatepass / delivery order for repairing !'))
+            raise osv.except_osv(_('Invalid Action!'), _('You have not created gatepass / delivery order for Repairing Indent !'))
         
         res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_form')
+            
         result = {
             'name': _('Receive Product'),
             'view_type': 'form',

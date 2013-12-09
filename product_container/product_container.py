@@ -28,7 +28,6 @@ class product_product(osv.Model):
         'container_ok': fields.boolean('Container'),
         'container_id': fields.many2one('product.product', 'Container Product', domain=[('container_ok','=',True)]),
         
-        'repair_ok': fields.boolean('Repairable'),
-        'repair_id': fields.many2one('product.product', 'Repair Product', domain=[('type','!=','service')]),
+        'repair_id': fields.many2one('product.product', 'Repairable Product', domain=[('type','!=','service')]),
     }
 product_product()

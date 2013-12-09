@@ -169,6 +169,8 @@ class purchase_order(osv.Model):
         return {'value': res}
     
 purchase_order()
+
+
 class mill_delivery(osv.Model):
     _name = 'mill.delivery'
     _description = 'Mill Delivery'

@@ -604,7 +604,7 @@ procurement_order()
 
 class stock_picking(osv.Model):
     _inherit = 'stock.picking'
- 
+
     def action_confirm(self, cr, uid, ids, context=None):
         #Implement method that will check further verification for authority
         return super(stock_picking, self).action_confirm(cr, uid, ids, context=context)
@@ -612,7 +612,18 @@ class stock_picking(osv.Model):
     def check_approval(self, cr, uid, ids):
         #Implement method that will check further verification for authority
         return True
-     
+
+    def draft_force_assign(self, cr, uid, ids, *args):
+        res = super(stock_picking, self).draft_force_assign(cr, uid, ids, *args)
+        for picking in self.browse(cr, uid, ids):
+            followers = []
+            for move in picking.move_lines:
+                if move.indent_id and move.indent_id.indentor_id and move.indent_id.indentor_id.partner_id and move.indent_id.indentor_id.partner_id.id:
+                    followers.append(move.indent_id.indentor_id.partner_id.id)
+            for follower in followers:
+                self.write(cr, uid, [picking.id], {'message_follower_ids': [(4, follower)]})
+        return res
+
 stock_picking()
 
 class purchase_order_line(osv.Model):

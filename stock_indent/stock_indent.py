@@ -625,10 +625,16 @@ purchase_order_line()
 
 class purchase_order(osv.Model):
     _inherit = 'purchase.order'
-    
+
     _columns = {
         'indent_id': fields.related('order_line', 'indent_id', type='many2one', relation='indent.indent', string='Indent')
     }
+
+    def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
+        res = super(purchase_order, self)._prepare_order_line_move(cr, uid, order=order, order_line=order_line, picking_id=picking_id, context=context)
+        res = dict(res, indent_id = order_line.indent_id and order_line.indent_id.id or False)
+        return res
+
 purchase_order()
 
 class stock_move(osv.Model):

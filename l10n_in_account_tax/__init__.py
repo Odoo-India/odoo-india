@@ -19,25 +19,6 @@
 #
 ##############################################################################
 
-{
-    'name': 'Account Tax Fix and Category',
-    'version': '1.1',
-    'category': 'Indian Localization',
-    'description': """
-This module adds category field on tax object and fixes the calculation when child taxes are applied.
-=====================================================================================================
-
-""",
-    'author': 'OpenERP SA',
-    'website': 'http://www.openerp.com',
-    'images': [],
-    'depends': ['account'],
-    'data': [
-        'account_tax_fix_view.xml'
-    ],
-    'demo': [],
-    'installable': True,
-    'auto_install': False,
-}
+import l10n_in_account_tax
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

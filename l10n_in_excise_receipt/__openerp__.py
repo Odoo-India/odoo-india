@@ -31,13 +31,18 @@ Excise Duties in the Goods Receipt
 ================================================================================================================================================================ 
 """,
     'depends' : ['stock_indent', 'l10n_in_purchase'],
+
     'data' : [
+        'receipt_sequence.xml',
     ],
+
     'update_xml' : [
         'l10n_in_excise_receipt_view.xml',
     ],
 
-    'demo': ['dispatch_mode_demo.xml'],
+    'demo': [
+        'dispatch_mode_demo.xml'
+    ],
 
     'installable' : True,
     'application' : True,

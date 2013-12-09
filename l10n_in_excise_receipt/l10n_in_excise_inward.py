@@ -165,7 +165,7 @@ class stock_picking(osv.Model):
                         move_line.append(stock_move.copy(cr, uid, move.id, dict1, context=context))
                     vals.update({'inward_id': pick.backorder_id and pick.backorder_id.id or False})
 
-                vals.update({'name': False,
+                vals.update({'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.receipt'),
                     'partner_id': pick.partner_id.id,
                     'stock_journal_id': pick.stock_journal_id.id or False,
                     'origin': pick.origin or False,

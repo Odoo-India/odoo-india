@@ -43,7 +43,7 @@ class stock_picking(osv.Model):
 
     _columns = {
         'indent_id': fields.related('move_lines', 'indent_id', type='many2one', relation='indent.indent', string='Indents'),
-        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', readonly=True),
+        'indent_date': fields.related('indent_id', 'indent_date', type='datetime', relation='indent.indent', string='Indent Date', store=True),
         'indentor_id': fields.related('move_lines', 'indentor_id', type='many2one', relation='res.users', string='Indentor'),
         'department_id': fields.related('move_lines', 'department_id', type='many2one', relation='stock.location', string='Department'),
         'product_id': fields.related('move_lines', 'product_id', type='many2one', relation='product.product', string='Products'),
@@ -227,7 +227,7 @@ class stock_picking_in(osv.osv):
 
     def receipt_tree_view(self, cr, uid, ids, context):
         mod_obj = self.pool.get('ir.model.data')
-        action_model, action_id = tuple(mod_obj.get_object_reference(cr, uid, 'maize_purchase', 'action_picking_tree4_receipt'))
+        action_model, action_id = tuple(mod_obj.get_object_reference(cr, uid, 'l10n_in_excise_receipt', 'action_picking_tree4_receipt'))
         action = self.pool.get(action_model).read(cr, uid, action_id, context=context)
         action_ctx = str(action['context']).strip()
         ctx = eval(action_ctx)

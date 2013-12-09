@@ -162,7 +162,7 @@ class purchase_order(osv.Model):
     _inherit = "purchase.order"
 
     def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
-        res = super(super, purchase_order)._prepare_order_line_move(cr, uid, order=order, order_line=order_line, picking_id=picking_id, context=context)
+        res = super(purchase_order, self)._prepare_order_line_move(cr, uid, order=order, order_line=order_line, picking_id=picking_id, context=context)
         res = dict(res, package_and_forwording=order_line.package_and_forwording, freight=order_line.freight, insurance=order_line.insurance, discount=order_line.discount)
         return res
 

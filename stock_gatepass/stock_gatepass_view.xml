@@ -9,21 +9,15 @@
 			<field name="arch" type="xml">
 				<form string="Gate Pass" version="7.0">
 					<header>
-						<button name="gate_pass_confirm" string="Confirm" states="draft"
-							class="oe_highlight" />
-						<button name="gate_pass_pending" string="Validate" class="oe_highlight"
-							attrs="{'invisible': ['|', ('state', '!=', 'confirm'), ('return_type', '=', 'non_return')]}" />
-						<button name="gate_pass_done" string="Validate" class="oe_highlight"
-							attrs="{'invisible': ['|', ('state', '!=', 'confirm'), ('return_type', '=', 'return')]}" />
-						<button name="open_incoming_shipment" string="Receive Product(s)"
-							states="pending" class="oe_highlight" type="object" />
-						<field name="state" widget="statusbar" statusbar_visible="draft, confirm, pending, done" />
+						<button name="gate_pass_done" string="Confirm" states="draft" class="oe_highlight"/>
+						<button name="open_incoming_shipment" string="Receive Product(s)" states="pending" class="oe_highlight" type="object"/>
+						<field name="state" widget="statusbar" statusbar_visible="draft, pending, done"/>
 					</header>
 					<sheet>
 						<div class="oe_title">
 							<h1>
 								<label string="Gate Pass"
-									attrs="{'invisible': [('state','in',('draft', 'confirm', 'pending'))]}" />
+									attrs="{'invisible': [('state','in',('draft', 'pending'))]}" />
 								<label string="Draft Gate Pass" attrs="{'invisible': [('state','=','done')]}" />
 								<field name="name" class="oe_inline" readonly="1" />
 							</h1>
@@ -158,7 +152,6 @@
 					<field name="date" />
 
 					<filter string="Draft" name="state_draft" domain="[('state','=','draft')]" />
-					<filter string="Confirm" name="state_confirm" domain="[('state','=','confirm')]" />
 					<filter string="Pending" name="state_pending" domain="[('state','=','pending')]" />
 					<filter string="Done" name="state_done" domain="[('state','=','done')]" />
 					<field name="type_id" />

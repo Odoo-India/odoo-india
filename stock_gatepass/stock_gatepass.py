@@ -110,7 +110,7 @@ class stock_gatepass(osv.Model):
         'company_id': fields.many2one('res.company', 'Company', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True, readonly=True),
         'location_id': fields.many2one('stock.location', 'Source Location', readonly=True, states={'draft': [('readonly', False)]}),
-        'state':fields.selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('pending', 'Pending'), ('done', 'Done')], 'State', readonly=True),
+        'state':fields.selection([('draft', 'Draft'), ('pending', 'Pending'), ('done', 'Done')], 'State', readonly=True),
         'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non Returnable')], 'Return Type'),
         'out_picking_id': fields.many2one('stock.picking.out', 'Delivery Order', readonly=True, states={'draft': [('readonly', False)]}),
         'in_picking_id': fields.many2one('stock.picking.in', 'Incoming Shipment', readonly=True, states={'draft': [('readonly', False)]}),
@@ -219,44 +219,45 @@ class stock_gatepass(osv.Model):
         return False
 
     def action_confirm(self, cr, uid, ids, context=None):
-        picking_obj = self.pool.get('stock.picking')
-        wf_service = netsvc.LocalService("workflow")
         seq_obj = self.pool.get('ir.sequence')
-        
+
         for gatepass in self.browse(cr, uid, ids, context=context):
-            
             if not gatepass.line_ids:
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm a gate pass which has no line.'))
-            
             out_picking_id = gatepass.out_picking_id.id
             in_picking_id = False
-            
+
             if not out_picking_id:
                 out_picking_id = self.create_delivery_order(cr, uid, gatepass, context=context)
-            
+
             if gatepass.type_id and gatepass.type_id.return_type == 'return':
                 in_picking_id = self.create_incoming_shipment(cr, uid, gatepass, context=context)
-            
+
             name = seq_obj.get(cr, uid, 'stock.gatepass')
-            
             res = {
-                'state': 'confirm',
                 'name': name, 
                 'approve_date': time.strftime('%Y-%m-%d %H:%M:%S'),
                 'out_picking_id':out_picking_id,
                 'in_picking_id':in_picking_id
             }
-            
             self.write(cr, uid, [gatepass.id], res, context=context)
-    
+
         return True
 
     def action_picking_create(self, cr, uid, ids, context=None):
+        self.action_confirm(cr, uid, ids, context=context)
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'
         picking = self.browse(cr, uid, ids[0], context=context).in_picking_id.id
         self.pool.get('stock.picking.in').write(cr, uid, [picking], {'gate_pass_id': ids[0]}, context=context)
         self.write(cr, uid, ids, {'state': 'pending'}, context=context)
         return picking
+
+    def action_done(self, cr, uid, ids, context=None):
+        for gatepass in self.browse(cr, uid, ids, context=context):
+            if gatepass.return_type == 'non_return':
+                self.action_confirm(cr, uid, [gatepass.id], context=context)
+            self.write(cr, uid, [gatepass.id], {'state': 'done'}, context=context)
+        return True
 
 stock_gatepass()
 

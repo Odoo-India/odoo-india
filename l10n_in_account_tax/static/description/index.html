@@ -748,11 +748,12 @@ div.oe_demo:hover span.oe_demo_play {
         </div>
         <div class="oe_span6">
             <p class="oe_mt32">
-Added tax category on tax which will be useful to get exact amount of tax levied on different types of services, goods, etc.
+Added tax category on tax which will be useful to get exact amount of tax levied on different types of services, goods, etc. (e.g. Excise, Service Tax, Cess, etc.)
             </p>
             <p class="oe_mt32">
-e.g. Excise, Service Tax, Cess, etc.
+It also fixes the base amount calculation when children taxes are applied.
             </p>
+            
             <div class="oe_centeralign oe_websiteonly">
                 <a href="http://www.openerp.com/start?app=product_container/" class="oe_button oe_big oe_tacky">Start your <span class="oe_emph">free</span> trial</a>
             </div>
@@ -801,4 +802,27 @@ e.g. If you select category "VAT" on the all VAT taxes configured in the system,
         </div>
     </div>
 </section>
-
+<section class="oe_container oe_dark">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan">Fixes base amount when children taxes are applied</h2>
+        <div class="oe_span6">
+            <div class="oe_row_img oe_centered">
+                <img class="oe_picture oe_screenshot" src="acctax3.png">
+            </div>
+        </div>
+        <div class="oe_span6">
+            <p class="oe_mt32">
+This module also fixes the base amount of tax in case of tax on children taxes.
+<p>Example:</p>
+            </p>
+            <ul class="simple">
+                <li>Excise 12%</li>
+                <ul class="simple">
+                    <li>Education Cess 2%</li>
+                    <li>Higher Education Cess 1%</li>
+                </ul>
+                <li>Vat 5%</li>
+            </ul>
+        </div>
+    </div>
+</section>

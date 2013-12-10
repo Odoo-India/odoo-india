@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Gate Pass Types -->
+        <record id="gate_pass_type_1" model="gatepass.type">
+            <field name="name">Sales Delivery Non-Returnable</field>
+            <field name="code">Sales Delivery Non-Returnable</field>
+            <field name="approval_required">True</field>
+            <field name="return_type">non_return</field>
+            <field name="sales_delivery">True</field>
+        </record>
+
+        <record id="gate_pass_type_2" model="gatepass.type">
+            <field name="name">Sales Delivery Returnable</field>
+            <field name="code">Sales Delivery Returnable</field>
+            <field name="approval_required">True</field>
+            <field name="return_type">return</field>
+            <field name="sales_delivery">True</field>
+        </record>
+
+        <record id="gate_pass_type_3" model="gatepass.type">
+            <field name="name">Cylinder Gatepass</field>
+            <field name="code">Cylinder Gatepass</field>
+            <field name="approval_required">True</field>
+            <field name="return_type">non_return</field>
+            <field name="sales_delivery">False</field>
+        </record>
+
+        <record id="gate_pass_type_4" model="gatepass.type">
+            <field name="name">Repair at Supplier Location</field>
+            <field name="code">Repair at Supplier Location</field>
+            <field name="approval_required">True</field>
+            <field name="return_type">return</field>
+            <field name="sales_delivery">False</field>
+        </record>
+
+    </data>
+</openerp>

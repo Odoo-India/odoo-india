@@ -35,7 +35,8 @@ Gate Pass
 """,
     'depends' : ['stock'],
     'data' : [
-        'stock_gatepass_sequence.xml'
+        'stock_gatepass_sequence.xml',
+        'stock_gatepass_data.xml',
     ],
     'update_xml' : [
         'stock_gatepass_view.xml',

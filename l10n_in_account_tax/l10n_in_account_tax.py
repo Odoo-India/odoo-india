@@ -33,7 +33,7 @@ TAX_TYPES = [('excise', 'Central Excise'),
     ('tcs','Tax Collected at Source'),
     ('cform','C Form'),
     ('hform','H Form'),
-    ('import_duety','Import Duety'),
+    ('import_duty','Import Duty'),
     ('other', 'Other')
 ]
 

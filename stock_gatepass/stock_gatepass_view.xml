@@ -114,8 +114,7 @@
 										<field name="approval_required" />
 									</group>
 									<group>
-										<field name="out_picking_id" readonly="1" />
-										<field name="in_picking_id" readonly="1" />
+										<field name="sales_delivery"/>
 									</group>
 								</group>
 							</page>
@@ -206,6 +205,7 @@
 							<group>
 								<field name="code" />
 								<field name="approval_required" />
+								<field name="sales_delivery"/>
 								<field name="active" />
 							</group>
 						</group>

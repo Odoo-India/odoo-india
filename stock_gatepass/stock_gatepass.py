@@ -61,7 +61,8 @@ class gate_pass_type(osv.Model):
         'code': fields.char('Code', size=16, select=1),
         'approval_required': fields.boolean('Approval State'),
         'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non-Returnable')], 'Return Type', required=True),
-        'active': fields.boolean('Active')
+        'active': fields.boolean('Active'),
+        'sales_delivery': fields.boolean('Sales Delivery')
     }
 
     _defaults = {
@@ -92,6 +93,7 @@ class stock_gatepass(osv.Model):
             type = self.pool.get('gatepass.type').browse(cr, uid, type_id)
             result['return_type'] = type.return_type
             result['approval_required'] = type.approval_required
+            result['sales_delivery'] = type.sales_delivery
         return {'value': result}
 
     _columns = {
@@ -113,6 +115,7 @@ class stock_gatepass(osv.Model):
         'out_picking_id': fields.many2one('stock.picking.out', 'Delivery Order', readonly=True, states={'draft': [('readonly', False)]}),
         'in_picking_id': fields.many2one('stock.picking.in', 'Incoming Shipment', readonly=True, states={'draft': [('readonly', False)]}),
         'approval_required': fields.boolean('Approval State', readonly=True, states={'draft': [('readonly', False)]}),
+        'sales_delivery': fields.boolean('Sales Delivery'),
     }
 
     _defaults = {
@@ -122,61 +125,62 @@ class stock_gatepass(osv.Model):
         'user_id': lambda self, cr, uid, context: uid,
     }
 
-    def create_delivery_order(self, cr, uid, ids, context=None):
+    def create_delivery_order(self, cr, uid, gatepass, context=None):
         picking_out_obj = self.pool.get('stock.picking.out')
         move_obj = self.pool.get('stock.move')
-        picking_ids = []
-        for gatepass in self.browse(cr, uid, ids, context=context):
-            vals = {
-                'partner_id': gatepass.partner_id.id,
-                'gate_pass_id': gatepass.id,
-                'date': time.strftime('%Y-%m-%d %H:%M:%S'),
-                'origin': gatepass.name,
-                'type': 'out',
-            }
-            out_picking_id = picking_out_obj.create(cr, uid, vals, context=context)
-            picking_ids.append(out_picking_id)
-            self.write(cr, uid, [gatepass.id], {'out_picking_id': out_picking_id}, context=context)
-            for line in gatepass.line_ids:
-                result = dict(name=line.product_id.name, 
-                    product_id=line.product_id.id, 
-                    product_qty=line.product_qty, 
-                    product_uom=line.uom_id.id, 
-                    location_id=line.location_id.id, 
-                    location_dest_id=line.location_dest_id.id, 
-                    picking_id=out_picking_id,
-                    prodlot_id = line.prodlot_id.id
-                )
-                move_obj.create(cr, uid, result, context=context)
-        return picking_ids
+        
+        vals = {
+            'partner_id': gatepass.partner_id.id,
+            'gate_pass_id': gatepass.id,
+            'date': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'origin': gatepass.name,
+            'type': 'out',
+        }
+        
+        out_picking_id = picking_out_obj.create(cr, uid, vals, context=context)
+        
+        for line in gatepass.line_ids:
+            result = dict(name=line.product_id.name, 
+                product_id=line.product_id.id, 
+                product_qty=line.product_qty, 
+                product_uom=line.uom_id.id, 
+                location_id=line.location_id.id, 
+                location_dest_id=line.location_dest_id.id, 
+                picking_id=out_picking_id,
+                prodlot_id = line.prodlot_id.id,
+                origin=gatepass.name
+            )
+            move_obj.create(cr, uid, result, context=context)
+        
+        return out_picking_id
 
-    def create_incoming_shipment(self, cr, uid, ids, context=None):
+    def create_incoming_shipment(self, cr, uid, gatepass, context=None):
         picking_in_obj = self.pool.get('stock.picking.in')
         move_obj = self.pool.get('stock.move')
-        picking_ids = []
-        for gatepass in self.browse(cr, uid, ids, context=context):
-            vals = {
-                'partner_id': gatepass.partner_id.id,
-                'gate_pass_id': gatepass.id,
-                'date': time.strftime('%Y-%m-%d %H:%M:%S'),
-                'origin': gatepass.name,
-                'type': 'in',
-            }
-            in_picking_id = picking_in_obj.create(cr, uid, vals, context=context)
-            picking_ids.append(in_picking_id)
-            self.write(cr, uid, [gatepass.id], {'in_picking_id': in_picking_id}, context=context)
-            for line in gatepass.line_ids:
-                result = dict(name=line.product_id.name, 
-                    product_id=line.product_id.id, 
-                    product_qty=line.product_qty, 
-                    product_uom=line.uom_id.id, 
-                    location_id=line.location_dest_id.id, 
-                    location_dest_id=line.location_id.id,
-                    picking_id=in_picking_id,
-                    prodlot_id = line.prodlot_id.id
-                )
-                move_obj.create(cr, uid, result, context=context)
-        return picking_ids
+                
+        vals = {
+            'partner_id': gatepass.partner_id.id,
+            'gate_pass_id': gatepass.id,
+            'date': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'origin': gatepass.name,
+            'type': 'in',
+        }
+        in_picking_id = picking_in_obj.create(cr, uid, vals, context=context)
+
+        for line in gatepass.line_ids:
+            result = dict(name=line.product_id.name, 
+                product_id=line.product_id.id, 
+                product_qty=line.product_qty, 
+                product_uom=line.uom_id.id, 
+                location_id=line.location_dest_id.id, 
+                location_dest_id=line.location_id.id,
+                picking_id=in_picking_id,
+                prodlot_id = line.prodlot_id.id,
+                origin=gatepass.name
+            )
+            move_obj.create(cr, uid, result, context=context)
+        
+        return in_picking_id
 
     def open_delivery_order(self, cr, uid, ids, context=None):
         out_picking_id = self.browse(cr, uid, ids[0], context=context).out_picking_id.id
@@ -215,22 +219,36 @@ class stock_gatepass(osv.Model):
         return False
 
     def action_confirm(self, cr, uid, ids, context=None):
-        picking_ids = self.create_delivery_order(cr, uid, ids, context=context)
         picking_obj = self.pool.get('stock.picking')
         wf_service = netsvc.LocalService("workflow")
         seq_obj = self.pool.get('ir.sequence')
+        
         for gatepass in self.browse(cr, uid, ids, context=context):
+            
             if not gatepass.line_ids:
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm a gate pass which has no line.'))
+            
+            out_picking_id = gatepass.out_picking_id.id
+            in_picking_id = False
+            
+            if not out_picking_id:
+                out_picking_id = self.create_delivery_order(cr, uid, gatepass, context=context)
+            
             if gatepass.type_id and gatepass.type_id.return_type == 'return':
-                self.create_incoming_shipment(cr, uid, [gatepass.id], context=context)
+                in_picking_id = self.create_incoming_shipment(cr, uid, gatepass, context=context)
+            
             name = seq_obj.get(cr, uid, 'stock.gatepass')
-            self.write(cr, uid, [gatepass.id], {'state': 'confirm', 'name': name, 'approve_date': time.strftime('%Y-%m-%d %H:%M:%S')}, context=context)
-        for picking in picking_ids:
-            wf_service.trg_validate(uid, 'stock.picking', picking, 'button_confirm', cr)
-            picking_obj.action_move(cr, uid, [picking], context=context)
-            wf_service.trg_validate(uid, 'stock.picking', picking, 'button_done', cr)
-
+            
+            res = {
+                'state': 'confirm',
+                'name': name, 
+                'approve_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'out_picking_id':out_picking_id,
+                'in_picking_id':in_picking_id
+            }
+            
+            self.write(cr, uid, [gatepass.id], res, context=context)
+    
         return True
 
     def action_picking_create(self, cr, uid, ids, context=None):

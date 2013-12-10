@@ -34,9 +34,6 @@ class stock_gatepass(osv.Model):
         order = self.pool.get('stock.picking.out').browse(cr, uid, order_id)
         products = order.move_lines
         
-        location_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'stock_location_customers')
-        customer_location = location_id and location_id[1] or False
-        
         for product in products:
             vals = dict(
                 product_id = product.product_id.id, 
@@ -47,8 +44,13 @@ class stock_gatepass(osv.Model):
                 location_dest_id = product.location_dest_id.id,
                 prodlot_id=product.prodlot_id.id
             )
-            if product.sale_line_id:
-                vals['price_unit'] = product.sale_line_id.price_unit
+            
+            #TODO: need to check in other ways whether sale module is installed or not instead of try and except..
+            try:
+                if product.sale_line_id:
+                    vals['price_unit'] = product.sale_line_id.price_unit
+            except:
+                vals['price_unit'] = product.product_id.list_price
             lines.append(vals)
         result['line_ids'] = lines
         result['partner_id'] = order.partner_id.id

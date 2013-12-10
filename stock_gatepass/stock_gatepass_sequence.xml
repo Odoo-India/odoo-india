@@ -10,7 +10,7 @@
         <record id="seq_gate_pass_cylinder" model="ir.sequence">
             <field name="name">Gate Pass</field>
             <field name="code">stock.gatepass</field>
-            <field name="prefix">%(year)s/GP/</field>
+            <field name="prefix">GP/</field>
             <field name="padding">5</field>
         </record>
 

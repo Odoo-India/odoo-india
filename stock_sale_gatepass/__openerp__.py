@@ -25,7 +25,7 @@
     'sequence': 110,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Indent Approval link on Repairs Gatepass',
+    'summary' : 'Delivery Order link on Delivery Gatepass',
     'description' : """
 Sale order link on Delivery Gatepass
 =====================================

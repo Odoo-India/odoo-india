@@ -43,7 +43,7 @@
         <record model="workflow.transition" id="trans_draft_pending">
             <field name="act_from" ref="act_draft"/>
             <field name="act_to" ref="act_pending"/>
-            <field name="signal">gate_pass_pending</field>
+            <field name="signal">gate_pass_done</field>
             <field name="condition">check_returnable()</field>
         </record>
 

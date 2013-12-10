@@ -157,7 +157,7 @@ class stock_gatepass(osv.Model):
     def create_incoming_shipment(self, cr, uid, gatepass, context=None):
         picking_in_obj = self.pool.get('stock.picking.in')
         move_obj = self.pool.get('stock.move')
-                
+
         vals = {
             'partner_id': gatepass.partner_id.id,
             'gate_pass_id': gatepass.id,
@@ -168,16 +168,28 @@ class stock_gatepass(osv.Model):
         in_picking_id = picking_in_obj.create(cr, uid, vals, context=context)
 
         for line in gatepass.line_ids:
-            result = dict(name=line.product_id.name, 
-                product_id=line.product_id.id, 
-                product_qty=line.product_qty, 
-                product_uom=line.uom_id.id, 
-                location_id=line.location_dest_id.id, 
-                location_dest_id=line.location_id.id,
-                picking_id=in_picking_id,
-                prodlot_id = line.prodlot_id.id,
-                origin=gatepass.name
-            )
+            if line.product_id.container_id:
+                result = dict(name=line.product_id.container_id.name, 
+                    product_id=line.product_id.container_id.id, 
+                    product_qty=1, 
+                    product_uom=line.product_id.container_id.uom_id.id, 
+                    location_id=line.location_dest_id.id, 
+                    location_dest_id=line.location_id.id,
+                    picking_id=in_picking_id,
+                    prodlot_id = line.prodlot_id.id,
+                    origin=gatepass.name
+                )
+            else:
+                result = dict(name=line.product_id.name, 
+                    product_id=line.product_id.id, 
+                    product_qty=line.product_qty, 
+                    product_uom=line.uom_id.id, 
+                    location_id=line.location_dest_id.id, 
+                    location_dest_id=line.location_id.id,
+                    picking_id=in_picking_id,
+                    prodlot_id = line.prodlot_id.id,
+                    origin=gatepass.name
+                )
             move_obj.create(cr, uid, result, context=context)
         
         return in_picking_id

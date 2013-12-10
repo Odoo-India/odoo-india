@@ -23,15 +23,31 @@ from openerp.osv import fields, osv
 
 class indent_indent(osv.Model):
     _inherit = 'indent.indent'
-   
+
     def _check_gatepass_flow(self, cr, uid, indent, context):
         #TODO: You can check for specific product and return True which can not be sent outside company for repairing.
         return False
-    
-    def create_repairing_gatepass(self, cr, uid, indent, context):
+
+    def create_repairing_gatepass(self, cr, uid, indent, context=None):
         #TODO: create a gatepass based on the indent, should be in draft mode waiting for the process.
-        pass
-    
+        gatepass_obj = self.pool.get('stock.gatepass')
+        lines = gatepass_obj.onchange_indent(cr, uid, [], indent and indent[0] or False)['value']['line_ids']
+        vals = {
+            'type_id': 1,
+            'partner_id': 1,
+            'return_type': 'return',
+            'approval_required': True,
+            'indent_id': indent and indent[0] or False,
+            'line_ids': map(lambda x: (0, 0, x), lines),
+        }
+        gatepass = gatepass_obj.create(cr, uid, vals, context=context)
+        self.write(cr, uid, indent and indent[0] or [], {'gate_pass_id': gatepass}, context=context)
+        return True
+
+    _columns = {
+        'gate_pass_id': fields.many2one('stock.gatepass', 'Gate Pass'),
+    }
+
 indent_indent()
 
 class stock_gatepass(osv.Model):

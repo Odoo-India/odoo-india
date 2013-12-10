@@ -20,6 +20,7 @@
 ##############################################################################
 
 from openerp.osv import fields, osv
+from openerp.tools.translate import _
 
 class indent_indent(osv.Model):
     _inherit = 'indent.indent'
@@ -43,6 +44,26 @@ class indent_indent(osv.Model):
         gatepass = gatepass_obj.create(cr, uid, vals, context=context)
         self.write(cr, uid, indent and indent[0] or [], {'gate_pass_id': gatepass}, context=context)
         return True
+
+    def action_open_gatepass(self, cr, uid, ids, context=None):
+        '''
+        This function returns an action that display gate pass of given indent ids.
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time'
+        gatepass_id = self.browse(cr, uid, ids[0], context=context).gate_pass_id.id
+        res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock_gatepass', 'view_gatepass_form')
+        result = {
+            'name': _('Gate Pass'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': res and res[1] or False,
+            'res_model': 'stock.gatepass',
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': gatepass_id,
+        }
+        return result
 
     _columns = {
         'gate_pass_id': fields.many2one('stock.gatepass', 'Gate Pass'),

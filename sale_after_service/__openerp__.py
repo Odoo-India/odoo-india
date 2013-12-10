@@ -21,11 +21,11 @@
 
 
 {
-    'name': 'Sale After Service ',
+    'name': 'After Sales Service ',
     'version': '1.0',
-    'category': 'Indian Localization',
+    'category': 'Sales',
     'description': """
-Module for providing service after sales.
+Managing Service Contracts
 =========================================
 
 This Module addding the feature of creation of contract after sales for maintaince of services.
@@ -39,11 +39,14 @@ TODO
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['sale_stock', 'account_analytic_analysis', 'crm'],
+    'depends': [
+        'sale_stock', 
+        'account_analytic_analysis', 
+        'crm'
+    ],
     'data': [
-#             'security/sale_service_security.xml',
-#             'security/ir.model.access.csv',
-             'sale_after_service_view.xml'],
+        'sale_after_service_view.xml'
+    ],
     'installable': True,
     'auto_install': False,
 }

@@ -112,7 +112,7 @@ class stock_gatepass(osv.Model):
         'location_id': fields.many2one('stock.location', 'Source Location', readonly=True, states={'draft': [('readonly', False)]}),
         'state':fields.selection([('draft', 'Draft'), ('pending', 'Pending'), ('done', 'Done')], 'State', readonly=True),
         'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non Returnable')], 'Return Type'),
-        'out_picking_id': fields.many2one('stock.picking.out', 'Delivery Order', readonly=True, states={'draft': [('readonly', False)]}),
+        'out_picking_id': fields.many2one('stock.picking.out', 'Delivery Order', readonly=True, states={'draft': [('readonly', False)]}, domain=[('type','=','out')]),
         'in_picking_id': fields.many2one('stock.picking.in', 'Incoming Shipment', readonly=True, states={'draft': [('readonly', False)]}),
         'approval_required': fields.boolean('Approval State', readonly=True, states={'draft': [('readonly', False)]}),
         'sales_delivery': fields.boolean('Sales Delivery'),
@@ -166,14 +166,16 @@ class stock_gatepass(osv.Model):
             'type': 'in',
         }
         in_picking_id = picking_in_obj.create(cr, uid, vals, context=context)
-
+        
+        supplier_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_suppliers')
+        
         for line in gatepass.line_ids:
             if line.product_id.container_id:
                 result = dict(name=line.product_id.container_id.name, 
                     product_id=line.product_id.container_id.id, 
                     product_qty=1, 
                     product_uom=line.product_id.container_id.uom_id.id, 
-                    location_id=line.location_dest_id.id, 
+                    location_id=supplier_location.id, 
                     location_dest_id=line.location_id.id,
                     picking_id=in_picking_id,
                     prodlot_id = line.prodlot_id.id,
@@ -184,7 +186,7 @@ class stock_gatepass(osv.Model):
                     product_id=line.product_id.id, 
                     product_qty=line.product_qty, 
                     product_uom=line.uom_id.id, 
-                    location_id=line.location_dest_id.id, 
+                    location_id=supplier_location.id, 
                     location_dest_id=line.location_id.id,
                     picking_id=in_picking_id,
                     prodlot_id = line.prodlot_id.id,
@@ -232,19 +234,20 @@ class stock_gatepass(osv.Model):
 
     def action_confirm(self, cr, uid, ids, context=None):
         seq_obj = self.pool.get('ir.sequence')
+        picking_pool = self.pool.get('stock.picking')
 
         for gatepass in self.browse(cr, uid, ids, context=context):
             if not gatepass.line_ids:
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm a gate pass which has no line.'))
             out_picking_id = gatepass.out_picking_id.id
             in_picking_id = False
-
+            
             if not out_picking_id:
                 out_picking_id = self.create_delivery_order(cr, uid, gatepass, context=context)
 
             if gatepass.type_id and gatepass.type_id.return_type == 'return':
                 in_picking_id = self.create_incoming_shipment(cr, uid, gatepass, context=context)
-
+            
             name = seq_obj.get(cr, uid, 'stock.gatepass')
             res = {
                 'name': name, 
@@ -253,7 +256,9 @@ class stock_gatepass(osv.Model):
                 'in_picking_id':in_picking_id
             }
             self.write(cr, uid, [gatepass.id], res, context=context)
-
+            
+            picking_ids = [out_picking_id, in_picking_id]
+            picking_pool.write(cr, uid, picking_ids, {'origin': name})
         return True
 
     def action_picking_create(self, cr, uid, ids, context=None):
@@ -302,12 +307,16 @@ class stock_gatepass_line(osv.Model):
     def _default_stock_location(self, cr, uid, context=None):
         stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_stock')
         return stock_location.id
-
+    
+    def _default_dest_location(self, cr, uid, context=None):
+        stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_customers')
+        return stock_location.id
+    
     _defaults = {
         'product_qty': 1,
         'uom_id': _get_uom_id,
         'location_id': _default_stock_location,
-        'location_dest_id': _default_stock_location,
+        'location_dest_id': _default_dest_location,
     }
 
     def onchange_product_id(self, cr, uid, ids, product_id=False):

@@ -77,15 +77,16 @@ class stock_partial_picking(osv.osv):
         for wizard_line in picking_obj.move_ids:
             prod_obj = prod_pool.browse(cr, uid, [wizard_line.product_id.id], context=context)[0]
             if prod_obj.service_after_sales and wizard_line.prodlot_id:
-                vals = {'name' : wizard_line.product_id.name + ' (%s)' % wizard_line.prodlot_id.name ,
-                        'code': wizard_line.prodlot_id.name,
-                        'type' : 'contract',
-                        'partner_id': delivery_order.partner_id and delivery_order.partner_id.id or False,
-                        'date_start' : time.strftime('%Y-%m-%d'),
-                        'company_id' : delivery_order.company_id.id,
-                        'manager_id' : manager_id,
-                        'sale_id' : delivery_order.sale_id.id,
-                        'delivery_id' : delivery_id or False
+                vals = {
+                    'name' : wizard_line.product_id.name + ' (%s)' % wizard_line.prodlot_id.name ,
+                    'code': wizard_line.prodlot_id.name,
+                    'type' : 'contract',
+                    'partner_id': delivery_order.partner_id and delivery_order.partner_id.id or False,
+                    'date_start' : time.strftime('%Y-%m-%d'),
+                    'company_id' : delivery_order.company_id.id,
+                    'manager_id' : manager_id,
+                    'sale_id' : delivery_order.sale_id.id,
+                    'delivery_id' : delivery_id or False
                  }
                 contract_id = cont_pool.create(cr, uid, vals, context=context)
                 prodlot_obj.write(cr, uid, [wizard_line.prodlot_id.id], {'contract_id' : contract_id}, context=context)

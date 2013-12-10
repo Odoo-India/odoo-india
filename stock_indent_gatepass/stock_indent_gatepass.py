@@ -89,8 +89,8 @@ class stock_gatepass(osv.Model):
                 vals = dict(
                     product_id=product.original_product_id.id or product.product_id.id or False, 
                     product_qty=product.product_uom_qty, 
-                    uom_id=product.product_uom.id, 
-                    name=product.product_id.name, 
+                    uom_id=product.original_product_id.uom_id.id, 
+                    name=product.original_product_id.name, 
                     location_id=indent.department_id.id, 
                     location_dest_id=supplier_location,
                     price_unit=product.price_unit
@@ -102,5 +102,9 @@ class stock_gatepass(osv.Model):
     _columns = {
         'indent_id': fields.many2one('indent.indent', 'Indent', readonly=True, states={'draft': [('readonly', False)]})
     }
+
+    _sql_constraints = [
+        ('gatepass_indent_uniq', 'unique(indent_id)', 'You can not create multiple Gatepass for same Indent !'),
+    ]
 
 stock_gatepass()

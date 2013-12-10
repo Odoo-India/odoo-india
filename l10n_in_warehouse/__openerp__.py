@@ -42,6 +42,7 @@ Store & Purchase Management
         'stock_gatepass', 
         'product_container', 
         'stock_indent_gatepass', 
+        'stock_sale_gatepass', 
         'stock_serial_tracking', 
         'l10n_in_purchase',
         'l10n_in_excise_receipt'

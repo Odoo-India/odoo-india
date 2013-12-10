@@ -20,46 +20,20 @@
 ##############################################################################
 
 import time
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp import netsvc
-from openerp.osv.orm import browse_record
 
 class stock_picking(osv.Model):
     _inherit = 'stock.picking'
- 
+
     _columns = {
         'gate_pass_id': fields.many2one('stock.gatepass', 'Gate Pass'),
     }
- 
-    def action_confirm(self, cr, uid, ids, context=None):
-        """ Confirms picking.
-        @return: True
-        """
-        picking = False
-        pickings = self.browse(cr, uid, ids, context=context)
-        self.write(cr, uid, ids, {'state': 'confirmed'})
-        todo = []
-        for picking in pickings:
-            for r in picking.move_lines:
-                if r.state == 'draft':
-                    todo.append(r.id)
-        todo = self.action_explode(cr, uid, todo, context)
-        if len(todo):
-            picking = self.pool.get('stock.move').action_confirm(cr, uid, todo, context=context)
- 
-        gate_pass_id = self.browse(cr, uid, ids[0], context=context).gate_pass_id.id
-        if gate_pass_id:
-            if isinstance(picking, browse_record):
-                picking = picking.id
-            self.pool.get('stock.gatepass').write(cr, uid, [gate_pass_id], {'in_picking_id': picking}, context=context)
-        return picking
 
 stock_picking()
- 
+
 class stock_picking_in(osv.Model):
     _inherit = "stock.picking.in"
 
@@ -176,6 +150,34 @@ class stock_gatepass(osv.Model):
                 move_obj.create(cr, uid, result, context=context)
         return picking_ids
 
+    def create_incoming_shipment(self, cr, uid, ids, context=None):
+        picking_in_obj = self.pool.get('stock.picking.in')
+        move_obj = self.pool.get('stock.move')
+        picking_ids = []
+        for gatepass in self.browse(cr, uid, ids, context=context):
+            vals = {
+                'partner_id': gatepass.partner_id.id,
+                'gate_pass_id': gatepass.id,
+                'date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'origin': gatepass.name,
+                'type': 'in',
+            }
+            in_picking_id = picking_in_obj.create(cr, uid, vals, context=context)
+            picking_ids.append(in_picking_id)
+            self.write(cr, uid, [gatepass.id], {'in_picking_id': in_picking_id}, context=context)
+            for line in gatepass.line_ids:
+                result = dict(name=line.product_id.name, 
+                    product_id=line.product_id.id, 
+                    product_qty=line.product_qty, 
+                    product_uom=line.uom_id.id, 
+                    location_id=line.location_dest_id.id, 
+                    location_dest_id=line.location_id.id,
+                    picking_id=in_picking_id,
+                    prodlot_id = line.prodlot_id.id
+                )
+                move_obj.create(cr, uid, result, context=context)
+        return picking_ids
+
     def open_delivery_order(self, cr, uid, ids, context=None):
         out_picking_id = self.browse(cr, uid, ids[0], context=context).out_picking_id.id
         res = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'view_picking_out_form')
@@ -186,7 +188,6 @@ class stock_gatepass(osv.Model):
             'view_id': res and res[1] or False,
             'res_model': 'stock.picking.out',
             'type': 'ir.actions.act_window',
-            'nodestroy': True,
             'target': 'current',
             'res_id': out_picking_id,
         }
@@ -202,7 +203,6 @@ class stock_gatepass(osv.Model):
             'view_id': res and res[1] or False,
             'res_model': 'stock.picking.in',
             'type': 'ir.actions.act_window',
-            'nodestroy': True,
             'target': 'current',
             'res_id': in_picking_id,
         }
@@ -222,6 +222,8 @@ class stock_gatepass(osv.Model):
         for gatepass in self.browse(cr, uid, ids, context=context):
             if not gatepass.line_ids:
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm a gate pass which has no line.'))
+            if gatepass.type_id and gatepass.type_id.return_type == 'return':
+                self.create_incoming_shipment(cr, uid, [gatepass.id], context=context)
             name = seq_obj.get(cr, uid, 'stock.gatepass')
             self.write(cr, uid, [gatepass.id], {'state': 'confirm', 'name': name, 'approve_date': time.strftime('%Y-%m-%d %H:%M:%S')}, context=context)
         for picking in picking_ids:
@@ -234,8 +236,6 @@ class stock_gatepass(osv.Model):
     def action_picking_create(self, cr, uid, ids, context=None):
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'
         picking = self.browse(cr, uid, ids[0], context=context).in_picking_id.id
-        if not picking:
-            raise osv.except_osv(_("Error !"), _('An inward related to the gate pass is not created.'))
         self.pool.get('stock.picking.in').write(cr, uid, [picking], {'gate_pass_id': ids[0]}, context=context)
         self.write(cr, uid, ids, {'state': 'pending'}, context=context)
         return picking

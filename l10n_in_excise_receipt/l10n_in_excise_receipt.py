@@ -69,17 +69,17 @@ class stock_picking_receipt(osv.Model):
         if receipt.freight:
             total = 0.0
             for move in receipt.move_lines:
-                total += move.amount
+                total += move.rate
  
             per_unit = receipt.freight / total if total else 1.0
             if receipt.freight > 0:
                 for move in receipt.move_lines:
-                    diff  = move.amount * per_unit / move.amount if move.amount else 1.0
-                    move_obj.write(cr, uid, [move.id], {'diff': diff, 'less_diff': 0}, context=context)
+                    diff  = move.rate * per_unit * 100 / move.rate if move.rate else 1.0
+                    move_obj.write(cr, uid, [move.id], {'freight_receipt': diff}, context=context)
             elif receipt.freight < 0:
                 for move in receipt.move_lines:
-                    diff  = move.amount * abs(per_unit) / move.amount if move.amount else 1.0
-                    move_obj.write(cr, uid, [move.id], {'diff': 0, 'less_diff': diff}, context=context)
+                    diff  = move.rate * per_unit * 100 / move.rate if move.rate else 1.0
+                    move_obj.write(cr, uid, [move.id], {'freight_receipt': diff}, context=context)
         return True
 
     def create(self, cr, user, vals, context=None):
@@ -122,7 +122,7 @@ class stock_move(osv.osv):
     def _total_cost(self, cr, uid, ids, name, args, context=None):
         result = dict([(id, {'rate': 0.0, 'other_cost': 0.0, 'total_cost': 0.0}) for id in ids])
         for move in self.browse(cr, uid, ids, context=context):
-            other_charges = (move.package_and_forwording + move.freight + move.insurance) * move.product_qty
+            other_charges = ((move.package_and_forwording + move.freight + move.insurance) * move.product_qty) + move.freight_receipt
             subtotal = ((move.product_qty * move.price_unit) + (move.excies + move.cess + move.higher_cess))
             result[move.id]['rate'] = subtotal
             result[move.id]['other_cost'] = other_charges
@@ -140,6 +140,7 @@ class stock_move(osv.osv):
         'exe_cess': fields.float('Exempted Cess'),
         'exe_higher_cess': fields.float('Exempted Higher Cess'),
         'exe_import_duty': fields.float('Exempted Import Duty'),
+        'freight_receipt': fields.float('Freight Receipt'),
         'other_cost': fields.function(_total_cost, multi='cals', type='float', string='Other Cost'),
         'total_cost': fields.function(_total_cost, multi='cals', type='float', string='Total'),
         'package_and_forwording': fields.float('Packing & Forwarding', digits_compute=dp.get_precision('Account')),

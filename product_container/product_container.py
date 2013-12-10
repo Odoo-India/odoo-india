@@ -26,8 +26,6 @@ class product_product(osv.Model):
  
     _columns = {
         'container_ok': fields.boolean('Container'),
-        'container_id': fields.many2one('product.product', 'Container Product', domain=[('container_ok','=',True)]),
-        
-        'repair_id': fields.many2one('product.product', 'Repairable Product', domain=[('type','!=','service')]),
+        'container_id': fields.many2one('product.product', 'Container Product', domain=[('container_ok','=',True)])
     }
 product_product()

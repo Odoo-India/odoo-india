@@ -297,7 +297,7 @@ class indent_indent(osv.Model):
 
         if line.product_id.type in ('service'):
             if not line.original_product_id:
-                raise osv.except_osv(_("Warning !"), _("You must define material or parts that you are sending for repairing !"))
+                raise osv.except_osv(_("Warning !"), _("You must define material or parts that you are going to repair !"))
 
             upd_res = {
                 'product_id':line.original_product_id.id,
@@ -356,9 +356,10 @@ class indent_indent(osv.Model):
         else:
             return False
         
-    def create_transfer_move(self, cr, uid, indent, context):
+    def create_transfer_move(self, cr, uid, indent, internal=None, context=None):
         move_obj = self.pool.get('stock.move')
         picking_obj = self.pool.get('stock.picking')
+        product_pool = self.pool.get('product.product')
         
         location_id = indent.warehouse_id.lot_stock_id.id
         
@@ -376,7 +377,10 @@ class indent_indent(osv.Model):
                     'location_id': indent.department_id.id,
                     'location_dest_id': location_id
                 })
-                move_id = move_obj.create(cr, uid, res, context=context)
+                if internal:
+                    move_id = move_obj.create(cr, uid, res, context=context)
+                elif not internal and not product_pool.browse(cr, uid, res.get('product_id')).repair_ok:
+                    move_id = move_obj.create(cr, uid, res, context=context)
 
         wf_service = netsvc.LocalService("workflow")
         if picking_id:
@@ -398,11 +402,13 @@ class indent_indent(osv.Model):
         indent = self.browse(cr, uid, ids[0], context=context)
         
         #Check if gatepass is not installed, transfer product to stock for repairing, else 
-        #Create a returnable gatepass to send supplier to repair their location
-        if self._check_gatepass_flow(cr, uid, indent, context):
-            self.create_transfer_move(cr, uid, indent, context)
-        else:
+        #Create a returnable gatepass to send supplier to repair their location\
+        gatepass_flow = self._check_gatepass_flow(cr, uid, indent,context)
+        if gatepass_flow and indent.type == 'existing':
+            self.create_transfer_move(cr, uid, indent, True, context)
+        elif not gatepass_flow and indent.type == 'existing':
             self.create_repairing_gatepass(cr, uid, ids, context)
+            self.create_transfer_move(cr, uid, indent, False, context)
         
         if indent.product_lines:
             picking_id = self._create_pickings_and_procurements(cr, uid, indent, indent.product_lines, None, context=context)
@@ -680,6 +686,19 @@ class procurement_order(osv.osv):
         return res
 
 procurement_order()
+
+class product_product(osv.Model):
+    _inherit = 'product.product'
+ 
+    _columns = {
+        'repair_id': fields.many2one('product.product', 'Repairable Product', domain=[('type','!=','service')]),
+        'repair_ok': fields.boolean('Can Move for Repairing'),
+    }
+    
+    _defaults = {
+        'repair_ok':True
+    }
+product_product()
 
 class stock_picking(osv.Model):
     _inherit = 'stock.picking'

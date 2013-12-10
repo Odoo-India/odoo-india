@@ -13,8 +13,6 @@
 				<field name="list_price" position="after">
 					<field name="container_id"
 						attrs="{'invisible':['|', ('container_ok','=',True), ('type','=','service')]}" />
-
-					<field name="repair_id" attrs="{'invisible':[('type','!=','service')]}" />
 				</field>
 			</field>
 		</record>

@@ -258,7 +258,7 @@ class stock_gatepass(osv.Model):
             self.write(cr, uid, [gatepass.id], res, context=context)
             
             picking_ids = [out_picking_id, in_picking_id]
-            picking_pool.write(cr, uid, picking_ids, {'origin': name})
+            picking_pool.write(cr, uid, picking_ids, {'origin': name}, context)
         return True
 
     def action_picking_create(self, cr, uid, ids, context=None):

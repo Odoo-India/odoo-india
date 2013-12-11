@@ -20,16 +20,18 @@
 ##############################################################################
 
 {
-    'name': 'Invoice Adjustments',
+    'name': 'Payable vs Receivable Adjustments',
     'version': '1.0',
-    'category': 'Indian Localization',
+    'category': 'Accounting',
+    'summary' : 'Adjust Payable vs Receivable Accounts',
     'description': """
 Adjust Customer and Suppliers Invoices.
-================================
-You can reconcile customer and suppliers invoices against each other. 
-1. Axelor Purchase invoice - 900
-2. Axelor Sales Invoice - 1000
-3. Collect only 100 from Axelor and close axelor's account.  
+=================================================================
+You can reconcile customer and suppliers account against each other.
+
+* Axelor Purchase invoice - 900
+* Axelor Sales Invoice - 1000
+* Collect only 100 from Axelor and adjust remaining with payable account and close axelor's account.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

@@ -18,16 +18,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-
 {
     'name': 'After Sales Service ',
     'version': '1.0',
     'category': 'Sales',
-    'description': """
-Managing Service Contracts
+    'summary' : 'Managing Service Contracts',
+    'description': """Managing Service Contracts
 =========================================
-
 This Module addding the feature of creation of contract after sales for maintaince of services.
 - Add boolean on product form which allow creation of contract for that product from delivery order.
 - Create contract from delivery order if delivery order line has serial number.

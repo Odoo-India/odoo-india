@@ -241,12 +241,15 @@ class stock_gatepass(osv.Model):
                 raise osv.except_osv(_('Warning!'),_('You cannot confirm a gate pass which has no line.'))
             out_picking_id = gatepass.out_picking_id.id
             in_picking_id = False
+            picking_ids = []
             
             if not out_picking_id:
                 out_picking_id = self.create_delivery_order(cr, uid, gatepass, context=context)
+                picking_ids.append(out_picking_id)
 
             if gatepass.type_id and gatepass.type_id.return_type == 'return':
                 in_picking_id = self.create_incoming_shipment(cr, uid, gatepass, context=context)
+                picking_ids.append(in_picking_id)
             
             name = seq_obj.get(cr, uid, 'stock.gatepass')
             res = {
@@ -257,7 +260,7 @@ class stock_gatepass(osv.Model):
             }
             self.write(cr, uid, [gatepass.id], res, context=context)
             
-            picking_ids = [out_picking_id, in_picking_id]
+            
             picking_pool.write(cr, uid, picking_ids, {'origin': name}, context)
         return True
 

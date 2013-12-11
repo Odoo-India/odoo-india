@@ -60,7 +60,7 @@ class gate_pass_type(osv.Model):
         'name': fields.char('Name', size=256, select=1),
         'code': fields.char('Code', size=16, select=1),
         'approval_required': fields.boolean('Approval State'),
-        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non-Returnable')], 'Return Type', required=True),
+        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non-returnable')], 'Return Type', required=True),
         'active': fields.boolean('Active'),
         'sales_delivery': fields.boolean('Sales Delivery')
     }
@@ -111,7 +111,7 @@ class stock_gatepass(osv.Model):
         'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True, readonly=True),
         'location_id': fields.many2one('stock.location', 'Source Location', readonly=True, states={'draft': [('readonly', False)]}),
         'state':fields.selection([('draft', 'Draft'), ('pending', 'Pending'), ('done', 'Done')], 'State', readonly=True),
-        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non Returnable')], 'Return Type', readonly=True, states={'draft': [('readonly', False)]}),
+        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non-returnable')], 'Return Type', readonly=True, states={'draft': [('readonly', False)]}),
         'out_picking_id': fields.many2one('stock.picking.out', 'Delivery Order', readonly=True, states={'draft': [('readonly', False)]}, domain=[('type','=','out')]),
         'in_picking_id': fields.many2one('stock.picking.in', 'Incoming Shipment', readonly=True, states={'draft': [('readonly', False)]}),
         'approval_required': fields.boolean('Approval State', readonly=True, states={'draft': [('readonly', False)]}),

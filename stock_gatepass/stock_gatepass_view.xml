@@ -183,37 +183,65 @@
 			</field>
 		</record>
 
-		<!-- Gate Pass Type Form View -->
-		<record id='view_gatepass_type_form' model='ir.ui.view'>
-			<field name="name">stock.gatepass.type.form</field>
-			<field name="model">gatepass.type</field>
-			<field name="arch" type="xml">
-				<form string="Gate Pass Type" version="7.0">
-					<sheet>
-						<group>
-							<group>
-								<field name="name" />
-								<field name="return_type" />
-							</group>
-							<group>
-								<field name="code" />
-								<field name="approval_required" />
-								<field name="sales_delivery"/>
-								<field name="active" />
-							</group>
-						</group>
-					</sheet>
-				</form>
-			</field>
-		</record>
+        <!-- Gate Pass Type Form View -->
+        <record id='view_gatepass_type_form' model='ir.ui.view'>
+            <field name="name">stock.gatepass.type.form</field>
+            <field name="model">gatepass.type</field>
+            <field name="arch" type="xml">
+                <form string="Gate Pass Type" version="7.0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+                                <field name="return_type"/>
+                            </group>
+                            <group>
+                                <field name="code"/>
+                                <field name="approval_required"/>
+                                <field name="sales_delivery"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
 
-		<!-- Gate Pass Menu -->
-		<menuitem name="Gate Passes" parent="stock.menu_stock_root"
-			id="menu_gate_pass_main" sequence="1" />
-		<menuitem action="action_gate_pass" name="Gate Passes"
-			parent="menu_gate_pass_main" id="menu_gate_pass" sequence="1" />
-		<menuitem action="stock.action_picking_tree" id="stock.menu_action_picking_tree"
-			parent="menu_gate_pass_main" sequence="5" />
+        <!-- Gate Pass Type Tree View -->
+        <record id='view_gatepass_type_tree' model='ir.ui.view'>
+            <field name="name">stock.gatepass.type.tree</field>
+            <field name="model">gatepass.type</field>
+            <field name="arch" type="xml">
+                <tree string="Gate Pass Types">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="return_type"/>
+                    <field name="approval_required"/>
+                    <field name="sales_delivery"/>
+                </tree>
+            </field>
+        </record>
 
-	</data>
+        <!-- Gate Pass Type Action -->
+        <record id='action_gate_pass_type' model='ir.actions.act_window'>
+            <field name="name">Gate Pass Types</field>
+            <field name="res_model">gatepass.type</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new gate pass type.
+                </p>
+            </field>
+        </record>
+
+        <!-- Gate Pass Menu -->
+        <menuitem name="Gate Passes" parent="stock.menu_stock_root" id="menu_gate_pass_main" sequence="1"/>
+        <menuitem action="action_gate_pass" name="Gate Passes" parent="menu_gate_pass_main" id="menu_gate_pass" sequence="1"/>
+        <menuitem action="stock.action_picking_tree" id="stock.menu_action_picking_tree" parent="menu_gate_pass_main" sequence="5"/>
+
+        <!-- Gate Pass Type Menu -->
+        <menuitem action="action_gate_pass_type" id="menu_gate_pass_type" name="Gate Pass Types" parent="stock.menu_stock_configuration"/>
+
+    </data>
 </openerp>

@@ -14,7 +14,7 @@
         <record id="gate_pass_type_2" model="gatepass.type">
             <field name="name">Sales Delivery Returnable</field>
             <field name="code">Sales Delivery Returnable</field>
-            <field name="approval_required">True</field>
+            <field name="approval_required">False</field>
             <field name="return_type">return</field>
             <field name="sales_delivery">True</field>
         </record>

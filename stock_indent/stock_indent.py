@@ -149,11 +149,12 @@ class indent_indent(osv.Model):
     }
 
     def _default_stock_location(self, cr, uid, context=None):
+        #TODO: need to improve this try except with some better option
         try:
-            stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock_indent', 'location_production1')
-        except ValueError:
-            return False
-        return stock_location.id
+            stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock_indent', 'location_production1').id
+        except:
+            stock_location = False
+        return stock_location
 
     def _get_required_date(self, cr, uid, context=None):
         return datetime.datetime.strftime(datetime.datetime.today() + timedelta(days=7), DEFAULT_SERVER_DATETIME_FORMAT)

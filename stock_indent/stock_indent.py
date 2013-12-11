@@ -147,9 +147,12 @@ class indent_indent(osv.Model):
         'warehouse_id': fields.many2one('stock.warehouse', 'Warehouse', help="default warehose where inward will be taken", readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}),
         'move_type': fields.selection([('direct', 'Partial'), ('one', 'All at once')], 'Receive Method', track_visibility='onchange', readonly=True, required=True, states={'draft':[('readonly', False)], 'cancel':[('readonly',True)]}, help="It specifies goods to be deliver partially or all at once"),    
     }
-    
+
     def _default_stock_location(self, cr, uid, context=None):
-        stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock_indent', 'location_production1')
+        try:
+            stock_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock_indent', 'location_production1')
+        except ValueError:
+            return False
         return stock_location.id
 
     def _get_required_date(self, cr, uid, context=None):

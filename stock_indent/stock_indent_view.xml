@@ -173,17 +173,17 @@
 										<label for="specification" />
 										<field name="specification" />
 									</form>
-									<tree string="Products">
-									    <field name="sequence" widget="handle"/>
-										<field name="type" />
-										<field name="product_id" />
-										<field name="qty_available" />
-										<field name="product_uom_qty" sum="Total Qty" />
-										<field name="product_uom" string="Unit" groups="product.group_uom" />
-										<field name="name" />
-										<field name="price_unit" sum="Total Price" />
-										<field name="price_subtotal" sum="Total Price" />
-									</tree>
+                                    <tree string="Products">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="product_id"/>
+                                        <field name="type"/>
+                                        <field name="product_uom_qty" sum="Total Qty"/>
+                                        <field name="qty_available"/>
+                                        <field name="product_uom" string="Unit" groups="product.group_uom"/>
+                                        <field name="name"/>
+                                        <field name="price_unit" sum="Total Price"/>
+                                        <field name="price_subtotal" sum="Total Price"/>
+                                    </tree>
 								</field>
 								<group class="oe_subtotal_footer oe_right">
 									<field name="amount_total" widget="monetary"

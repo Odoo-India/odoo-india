@@ -35,5 +35,18 @@
             <field name="sales_delivery">False</field>
         </record>
 
+        <!-- Gatepass-related subtypes for messaging / Chatter -->
+        <record id="mt_gatepass_pending" model="mail.message.subtype">
+            <field name="name">Pending</field>
+            <field name="res_model">stock.gatepass</field>
+            <field name="description">Gatepass is pending</field>
+        </record>
+
+        <record id="mt_gatepass_done" model="mail.message.subtype">
+            <field name="name">Done</field>
+            <field name="res_model">stock.gatepass</field>
+            <field name="description">Gatepass is done</field>
+        </record>
+
     </data>
 </openerp>

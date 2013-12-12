@@ -78,6 +78,13 @@ class stock_gatepass(osv.Model):
     _description = 'Gate Pass'
     _order = "name desc"
 
+    _track = {
+        'state': {
+            'stock_gatepass.mt_gatepass_pending': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'pending',
+            'stock_gatepass.mt_gatepass_done': lambda self, cr, uid, obj, ctx=None: obj['state'] == 'done'
+        },
+    }
+
     def _get_total_amount(self, cr, uid, ids, name, args, context=None):
         result = {}
         for gatepass in self.browse(cr, uid, ids, context=context):
@@ -97,21 +104,21 @@ class stock_gatepass(osv.Model):
         return {'value': result}
 
     _columns = {
-        'name': fields.char('Name', size=256, readonly=True, states={'draft': [('readonly', False)]}),
+        'name': fields.char('Name', size=256, readonly=True, states={'draft': [('readonly', False)]}, track_visibility='always'),
         'driver_id': fields.many2one('res.partner', 'Driver', readonly=True, states={'draft': [('readonly', False)]}),
         'person_id': fields.many2one('res.partner', 'Delivery Person', readonly=True, states={'draft': [('readonly', False)]}),
         'user_id': fields.many2one('res.users', 'User', required=True, readonly=True),
         'date': fields.datetime('Create Date', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'approve_date': fields.datetime('Approve Date', readonly=True, states={'draft': [('readonly', False)]}),
-        'type_id': fields.many2one('gatepass.type', 'Type', required=True, readonly=True, states={'draft': [('readonly', False)]}),
-        'partner_id':fields.many2one('res.partner', 'Supplier', required=True, readonly=True, states={'draft': [('readonly', False)]}),
+        'type_id': fields.many2one('gatepass.type', 'Type', required=True, readonly=True, states={'draft': [('readonly', False)]}, track_visibility='onchange'),
+        'partner_id':fields.many2one('res.partner', 'Supplier', required=True, readonly=True, states={'draft': [('readonly', False)]}, track_visibility='onchange'),
         'line_ids': fields.one2many('stock.gatepass.line', 'gatepass_id', 'Products', readonly=True, states={'draft': [('readonly', False)]}),
         'description': fields.text('Remarks', readonly=True, states={'draft': [('readonly', False)], 'pending': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', required=True, readonly=True, states={'draft': [('readonly', False)]}),
-        'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True, readonly=True),
+        'amount_total': fields.function(_get_total_amount, type="float", string='Total', store=True, readonly=True, track_visibility='onchange'),
         'location_id': fields.many2one('stock.location', 'Source Location', readonly=True, states={'draft': [('readonly', False)]}),
-        'state':fields.selection([('draft', 'Draft'), ('pending', 'Pending'), ('done', 'Done')], 'State', readonly=True),
-        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non-returnable')], 'Return Type', readonly=True, states={'draft': [('readonly', False)]}),
+        'state':fields.selection([('draft', 'Draft'), ('pending', 'Pending'), ('done', 'Done')], 'State', readonly=True, track_visibility='onchange'),
+        'return_type': fields.selection([('return', 'Returnable'), ('non_return', 'Non-returnable')], 'Return Type', readonly=True, states={'draft': [('readonly', False)]}, track_visibility='onchange'),
         'out_picking_id': fields.many2one('stock.picking.out', 'Delivery Order', readonly=True, states={'draft': [('readonly', False)]}, domain=[('type','=','out')]),
         'in_picking_id': fields.many2one('stock.picking.in', 'Incoming Shipment', readonly=True, states={'draft': [('readonly', False)]}),
         'approval_required': fields.boolean('Approval State', readonly=True, states={'draft': [('readonly', False)]}),

@@ -185,7 +185,6 @@ class stock_gatepass(osv.Model):
                     location_id=supplier_location.id, 
                     location_dest_id=line.location_id.id,
                     picking_id=in_picking_id,
-                    prodlot_id = line.prodlot_id.id,
                     origin=gatepass.name
                 )
             else:
@@ -308,7 +307,7 @@ class stock_gatepass_line(osv.Model):
         'location_id': fields.many2one('stock.location', 'Source Location', required=True),
         'location_dest_id': fields.many2one('stock.location', 'Destination Location', required=True),
         'price_unit': fields.float('Approx. Value'),
-        'prodlot_id': fields.many2one('stock.production.lot', 'Serial #', domain="[('product_id','=',product_id)]"),
+        'prodlot_id': fields.many2one('stock.production.lot', 'Serial #'),
      }
 
     def _get_uom_id(self, cr, uid, *args):

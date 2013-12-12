@@ -19,6 +19,8 @@
 #
 ##############################################################################
 
+import time
+
 from openerp.osv import fields, osv
 
 class stock_production_lot(osv.osv):
@@ -33,17 +35,19 @@ class stock_production_lot(osv.osv):
     
     def _get_current_location(self, cr, uid, ids, name, args, context=None):
         res = dict([(id, {'current_location_id':False}) for id in ids])
-        for serial in self.browse(cr, uid, ids, context={}):
-            cid = -1
-            location_id = -1
-            for move in serial.move_ids:
-                if move.id > cid and move.state == 'done':
-                    cid = move.id
-                    location_id = move.location_dest_id.id
-            if location_id == -1:
-                res[serial.id] = False
+        move_pool= self.pool.get('stock.move')
+
+        for serial_id in ids:
+            date = time.strftime('%Y-%m-%d %H:%M:%S')
+            
+            move_ids = move_pool.search(cr, uid, [('prodlot_id','=',serial_id), ('date','<=',date), ('state','=','done')], order='date desc')
+            
+            if move_ids:
+                location_dest_id = move_pool.browse(cr, uid, move_ids[0]).location_dest_id.id
+                res[serial_id] = location_dest_id
             else:
-                res[serial.id] = location_id
+                res[serial_id] = False 
+                
         return res
     
     _columns = {

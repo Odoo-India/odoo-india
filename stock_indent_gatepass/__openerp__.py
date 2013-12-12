@@ -19,17 +19,35 @@
 #
 ##############################################################################
 {
-    'name' : 'Repairs Gatepass',
+    'name' : 'Repair\'s Gatepass',
     'version' : '0.1',
     'author' : 'OpenERP S.A.',
     'sequence': 110,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Indent Approval link on Repairs Gatepass',
+    'summary' : 'Indent Approval link on Repair\'s Gatepass',
     'description' : """
-Indent Approval Link on Repairs Gatepass
-=====================================
-* Linking of Indent on gatepass before sending Mechines or part of Mechines out side factory.
+Indent Approval Link on Repair's Gate Pass
+=============================================
+This module allows you to send products in repairing indent using gate pass and also keeps track of the incoming shipment of repaired products coming back from the supplier who has sent repaired product.
+
+How it works?
+********************
+Creating Repairing Indent
+---------------------------
+When you want to send a Laptop out for repairing you will create a repairing indent and select Laptop as product to be sent for repairing and the service to repair the Laptop.
+
+Deliver through Gate Pass
+---------------------------
+After indent is approved, a returnable gate pass is created for Laptop. The gate keeper can confirm the gate pass and process the delivery of Laptop to be send to supplier for repairing.
+
+Receive through Gate Pass
+---------------------------
+The incoming shipment for Laptop is also recorded on the same gate pass which is created for the repairing indent. When the Laptop is arrived from the supplier, the gate keeper can process the incoming shipment of Laptop for the same gate pass.
+
+Transfer to the Department
+---------------------------
+After the repaired Laptop has arrived from supplier, you can issue the products to the department for which the repairing indent was created. Once the internal transfer has been done, the indent will be completed and changed to Received status.
 """,
     'depends' : ['stock_indent', 'stock_gatepass'],
     'data' : [

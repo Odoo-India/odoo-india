@@ -19,6 +19,8 @@
 #
 ##############################################################################
 
+import time
+
 from openerp.osv import fields, osv
 
 class stock_gatepass(osv.Model):
@@ -55,9 +57,67 @@ class stock_gatepass(osv.Model):
         result['line_ids'] = lines
         result['partner_id'] = order.partner_id.id
         return {'value': result}
+    
+    def create_incoming_shipment(self, cr, uid, gatepass, context=None):
+        picking_in_obj = self.pool.get('stock.picking.in')
+        move_obj = self.pool.get('stock.move')
+
+        vals = {
+            'partner_id': gatepass.partner_id.id,
+            'gate_pass_id': gatepass.id,
+            'date': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'origin': gatepass.name,
+            'type': 'in',
+        }
+        in_picking_id = picking_in_obj.create(cr, uid, vals, context=context)
+        
+        supplier_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_suppliers')
+        
+        for line in gatepass.line_ids:
+            if line.product_id.container_id:
+                result = dict(name=line.product_id.container_id.name, 
+                    product_id=line.product_id.container_id.id, 
+                    product_qty=1, 
+                    product_uom=line.product_id.container_id.uom_id.id, 
+                    location_id=supplier_location.id, 
+                    location_dest_id=line.location_id.id,
+                    picking_id=in_picking_id,
+                    prodlot_id = line.prodlot_id.container_serial_id.id,
+                    origin=gatepass.name
+                )
+            else:
+                result = dict(name=line.product_id.name, 
+                    product_id=line.product_id.id, 
+                    product_qty=line.product_qty, 
+                    product_uom=line.uom_id.id, 
+                    location_id=supplier_location.id, 
+                    location_dest_id=line.location_id.id,
+                    picking_id=in_picking_id,
+                    prodlot_id = line.prodlot_id.id,
+                    origin=gatepass.name
+                )
+            move_obj.create(cr, uid, result, context=context)
+        
+        return in_picking_id
 
     _sql_constraints = [
         ('gatepass_delivery_uniq', 'unique(out_picking_id)', 'You can not create multiple Gatepass for same Delivery Order!'),
     ]
 
 stock_gatepass()
+
+class stock_picking(osv.Model):
+    _inherit = "stock.picking"
+    
+    _columns = {
+        'prodlot_id': fields.related('move_lines', 'prodlot_id', type='many2one', relation='stock.production.lot', string='Serial #')
+    }
+stock_picking()
+
+class stock_picking_in(osv.Model):
+    _inherit = "stock.picking.in"
+    
+    _columns = {
+        'prodlot_id': fields.related('move_lines', 'prodlot_id', type='many2one', relation='stock.production.lot', string='Serial #')
+    }
+stock_picking_in()

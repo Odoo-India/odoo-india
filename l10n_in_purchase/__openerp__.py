@@ -25,11 +25,30 @@
     'sequence': 111,
     'category': 'Purchase Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Purchase',
+    'summary' : 'Purchase Management, Indian localization',
     'description' : """
-Managing Purchase.
-===================== 
+Manage Freight, Packaging & Forwarding, Insurance, Mill Delivery
+=====================================================================
+This module allows you to manage different charges on Purchase orders & Supplier invoices used for Indian Localization.
 
+* Freight
+* Packaging & Forwarding
+* Insurance
+* Mill Delivery
+
+Management of Rates and Amounts
+++++++++++++++++++++++++++++++++++++++
+You can manage calculation of various charges by different applicable options.
+
+* **Fix Amount**: Fix amount applicable on total price
+* **Percentage**: Amount in percentage applicable on total price
+* **Per Unit**: Fix amount applicable per unit on total quantity of items
+* **At actual**: Charge different rates over time
+* **Include in Price**: Recomputes price of items to adjust amount in price of items
+
+Reports
+++++++++++
+It also prints reports of Purchase orders and Supplier Invoices with Freight/Packaging etc. information.
 """,
     'depends' : ['purchase'],
     'data' : [

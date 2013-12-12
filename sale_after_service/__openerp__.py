@@ -19,19 +19,23 @@
 #
 ##############################################################################
 {
-    'name': 'After Sales Service ',
+    'name': 'After Sales Service Contracts',
     'version': '1.0',
     'category': 'Sales',
-    'summary' : 'Managing Service Contracts',
-    'description': """Managing Service Contracts
-=========================================
-This Module addding the feature of creation of contract after sales for maintaince of services.
-- Add boolean on product form which allow creation of contract for that product from delivery order.
-- Create contract from delivery order if delivery order line has serial number.
-- Contract from delivery order has reference of sale order and delivery order.
+    'summary' : 'Manage Service Contracts',
+    'description': """
+Manage service contract for the products after sales
+====================================================== 
+This module adds the feature of automatic creation of contracts for maintenance or services after the sales of products.
 
-TODO
-- Security
+How it works?
++++++++++++++++
+The contract is created from delivery order if delivery order line has serial number and the product has a boolean true for after sales services. A boolean on product for Service after sales, when selected, allows creation of contracts for that product while processing delivery of that product, if proper serial number is selected.
+
+* Adds boolean on product form for after sales service
+* If delivery order line has serial number, Creates contract from delivery order
+* Created contract has reference of sale order and delivery order to search it easily
+* Serial Number also has reference of created contract, if any
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

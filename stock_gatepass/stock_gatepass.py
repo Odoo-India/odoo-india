@@ -249,7 +249,7 @@ class stock_gatepass(osv.Model):
             out_picking_id = gatepass.out_picking_id.id
             in_picking_id = False
             picking_ids = []
-            
+
             if not out_picking_id:
                 out_picking_id = self.create_delivery_order(cr, uid, gatepass, context=context)
                 picking_ids.append(out_picking_id)
@@ -257,17 +257,18 @@ class stock_gatepass(osv.Model):
             if gatepass.type_id and gatepass.type_id.return_type == 'return':
                 in_picking_id = self.create_incoming_shipment(cr, uid, gatepass, context=context)
                 picking_ids.append(in_picking_id)
-            
+
             name = seq_obj.get(cr, uid, 'stock.gatepass')
             res = {
                 'name': name, 
                 'approve_date': time.strftime('%Y-%m-%d %H:%M:%S'),
-                'out_picking_id':out_picking_id,
-                'in_picking_id':in_picking_id
+                'out_picking_id': out_picking_id,
+                'in_picking_id': in_picking_id,
             }
+            # Added the delivery person as follower
+            if gatepass.person_id:
+                res = dict(res, message_follower_ids = [(4, gatepass.person_id and gatepass.person_id.id)])
             self.write(cr, uid, [gatepass.id], res, context=context)
-            
-            
             picking_pool.write(cr, uid, picking_ids, {'origin': name}, context)
         return True
 

@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<document filename="test.pdf">
+  <template pageSize="(595.0,842.0)" title="Declaration Form" author="Martin Simon" allowSplitting="20">
+    <pageTemplate id="first">
+      <frame id="first" x1="57.0" y1="57.0" width="481" height="728"/>
+    </pageTemplate>
+  </template>
+  <stylesheet>
+    <blockTableStyle id="Standard_Outline">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table1">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="0,0" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="0,0" stop="0,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="1,0" stop="1,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="1,0" stop="1,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="2,0" stop="2,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="2,0" stop="2,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="3,0" stop="3,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="3,0" stop="3,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="4,0" stop="4,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="4,0" stop="4,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="5,0" stop="5,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="5,0" stop="5,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="6,0" stop="6,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="6,0" stop="6,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="7,0" stop="7,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="7,0" stop="7,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="8,0" stop="8,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="8,0" stop="8,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="8,-1" stop="8,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="9,0" stop="9,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="9,0" stop="9,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="9,-1" stop="9,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="10,0" stop="10,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#e6e6e6" start="10,0" stop="10,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#e6e6e6" start="10,0" stop="10,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#e6e6e6" start="10,-1" stop="10,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table2">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="0,0" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="1,0" stop="1,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="2,0" stop="2,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="3,0" stop="3,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="3,-1" stop="3,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="4,0" stop="4,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="4,-1" stop="4,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="5,0" stop="5,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="5,-1" stop="5,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="6,0" stop="6,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="6,-1" stop="6,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="7,0" stop="7,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="7,-1" stop="7,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="8,0" stop="8,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="8,-1" stop="8,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="9,0" stop="9,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="9,-1" stop="9,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="10,0" stop="10,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#ffffff" start="10,0" stop="10,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="10,-1" stop="10,-1"/>
+    </blockTableStyle>
+    
+    <blockTableStyle id="Table3">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="0,0" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#ffffff" start="0,0" stop="0,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#ffffff" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBEFORE" colorName="#ffffff" start="1,0" stop="1,-1"/>
+    </blockTableStyle>  
+    
+    <initialize>
+      <paraStyle name="all" alignment="justify"/>
+    </initialize>
+    <paraStyle name="P1" fontName="Helvetica-Bold" fontSize="7.0" leading="8"/>
+    <paraStyle name="P2" fontName="Helvetica-Bold" alignment="RIGHT" fontSize="7.0" leading="8"/>
+    <paraStyle name="P3" fontName="Helvetica-Bold" fontSize="10.0" leading="12" alignment="CENTER" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P4" fontName="Helvetica-Bold" fontSize="7.0" leading="8"/>
+    <paraStyle name="Standard" fontName="Helvetica"/>
+    <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
+    <paraStyle name="List" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
+    <paraStyle name="Caption" fontName="Helvetica" fontSize="12.0" leading="15" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="Index" fontName="Helvetica"/>
+    <paraStyle name="Table Contents" fontName="Helvetica" fontSize="7.0" leading="8"/>
+    <images/>
+  </stylesheet>
+  <story>
+    <para style="P1">[[ repeatIn(objects,'o') ]]</para>
+    <blockTable colWidths="394.0,143.0" style="Table3">
+      <tr>
+        <td>
+          <para style="P4">
+            <font face="Helvetica">Start Period : [[ data['form']['period_from'] and data['form']['period_from'][1] or removeParentNode('font')]]</font>
+          </para>
+          <para style="P4">
+            <font face="Helvetica">End Period : [[ data['form']['period_to'] and data['form']['period_to'][1] or removeParentNode('font')]] </font> 
+          </para>
+        </td>
+        <td>
+          <para style="P2">
+            <font face="Helvetica"> [[ o._table_name == 'account.account' and 'Account' or 'Partner' ]] : [[ o.name ]] </font>
+          </para>
+          <para style="P2">
+            <font face="Helvetica"> Form type: [[ data['form']['form_type'] == 'c_form' and 'C' or data['form']['form_type'] == 'h_form' and 'H' or data['form']['form_type'] == 'i_form' and 'I' or 'E1']] Form</font>
+          </para>
+        </td>
+      </tr>
+    </blockTable>  
+    <blockTable colWidths="48.0,71.0,55.0,63.0,60.0,52.0,40.0,48.0,62.0,48.0" style="Table1">
+      <tr>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">Date</font>
+          </para>
+        </td>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">Particulars</font>
+          </para>
+        </td>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">CST No.</font>
+          </para>
+        </td>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">Vch Type</font>
+          </para>
+        </td>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">Vch No.</font>
+          </para>
+        </td>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">Assessable Value</font>
+          </para>
+        </td>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">CST Amount</font>
+          </para>
+        </td>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">Invoice Amount</font>
+          </para>
+        </td>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">Form Number</font>
+          </para>
+        </td>
+        <td>
+          <para style="P1">
+            <font face="Helvetica">Form Date</font>
+          </para>
+        </td>
+      </tr>
+    </blockTable>
+    <section>
+    <para style="P1">[[ repeatIn(get_data(o.id, data['form']),'c') ]]</para>
+    
+    <blockTable colWidths="48.0,71.0,55.0,63.0,60.0,52.0,40.0,48.0,62.0,48.0" style="Table2">
+      <tr>
+        <td>
+          <para style="Table Contents">[[ c['invoice_date'] ]]</para>
+        </td>
+        <td>
+          <para style="Table Contents">[[ c['name'] ]]</para>
+        </td>
+        <td>
+          <para style="Table Contents">[[ c['cst_no'] ]]</para>
+        </td>
+        <td>
+          <para style="Table Contents">[[ c['voucher_type'] ]]</para>
+        </td>
+        <td>
+          <para style="Table Contents">[[ c['number'] ]]</para>
+        </td>
+        <td>
+          <para style="Table Contents">[[ formatLang(c['assessable_value'], digits=get_digits(dp='Account')) ]]</para>
+        </td>
+        <td>
+          <para style="Table Contents">[[ formatLang(c['cst_amount'], digits=get_digits(dp='Account')) ]]</para>
+        </td>
+        <td>
+          <para style="Table Contents">[[ formatLang(c['amount_total'], digits=get_digits(dp='Account')) ]]</para>
+        </td>
+        <td>
+          <para style="Table Contents">[[ c['form_no'] ]]</para>
+        </td>
+        <td>
+          <para style="Table Contents">[[ c['form_date'] and formatLang(c['form_date'], date=True) or '' ]]</para>
+        </td>
+      </tr>
+    </blockTable>
+    </section>
+    <para style="Standard">
+      <font color="white"> </font>
+    </para>
+  </story>
+</document>

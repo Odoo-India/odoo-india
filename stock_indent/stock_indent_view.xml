@@ -1,30 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
-	   
-        <!-- Purchase Order Search View -->
-        <record id="view_purchase_order_inherited_search" model="ir.ui.view">
-            <field name="name">purchase.order.search.inherit</field>
-            <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+	
+        <!-- Product configuration for repairable product -->
+        <record id='view_product_container_form' model='ir.ui.view'>
+            <field name="name">product.product.container.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view" />
             <field name="arch" type="xml">
-               <filter string="Source" position="attributes">
-                    <attribute name="string">Indent</attribute>
-                </filter>
-               <field name="create_uid" position="after">
-                    <field name="indent_id"/>
+                <field name="list_price" position="after">
+                    <field name="repair_id" attrs="{'invisible':[('type','!=','service')]}" />
+                    <field name="repair_ok" attrs="{'invisible':[('type','=','service')]}" />
                 </field>
             </field>
         </record>
-	   
-        <!-- Purchase Order Link with Indent action -->
-        <record model="ir.actions.act_window" id="action_purchase_order_indent_view">
-            <field name="context">{'search_default_indent_id': active_id}</field>
-            <field name="name">Purchase Order</field>
-            <field name="res_model">purchase.order</field>
-            <field name="search_view_id" ref="view_purchase_order_inherited_search"/>
-        </record>
-        
+
+		<!-- Project Settings -->
+		<record id="view_account_analytic_account_form" model="ir.ui.view">
+			<field name="name">account.analytic.account.inherit</field>
+			<field name="model">account.analytic.account</field>
+			<field name="inherit_id" ref="analytic.view_account_analytic_account_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//group[@name='main']" position="inside">
+					<group>
+						<field name="indent_close" />
+						<field name="purchase_close" />
+					</group>
+				</xpath>
+			</field>
+		</record>
+
+		<!-- Purchase Order Search View -->
+		<record id="view_purchase_order_inherited_search" model="ir.ui.view">
+			<field name="name">purchase.order.search.inherit</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.view_purchase_order_filter" />
+			<field name="arch" type="xml">
+				<filter string="Source" position="attributes">
+					<attribute name="string">Indent</attribute>
+				</filter>
+				<field name="create_uid" position="after">
+					<field name="indent_id" />
+				</field>
+			</field>
+		</record>
+
+		<!-- Purchase Order Link with Indent action -->
+		<record model="ir.actions.act_window" id="action_purchase_order_indent_view">
+			<field name="context">{'search_default_indent_id': active_id}</field>
+			<field name="name">Purchase Order</field>
+			<field name="res_model">purchase.order</field>
+			<field name="search_view_id" ref="view_purchase_order_inherited_search" />
+		</record>
+
 		<!-- Stock Location Form View -->
 		<record id="view_indent_stock_location_form" model="ir.ui.view">
 			<field name="name">indent.stock.location.form</field>
@@ -40,8 +68,8 @@
 				</xpath>
 			</field>
 		</record>
-        
-        <!-- Indent Form View -->
+
+		<!-- Indent Form View -->
 		<record id='view_stock_indent_indent_form' model='ir.ui.view'>
 			<field name="name">indent.indent.form</field>
 			<field name="model">indent.indent</field>
@@ -53,8 +81,12 @@
 						<button name="indent_inprogress" string="Approve" states="waiting_approval"
 							class="oe_highlight" />
 						<button name="indent_reject" string="Reject" states="waiting_approval" />
-						<button name="action_receive_products" string="Receive Product(s)"
+						
+						<button name="action_deliver_products" string="Transfer for Repair"
+                            type="object" class="oe_highlight" attrs="{'invisible': ['|', ('type','=','new'), ('state','in',['draft','confirm', 'waiting_approval','received'])]}"/>
+						<button name="action_receive_products" string="Issue Product(s)"
 							states="inprogress" type="object" class="oe_highlight" />
+						
 						<field name="state" widget="statusbar"
 							statusbar_visible="draft,waiting_approval,inprogress,received"
 							statusbar_colors='{"reject":"red"}' />
@@ -69,43 +101,45 @@
 							</h1>
 						</div>
 						<div class="oe_right oe_inline" name="buttons">
-                            <button name="%(action_purchase_order_indent_view)d" string="Purchase Orders" type="action" />
-                        </div>
-
+							<button name="%(action_purchase_order_indent_view)d"
+								string="Purchase Orders" type="action"
+								attrs="{'invisible': ['|', '|', ('state', '=', 'draft'), ('state', '=', 'confirm'), ('state', '=', 'waiting_approval')]}" />
+						</div>
 						<group>
 							<group>
-								<field name="item_for" />
-								<field name="analytic_account_id" attrs="{'required': [('item_for', '=', 'capital')]}" />
-								<field name="requirement"
-									on_change="onchange_requirement(indent_date, requirement)" />
+								<field name="indentor_id" readonly="1" />
 								<field name="department_id"
 									domain="[('location_id', '!=',False), ('usage', '!=', 'view'), ('can_request','=',True)]" />
-							</group>
-							<group>
-								<field name="indentor_id" readonly="1"/>
-								<field name="manager_id" readonly="1"/>
-								<field name="approver_id" readonly="1"/>
-							</group>
 
+							</group>
 							<group>
 								<field name="indent_date" />
 								<field name="required_date" />
+								<field name="approve_date" />
 							</group>
-
 							<group>
+								<field name="item_for" />
+								<field name="analytic_account_id" domain="[('indent_close','=',False), ('type','!=','view'), ('type','!=','template')]"
+									attrs="{'required': [('item_for', '=', 'capital')]}" />
+							</group>
+							<group>
+								<field name="requirement"
+									on_change="onchange_requirement(indent_date, requirement)" />
 								<field name="type" />
-								<field name="company_id" />
+								<field name="company_id" groups="base.group_multi_company"
+									readonly="1" />
 							</group>
 						</group>
 						<notebook>
 							<page string="Products">
-								<field name="product_lines">
+								<field name="product_lines" context="{'indent_type':type}">
 									<form string="Products" version="7.0">
 										<group>
 											<group>
 												<field name="product_id" groups="base.group_user"
 													on_change="onchange_product_id(product_id, product_uom_qty, product_uom, price_unit, qty_available, virtual_available, 
             name, parent.analytic_account_id, parent.type)" />
+												<field name="original_product_id" attrs="{'invisible':[('indent_type','=','new')], 'required':[('indent_type','=','existing')]}"/>
 												<label for="product_uom_qty" />
 												<div>
 													<field name="product_uom_qty" class="oe_inline" />
@@ -122,6 +156,7 @@
 											</group>
 											<group>
 												<field name="type" />
+												<field name="indent_type" invisible="1"/>
 												<field name="qty_available"
 													on_change="onchange_product_id(product_id, 
             product_uom_qty, product_uom, price_unit, qty_available, virtual_available, 
@@ -138,27 +173,46 @@
 										<label for="specification" />
 										<field name="specification" />
 									</form>
-									<tree string="Products">
-										<field name="type" />
-										<field name="product_id" />
-										<field name="qty_available" />
-										<field name="product_uom_qty" sum="Total Qty"/>
-										<field name="product_uom" string="Unit" />
-										<field name="name" />
-										<field name="price_unit" sum="Total Price"/>
-										<field name="price_subtotal" sum="Total Price"/>
-									</tree>
+                                    <tree string="Products">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="product_id"/>
+                                        <field name="type"/>
+                                        <field name="product_uom_qty" sum="Total Qty"/>
+                                        <field name="qty_available"/>
+                                        <field name="product_uom" string="Unit" groups="product.group_uom"/>
+                                        <field name="name"/>
+                                        <field name="price_unit" sum="Total Price"/>
+                                        <field name="price_subtotal" sum="Total Price"/>
+                                    </tree>
 								</field>
 								<group class="oe_subtotal_footer oe_right">
 									<field name="amount_total" widget="monetary"
-                                options="{'currency_field': 'currency_id'}"/>
+										class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}" />
+								</group>
+								<div class="oe_clear">
+									<label for="description" />
+								</div>
+								<field name="description" class="oe_inline" placeholder="Additional note..." />
+							</page>
+
+							<page string="Others">
+								<group>
+									<group>
+										<field name="equipment_id" />
+										<field name="equipment_section_id" domain="[('equipment_id','=',equipment_id)]" />
+									</group>
+									<group>
+										<field name="move_type" />
+										<field name="warehouse_id" />
+									</group>
+									<group>
+										<field name="manager_id" readonly="1" />
+										<field name="approver_id" readonly="1" />
+									</group>
 								</group>
 							</page>
 						</notebook>
-						<div class="oe_clear">
-                            <label for="description"/>
-                        </div>
-						<field name="description" class="oe_inline" placeholder="Additional note..."/>
+
 					</sheet>
 					<div class="oe_chatter">
 						<field name="message_follower_ids" widget="mail_followers" />
@@ -167,8 +221,8 @@
 				</form>
 			</field>
 		</record>
-        
-        <!-- Indent Tree View -->
+
+		<!-- Indent Tree View -->
 		<record id='view_indent_indent_tree' model='ir.ui.view'>
 			<field name="name">indent.indent.tree</field>
 			<field name="model">indent.indent</field>
@@ -176,19 +230,19 @@
 				<tree string="Indents"
 					colors="gray:state=='received';green:state=='waiting_approval';">
 					<field name="name" />
-					<field name="indentor_id"/>
-					<field name="indent_date"/>
-					<field name="requirement"/>
-					<field name="required_date"/>
-					<field name="department_id"/>
-					<field name="analytic_account_id"/>
-					<field name="type"/>
-					<field name="amount_total"/>
-					<field name="state"/>
+					<field name="indentor_id" />
+					<field name="department_id" />
+					<field name="analytic_account_id" />
+					<field name="amount_total" />
+					<field name="type" />
+					<field name="indent_date" />
+					<field name="required_date" />
+					<field name="approve_date" />
+					<field name="state" />
 				</tree>
 			</field>
 		</record>
-		
+
 		<!-- Indent Search View -->
 		<record id="view_indent_indent_search" model="ir.ui.view">
 			<field name="name">indent.indent.search</field>
@@ -198,6 +252,12 @@
 					<field name="name" string="Indent Name" />
 					<field name="indent_date" />
 					<field name="required_date" />
+					<field name="approve_date" />
+					<field name="product_id" />
+					<field name="indentor_id" />
+					<field name="department_id" />
+					<field name="analytic_account_id" />
+
 					<filter string="Draft" name="draft" domain="[('state','=','draft')]" />
 					<filter string="Waiting For Approval" name="waiting"
 						domain="[('state','=','waiting_approval')]" />
@@ -206,9 +266,9 @@
 					<filter string="Received" name="received" domain="[('state','=','received')]" />
 					<filter string="Rejected" name="reject"
 						domain="[('state','=','reject'),('active','=',False)]" />
-					<field name="indentor_id" />
-					<field name="department_id" />
-					<field name="analytic_account_id" />
+						
+					<filter string="My Indents" name="draft" domain="[('indentor_id','=',uid)]" />
+
 					<group expand="0" string="Group By...">
 						<filter string="Indentor" context="{'group_by': 'indentor_id'}" />
 						<filter string="Department" context="{'group_by': 'department_id'}" />
@@ -221,7 +281,7 @@
 				</search>
 			</field>
 		</record>
-		
+
 		<!-- Indent Window Action -->
 		<record id='action_indent_indent' model='ir.actions.act_window'>
 			<field name="name">Indents</field>
@@ -235,7 +295,7 @@
 				</p>
 			</field>
 		</record>
-		
+
 		<!-- Indent Menu -->
 		<menuitem name="Indents" parent="stock.menu_stock_root" id="menu_indent_indent_main"
 			sequence="1" />
@@ -245,10 +305,10 @@
 			parent="stock.menu_stock_root" sequence="2" />
 		<menuitem id="stock.menu_stock_products_moves" name="Receive/Deliver Products"
 			parent="stock.menu_stock_root" sequence="3" />
-        
+
 		<!-- Document Authority Menu -->
 		<menuitem name="Indent 
-			Management" parent="stock.menu_stock_configuration"
+            Management" parent="stock.menu_stock_configuration"
 			id="menu_indent_configuration" sequence="41" />
 	</data>
 </openerp>

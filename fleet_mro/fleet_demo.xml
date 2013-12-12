@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Fleet Vehicle Log Services -->
+        <record id="fleet.log_service_1" model="fleet.vehicle.log.services">
+            <field name="in_inspector_id" ref="base.user_root"/>
+            <field name="technician_id" ref="base.user_root"/>
+        </record>
+
+        <record id="fleet.log_service_2" model="fleet.vehicle.log.services">
+            <field name="in_inspector_id" ref="base.user_root"/>
+            <field name="technician_id" ref="base.user_root"/>
+        </record>
+
+        <record id="fleet.log_service_3" model="fleet.vehicle.log.services">
+            <field name="in_inspector_id" ref="base.user_demo"/>
+            <field name="technician_id" ref="base.user_demo"/>
+        </record>
+
+        <record id="fleet.log_service_4" model="fleet.vehicle.log.services">
+            <field name="in_inspector_id" ref="base.user_root"/>
+            <field name="technician_id" ref="base.user_root"/>
+        </record>
+
+        <record id="fleet.log_service_5" model="fleet.vehicle.log.services">
+            <field name="in_inspector_id" ref="base.user_demo"/>
+            <field name="technician_id" ref="base.user_demo"/>
+        </record>
+
+        <record id="fleet.log_service_6" model="fleet.vehicle.log.services">
+            <field name="in_inspector_id" ref="base.user_root"/>
+            <field name="technician_id" ref="base.user_root"/>
+        </record>
+
+    </data>
+</openerp>

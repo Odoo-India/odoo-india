@@ -1,0 +1,505 @@
+.openerp .task_panel {
+    float: left;
+    overflow: hidden;
+    position: relative;
+    left: 57%;
+}
+
+.openerp .task_panel .task_logger {
+    background: white;
+    border: 1px solid #F4F2F2;
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    box-shadow: 0 1px 2px #bbb;
+}
+
+.openerp .task_panel h2,
+.openerp .task_panel .snooze {
+    color: #666;
+    font-size: 0.8em;
+    text-align: center;
+    border-bottom: 1px solid #bbb;
+}
+
+.openerp .task_panel select {
+    
+}
+
+.openerp .task_panel .tasks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.openerp .task_panel .tasks li {
+    margin: 6px;
+    padding: 4px;
+    border: 1px solid #bbb;
+    color: #666;
+}
+
+
+ 
+
+
+.openerp .oe_searchview {
+  z-index:5;
+  cursor: text;
+  position: fixed;
+  top:0px;
+  right: 0px;
+  float: right;
+  padding: 1px 0;
+  line-height: 28px;
+  width: 100%;
+  border: 2px solid #ababab;
+  background: #3d3c3c;
+  border-top: none;
+  border-right: none;
+  -moz-border-radius-topright: 0px;
+  -moz-border-radius-topleft: 0px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  -moz-border-radius-bottomright: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) inset;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) inset;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) inset;
+  -moz-box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: -2px 3px 2px rgba(0, 0, 0, 0.6);
+  box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.6);
+}
+.openerp .oe_searchview input, .openerp .oe_searchview textarea {
+  z-index:5;
+  padding: 3px;
+  height: 14px;
+  font-size: 12px;
+  line-height: 18px;
+}
+.openerp .oe_searchview.oe_focused {
+  z-index:5;
+  border-color: #a6a6fe;
+  -moz-box-shadow: 0 1px 2px #a6a6fe inset;
+  -webkit-box-shadow: 0 1px 2px #a6a6fe inset;
+  box-shadow: 0 1px 2px #a6a6fe inset;
+  -moz-box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: -2px 3px 2px rgba(0, 0, 0, 0.6);
+  box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.6);
+}
+.openerp .oe_searchview .oe_searchview_clear {
+  z-index:5;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 18px;
+  width: 15px;
+  height: 100%;
+  background: url(../img/search_reset.png) center center no-repeat;
+}
+.openerp .oe_searchview .oe_searchview_unfold_drawer {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  padding: 0 7px 0 4px;
+  color: #cccccc;
+  cursor: pointer;
+  background: url(../img/arrow_down.png) center center no-repeat;
+}
+.openerp .oe_searchview .oe_searchview_unfold_drawer:hover {
+  color: #999999;
+}
+.openerp .oe_searchview .oe_searchview_unfold_drawer:before {
+  position: absolute;
+  top: 12px;
+  right: 7px;
+  width: 0;
+  height: 0;
+  display: inline-block;
+  content: "";
+  vertical-align: top;
+  border-top: 5px solid #4c4c4c;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  filter: alpha(opacity=50);
+  opacity: 0.5;
+}
+.openerp .oe_searchview .oe_searchview_search {
+  font-size: 1px;
+  letter-spacing: -1px;
+  color: transparent;
+  font-weight: normal;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  position: absolute;
+  left: 3px;
+  bottom: 3px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+.openerp .oe_searchview .oe_searchview_search:before {
+  font: 24px "mnmliconsRegular";
+  content: "r";
+  color: #a3a3a3;
+}
+.openerp .oe_searchview .oe_searchview_facets {
+  min-height: 22px;
+  margin-left: 15px;
+}
+.openerp .oe_searchview .oe_searchview_facets * {
+  vertical-align: top;
+  display: inline-block;
+  line-height: 17px;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet {
+  height: 18px;
+  margin: 5px 0px 3px 3px;
+  font-size: 11px;
+  border: 0px solid #ababab;
+    -moz-border-radius-topright: 0px;
+  -moz-border-radius-topleft: 0px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  -moz-border-radius-bottomright: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet:focus {
+  outline: none;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_input {
+  padding: 0 0 0 6px;
+  font-size: 19px;
+  height: 16px;
+  margin-top: 6px;
+  color:#F1F1F1;
+  text-shadow: 0 1px 1px black;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_input:focus {
+  outline: none;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet {
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  -webkit-font-smoothing: auto;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet:focus {
+  border-color: #a6a6fe;
+  -moz-box-shadow: 0 0 3px 1px #a6a6fe;
+  -webkit-box-shadow: 0 0 3px 1px #a6a6fe;
+  box-shadow: 0 0 3px 1px #a6a6fe;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_values {
+  background: #999999;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_category, .openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_value {
+  height: 18px;
+  padding: 0 4px;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_category {
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_category.oe_i {
+  font-size: 16px;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_value {
+  border-left: 1px solid #afafb6;
+  text-shadow: 0 1px 1px black;
+  color: #f2efef;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_value:last-child {
+  padding-right: 16px;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_remove {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  color: #8786b7;
+  line-height: 8px;
+  width: 12px;
+  height: 12px;
+  padding-top: 1px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  text-shadow: 0 1px 1px #E6E6E6;
+}
+.openerp .oe_searchview .oe_searchview_facets .oe_searchview_facet .oe_facet_remove:hover {
+  color: white;
+  background: #8786b7;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+.openerp .oe_searchview.oe_searchview_open_drawer .oe_searchview_drawer {
+  display: block;
+}
+.openerp .oe_searchview .oe_searchview_drawer{
+  position: absolute;
+  z-index: 100;
+  margin-top: 0px;
+  top: 100%;
+  right: 0px;
+  background-color: #3d3c3c;
+  min-width: 100%;
+  display: none;
+  border: 1px solid #afafb6;
+  text-align: left;
+  -moz-border-radius-bottomright: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  -moz-border-radius-topright: 0px;
+  -moz-border-radius-topleft: 0px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  border: 2px solid #A6A6FE;
+  background: #3d3c3c;
+  border-right  : none;
+  -moz-box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: -2px 3px 2px rgba(0, 0, 0, 0.6);
+  box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.6);
+}
+.openerp .oe_searchview .oe_searchview_drawer > div {
+  border-top: 1px solid #9b9bef;
+  margin: 0;
+  padding: 8px;
+}
+.openerp .oe_searchview .oe_searchview_drawer > div:first-child {
+  border-top: none;
+  margin: 0;
+}
+.openerp .oe_searchview .oe_searchview_drawer h3 {
+  margin: 8px 4px 4px 12px;
+  color: #7c7bad;
+  font-size: 20px;
+  text-shadow: 0 1px 1px black;
+}
+.openerp .oe_searchview .oe_searchview_drawer h4, .openerp .oe_searchview .oe_searchview_drawer h4 * {
+  margin: 0;
+  cursor: pointer;
+  font-weight: normal;
+  display: inline-block;
+  color: #bfbdbd;
+  text-shadow: 0 1px 1px black;
+}
+.openerp .oe_searchview .oe_searchview_drawer h4:hover, .openerp .oe_searchview .oe_searchview_drawer h4 *:hover {
+  background-color: #494848;/*hover*/
+}
+.openerp .oe_searchview .oe_searchview_drawer h4:before {
+  content: "▸ ";
+  color: #a3a3a3;
+}
+.openerp .oe_searchview .oe_searchview_drawer button {
+  margin: 4px 0;
+}
+.openerp .oe_searchview .oe_searchview_drawer .button {
+  border: none;
+  background: transparent;
+  padding: 0 2px;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_section {
+  display: table;
+  width: 100%;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_section > div {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  display: table-cell;
+  width: 50%;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_section ul {
+  margin: 0 8px 8px;
+  padding: 0;
+  list-style: none;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_section li {
+  list-style: none;
+  padding: 2px 4px 2px 20px;
+  line-height: 14px;
+  color: #bfbdbd;
+  cursor: pointer;
+  position: relative;
+  text-shadow: 0 1px 1px black;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_section li.oe_selected:before {
+  content: "W";
+  font-family: "entypoRegular" !important;
+  font-size: 24px;
+  font-weight: 300 !important;
+  color: #a3a3a3;
+  position: absolute;
+  left: 4px;
+  top: -2px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_section li:hover {
+  background-color: #494848;/*hover*/
+}
+.openerp .oe_searchview .oe_searchview_drawer form {
+  margin-left: 12px;
+}
+.openerp .oe_searchview .oe_searchview_drawer form p {
+  margin: 4px 0;
+  line-height: 18px;
+}
+.openerp .oe_searchview .oe_searchview_drawer form button {
+  margin: 0 0 8px 0;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom {
+  padding: 0 8px 8px 8px;
+  color: #bfbdbd;
+  text-shadow: 0 1px 1px black;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom form {
+  display: none;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom li {
+  cursor: pointer;
+  position: relative;
+  line-height: 14px;
+  padding: 2px 4px 2px 20px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom li:hover {
+  background-color: #494848;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom li button {
+  position: absolute;
+  top: 0;
+  right: 5px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_dashboard form {
+  display: none;
+  margin-top: 2px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_advanced form {
+  display: none;
+  margin-top: 8px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_advanced button.oe_add_condition:before {
+  content: "Z";
+  font-family: "entypoRegular" !important;
+  font-size: 24px;
+  font-weight: 300 !important;
+  margin-right: 4px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_advanced ul {
+  list-style: none;
+  padding: 0;
+  color: #bfbdbd;
+  text-shadow: 0 1px 1px black;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_advanced li {
+  cursor: pointer;
+  position: relative;
+  list-style: none;
+  margin: 0;
+  white-space: nowrap;
+  color: #bfbdbd;
+  text-shadow: 0 1px 1px black;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_advanced li:first-child .searchview_extended_prop_or {
+  visibility: hidden;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_advanced .searchview_extended_prop_or {
+  opacity: 0.5;
+  margin-left: -14px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_opened h4:before {
+  content: "▾ ";
+  position: relative;
+  top: -1px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_opened form {
+  display: block;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom_delete, .openerp .oe_searchview .oe_searchview_drawer .searchview_extended_delete_prop {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  padding: 1px;
+  color: #8786b7;
+  line-height: 8px;
+  text-align: center;
+  font-weight: bold;
+  text-shadow: 0 1px 1px black;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom_delete:hover, .openerp .oe_searchview .oe_searchview_drawer .searchview_extended_delete_prop:hover {
+  text-decoration: none;
+  color: white;
+  background: #8786b7;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom_delete {
+  display: none;
+  position: absolute;
+  bottom: 1px;
+  right: 4px;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom_private:hover .oe_searchview_custom_delete, .openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom_public:hover .oe_searchview_custom_delete {
+  display: inline-block;
+}
+.openerp .oe_searchview .oe_searchview_drawer .oe_searchview_custom_public:after {
+  content: ",";
+  font-family: "entypoRegular" !important;
+  font-size: 22px;
+  font-weight: 300 !important;
+  margin: 0 0 0 4px;
+  padding: 0;
+}
+.openerp .oe_menu > li > a {
+  display: block;
+  padding: 5px 10px 4px;
+  line-height: 20px;
+  height: 20px;
+  text-decoration: none;
+  color: #eeeeee;
+  vertical-align: top;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -ms-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+  transition:border 0s;
+	-moz-transition:border 0s; /* Firefox 4 */
+	-webkit-transition:border 0s; /* Safari and Chrome */
+	-o-transition:border 0s; /* Opera */
+  border-bottom: 3px solid #292929;
+}
+.openerp .oe_menu > li > a:hover {
+  background: rgba(0, 0, 0, 0.2);
+  text-shadow: black 0px 0px 3px;
+  color: white;
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset;
+  border-bottom: 3px solid #A6A6FE;
+}
+.openerp .oe_menu > li > .oe_active {
+  background: rgba(0, 0, 0, 0.3);
+  text-shadow: black 0px 0px 3px;
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset;
+  border-bottom: 3px solid #8787d1;
+}

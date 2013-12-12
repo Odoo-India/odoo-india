@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="report_sale_order" model="sale.order" name="sale.quotation.india" rml="l10n_in_tax_retail_invoice/report/quotation.rml" string="Quotation / Order"/>
+    </data>
+</openerp>

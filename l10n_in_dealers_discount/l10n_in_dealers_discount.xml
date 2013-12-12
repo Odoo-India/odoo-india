@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    
+   		<record id="view_order_form_dealers_discount" model="ir.ui.view">
+            <field name="name">sale.order.form.dealers_discount</field>
+            <field name="inherit_id" ref="l10n_in_tax_retail_invoice.view_order_form_inheriting"/>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+            	<xpath expr="//notebook//page[@string='Order Lines']//field[@name='price_unit']" position="after">
+                    <field name="lst_price"/>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                	<field name="lst_price"/>
+                </xpath>
+           </field> 
+        </record>
+        
+        <record id="view_account_invoice_inherit_form_dealers_discount" model="ir.ui.view">
+            <field name="name">account.invoice.inherit.form.dealers_discount</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="l10n_in_tax_retail_invoice.view_account_invoice_inherit_form_reference_fields"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page/field[@name='invoice_line']/tree/field[@name='price_unit']" position="after">
+                	<field name="lst_price"/>
+                </xpath>
+            </field>
+        </record>
+        
+    </data>
+</openerp>

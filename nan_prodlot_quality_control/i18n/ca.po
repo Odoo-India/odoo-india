@@ -1,0 +1,476 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* nan_prodlot_quality_control
+#
+# Guillem Barba <guillem@nan-tic.com>, 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 6.0.2\n"
+"Report-Msgid-Bugs-To: support@openerp.com\n"
+"POT-Creation-Date: 2012-02-23 16:42+0000\n"
+"PO-Revision-Date: 2012-02-23 15:48+0100\n"
+"Last-Translator: Guillem Barba <guillem@nan-tic.com>\n"
+"Language-Team: Catalan <>\n"
+"Language: ca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+"X-Generator: Lokalize 1.2\n"
+
+#. module: nan_prodlot_quality_control
+#: model:ir.model,name:nan_prodlot_quality_control.model_stock_production_lot
+msgid "Production lot"
+msgstr "Lot de producció"
+
+#. module: nan_prodlot_quality_control
+#: field:product.qc.trigger.template,template_type:0
+#: field:stock.production.lot.qc.trigger.test,template_type:0
+msgid "Template's Type"
+msgstr "Tipus plantilla"
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot:0
+msgid "Next Test"
+msgstr "Següent test"
+
+#. module: nan_prodlot_quality_control
+#: view:res.company.qc.trigger.template:0
+msgid "QC Template Triggers by Company"
+msgstr "Disparadors de plantilles de qualitat per Companyia"
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot:0
+msgid "Confirm"
+msgstr "Confirma"
+
+#. module: nan_prodlot_quality_control
+#: selection:product.qc.trigger.template,template_type:0
+#: selection:stock.production.lot.qc.trigger.test,template_type:0
+msgid "Generic"
+msgstr "Genèrica"
+
+#. module: nan_prodlot_quality_control
+#: constraint:res.company:0
+msgid "Error! You can not create recursive companies."
+msgstr "Error! No podeu crear companyies recursives."
+
+#. module: nan_prodlot_quality_control
+#: sql_constraint:res.company.qc.trigger.template:0
+msgid "The QC Trigger Tag must be unique for each Company!"
+msgstr ""
+"L'etiqueta disparadora de Control de Qualitat ha de ser única per cada "
+"Companyia!"
+
+#. module: nan_prodlot_quality_control
+#: field:stock.production.lot,current_qc_test_trigger_id:0
+msgid "Current QC Test Trigger"
+msgstr "Disparador de test de qualitat actual"
+
+#. module: nan_prodlot_quality_control
+#: help:product.qc.trigger.template,trigger_id:0
+#: help:stock.production.lot.qc.trigger.test,trigger_id:0
+msgid ""
+"The Quality Control Trigger Tag which defines when must to be created a Test "
+"(using the specified template) for a Production Lot of this Product."
+msgstr ""
+"L'etiqueta de disparador de control de qualitat que defineix quan s'ha de "
+"crear un test (utilitzant la plantilla especificada) per als lots de "
+"producció d'aquest producte."
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot:0 field:stock.production.lot,state:0
+msgid "State"
+msgstr "Estat"
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot:0
+msgid "Quality Control"
+msgstr "Control de qualitat"
+
+#. module: nan_prodlot_quality_control
+#: field:stock.production.lot.qc.trigger.test,prodlot_id:0
+msgid "Lot"
+msgstr "Lot"
+
+#. module: nan_prodlot_quality_control
+#: view:product.product:0 view:res.company:0
+msgid "Quality Control Trigger"
+msgstr "Disparador control de qualitat"
+
+#. module: nan_prodlot_quality_control
+#: field:stock.production.lot.qc.trigger.test,test_id:0
+msgid "Test"
+msgstr "Test"
+
+#. module: nan_prodlot_quality_control
+#: model:qc.test.template,name:nan_prodlot_quality_control.qc_test_template_generic0
+msgid "Generic Template for Input Lots"
+msgstr "Plantilla genèrica per Lots d'entrada"
+
+#. module: nan_prodlot_quality_control
+#: model:product.template,name:nan_prodlot_quality_control.product_w_2qctest0_product_template
+msgid "Product with Two QC Test"
+msgstr "Producte amb dos Tests de qualitat"
+
+#. module: nan_prodlot_quality_control
+#: help:stock.production.lot,qc_test_trigger_ids:0
+msgid ""
+"Defines the Quality Control Tests that this Production Lot must to pass in "
+"certain situations defined by the Trigger Tag."
+msgstr ""
+"Defineix els tests de control de qualitat que aquest lot de producció ha de "
+"passar en certes situacions definides per les etiquetes de disparadors."
+
+#. module: nan_prodlot_quality_control
+#: field:stock.production.lot.qc.trigger.test,test_success:0
+msgid "Test success?"
+msgstr "Test exitós?"
+
+#. module: nan_prodlot_quality_control
+#: view:qc.trigger:0
+msgid "Trigger Tag"
+msgstr "Etiqueta de disparador"
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot:0
+msgid "Force Cancel"
+msgstr "Forçar cancel·lació"
+
+#. module: nan_prodlot_quality_control
+#: model:ir.model,name:nan_prodlot_quality_control.model_product_product
+#: field:product.qc.trigger.template,product_id:0 view:stock.production.lot:0
+msgid "Product"
+msgstr "Producte"
+
+#. module: nan_prodlot_quality_control
+#: help:res.company.qc.trigger.template,trigger_id:0
+msgid ""
+"The Quality Control Trigger Tag which defines when must to be created a Test "
+"(using the specified template) for a Production Lot."
+msgstr ""
+"L'etiqueta de disparador de control de qualitat que defineix quan s'ha de "
+"crear el test (utilitzant la plantilla especificada) per un lot de producció."
+
+#. module: nan_prodlot_quality_control
+#: model:product.template,name:nan_prodlot_quality_control.product_wo_qc0_product_template
+msgid "Product without Quality Control"
+msgstr "Producte sense control de qualitat"
+
+#. module: nan_prodlot_quality_control
+#: help:res.company,qc_template_trigger_ids:0
+msgid ""
+"Defines when a Production Lot must to pass a Quality Control Test (based on "
+"the defined Template).\n"
+"It defines the default Template Triggers which will be used when a Product "
+"is created. Only the Product's field define the final behavior of its lots: "
+"which template to use or don't require any test if there aren't any trigger "
+"defined."
+msgstr ""
+"Defineix quan un lot de producció ha de passar un test de qualitat (basat en "
+"la plantilla especificada).\n"
+"TODOIt defines the default Template Triggers which will be used when a "
+"Product is created. Only the Product's field define the final behavior of "
+"its lots: which template to use or don't require any test if there aren't "
+"any trigger defined."
+
+#. module: nan_prodlot_quality_control
+#: field:product.qc.trigger.template,company_id:0
+#: field:res.company.qc.trigger.template,company_id:0
+msgid "Company"
+msgstr "Companyia"
+
+#. module: nan_prodlot_quality_control
+#: help:product.product,qc_template_trigger_ids:0
+msgid ""
+"Defines when a Production Lot must to pass a Quality Control Test (based on "
+"the defined Template).\n"
+"It gets its default value for generic templates from the Company."
+msgstr ""
+"Defineix quan un Lot de producció ha de passar un test de qualitat (basat en "
+"la plantilla especificada).\n"
+"Agafa de la companyia els valors per defecte per plantilles genèriques."
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot.qc.trigger.test:0
+msgid "QC Test Triggers by Lot"
+msgstr "Disparadors de tests de qualitat per Lot"
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot.qc.trigger.test:0
+msgid "QC Test Trigger by Lot"
+msgstr "Disparador de test de qualitat per Lot"
+
+#. module: nan_prodlot_quality_control
+#: constraint:product.product:0
+msgid "Error: Invalid ean code"
+msgstr "Error: Codi EAN invàlid"
+
+#. module: nan_prodlot_quality_control
+#: field:product.product,qc_template_trigger_ids:0
+#: field:product.product,qc_trigger_ids:0
+#: field:res.company,qc_template_trigger_ids:0
+#: field:stock.production.lot,qc_trigger_ids:0
+msgid "QC Triggers"
+msgstr "Disparadors de qualitat"
+
+#. module: nan_prodlot_quality_control
+#: field:stock.production.lot,active:0
+msgid "Active"
+msgstr "Actiu"
+
+#. module: nan_prodlot_quality_control
+#: model:ir.model,name:nan_prodlot_quality_control.model_res_company_qc_trigger_template
+msgid "Quality Control Template Triggers by Company"
+msgstr "Disparadors de plantilles de qualitat per Companyia"
+
+#. module: nan_prodlot_quality_control
+#: field:product.qc.trigger.template,template_id:0
+#: field:res.company.qc.trigger.template,template_id:0
+msgid "Template"
+msgstr "Plantilla"
+
+#. module: nan_prodlot_quality_control
+#: view:res.company:0
+msgid "Configuration"
+msgstr "Configuració"
+
+#. module: nan_prodlot_quality_control
+#: model:product.template,name:nan_prodlot_quality_control.product_w_1qctest0_product_template
+msgid "Product with One QC Test"
+msgstr "Producte amb un test de qualitat"
+
+#. module: nan_prodlot_quality_control
+#: code:addons/nan_prodlot_quality_control/stock.py:516
+#, python-format
+msgid ""
+"You are trying to cancel the Production Lots with IDs '%(lot_ids)s' which "
+"are associated to QC Test workflow, and it is not allowed.\n"
+"Please, use the 'Force Cancel' button or function to cancel a Lot in "
+"'Pending Test' or 'Test Failed' state."
+msgstr ""
+"Està intentant cancel·lar els Lots amb ID '%(lot_ids)s' els quals estan "
+"associats a fluxes de tests de qualitat, i això no està permès.\n"
+"Si us plau, utilitza el botó 'Força cancel·lació' o la funció corresponent "
+"per cancel·lar els Lots en estat 'Pendent del test' o 'Test fallit'."
+
+#. module: nan_prodlot_quality_control
+#: model:ir.actions.act_window,name:nan_prodlot_quality_control.action_qc_test_prodlot_view
+#: model:ir.ui.menu,name:nan_prodlot_quality_control.qc_test_prodlot_menu
+msgid "Production Lot Tests"
+msgstr "Tests de Lots de producció"
+
+#. module: nan_prodlot_quality_control
+#: sql_constraint:qc.trigger:0
+msgid "The Name of the Quality Control Trigger Tags must be unique!"
+msgstr "El nom de les etiquetes de disparadors de qualitat ha de ser únic!"
+
+#. module: nan_prodlot_quality_control
+#: field:qc.trigger,name:0
+msgid "Name"
+msgstr "Nom"
+
+#. module: nan_prodlot_quality_control
+#: sql_constraint:stock.production.lot.qc.trigger.test:0
+msgid ""
+"The tuple QC Trigger Tag and Template Type must be unique for each "
+"Production Lot!"
+msgstr ""
+"La combinació Etiqueta de disparador de qualitat i Tipus de plantilla ha de "
+"ser única per cada Lot de producció!"
+
+#. module: nan_prodlot_quality_control
+#: model:qc.test.template,name:nan_prodlot_quality_control.qc_test_template_related0
+msgid "Specific Template for Input Lots"
+msgstr "Plantilla específica per Lots d'entrada"
+
+#. module: nan_prodlot_quality_control
+#: code:addons/nan_prodlot_quality_control/quality_control.py:74
+#, python-format
+msgid "Error canceling Test!"
+msgstr "Error cancel·lant un test!"
+
+#. module: nan_prodlot_quality_control
+#: code:addons/nan_prodlot_quality_control/stock.py:515
+#, python-format
+msgid "Error Cancelling Lot with subflow!"
+msgstr "Error cancel·lant un Lot amb subflux!"
+
+#. module: nan_prodlot_quality_control
+#: model:ir.model,name:nan_prodlot_quality_control.model_qc_trigger
+msgid "Quality Control Trigger Tag"
+msgstr "Etiqueta de disparador de qualitat"
+
+#. module: nan_prodlot_quality_control
+#: model:ir.model,name:nan_prodlot_quality_control.model_res_company
+msgid "Companies"
+msgstr "Companyies"
+
+#. module: nan_prodlot_quality_control
+#: view:product.qc.trigger.template:0
+msgid "QC Template Trigger by Product"
+msgstr "Disparadors de plantilles de qualitat per producte"
+
+#. module: nan_prodlot_quality_control
+#: field:product.qc.trigger.template,trigger_id:0
+#: field:res.company.qc.trigger.template,trigger_id:0
+#: field:stock.production.lot.qc.trigger.test,trigger_id:0
+msgid "Trigger"
+msgstr "Disparador"
+
+#. module: nan_prodlot_quality_control
+#: model:qc.posible.value,name:nan_prodlot_quality_control.qc_posible_value_no0
+msgid "No"
+msgstr "No"
+
+#. module: nan_prodlot_quality_control
+#: model:ir.model,name:nan_prodlot_quality_control.model_product_qc_trigger_template
+msgid "Quality Control Template Triggers by Product"
+msgstr "Disparadors de plantilles de qualitat per producte"
+
+#. module: nan_prodlot_quality_control
+#: model:ir.actions.act_window,name:nan_prodlot_quality_control.act_trigger_tag_view
+#: model:ir.ui.menu,name:nan_prodlot_quality_control.menu_action_trigger_tag
+#: view:qc.trigger:0
+msgid "Trigger Tags"
+msgstr "Etiqueta de disparador"
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot:0
+msgid "Set To Draft"
+msgstr "Canvia a esborrany"
+
+#. module: nan_prodlot_quality_control
+#: view:res.company.qc.trigger.template:0
+msgid "QC Template Trigger by Company"
+msgstr "Disparadors de plantilles de qualitat per Companyia"
+
+#. module: nan_prodlot_quality_control
+#: model:ir.model,name:nan_prodlot_quality_control.model_stock_production_lot_qc_trigger_test
+msgid "Quality Control Test Triggers by Lot"
+msgstr "Disparadors de tests de qualitat per Lot"
+
+#. module: nan_prodlot_quality_control
+#: code:addons/nan_prodlot_quality_control/stock.py:292
+#, python-format
+msgid "Error setting next test!"
+msgstr "Error establint el següent test!"
+
+#. module: nan_prodlot_quality_control
+#: model:qc.posible.value,name:nan_prodlot_quality_control.qc_posible_value_yes0
+msgid "Yes"
+msgstr "Sí"
+
+#. module: nan_prodlot_quality_control
+#: sql_constraint:stock.production.lot:0
+msgid ""
+"The combination of serial number and internal reference must be unique !"
+msgstr ""
+"La combinació del número de serie i la referència interna ha de ser única!"
+
+#. module: nan_prodlot_quality_control
+#: model:product.template,name:nan_prodlot_quality_control.product_w_2qctest_diff_trigger0_product_template
+msgid "Product with Two QC Test with different Trigger"
+msgstr "Producte amb dos Tests de qualitat amb diferent disparador"
+
+#. module: nan_prodlot_quality_control
+#: selection:product.qc.trigger.template,template_type:0
+#: selection:stock.production.lot.qc.trigger.test,template_type:0
+msgid "Specific"
+msgstr "Específic"
+
+#. module: nan_prodlot_quality_control
+#: code:addons/nan_prodlot_quality_control/quality_control.py:75
+#, python-format
+msgid ""
+"You are trying to cancel the Quality Control Test '%(test_name)s' (id:"
+"%(test_id)d) but it is in a Test Trigger of the Production Lot "
+"'%(lot_name)s' (id:%(lot_id)d) which is in '%(lot_state)s' state.\n"
+"You can only cancel this test if it is the current test of the Lot and the "
+"Lot's state is 'Waiting QC Test' or 'QC Test Failed"
+msgstr ""
+"Està intentant cancel·lar el test de qualitat '%(test_name)s' (id:"
+"%(test_id)d) però està associat a un disparador de qualitat del Lot "
+"'%(lot_name)s' (id:%(lot_id)d) el qual està a l'estat '%(lot_state)s'.\n"
+"Només es pot cancel·lar aquest test si és el test actual del Lot i l'estat "
+"es 'Esperant test' o 'Test fallit'."
+
+#. module: nan_prodlot_quality_control
+#: field:product.qc.trigger.template,sequence:0
+#: field:res.company.qc.trigger.template,sequence:0
+#: field:stock.production.lot.qc.trigger.test,sequence:0
+msgid "Sequence"
+msgstr "Seqüència"
+
+#. module: nan_prodlot_quality_control
+#: model:ir.model,name:nan_prodlot_quality_control.model_qc_test
+msgid "qc.test"
+msgstr "qc.test"
+
+#. module: nan_prodlot_quality_control
+#: view:product.product:0 view:res.company:0 view:stock.production.lot:0
+msgid "Quality Control Triggers"
+msgstr "Disparadors de qualitat"
+
+#. module: nan_prodlot_quality_control
+#: field:stock.production.lot,current_qc_test_id:0
+msgid "Current QC Test"
+msgstr "Test de qualitat actual"
+
+#. module: nan_prodlot_quality_control
+#: help:product.qc.trigger.template,template_id:0
+#: help:res.company.qc.trigger.template,template_id:0
+msgid "The Quality Control Template to use."
+msgstr "La plantilla de qualitat a utilitzar."
+
+#. module: nan_prodlot_quality_control
+#: sql_constraint:product.qc.trigger.template:0
+msgid ""
+"The tuple QC Trigger Tag and Template Type must be unique for each Product "
+"and Company!"
+msgstr ""
+"La combinació Etiqueta de disparador de qualitat i Tipus de plantilla ha de "
+"ser única per cada producte!"
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot:0
+msgid "Inactive"
+msgstr "Inactiu"
+
+#. module: nan_prodlot_quality_control
+#: view:product.qc.trigger.template:0
+msgid "QC Template Triggers by Product"
+msgstr "Disparadors de plantilles de qualitat per producte"
+
+#. module: nan_prodlot_quality_control
+#: view:stock.production.lot:0
+msgid "Cancel"
+msgstr "Cancel·la"
+
+#. module: nan_prodlot_quality_control
+#: field:stock.production.lot.qc.trigger.test,test_approved:0
+msgid "Test approved?"
+msgstr "Test aprovat?"
+
+#. module: nan_prodlot_quality_control
+#: field:stock.production.lot,qc_test_trigger_ids:0
+#: field:stock.production.lot,qc_test_trigger_ro_ids:0
+msgid "QC Tests"
+msgstr "Tests de qualitat"
+
+#. module: nan_prodlot_quality_control
+#: code:addons/nan_prodlot_quality_control/stock.py:293
+#, python-format
+msgid ""
+"It is trying to set a new next test for Production Lot '%(lot_name)s' (id: "
+"%(lot_id)s) but it is in state '%(lot_state)s' when it is expected 'Draft' "
+"or 'Valid' states to change the current test."
+msgstr ""
+"S'està intentant establir el següent test de qualitat pel Lot "
+"'%(lot_name)s' (id: %(lot_id)s) però està en l'estat '%(lot_state)s' quan "
+"s'espera que estigui a 'Borrador' o 'Valid' per canviar el test actual."
+
+#. module: nan_prodlot_quality_control
+#: model:qc.proof,name:nan_prodlot_quality_control.qc_proof_simpleproof0
+msgid "Simple Proof"
+msgstr "Prova simple"

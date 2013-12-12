@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Account Tax Form View -->
+        <record id="view_account_tax_inherit_form_taxcateg" model="ir.ui.view">
+            <field name="name">account.tax.inherit.form.tax.categ</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_form"/>
+            <field name="arch" type="xml">
+                <field name="description" position="after">
+                    <field name="tax_categ"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Account Tax Search View -->
+        <record id="view_account_tax_categ_search" model="ir.ui.view">
+            <field name="name">account.tax.categ.search</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_account_tax_search"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="after">
+                    <field name="tax_categ"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Category" context="{'group_by': 'tax_categ'}"/>
+                    </group>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</openerp>

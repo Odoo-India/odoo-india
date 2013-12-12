@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report id="report_picking_challan" model="stock.move" name="stock.picking.challan" string="Challan" rml="l10n_in_delivery_challan/report/challan.rml"/>
+    </data>
+</openerp>

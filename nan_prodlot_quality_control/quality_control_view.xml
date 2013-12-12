@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- qc.trigger -->
+        <record id="qc_trigger_form" model="ir.ui.view">
+			<field name="name">qc.trigger.form</field>
+			<field name="model">qc.trigger</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Trigger Tag">
+					<field name="name" select="1"/>
+				</form>
+			</field>
+		</record>
+        
+        <record id="qc_trigger_tree" model="ir.ui.view">
+			<field name="name">qc.trigger.tree</field>
+			<field name="model">qc.trigger</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Trigger Tags">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="act_trigger_tag_view" model="ir.actions.act_window">
+            <field name="name">Trigger Tags</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">qc.trigger</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <menuitem id="menu_action_trigger_tag"
+                 action="act_trigger_tag_view"
+                 parent="nan_quality_control.qc_menu_config" sequence="50"/>
+        
+        
+        <!-- qc.test -->
+        <record id="action_qc_test_prodlot_view" model="ir.actions.act_window">
+            <field name="name">Production Lot Tests</field>
+            <field name="res_model">qc.test</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('object_id','like','stock.production.lot,')]</field>
+        </record>
+        
+        <menuitem id="qc_test_prodlot_menu" action="action_qc_test_prodlot_view"
+                name="Production Lot Tests"
+                parent="nan_quality_control.qc_test_menu"/>
+    </data>
+</openerp>

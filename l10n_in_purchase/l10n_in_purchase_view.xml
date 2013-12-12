@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Purchase Order Inherit -->
+        <record id="l10n_in_purchase_order_inherit_form" model="ir.ui.view">
+            <field name="name">l10n_in_purchase.order.inherit.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='minimum_planned_date']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='date_approve']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='validator']" position="replace">
+                </xpath>
+                <xpath expr="//group[@class='oe_subtotal_footer oe_right']"
+                    position="replace">
+                    <group>
+                        <group width="800%%">
+                            <label for="package_and_forwording" />
+                            <div>
+                                <field name="package_and_forwording_type"
+                                    on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
+                                    class="oe_inline oe_edit_only" />
+                                <field name="package_and_forwording" class="oe_inline"
+                                    attrs="{'invisible':[('package_and_forwording_type','=','actual')]}" />
+                                <label string="Per Unit" class="oe_inline"
+                                    attrs="{'invisible':[('package_and_forwording_type','!=','per_unit')]}" />
+                                <label string="%%" class="oe_inline"
+                                    attrs="{'invisible':[('package_and_forwording_type','!=','percentage')]}" />
+                                <label string="At Actual" class="oe_inline"
+                                    attrs="{'invisible':[('package_and_forwording_type','!=','actual')]}" />
+                            </div>
+                            <label for="freight" />
+                            <div>
+                                <field name="freight_type"
+                                    on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
+                                    class="oe_inline oe_edit_only" />
+                                <field name="freight" class="oe_inline"
+                                    attrs="{'invisible':[('freight_type','=','actual')]}" />
+                                <label string="Per Unit" class="oe_inline"
+                                    attrs="{'invisible':[('freight_type','!=','per_unit')]}" />
+                                <label string="%%" class="oe_inline"
+                                    attrs="{'invisible':[('freight_type','!=','percentage')]}" />
+                                <label string="At Actual" class="oe_inline"
+                                    attrs="{'invisible':[('freight_type','!=','actual')]}" />
+                            </div>
+
+                            <label for="insurance" />
+                            <div>
+                                <field name="insurance_type"
+                                    on_change="onchange_reset(insurance_type,freight_type,package_and_forwording_type)"
+                                    class="oe_inline oe_edit_only" />
+                                <field name="insurance" class="oe_inline" />
+                                <label string="Per Unit" class="oe_inline"
+                                    attrs="{'invisible':[('insurance_type','!=','per_unit')]}" />
+                                <label string="%%" class="oe_inline"
+                                    attrs="{'invisible':[('insurance_type','!=','percentage')]}" />
+                            </div>
+
+                            <label for="payment_term_id" />
+                            <div>
+                                <field name="payment_term_id" class="oe_inline" />
+                            </div>
+
+                            <label for="delivery_id" />
+                            <div>
+                                <field name="delivery_id" class="oe_inline" />
+                            </div>
+                        </group>
+
+                        <group class="oe_subtotal_footer oe_right">
+                            <field name="amount_untaxed" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+                            <field name="amount_tax" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+                            <field name="other_charges" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+                            <field name="round_off" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+                            <div class="oe_subtotal_footer_separator oe_inline">
+                                <label for="amount_total" />
+                                <button name="button_dummy" states="draft" string="(update)"
+                                    type="object" class="oe_edit_only oe_link" />
+                            </div>
+                            <field name="amount_total" nolabel="1"
+                                class="oe_subtotal_footer_separator" widget="monetary"
+                                options="{'currency_field': 'currency_id'}" />
+                        </group>
+                    </group>
+                </xpath>
+
+                <xpath expr="//field[@name='origin']" position="before">
+                    <field name="minimum_planned_date" />
+                </xpath>
+                <xpath expr="//field[@name='minimum_planned_date']" position="before">
+                    <field name="date_approve" />
+                </xpath>
+                <xpath expr="//field[@name='partner_ref']" position="after">
+                    <field name="validator" />
+                </xpath>
+            </field>
+        </record>
+        <!-- inherited view to make the purchase order lines list in the form non-editable
+                 for the members of some usability groups -->
+        <record id="view_purchase_order_form_editable_list_l10n_in_purchase" model="ir.ui.view">
+            <field name="name">purchase.order.form.editable.list.l10n.purchase</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']/tree" position="attributes">
+                    <attribute name="editable"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="before">
+                    <field name="discount"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_purchase_order_line_form_l10n_in_purchase" model="ir.ui.view">
+            <field name="name">view.purchase.order.line.form.l10n.purchase</field>
+            <field name="model">purchase.order.line</field>
+            <field name="inherit_id" ref="purchase.purchase_order_line_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='price_unit']" position="after">
+                    <field name="discount"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,28 @@
+/* 
+ZoomIt customizations 
+
+The 3 CSS classes below can be changed to any other CSS class you desire. Just make sure 
+to fill the parameters with the new classes when starting jqZoomIt().
+
+Default values in script:
+
+- zoomClass			: 'zoomIt_zoomed', // additional styling on zoom container
+- zoomLoadingClass	: 'zoomIt_loading', // css class to apply before the big image is fully loaded
+- zoomAreaClass		: 'zoomIt_area', // additional styling on zoomed area
+*/		
+
+/* big image container */
+.zoomIt_zoomed{
+	border:2px #CCC solid;
+	-moz-box-shadow: 10px 10px 5px #888;
+	-webkit-box-shadow: 10px 10px 5px #888;
+	box-shadow: 10px 10px 5px #888;
+}
+/* big image loading class */
+.zoomIt_loading{
+	background:url(images/loading.gif) center center no-repeat;
+}
+/* small image zoomed area overlay */
+.zoomIt_area{
+	border:none;
+}

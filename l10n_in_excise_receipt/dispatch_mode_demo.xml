@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Dispatch Modes -->
+        <record id="dispatch_mode_1" model="dispatch.mode">
+            <field name="name">By Person</field>
+            <field name="code">person</field>
+        </record>
+
+        <record id="dispatch_mode_2" model="dispatch.mode">
+            <field name="name">By Scooter</field>
+            <field name="code">scooter</field>
+        </record>
+
+        <record id="dispatch_mode_3" model="dispatch.mode">
+            <field name="name">By Tanker</field>
+            <field name="code">tanker</field>
+        </record>
+
+        <record id="dispatch_mode_4" model="dispatch.mode">
+            <field name="name">By Truck</field>
+            <field name="code">truck</field>
+        </record>
+
+        <record id="dispatch_mode_5" model="dispatch.mode">
+            <field name="name">By Auto Rickshaw</field>
+            <field name="code">auto_rickshaw</field>
+        </record>
+
+        <record id="dispatch_mode_6" model="dispatch.mode">
+            <field name="name">By Loading Rickshaw</field>
+            <field name="code">loading_rickshaw</field>
+        </record>
+
+        <record id="dispatch_mode_7" model="dispatch.mode">
+            <field name="name">By Tempo</field>
+            <field name="code">tempo</field>
+        </record>
+
+        <record id="dispatch_mode_8" model="dispatch.mode">
+            <field name="name">By Metador</field>
+            <field name="code">metador</field>
+        </record>
+
+        <record id="dispatch_mode_9" model="dispatch.mode">
+            <field name="name">By Rickshaw Tempo</field>
+            <field name="code">rickshaw_tempo</field>
+        </record>
+
+        <record id="dispatch_mode_10" model="dispatch.mode">
+            <field name="name">By Cart</field>
+            <field name="code">cart</field>
+        </record>
+
+        <record id="dispatch_mode_11" model="dispatch.mode">
+            <field name="name">By Cycle</field>
+            <field name="code">cycle</field>
+        </record>
+
+        <record id="dispatch_mode_12" model="dispatch.mode">
+            <field name="name">By Pedal Rickshaw</field>
+            <field name="code">pedal_rickshaw</field>
+        </record>
+
+        <record id="dispatch_mode_13" model="dispatch.mode">
+            <field name="name">By Car</field>
+            <field name="code">car</field>
+        </record>
+
+        <record id="dispatch_mode_14" model="dispatch.mode">
+            <field name="name">By Post Parcel</field>
+            <field name="code">post_parcel</field>
+        </record>
+
+        <record id="dispatch_mode_15" model="dispatch.mode">
+            <field name="name">By Courier</field>
+            <field name="code">courier</field>
+        </record>
+
+        <record id="dispatch_mode_16" model="dispatch.mode">
+            <field name="name">By Tractor</field>
+            <field name="code">tractor</field>
+        </record>
+
+        <record id="dispatch_mode_17" model="dispatch.mode">
+            <field name="name">By Hand Cart</field>
+            <field name="code">hand_cart</field>
+        </record>
+
+        <record id="dispatch_mode_18" model="dispatch.mode">
+            <field name="name">By Camel Cart</field>
+            <field name="code">camel_cart</field>
+        </record>
+
+        <record id="dispatch_mode_19" model="dispatch.mode">
+            <field name="name">Others</field>
+            <field name="code">others</field>
+        </record>
+
+    </data>
+</openerp>

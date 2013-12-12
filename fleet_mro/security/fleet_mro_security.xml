@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+
+        <record id="stock_warehouse_rule" model="ir.rule">
+            <field name="name">Warehouse Rule</field>
+            <field name="model_id" ref="stock.model_stock_warehouse"/>
+            <field name="domain_force">[('id', '=', user.warehouse_id.id)]</field>
+            <field name="global" eval="True"/>
+        </record>
+
+        <record id="stock_picking_rule" model="ir.rule">
+            <field name="name">Stock Picking Rule</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="domain_force">[('workshop_id', '=', user.warehouse_id.id)]</field>
+            <field name="global" eval="True"/>
+        </record>
+
+        <record id="stock_picking_in_rule" model="ir.rule">
+            <field name="name">Stock Picking In Rule</field>
+            <field name="model_id" ref="stock.model_stock_picking_in"/>
+            <field name="domain_force">[('workshop_id', '=', user.warehouse_id.id)]</field>
+            <field name="global" eval="True"/>
+        </record>
+
+        <record id="stock_picking_out_rule" model="ir.rule">
+            <field name="name">Stock Picking Out Rule</field>
+            <field name="model_id" ref="stock.model_stock_picking_out"/>
+            <field name="domain_force">[('workshop_id', '=', user.warehouse_id.id)]</field>
+            <field name="global" eval="True"/>
+        </record>
+
+        <record id="stock_location_rule" model="ir.rule">
+            <field name="name">Stock Location Rule</field>
+            <field name="model_id" ref="stock.model_stock_location"/>
+            <field name="domain_force">[('id', 'child_of', [user.warehouse_id.lot_input_id.id])]</field>
+            <field name="global" eval="True"/>
+            <field name="perm_read" eval="0"/>
+        </record>
+
+        <record id="fleet_vehicle_rule" model="ir.rule">
+            <field name="name">Fleet Vehicle Rule</field>
+            <field name="model_id" ref="model_fleet_vehicle"/>
+            <field name="domain_force">[('unit_id', 'child_of', [user.warehouse_id.lot_input_id.id])]</field>
+            <field name="global" eval="True"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+        <record id="fleet_vehicle_log_services_rule" model="ir.rule">
+            <field name="name">Fleet Vehicle Log Services Rule</field>
+            <field name="model_id" ref="fleet.model_fleet_vehicle_log_services"/>
+            <field name="domain_force">[('location_id', 'child_of', [user.warehouse_id.lot_input_id.id])]</field>
+            <field name="global" eval="True"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+    </data>
+</openerp>

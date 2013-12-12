@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Sequences for Job Number -->
+        <record id="seq_job_no_type" model="ir.sequence.type">
+            <field name="name">Job Number</field>
+            <field name="code">job.number</field>
+        </record>
+
+        <record id="seq_job_no" model="ir.sequence">
+            <field name="name">Job Number</field>
+            <field name="code">job.number</field>
+            <field name="prefix">B</field>
+            <field name="padding">6</field>
+        </record>
+
+    </data>
+</openerp>

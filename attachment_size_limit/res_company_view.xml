@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<!-- res.company form view -->
+		<record model="ir.ui.view" id="view_company_inherit_base_gengo_form">
+			<field name="name">res.company.form.inherit</field>
+			<field name="inherit_id" ref="base.view_company_form" />
+			<field name="model">res.company</field>
+			<field name="arch" type="xml">
+				<xpath expr="//page[@string='Configuration']" position="inside">
+					<separator string="Document" />
+					<group>
+						<field name="attachment_size" />
+						<field name="attachment_num" />
+						<label for="user_blocked" />
+						<field name="user_blocked" domain="[('company_id','=',id)]"
+							nolabel="1" />
+					</group>
+				</xpath>
+			</field>
+		</record>
+
+	</data>
+</openerp>

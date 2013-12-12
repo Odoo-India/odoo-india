@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- General structure of a workflow XML file -->
+        <record model="workflow" id="wkf_gate_pass">
+            <field name="name">workflow.gate.pass</field>
+            <field name="osv">stock.gatepass</field>
+            <field name="on_create">True</field>
+        </record>
+
+        <!-- Gate Pass Workflow Activities -->
+        <record model="workflow.activity" id="act_draft">
+            <field name="wkf_id" ref="wkf_gate_pass"/>
+            <field name="name">activity.draft</field>
+            <field name="flow_start">True</field>
+        </record>
+
+        <record model="workflow.activity" id="act_pending">
+            <field name="wkf_id" ref="wkf_gate_pass"/>
+            <field name="name">activity.pending</field>
+            <field name="kind">subflow</field>
+            <field name="subflow_id" search="[('name','=','stock.picking.basic')]"/>
+            <field name="action">action_picking_create()</field>
+        </record>
+
+        <record model="workflow.activity" id="act_done">
+            <field name="wkf_id" ref="wkf_gate_pass"/>
+            <field name="name">activity.done</field>
+            <field name="flow_stop">True</field>
+            <field name="kind">function</field>
+            <field name="action">action_done()</field>
+        </record>
+
+        <!-- Gate Pass Workflow Transitions -->
+        <record model="workflow.transition" id="trans_draft_done">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_done"/>
+            <field name="condition">not check_returnable()</field>
+            <field name="signal">gate_pass_done</field>
+        </record>
+
+        <record model="workflow.transition" id="trans_draft_pending">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_pending"/>
+            <field name="signal">gate_pass_done</field>
+            <field name="condition">check_returnable()</field>
+        </record>
+
+        <record model="workflow.transition" id="trans_pending_done">
+            <field name="act_from" ref="act_pending"/>
+            <field name="act_to" ref="act_done"/>
+            <field name="signal">subflow.done</field>
+        </record>
+
+    </data>
+</openerp>

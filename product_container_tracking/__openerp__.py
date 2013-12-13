@@ -27,15 +27,25 @@
     'website' : 'http://www.openerp.com',
     'summary' : 'Tracking the containers in warehouse',
     'description' : """
-Tracking the containers in warehouse
-==========================
-Useful to track container which comes with product delivery as we have to return container back to the suppliers
-e.g. Oxygen Gas delivered in Bottle, we have to return that bottle once the gas consumed
+Track the product containers in warehouse
+====================================================== 
+Useful to manage and track containers in which products are received or delivered. Easily manage stock and current location of containers and products of different serial numbers.
 
-* Define product as container (e.g. Bottle)
-* Select container in products (e.g. Oxygen)
-* Track containers with serial once issued with in company 
-* return container back to the suppliers with gatepass
+Key Features
++++++++++++++++++
+When a product is configured with a container, the product is received or delivered through the container. With use of this module, you can create incoming or outgoing movements of the container along with the product, so you can easily track the container in the warehouse.
+
+* Track containers with serial number once issued
+* Get exact location of containers using serial numbers
+* Get exact containers on hand by locations
+* Return containers back to the suppliers or take back containers from customers
+
+How it works?
+++++++++++++++
+* Define product as container (e.g. Cylinder)
+* Select container in products (e.g. Oxygen Gas)
+* Receive incoming shipment of Oxygen Gas and Assign serial numbers (e.g. 001) for Oxygen Gas while processing it
+* OpenERP will automatically create an Incoming move for Cylinder with serial number (i.e. 001)
 """,
     'depends' : ['product_container', 'stock_serial_tracking'],
     'data' : [

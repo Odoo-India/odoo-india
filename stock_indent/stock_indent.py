@@ -272,7 +272,8 @@ class indent_indent(osv.Model):
             'location_id': location_id,
             'procure_method': line.type,
             'move_id': move_id,
-            'note': line.name
+            'note': line.name,
+            'price': line.price_unit or 0.0,
         }
         if indent.company_id:
             res = dict(res, company_id = indent.company_id.id)

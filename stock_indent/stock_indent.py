@@ -460,7 +460,8 @@ class indent_indent(osv.Model):
             'res_id': picking_id,
         }
         return result
-    
+
+    #TODO: improve this method, gatepass object not allowed to access in this module   
     def action_deliver_products(self, cr, uid, ids, context=None):
         '''
         This function returns an action that display internal move of given indent ids.

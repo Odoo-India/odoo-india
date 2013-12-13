@@ -102,7 +102,7 @@ class stock_gatepass(osv.Model):
                     package_serial_entry[line.prodlot_id.container_serial_id.name] = True
                 else:
                     continue
-            else:
+            elif gatepass.type_id.approval_required == True:
                 result = dict(name=line.product_id.name, 
                     product_id=line.product_id.id, 
                     product_qty=line.product_qty, 

@@ -187,7 +187,7 @@ class stock_gatepass(osv.Model):
                     picking_id=in_picking_id,
                     origin=gatepass.name
                 )
-            else:
+            elif gatepass.type_id.approval_required == True:
                 result = dict(name=line.product_id.name, 
                     product_id=line.product_id.id, 
                     product_qty=line.product_qty, 

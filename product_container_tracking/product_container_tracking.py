@@ -43,18 +43,24 @@ class stock_picking(osv.Model):
 
         res = super(stock_picking, self).do_partial(cr, uid, ids, partial_datas, context=context)
         
+        package_serial_entry = {}
+        
         for picking_id in res:
             picking = self.browse(cr, uid, picking_id)
             for move in picking.move_lines:
                 if move.product_id.container_id and move.prodlot_id:
                     serial_id = False
                     if not move.prodlot_id.container_serial_id:
-                        res = {
-                            'name':move.prodlot_id.name,
-                            'product_id':move.product_id.container_id.id,
-                            'date':time.strftime('%Y-%m-%d %H:%M:%S')
-                        }
-                        serial_id = serial_pool.create(cr, uid, res)
+                        serial_ids = serial_pool.search(cr, uid, [('product_id','=',move.product_id.container_id.id), ('name','=',move.prodlot_id.name)])
+                        if serial_ids:
+                            serial_id = serial_ids[0]
+                        else:
+                            res = {
+                                'name':move.prodlot_id.name,
+                                'product_id':move.product_id.container_id.id,
+                                'date':time.strftime('%Y-%m-%d %H:%M:%S')
+                            }
+                            serial_id = serial_pool.create(cr, uid, res)
                         serial_pool.write(cr, uid, [move.prodlot_id.id], {'container_serial_id':serial_id})
                     else:
                         serial_id = move.prodlot_id.container_serial_id.id
@@ -74,7 +80,39 @@ class stock_picking(osv.Model):
                         'state':'done'
                     }
                     move_pool.create(cr, uid, res)
-                
+                elif not move.product_id.container_id and move.prodlot_id and move.tracking_id and move.product_packaging:
+                    serial_id = False
+                    if not move.prodlot_id.container_serial_id:
+                        serial_ids = serial_pool.search(cr, uid, [('product_id','=',move.product_packaging.ul.container_id.id), ('name','=',move.tracking_id.name)])
+                        if serial_ids:
+                            serial_id = serial_ids[0]
+                        else:
+                            res = {
+                                'name':move.tracking_id.name,
+                                'product_id':move.product_packaging.ul.container_id.id,
+                                'date':time.strftime('%Y-%m-%d %H:%M:%S')
+                            }
+                            serial_id = serial_pool.create(cr, uid, res)
+                        serial_pool.write(cr, uid, [move.prodlot_id.id], {'container_serial_id':serial_id})
+                    else:
+                        serial_id = move.prodlot_id.container_serial_id.id
+                    
+                    if not package_serial_entry.get(serial_id):
+                        res = {
+                            'product_id':move.product_packaging.ul.container_id.id,
+                            'product_qty':1,
+                            'product_uom':move.product_packaging.ul.container_id.uom_id.id,
+                            'name':move.name,
+                            'origin':picking.name,
+                            'type':'internal',
+                            'location_id':move.location_id.id,
+                            'location_dest_id':move.location_dest_id.id,
+                            'partner_id':move.partner_id.id,
+                            'date':move.date,
+                            'prodlot_id':serial_id,
+                            'state':'done'
+                        }
+                        package_serial_entry[serial_id] = move_pool.create(cr, uid, res)
         return res
     
 stock_picking()

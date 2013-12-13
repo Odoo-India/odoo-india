@@ -73,6 +73,8 @@ class stock_gatepass(osv.Model):
         
         supplier_location = self.pool.get('ir.model.data').get_object(cr, uid, 'stock', 'stock_location_suppliers')
         
+        package_serial_entry = {}
+        
         for line in gatepass.line_ids:
             if line.product_id.container_id:
                 result = dict(name=line.product_id.container_id.name, 
@@ -85,6 +87,21 @@ class stock_gatepass(osv.Model):
                     prodlot_id = line.prodlot_id.container_serial_id.id,
                     origin=gatepass.name
                 )
+            elif line.prodlot_id.container_serial_id:
+                if not package_serial_entry.get(line.prodlot_id.container_serial_id.name, False):
+                    result = dict(name=line.prodlot_id.container_serial_id.product_id.name, 
+                        product_id=line.prodlot_id.container_serial_id.product_id.id, 
+                        product_qty=1,
+                        product_uom=line.prodlot_id.container_serial_id.product_id.uom_id.id, 
+                        location_id=supplier_location.id, 
+                        location_dest_id=line.location_id.id,
+                        picking_id=in_picking_id,
+                        prodlot_id = line.prodlot_id.container_serial_id.id,
+                        origin=gatepass.name
+                    )
+                    package_serial_entry[line.prodlot_id.container_serial_id.name] = True
+                else:
+                    continue
             else:
                 result = dict(name=line.product_id.name, 
                     product_id=line.product_id.id, 

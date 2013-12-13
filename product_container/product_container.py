@@ -21,6 +21,14 @@
 
 from openerp.osv import fields, osv
 
+class product_ul(osv.osv):
+    _inherit = "product.ul"
+
+    _columns = {
+        'container_id' : fields.many2one('product.product', 'Container Product', domain=[('container_ok','=',True)]),
+    }
+product_ul()
+
 class product_product(osv.Model):
     _inherit = 'product.product'
  

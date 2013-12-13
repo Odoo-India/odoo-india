@@ -513,7 +513,7 @@ class indent_product_lines(osv.Model):
         'indent_id': fields.many2one('indent.indent', 'Indent', required=True, ondelete='cascade'),
         'name': fields.text('Description', required=True),
         'product_id': fields.many2one('product.product', 'Product', required=True, domain=[('supply_method','=','buy')]),
-        'original_product_id': fields.many2one('product.product', 'Product to be Repair'),
+        'original_product_id': fields.many2one('product.product', 'Product to be Repaired'),
         'type': fields.selection([('make_to_stock', 'Stock'), ('make_to_order', 'Purchase')], 'Procure', required=True,
          help="From stock: When needed, the product is taken from the stock or we wait for replenishment.\nOn order: When needed, the product is purchased or produced."),
         'product_uom_qty': fields.float('Quantity Required', digits_compute= dp.get_precision('Product UoS'), required=True),

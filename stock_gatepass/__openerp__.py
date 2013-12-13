@@ -25,7 +25,7 @@
     'sequence': 110,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Gate Passes',
+    'summary' : 'Gate Pass, Delivery Orders, Returnable Incoming Shipments',
     'description' : """
 Gate Pass
 ===========

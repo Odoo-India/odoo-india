@@ -58,6 +58,7 @@ class sale_order(osv.Model):
                 packaging = False,
                 fiscal_position = fiscal_position,
                 flag = False)
+            vals['value']['discount'] = line.discount
             vals['value']['product_id'] = line.product_id and line.product_id.id or False
             vals['value']['state'] = 'draft'
             vals['value']['product_uom_qty'] = 1.0

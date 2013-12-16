@@ -27,15 +27,37 @@
     'website' : 'http://www.openerp.com',
     'summary' : 'Managing the container products',
     'description' : """
-Manage Product Container
-==========================
-Useful to manage and track containers in which products are delivered to the customers and to be taken back from customers.  
-e.g. Oxygen Gas delivered in Bottle
+Efficient management of products and containers
+=======================================================
+Useful to manage and track containers in which products are delivered to the customers and to be taken back from customers.
 
-* Define product as container (e.g. Bottle)
-* Select container in products (e.g. Oxygen)
+Key Features
++++++++++++++++
+A real-time example of use of containers is Oxygen Gas delivered in Cylinder. With this module you can easily create and manage Cylinder as container of Oxygen Gas.
+
+* Define product as container (e.g. Cylinder)
+* Select container in products (e.g. Oxygen Gas)
 * Track containers on hand
 * Track containers to be taken back from customers
+* Track containers to be taken back from customers
+
+Manage Containers
++++++++++++++++++++++++++
+The reusable container products are easily managed by selecting an option from product form. As we define container as product, its easy to manage the stock of container. Thus you can track and manage containers efficiently.
+
+Define Products with Containers
+++++++++++++++++++++++++++++++++++++++
+Create a product and select container for the product, and that's it!
+
+
+Containers for Multiple Quantities
++++++++++++++++++++++++++++++++++++++++
+You can also configure a container to carry more than one quantity of product by selecting the container product in packaging.
+
+* Define product as container (e.g. Box 30x40x60)
+* Select container in packaging
+* Select quantity of products and packaging in product sales tab
+* Track containers per multiple quantities of product
 """,
     'depends' : ['product'],
     'data' : [

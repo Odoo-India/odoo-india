@@ -183,7 +183,8 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <field name="project_id" position="after">
-                    <field name="template_id" context="{'default_is_template': True, 'form_view_ref': 'view_sale_order_template_form'}"/>
+                    <field name="template_id" context="{'default_is_template': True, 'form_view_ref': 'view_sale_order_template_form'}"
+                    on_change="onchange_template(template_id)"/>
                 </field>
             </field>
         </record>

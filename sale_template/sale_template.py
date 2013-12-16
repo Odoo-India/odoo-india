@@ -29,6 +29,33 @@ class sale_order(osv.Model):
         'template_id': fields.many2one('sale.order', 'Template', domain=[('is_template', '=', True)]),
     }
 
+    def onchange_template(self, cr, uid, ids, template=False):
+        result = {'order_line': []}
+        lines = []
+ 
+        if not template:
+            return {'value': result}
+
+        template = self.browse(cr, uid, template)
+        order_lines = template.order_line
+        for line in order_lines:
+            vals = dict(
+                product_id = line.product_id and line.product_id.id or False,
+                product_uom_qty = line.product_uom_qty, 
+                product_uom = line.product_uom and line.product_uom.id or False,
+                product_uos_qty = line.product_uos_qty,
+                product_uos = line.product_uos and line.product_uos.id or False,
+                price_unit = line.price_unit,
+                discount = line.discount,
+                name = line.name,
+                type = line.type,
+                address_allotment_id = line.address_allotment_id and line.address_allotment_id.id or False,
+                th_weight = line.th_weight,
+            )
+            lines.append(vals)
+        result['order_line'] = lines
+        return {'value': result}
+
 sale_order()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

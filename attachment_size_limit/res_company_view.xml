@@ -12,9 +12,13 @@
 					<group>
 						<field name="attachment_size" />
 						<field name="attachment_num" />
-						<label for="user_blocked" />
-						<field name="user_blocked" domain="[('company_id','=',id)]"
-							nolabel="1" />
+					</group>
+					<group cols="4">
+						<div>
+							<label for="user_blocked" />
+							<field name="user_blocked" domain="[('company_id','=',id)]"
+								nolabel="1" />
+						</div>
 					</group>
 				</xpath>
 			</field>

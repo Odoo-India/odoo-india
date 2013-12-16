@@ -19,21 +19,7 @@
 #
 ##############################################################################
 
-from openerp.osv import fields, osv
+import sale_template
 
-class product_ul(osv.osv):
-    _inherit = "product.ul"
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
-    _columns = {
-        'container_id' : fields.many2one('product.product', 'Container Product', domain=[('container_ok','=',True)]),
-    }
-product_ul()
-
-class product_product(osv.Model):
-    _inherit = 'product.product'
- 
-    _columns = {
-        'container_ok': fields.boolean('Container', help='Select this if the product will act as a container to carry other products.'),
-        'container_id': fields.many2one('product.product', 'Container Product', domain=[('container_ok','=',True)])
-    }
-product_product()

@@ -2,5 +2,5 @@
 consumer_key = OpenERP-Local
 consumer_secret = 
 access_token = LCCdVBRm4p7nXnWHhNCl
-access_secret = q3V3fvd5xDVX1kxgKzKl1Rr8c0Sv1fxFGPjlbwHCWH0bsGLVG8QSq9W74L1z1FNKDbjnTZTTZTDHDnxZ
+access_secret = q3V3fvd5xDVX1kxgKzKl1Rr8c78969696969699878CWH0bsGLVG8QSq9W74L1z1FNKDbjnTZTTZTDHDnxZ
 

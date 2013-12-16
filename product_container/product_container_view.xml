@@ -1,23 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-    <data>
+	<data>
 
-        <!-- Product Form View -->
-        <record id='view_product_container_form' model='ir.ui.view'>
-            <field name="name">product.product.container.form</field>
-            <field name="model">product.product</field>
-            <field name="inherit_id" ref="product.product_normal_form_view" />
-            <field name="arch" type="xml">
-                <label for="sale_ok" position="after">
-                    <field name="container_ok" attrs="{'invisible':[('type','=','service')]}"/>
-                    <label for="container_ok" attrs="{'invisible':[('type','=','service')]}"/>
-                </label>
-                <field name="list_price" position="after">
-                    <field name="container_id" attrs="{'invisible':['|', ('container_ok','=',True), ('type','=','service')]}"
-                        context="{'default_container_ok': True}"/>
-                </field>
-            </field>
-        </record>
+		<!-- Product Form View -->
+		<record id='view_product_container_form' model='ir.ui.view'>
+			<field name="name">product.product.container.form</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="product.product_normal_form_view" />
+			<field name="arch" type="xml">
+				<label for="sale_ok" position="after">
+					<field name="container_ok" attrs="{'invisible':[('type','=','service')]}" />
+					<label for="container_ok" attrs="{'invisible':[('type','=','service')]}" />
+				</label>
+				<field name="list_price" position="after">
+					<field name="container_id"
+						attrs="{'invisible':['|', ('container_ok','=',True), ('type','=','service')]}"
+						context="{'default_container_ok': True}" />
+				</field>
+			</field>
+		</record>
 
-    </data>
+		<!-- Container Product on Box packaging Form View -->
+		<record id="product_ul_form_view" model="ir.ui.view">
+			<field name="name">product.ul.form.view</field>
+			<field name="model">product.ul</field>
+			<field name="inherit_id" ref="product.product_ul_form_view" />
+			<field name="arch" type="xml">
+				<field name="name" position="before">
+					<field name="container_id" />
+				</field>
+			</field>
+		</record>
+
+		<record id="product_ul_tree" model="ir.ui.view">
+			<field name="name">product.ul.tree</field>
+			<field name="model">product.ul</field>
+			<field name="inherit_id" ref="product.product_ul_tree" />
+			<field name="arch" type="xml">
+				<field name="name" position="before">
+					<field name="container_id" />
+				</field>
+			</field>
+		</record>
+	</data>
 </openerp>

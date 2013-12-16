@@ -21,14 +21,18 @@
 
 from openerp.osv import fields, osv
 
-
 class res_company(osv.Model):
     _name = "res.company"
     _inherit = "res.company"
     
     _columns = {
-           "attachment_size": fields.integer("Max. Attachment Size( MB )"),
-           "attachment_num": fields.integer("Attachment allowed(per Record)"),
-           "user_blocked": fields.many2many('res.users', 'attachment_user_rel', 'user_id', 'attach_id', 'User Blocked'),
+       'attachment_size': fields.integer("Maximum Size", help="Maximum size of attachment allowed to upload, i.e 5 represent by 5MB"),
+       'attachment_num': fields.integer("# of Attachments", help="Maximum attachment allowed to attach per record"),
+       'user_blocked': fields.many2many('res.users', 'attachment_user_rel', 'user_id', 'attach_id', 'Blocked Users', help="user listed here will not be able to attach files on any record"),
     }
-
+    
+    _defaults = {
+        'attachment_size':10240,
+        'attachment_num':5
+    }
+res_company()

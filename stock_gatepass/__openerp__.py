@@ -25,13 +25,26 @@
     'sequence': 110,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Managing Gate Passes',
+    'summary' : 'Gate Pass, Delivery Orders, Returnable Incoming Shipments',
     'description' : """
 Gate Pass
-===========
-* Document that allows gate keeper to pass the outgoing material, products, etc.
-* Supports returnable and non returnable gate pass, Track returning items automatically
-* Report that allows you to track the pending gate pass
+=============
+Useful to manage documents that allows gate keeper to pass the outgoing materials, products, etc. and keeps track of returning items.
+
+Manage Returnable/Non-Returnable Gate Pass
+++++++++++++++++++++++++++++++++++++++++++++
+By selecting proper type on gate pass you can manage returnable or non-returnable products. Its reflected on gate pass created with this type, so you can easily find and manage different types of gate pass.
+
+Once you confirm the gate pass, Delivery Order is automatically created for the products selected on the gate pass. Incoming shipment is also created automatically in case of returnable gate pass, once you validate the gate pass.
+
+Access Delivery Orders and Incoming Shipments easily
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Delivery Orders and Incoming Shipments are linked to gate pass. You can navigate to delivery order and incoming shipment from the buttons on gate pass.
+
+Gate Pass Receipt
++++++++++++++++++++
+The report to print the details of gate pass with products and shipping details.
+
 """,
     'depends' : ['stock'],
     'data' : [

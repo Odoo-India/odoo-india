@@ -19,21 +19,31 @@
 #
 ##############################################################################
 
-from openerp.osv import fields, osv
+{
+    'name' : 'Sales Template',
+    'version' : '1.0',
+    'author' : 'OpenERP S.A.',
+    'sequence': 120,
+    'category': 'Sales Management',
+    'website' : 'http://www.openerp.com',
+    'summary' : 'Sales Template',
+    'description' : """
+Sales Template
+=============
+""",
+    'depends' : ['sale'],
+    'data' : [
+    ],
+    'update_xml' : [
+        'sale_template_view.xml',
+    ],
 
-class product_ul(osv.osv):
-    _inherit = "product.ul"
+    'demo': [
+    ],
 
-    _columns = {
-        'container_id' : fields.many2one('product.product', 'Container Product', domain=[('container_ok','=',True)]),
-    }
-product_ul()
+    'installable' : True,
+    'application' : True,
+}
 
-class product_product(osv.Model):
-    _inherit = 'product.product'
- 
-    _columns = {
-        'container_ok': fields.boolean('Container', help='Select this if the product will act as a container to carry other products.'),
-        'container_id': fields.many2one('product.product', 'Container Product', domain=[('container_ok','=',True)])
-    }
-product_product()
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

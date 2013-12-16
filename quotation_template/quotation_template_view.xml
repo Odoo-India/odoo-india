@@ -14,8 +14,8 @@
                     </header>
                     <sheet>
                         <h1>
-                            <label string="Template"/>
-                            <field name="name" class="oe_inline" readonly="1"/>
+                            <label string="Template" class="oe_edit_only"/>
+                            <field name="name" class="oe_inline"/>
                         </h1>
                         <group>
                             <group>

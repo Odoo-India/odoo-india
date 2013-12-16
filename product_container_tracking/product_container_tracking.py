@@ -22,6 +22,7 @@
 import time
 
 from openerp.osv import fields, osv
+from openerp.tools.translate import _
 
 class stock_production_lot(osv.osv):
     _inherit = 'stock.production.lot'
@@ -40,7 +41,7 @@ class stock_picking(osv.Model):
         move_pool = self.pool.get('stock.move')
         warehouse_pool = self.pool.get('stock.warehouse')
         serial_pool = self.pool.get('stock.production.lot')
-
+        
         res = super(stock_picking, self).do_partial(cr, uid, ids, partial_datas, context=context)
         
         package_serial_entry = {}
@@ -48,6 +49,16 @@ class stock_picking(osv.Model):
         for picking_id in res:
             picking = self.browse(cr, uid, picking_id)
             for move in picking.move_lines:
+                
+                if move.product_id.container_id and move.product_id.container_id.track_outgoing and not move.prodlot_id:
+                    raise osv.except_osv(_('Warning!'),_('You cannot confirm shipping for %s with container %s, without serial number' % (move.name, move.product_id.container_id.name)))
+                
+                if move.product_packaging and not move.product_packaging.ul.container_id:
+                    raise osv.except_osv(_('Warning!'),_('Please define container product on package %s' % (move.product_packaging.ul.name)))
+                
+                if move.product_packaging and (not move.prodlot_id or not move.tracking_id):
+                    raise osv.except_osv(_('Warning!'),_('You cannot confirm an shipping %s with container %s, without serial number' % (move.name, move.product_packaging.ul.container_id.id)))
+                
                 if move.product_id.container_id and move.prodlot_id:
                     serial_id = False
                     if not move.prodlot_id.container_serial_id:

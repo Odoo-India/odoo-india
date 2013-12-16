@@ -10,6 +10,8 @@ Group Expand Buttons
         """,
     "depends" : ["web"],
     "js": ["static/src/js/web_group_expand.js"],
+     'qweb' : ["static/src/xml/expand_buttons.xml"],
+     'css' : ["static/src/css/expand_buttons.css"],
     'installable': True,
     'auto_install': False,
 }

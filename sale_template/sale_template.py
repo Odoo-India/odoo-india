@@ -30,6 +30,7 @@ class sale_order(osv.Model):
     }
 
     def onchange_template(self, cr, uid, ids, template=False):
+        line_obj = self.pool.get('sale.order.line')
         result = {'order_line': []}
         lines = []
  
@@ -39,20 +40,24 @@ class sale_order(osv.Model):
         template = self.browse(cr, uid, template)
         order_lines = template.order_line
         for line in order_lines:
-            vals = dict(
-                product_id = line.product_id and line.product_id.id or False,
-                product_uom_qty = line.product_uom_qty, 
-                product_uom = line.product_uom and line.product_uom.id or False,
-                product_uos_qty = line.product_uos_qty,
-                product_uos = line.product_uos and line.product_uos.id or False,
-                price_unit = line.price_unit,
-                discount = line.discount,
-                name = line.name,
-                type = line.type,
-                address_allotment_id = line.address_allotment_id and line.address_allotment_id.id or False,
-                th_weight = line.th_weight,
-            )
-            lines.append(vals)
+            vals = line_obj.product_id_change(cr, uid, [],
+                pricelist = template.pricelist_id and template.pricelist_id.id or False,
+                product = line.product_id and line.product_id.id or False,
+                qty = 0.0,
+                uom = False,
+                qty_uos = 0.0,
+                uos = False,
+                name = '',
+                partner_id = template.partner_id and template.partner_id.id or False,
+                lang = False,
+                update_tax = True,
+                date_order = False,
+                packaging = False,
+                fiscal_position = template.fiscal_position and template.fiscal_position.id or False,
+                flag = False)
+            vals['value']['product_id'] = line.product_id and line.product_id.id or False
+            vals['value']['state'] = 'draft'
+            lines.append(vals['value'])
         result['order_line'] = lines
         return {'value': result}
 

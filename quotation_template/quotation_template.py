@@ -64,6 +64,7 @@ class sale_order(osv.Model):
             lines.append(vals['value'])
         result['order_line'] = lines
         result['payment_term'] = template.payment_term and template.payment_term.id or False
+        result['note'] = template.note
         return {'value': result}
 
 sale_order()

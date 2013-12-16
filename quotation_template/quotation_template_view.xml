@@ -8,7 +8,7 @@
             <field name="model">sale.order</field>
             <field name="priority">20</field>
             <field name="arch" type="xml">
-                <form string="Sales Templates" version="7.0">
+                <form string="Quotation Templates" version="7.0">
                     <header>
                         <field name="state" invisible="1"/>
                     </header>
@@ -148,7 +148,7 @@
             <field name="model">sale.order</field>
             <field name="priority">2</field>
             <field name="arch" type="xml">
-                <tree string="Sales Templates">
+                <tree string="Quotation Templates">
                     <field name="message_unread" invisible="1"/>
                     <field name="name" string="Template Number"/>
                     <field name="date_order"/>

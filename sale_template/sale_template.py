@@ -20,6 +20,7 @@
 ##############################################################################
 
 from openerp.osv import fields, osv
+from openerp.tools.translate import _
 
 class sale_order(osv.Model):
     _inherit = 'sale.order'
@@ -29,7 +30,7 @@ class sale_order(osv.Model):
         'template_id': fields.many2one('sale.order', 'Template', domain=[('is_template', '=', True)]),
     }
 
-    def onchange_template(self, cr, uid, ids, template=False):
+    def onchange_template(self, cr, uid, ids, template=False, partner_id=False, fiscal_position=False):
         line_obj = self.pool.get('sale.order.line')
         result = {'order_line': []}
         lines = []
@@ -37,6 +38,8 @@ class sale_order(osv.Model):
         if not template:
             return {'value': result}
 
+        if not partner_id:
+            raise osv.except_osv(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the sales form.'))
         template = self.browse(cr, uid, template)
         order_lines = template.order_line
         for line in order_lines:
@@ -48,12 +51,12 @@ class sale_order(osv.Model):
                 qty_uos = 0.0,
                 uos = False,
                 name = '',
-                partner_id = template.partner_id and template.partner_id.id or False,
+                partner_id = partner_id,
                 lang = False,
                 update_tax = True,
                 date_order = False,
                 packaging = False,
-                fiscal_position = template.fiscal_position and template.fiscal_position.id or False,
+                fiscal_position = fiscal_position,
                 flag = False)
             vals['value']['product_id'] = line.product_id and line.product_id.id or False
             vals['value']['state'] = 'draft'

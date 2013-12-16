@@ -145,6 +145,24 @@
             </field>
         </record>
 
+        <!-- Sale Order Template Tree View -->
+        <record id="view_sale_order_template_tree" model="ir.ui.view">
+            <field name="name">sale.order.template.tree</field>
+            <field name="model">sale.order</field>
+            <field name="priority">2</field>
+            <field name="arch" type="xml">
+                <tree string="Sales Templates">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="name" string="Template Number"/>
+                    <field name="date_order"/>
+                    <field name="partner_id"/>
+                    <field name="user_id"/>
+                    <field name="amount_total" sum="Total Tax Included"/>
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
         <!-- Sale Order Template Action -->
         <record id='action_sale_order_tempalte' model='ir.actions.act_window'>
             <field name="name">Templates</field>
@@ -163,7 +181,7 @@
         <record id="action_sale_order_tempalte_tree" model="ir.actions.act_window.view">
             <field eval="1" name="sequence"/>
             <field name="view_mode">tree</field>
-            <field name="view_id" ref="sale.view_order_tree"/>
+            <field name="view_id" ref="view_sale_order_template_tree"/>
             <field name="act_window_id" ref="action_sale_order_tempalte"/>
         </record>
 
@@ -174,6 +192,7 @@
             <field name="act_window_id" ref="action_sale_order_tempalte"/>
         </record>
 
+        <!-- Sale Order Template Menu -->
         <menuitem id="menu_sale_template" action="action_sale_order_tempalte" parent="base.menu_sales" sequence="3"/>
 
         <!-- Sale Order Form View -->
@@ -189,6 +208,7 @@
             </field>
         </record>
 
+        <!-- Sale Order Action -->
         <record id="sale.action_orders" model="ir.actions.act_window">
             <field name="name">Sales Orders</field>
             <field name="type">ir.actions.act_window</field>
@@ -208,6 +228,7 @@
             </field>
         </record>
 
+        <!-- Quotation Action -->
         <record id="sale.action_quotations" model="ir.actions.act_window">
             <field name="name">Quotations</field>
             <field name="type">ir.actions.act_window</field>

@@ -8,139 +8,135 @@
             <field name="model">sale.order</field>
             <field name="arch" type="xml">
                 <form string="Sales Templates" version="7.0">
-                <header>
-                    <field name="state" invisible="1"/>
-                </header>
-                <sheet>
-                    <h1>
-                        <label string="Template"/>
-                        <field name="name" class="oe_inline" readonly="1"/>
-                    </h1>
-                    <group>
+                    <header>
+                        <field name="state" invisible="1"/>
+                    </header>
+                    <sheet>
+                        <h1>
+                            <label string="Template"/>
+                            <field name="name" class="oe_inline" readonly="1"/>
+                        </h1>
                         <group>
-                            <field name="partner_id" on_change="onchange_partner_id(partner_id, context)" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1}" options='{"always_reload": True}'/>
-                            <field name="partner_invoice_id" invisible="1" context="{'default_type':'invoice'}"/>
-                            <field name="partner_shipping_id" invisible="1" context="{'default_type':'delivery'}"/>
-                            <field name="project_id" context="{'partner_id':partner_invoice_id, 'default_pricelist_id':pricelist_id, 'default_name':name, 'default_type': 'contract'}" groups="sale.group_analytic_accounting" domain="[('type','in',['view','normal','contract'])]"/>
-                        </group>
-                        <group>
-                            <field name="date_order"/>
-                            <field name="shop_id" groups="base.group_no_one" on_change="onchange_shop_id(shop_id, context)" widget="selection"/>
-                            <field name="client_order_ref"/>
-                            <field domain="[('type','=','sale')]" name="pricelist_id" groups="product.group_sale_pricelist" on_change="onchange_pricelist_id(pricelist_id,order_line)"/>
-                            <field name="currency_id" invisible="1"/>
-                            <field name="is_template" invisible="1"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page string="Order Lines">
-                            <field name="order_line">
-                                <form string="Sales Order Lines" version="7.0">
-                                    <header groups="base.group_user">
-                                        <button name="%(sale.action_view_sale_order_line_make_invoice)d" states="confirmed" string="Invoice" type="action" icon="terp-document-new"/>
-                                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done" statusbar_colors='{"exception":"red","cancel":"red"}'/>
-                                    </header>
-                                    <group>
-                                        <group>
-                                            <field name="product_id"
-                                                context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
-                                                groups="base.group_user"
-                                                on_change="product_id_change(parent.pricelist_id, product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.partner_id, False, True, parent.date_order, False, parent.fiscal_position, False, context)"/>
-                                            <label for="product_uom_qty"/>
-                                            <div>
-                                                <field
-                                                    context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
-                                                    name="product_uom_qty" class="oe_inline"
-                                                    on_change="product_id_change(parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id, False, False, parent.date_order, False, parent.fiscal_position, True, context)"/>
-                                                <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
-
-                                                    on_change="product_uom_change(parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id, False, False, parent.date_order, context)"/>
-                                            </div>
-                                            <label for="product_uos_qty" groups="product.group_uos"/>
-                                            <div groups="product.group_uos">
-                                                <field name="product_uos_qty" class="oe_inline"/>
-                                                <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
-                                            </div>
-                                            <field name="price_unit"/>
-                                            <label for="discount" groups="sale.group_discount_per_so_line"/>
-                                            <div name="discount" groups="sale.group_discount_per_so_line">
-                                                <field name="discount" class="oe_inline"/> %%
-                                            </div>
-                                        </group>
-                                        <group>
-                                            <field name="tax_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','&lt;&gt;','purchase')]"/>
-                                            <field name="type"/>
-                                            <field name="th_weight"/>
-                                            <!-- we should put a config wizard for these two fields -->
-                                            <field name="address_allotment_id"/>
-                                        </group>
-                                    </group>
-                                    <label for="name"/>
-                                    <field name="name"/>
-                                    <div groups="base.group_no_one">
-                                        <label for="invoice_lines"/>
-                                        <field name="invoice_lines"/>
-                                    </div>
-                                </form>
-                                <tree string="Sales Order Lines" editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="state" invisible="1"/>
-                                    <field name="th_weight" invisible="1"/>
-                                    <field name="product_id"
-                                        context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
-                                        groups="base.group_user" 
-                                        on_change="product_id_change(parent.pricelist_id, product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.partner_id, False, True, parent.date_order, False, parent.fiscal_position, False, context)"/>
-                                    <field name="name"/>
-                                    <field name="product_uom_qty"
-                                        context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
-                                        on_change="product_id_change(parent.pricelist_id, product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.partner_id, False, False, parent.date_order, False, parent.fiscal_position, True, context)"/>
-                                    <field name="product_uom"
-                                        on_change="product_uom_change(parent.pricelist_id, product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.partner_id, False, False, parent.date_order, context)"
-                                        groups="product.group_uom" options='{"no_open": True}'/>
-                                    <field name="product_uos_qty" groups="product.group_uos" invisible="1"/>
-                                    <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
-                                    <field name="tax_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','&lt;&gt;','purchase')]"/>
-                                    <field name="price_unit"/>
-                                    <field name="discount" groups="sale.group_discount_per_so_line"/>
-                                    <field name="price_subtotal"/>
-                                </tree>
-                            </field>
-                            <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
-                                <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                <div class="oe_subtotal_footer_separator oe_inline">
-                                    <label for="amount_total" />
-                                    <button name="button_dummy"
-                                        states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
-                                </div>
-                                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                            </group>
-                            <div class="oe_clear"/>
-                            <field name="note" class="oe_inline" placeholder="Terms and conditions..."/>
-                        </page>
-                        <page string="Other Information" groups="base.group_user">
                             <group>
-                                <group name="sales_person" groups="base.group_user">
-                                    <field name="user_id"/>
-                                    <field groups="base.group_no_one" name="origin"/>
-                                </group>
-                                <group name="sale_pay">
-                                    <field name="payment_term" widget="selection"/>
-                                    <field name="fiscal_position" widget="selection"/>
-                                    <field name="company_id" widget="selection" groups="base.group_multi_company"/>
-                                </group>
-                                <group>
-                                    <field name="invoiced"/>
-                                    <field name="invoice_exists" invisible="1"/>
-                                </group>
+                                <field name="partner_id" on_change="onchange_partner_id(partner_id, context)" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1}" options='{"always_reload": True}'/>
+                                <field name="partner_invoice_id" invisible="1" context="{'default_type':'invoice'}"/>
+                                <field name="partner_shipping_id" invisible="1" context="{'default_type':'delivery'}"/>
+                                <field name="project_id" context="{'partner_id':partner_invoice_id, 'default_pricelist_id':pricelist_id, 'default_name':name, 'default_type': 'contract'}" groups="sale.group_analytic_accounting" domain="[('type','in',['view','normal','contract'])]"/>
                             </group>
-                        </page>
-                    </notebook>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
+                            <group>
+                                <field name="date_order"/>
+                                <field name="shop_id" groups="base.group_no_one" on_change="onchange_shop_id(shop_id, context)" widget="selection"/>
+                                <field name="client_order_ref"/>
+                                <field domain="[('type','=','sale')]" name="pricelist_id" groups="product.group_sale_pricelist" on_change="onchange_pricelist_id(pricelist_id,order_line)"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="is_template" invisible="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Order Lines">
+                                <field name="order_line">
+                                    <form string="Sales Order Lines" version="7.0">
+                                        <header groups="base.group_user">
+                                            <button name="%(sale.action_view_sale_order_line_make_invoice)d" states="confirmed" string="Invoice" type="action" icon="terp-document-new"/>
+                                            <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done" statusbar_colors='{"exception":"red","cancel":"red"}'/>
+                                        </header>
+                                        <group>
+                                            <group>
+                                                <field name="product_id"
+                                                    context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
+                                                    groups="base.group_user"
+                                                    on_change="product_id_change(parent.pricelist_id, product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.partner_id, False, True, parent.date_order, False, parent.fiscal_position, False, context)"/>
+                                                <label for="product_uom_qty"/>
+                                                <div>
+                                                    <field
+                                                        context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
+                                                        name="product_uom_qty" class="oe_inline"
+                                                        on_change="product_id_change(parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id, False, False, parent.date_order, False, parent.fiscal_position, True, context)"/>
+                                                    <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button"
+    
+                                                        on_change="product_uom_change(parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id, False, False, parent.date_order, context)"/>
+                                                </div>
+                                                <label for="product_uos_qty" groups="product.group_uos"/>
+                                                <div groups="product.group_uos">
+                                                    <field name="product_uos_qty" class="oe_inline"/>
+                                                    <field name="product_uos" options='{"no_open": True}' class="oe_inline"/>
+                                                </div>
+                                                <field name="price_unit"/>
+                                                <label for="discount" groups="sale.group_discount_per_so_line"/>
+                                                <div name="discount" groups="sale.group_discount_per_so_line">
+                                                    <field name="discount" class="oe_inline"/> %%
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="tax_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','&lt;&gt;','purchase')]"/>
+                                                <field name="type"/>
+                                                <field name="th_weight"/>
+                                                <!-- we should put a config wizard for these two fields -->
+                                                <field name="address_allotment_id"/>
+                                            </group>
+                                        </group>
+                                        <label for="name"/>
+                                        <field name="name"/>
+                                        <div groups="base.group_no_one">
+                                            <label for="invoice_lines"/>
+                                            <field name="invoice_lines"/>
+                                        </div>
+                                    </form>
+                                    <tree string="Sales Order Lines" editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="state" invisible="1"/>
+                                        <field name="th_weight" invisible="1"/>
+                                        <field name="product_id"
+                                            context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
+                                            groups="base.group_user" 
+                                            on_change="product_id_change(parent.pricelist_id, product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.partner_id, False, True, parent.date_order, False, parent.fiscal_position, False, context)"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"
+                                            context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
+                                            on_change="product_id_change(parent.pricelist_id, product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.partner_id, False, False, parent.date_order, False, parent.fiscal_position, True, context)"/>
+                                        <field name="product_uom"
+                                            on_change="product_uom_change(parent.pricelist_id, product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.partner_id, False, False, parent.date_order, context)"
+                                            groups="product.group_uom" options='{"no_open": True}'/>
+                                        <field name="product_uos_qty" groups="product.group_uos" invisible="1"/>
+                                        <field name="product_uos" string="UoS" groups="product.group_uos" invisible="1"/>
+                                        <field name="tax_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','&lt;&gt;','purchase')]"/>
+                                        <field name="price_unit"/>
+                                        <field name="discount" groups="sale.group_discount_per_so_line"/>
+                                        <field name="price_subtotal"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                    <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="amount_total" />
+                                        <button name="button_dummy"
+                                            states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                                    </div>
+                                    <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                </group>
+                                <div class="oe_clear"/>
+                                <field name="note" class="oe_inline" placeholder="Terms and conditions..."/>
+                            </page>
+                            <page string="Other Information" groups="base.group_user">
+                                <group>
+                                    <group name="sales_person" groups="base.group_user">
+                                        <field name="user_id"/>
+                                        <field groups="base.group_no_one" name="origin"/>
+                                    </group>
+                                    <group name="sale_pay">
+                                        <field name="payment_term" widget="selection"/>
+                                        <field name="fiscal_position" widget="selection"/>
+                                        <field name="company_id" widget="selection" groups="base.group_multi_company"/>
+                                    </group>
+                                    <group>
+                                        <field name="invoiced"/>
+                                        <field name="invoice_exists" invisible="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
                 </form>
             </field>
         </record>

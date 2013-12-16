@@ -19,7 +19,31 @@
 #
 ##############################################################################
 
-import sale_template
+{
+    'name' : 'Quotation Template',
+    'version' : '1.0',
+    'author' : 'OpenERP S.A.',
+    'sequence': 120,
+    'category': 'Sales Management',
+    'website' : 'http://www.openerp.com',
+    'summary' : 'Quotation Template',
+    'description' : """
+Quotation Template
+=============
+""",
+    'depends' : ['sale'],
+    'data' : [
+    ],
+    'update_xml' : [
+        'quotation_template_view.xml',
+    ],
+
+    'demo': [
+    ],
+
+    'installable' : True,
+    'application' : True,
+}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

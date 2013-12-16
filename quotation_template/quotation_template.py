@@ -39,7 +39,7 @@ class sale_order(osv.Model):
             return {'value': result}
 
         if not partner_id:
-            raise osv.except_osv(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the sales form.'))
+            raise osv.except_osv(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the template form.'))
         template = self.browse(cr, uid, template)
         order_lines = template.order_line
         for line in order_lines:

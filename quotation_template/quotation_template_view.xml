@@ -2,7 +2,7 @@
 <openerp>
     <data>
 
-        <!-- Sale Order Template Form View -->
+        <!-- Quotation Template Form View -->
         <record id="view_sale_order_template_form" model="ir.ui.view">
             <field name="name">sale.order.template.form</field>
             <field name="model">sale.order</field>
@@ -142,7 +142,7 @@
             </field>
         </record>
 
-        <!-- Sale Order Template Tree View -->
+        <!-- Quotation Template Tree View -->
         <record id="view_sale_order_template_tree" model="ir.ui.view">
             <field name="name">sale.order.template.tree</field>
             <field name="model">sale.order</field>
@@ -160,7 +160,7 @@
             </field>
         </record>
 
-        <!-- Sale Order Template Action -->
+        <!-- Quotation Template Action -->
         <record id='action_sale_order_tempalte' model='ir.actions.act_window'>
             <field name="name">Templates</field>
             <field name="res_model">sale.order</field>
@@ -189,7 +189,7 @@
             <field name="act_window_id" ref="action_sale_order_tempalte"/>
         </record>
 
-        <!-- Sale Order Template Menu -->
+        <!-- Quotation Template Menu -->
         <menuitem id="menu_sale_template" action="action_sale_order_tempalte" parent="base.menu_sales" sequence="3"/>
 
         <!-- Sale Order Form View -->

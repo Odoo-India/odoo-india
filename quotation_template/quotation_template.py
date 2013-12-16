@@ -61,7 +61,8 @@ class sale_order(osv.Model):
             vals['value']['discount'] = line.discount
             vals['value']['product_id'] = line.product_id and line.product_id.id or False
             vals['value']['state'] = 'draft'
-            vals['value']['product_uom_qty'] = 1.0
+            vals['value']['product_uom_qty'] = line.product_uom_qty
+            vals['value']['product_uom'] = line.product_uom and line.product_uom.id or False
             lines.append(vals['value'])
         result['order_line'] = lines
         result['note'] = template.note

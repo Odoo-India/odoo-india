@@ -57,6 +57,7 @@ class sale_order(osv.Model):
                 flag = False)
             vals['value']['product_id'] = line.product_id and line.product_id.id or False
             vals['value']['state'] = 'draft'
+            vals['value']['product_uom_qty'] = 1.0
             lines.append(vals['value'])
         result['order_line'] = lines
         return {'value': result}

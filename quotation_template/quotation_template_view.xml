@@ -150,7 +150,7 @@
             <field name="arch" type="xml">
                 <tree string="Quotation Templates">
                     <field name="message_unread" invisible="1"/>
-                    <field name="name" string="Template Number"/>
+                    <field name="name" string="Name"/>
                     <field name="date_order"/>
                     <field name="partner_id"/>
                     <field name="user_id"/>
@@ -200,7 +200,7 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
                     <field name="template_id" context="{'default_is_template': True, 'form_view_ref': 'view_sale_order_template_form'}"
-                    on_change="onchange_template(template_id, partner_id, fiscal_position)"/>
+                    on_change="onchange_template(template_id, partner_id, pricelist_id, fiscal_position)"/>
                 </field>
             </field>
         </record>

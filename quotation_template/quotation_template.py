@@ -30,7 +30,7 @@ class sale_order(osv.Model):
         'template_id': fields.many2one('sale.order', 'Template', domain=[('is_template', '=', True)]),
     }
 
-    def onchange_template(self, cr, uid, ids, template=False, partner_id=False, fiscal_position=False):
+    def onchange_template(self, cr, uid, ids, template=False, partner_id=False, pricelist_id=False, fiscal_position=False):
         line_obj = self.pool.get('sale.order.line')
         result = {'order_line': []}
         lines = []
@@ -44,7 +44,7 @@ class sale_order(osv.Model):
         order_lines = template.order_line
         for line in order_lines:
             vals = line_obj.product_id_change(cr, uid, [],
-                pricelist = template.pricelist_id and template.pricelist_id.id or False,
+                pricelist = pricelist_id,
                 product = line.product_id and line.product_id.id or False,
                 qty = 0.0,
                 uom = False,
@@ -63,7 +63,6 @@ class sale_order(osv.Model):
             vals['value']['product_uom_qty'] = 1.0
             lines.append(vals['value'])
         result['order_line'] = lines
-        result['payment_term'] = template.payment_term and template.payment_term.id or False
         result['note'] = template.note
         return {'value': result}
 

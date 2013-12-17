@@ -21,7 +21,7 @@
 			<field eval="1" name="priority" />
 			<field name="arch" type="xml">
 				<field name="origin" position="before">
-					<field name="product_packaging" />
+					<field name="product_packaging" domain="[('product_id','=',product_id)]"/>
 				</field>
 			</field>
 		</record>

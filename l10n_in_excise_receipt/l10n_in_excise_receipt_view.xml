@@ -90,7 +90,7 @@
                     <sheet>
                         <h1>
                             <label string="Receipt" attrs="{'invisible': [('state','=','draft')]}"/>
-                            <label string="Draft Receipt" attrs="{'invisible': [('state','!=','draft')]}"/>
+                            <label string="Draft Receipt" attrs="{'invisible': [('state','in',('done', 'available', 'auto', 'confirmed', 'assigned'))]}"/>
                             <field name="name" class="oe_inline" readonly="1"/>
                         </h1>
                         <group>

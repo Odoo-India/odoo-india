@@ -22,6 +22,9 @@
 {
     'name': 'Attachment Size Limit',
     'category': 'Hidden',
+    'version' : '1.1',
+    'author' : 'OpenERP S.A.',
+    'sequence': 120,
     'summary': 'Limits on # file, size on uploads, Block users for uploading',
     'description': """
 Attachment Configuration

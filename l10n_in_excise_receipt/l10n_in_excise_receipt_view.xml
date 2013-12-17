@@ -89,9 +89,8 @@
                     </header>
                     <sheet>
                         <h1>
-                            <label string="Receipt"
-                                attrs="{'invisible': [('state','in',('draft', 'available', 'auto', 'confirmed', 'assigned'))]}"/>
-                            <label string="Draft Receipt" attrs="{'invisible': [('state','=','done')]}"/>
+                            <label string="Receipt" attrs="{'invisible': [('state','=','draft')]}"/>
+                            <label string="Draft Receipt" attrs="{'invisible': [('state','in',('done', 'available', 'auto', 'confirmed', 'assigned'))]}"/>
                             <field name="name" class="oe_inline" readonly="1"/>
                         </h1>
                         <group>
@@ -105,11 +104,6 @@
                                 <field name="date" invisible="True"/>
                                 <field name="date_done" string="Receipt Date"/>
                                 <field name="origin" placeholder="e.g. PO0032" class="oe_inline"/>
-                            </group>
-                        </group>
-                        <group>
-                            <group>
-                                <field name="freight"/>
                             </group>
                         </group>
                         <notebook>
@@ -187,11 +181,12 @@
                                 </field>
                                 <group class="oe_subtotal_footer oe_right">
                                     <field name="amount_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="freight" class="oe_edit_only" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="other_charges" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="import_duty" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <div class="oe_subtotal_footer_separator oe_inline">
                                         <label for="amount_total"/>
-                                        <button name="button_dummy" states="draft,assigned,approved,confirmed"
+                                        <button name="button_dummy" states="draft,assigned,approved,confirmed,done"
                                             string="(update)" type="object" class="oe_edit_only oe_link"/>
                                     </div>
                                     <field name="amount_total" nolabel="1"

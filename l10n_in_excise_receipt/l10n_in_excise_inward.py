@@ -115,13 +115,10 @@ class stock_picking(osv.Model):
         picking_receipt_id = picking.type == 'receipt' and picking.id
 
         for move in picking.move_lines:
-            freight += move.freight_unit * move.product_qty
-            insurance += move.insurance_unit * move.product_qty
-            package_and_forwording += move.packing_unit * move.product_qty
-            vat_amount += move.vat_unit * move.product_qty
-            retention_amount += move.retention_unit * move.product_qty
-            advance_amount += move.advance_adjustment
-        res = dict(res, freight=freight, insurance=insurance, package_and_forwording=package_and_forwording, advance_amount=advance_amount,vat_amount=vat_amount, purchase_id=purchase_id, picking_in_id=picking_in_id, picking_receipt_id=picking_receipt_id, lab_no=picking.lab_no, retention_amount=retention_amount)
+            freight += move.freight * move.product_qty
+            insurance += move.insurance * move.product_qty
+            package_and_forwording += move.package_and_forwording * move.product_qty
+        res = dict(res, freight=freight, insurance=insurance, package_and_forwording=package_and_forwording, purchase_id=purchase_id, picking_in_id=picking_in_id, picking_receipt_id=picking_receipt_id)
         return res
 
     def action_invoice_create(self, cr, uid, ids, journal_id=False, group=False, type='out_invoice', context=None):
@@ -174,6 +171,7 @@ class stock_picking(osv.Model):
                     'move_lines': [(6, 0, move_line)],
                     'challan_no':pick.challan_no,
                     'date_done':pick.date_done,
+                    'invoice_state': pick.invoice_state,
                 })
             receipt_obj.create(cr, uid, vals, context=context)
 

@@ -658,11 +658,15 @@ class procurement_order(osv.osv):
                 name = product.description_purchase
             line_vals = self._prepare_line_purchase(cr, uid, name, procurement, qty, uom_id, procurement.price, schedule_date, taxes)
             name = seq_obj.get(cr, uid, 'purchase.order') or _('PO: %s') % procurement.name
+            
+            if not warehouse_id:
+                raise osv.except_osv(_("Warning !"), _("You must define at least one warehouse for current company !"))
+            
             po_vals = {
                 'name': name,
                 'origin': procurement.origin,
                 'partner_id': partner_id,
-                'location_id': procurement.location_id.id,
+                'location_id': warehouse_obj.browse(cr, uid, warehouse_id[0]).lot_input_id.id,
                 'warehouse_id': warehouse_id and warehouse_id[0] or False,
                 'pricelist_id': pricelist_id,
                 'date_order': purchase_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT),

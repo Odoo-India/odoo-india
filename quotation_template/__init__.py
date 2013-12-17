@@ -19,31 +19,7 @@
 #
 ##############################################################################
 
-{
-    'name' : 'Sales Template',
-    'version' : '1.0',
-    'author' : 'OpenERP S.A.',
-    'sequence': 120,
-    'category': 'Sales Management',
-    'website' : 'http://www.openerp.com',
-    'summary' : 'Sales Template',
-    'description' : """
-Sales Template
-=============
-""",
-    'depends' : ['sale'],
-    'data' : [
-    ],
-    'update_xml' : [
-        'sale_template_view.xml',
-    ],
-
-    'demo': [
-    ],
-
-    'installable' : True,
-    'application' : True,
-}
+import quotation_template
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

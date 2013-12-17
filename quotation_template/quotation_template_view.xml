@@ -2,20 +2,20 @@
 <openerp>
     <data>
 
-        <!-- Sale Order Template Form View -->
+        <!-- Quotation Template Form View -->
         <record id="view_sale_order_template_form" model="ir.ui.view">
             <field name="name">sale.order.template.form</field>
             <field name="model">sale.order</field>
             <field name="priority">20</field>
             <field name="arch" type="xml">
-                <form string="Sales Templates" version="7.0">
+                <form string="Quotation Templates" version="7.0">
                     <header>
                         <field name="state" invisible="1"/>
                     </header>
                     <sheet>
                         <h1>
-                            <label string="Template"/>
-                            <field name="name" class="oe_inline" readonly="1"/>
+                            <label string="Template" class="oe_edit_only"/>
+                            <field name="name" class="oe_inline"/>
                         </h1>
                         <group>
                             <group>
@@ -142,15 +142,15 @@
             </field>
         </record>
 
-        <!-- Sale Order Template Tree View -->
+        <!-- Quotation Template Tree View -->
         <record id="view_sale_order_template_tree" model="ir.ui.view">
             <field name="name">sale.order.template.tree</field>
             <field name="model">sale.order</field>
             <field name="priority">2</field>
             <field name="arch" type="xml">
-                <tree string="Sales Templates">
+                <tree string="Quotation Templates">
                     <field name="message_unread" invisible="1"/>
-                    <field name="name" string="Template Number"/>
+                    <field name="name" string="Name"/>
                     <field name="date_order"/>
                     <field name="partner_id"/>
                     <field name="user_id"/>
@@ -160,7 +160,7 @@
             </field>
         </record>
 
-        <!-- Sale Order Template Action -->
+        <!-- Quotation Template Action -->
         <record id='action_sale_order_tempalte' model='ir.actions.act_window'>
             <field name="name">Templates</field>
             <field name="res_model">sale.order</field>
@@ -189,7 +189,7 @@
             <field name="act_window_id" ref="action_sale_order_tempalte"/>
         </record>
 
-        <!-- Sale Order Template Menu -->
+        <!-- Quotation Template Menu -->
         <menuitem id="menu_sale_template" action="action_sale_order_tempalte" parent="base.menu_sales" sequence="3"/>
 
         <!-- Sale Order Form View -->
@@ -200,7 +200,7 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
                     <field name="template_id" context="{'default_is_template': True, 'form_view_ref': 'view_sale_order_template_form'}"
-                    on_change="onchange_template(template_id, partner_id, fiscal_position)"/>
+                    on_change="onchange_template(template_id, partner_id, pricelist_id, fiscal_position)"/>
                 </field>
             </field>
         </record>

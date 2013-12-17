@@ -30,7 +30,7 @@ class sale_order(osv.Model):
         'template_id': fields.many2one('sale.order', 'Template', domain=[('is_template', '=', True)]),
     }
 
-    def onchange_template(self, cr, uid, ids, template=False, partner_id=False, fiscal_position=False):
+    def onchange_template(self, cr, uid, ids, template=False, partner_id=False, pricelist_id=False, fiscal_position=False):
         line_obj = self.pool.get('sale.order.line')
         result = {'order_line': []}
         lines = []
@@ -39,12 +39,12 @@ class sale_order(osv.Model):
             return {'value': result}
 
         if not partner_id:
-            raise osv.except_osv(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the sales form.'))
+            raise osv.except_osv(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the template form.'))
         template = self.browse(cr, uid, template)
         order_lines = template.order_line
         for line in order_lines:
             vals = line_obj.product_id_change(cr, uid, [],
-                pricelist = template.pricelist_id and template.pricelist_id.id or False,
+                pricelist = pricelist_id,
                 product = line.product_id and line.product_id.id or False,
                 qty = 0.0,
                 uom = False,
@@ -58,11 +58,14 @@ class sale_order(osv.Model):
                 packaging = False,
                 fiscal_position = fiscal_position,
                 flag = False)
+            vals['value']['discount'] = line.discount
             vals['value']['product_id'] = line.product_id and line.product_id.id or False
             vals['value']['state'] = 'draft'
-            vals['value']['product_uom_qty'] = 1.0
+            vals['value']['product_uom_qty'] = line.product_uom_qty
+            vals['value']['product_uom'] = line.product_uom and line.product_uom.id or False
             lines.append(vals['value'])
         result['order_line'] = lines
+        result['note'] = template.note
         return {'value': result}
 
 sale_order()

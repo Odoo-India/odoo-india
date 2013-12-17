@@ -299,6 +299,9 @@
 		<!-- Indent Menu -->
 		<menuitem name="Indents" parent="stock.menu_stock_root" id="menu_indent_indent_main"
 			sequence="1" />
+			
+		<menuitem id="menu_reporting_indent" name="Indents" parent="base.menu_reporting" sequence="10"/>
+		
 		<menuitem action="action_indent_indent" name="Indents"
 			parent="menu_indent_indent_main" id="menu_indent_indent" sequence="1" />
 		<menuitem id="stock.menu_stock_warehouse_mgmt" name="Receive/Deliver By Orders"

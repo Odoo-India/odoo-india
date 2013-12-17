@@ -197,7 +197,7 @@ class purchase_order_line(osv.Model):
         res = {}
         cur_obj = self.pool.get('res.currency')
         tax_obj = self.pool.get('account.tax')
-        total_qty = package_amount = insurance_amount = packing_and_forwading = freight_amount = freight= 0.0
+        package_amount = insurance_amount = freight_amount = 0.0
         for line in self.browse(cr, uid, ids, context=context):
             res[line.id] = {
                 'package_and_forwording':0.0,
@@ -240,7 +240,7 @@ class purchase_order_line(osv.Model):
                 res[line.id]['package_and_forwording'] = package_amount / line.product_qty
             elif line.order_id.package_and_forwording_type == 'fix':
                 if line.order_id.amount_untaxed > 0.0:
-                    package_amount = ((line.order_id.package_and_forwording)*val1)/ line.order_id.amount_untaxed
+                    package_amount = ((line.order_id.package_and_forwording * val1) / line.order_id.amount_untaxed) / line.product_qty
                 res[line.id]['package_and_forwording'] = package_amount
             if line.order_id.freight_type == 'per_unit':
                 res[line.id]['freight'] = line.order_id.freight
@@ -249,14 +249,14 @@ class purchase_order_line(osv.Model):
                 res[line.id]['freight'] = freight_amount / line.product_qty
             elif line.order_id.freight_type == 'fix':
                 if line.order_id.amount_untaxed > 0.0:
-                    freight_amount = ((line.order_id.freight)*val1)/ line.order_id.amount_untaxed
+                    freight_amount = ((line.order_id.freight * val1) / line.order_id.amount_untaxed ) / line.product_qty
                 res[line.id]['freight'] = freight_amount
             if line.order_id.insurance_type == 'percentage':
                 insurance_amount = ((line.order_id.insurance * val1) / 100)
                 res[line.id]['insurance'] = insurance_amount / line.product_qty
             elif line.order_id.insurance_type == 'fix':
                 if line.order_id.amount_untaxed > 0.0:
-                    insurance_amount = ((line.order_id.insurance)*val1)/ line.order_id.amount_untaxed
+                    insurance_amount = ((line.order_id.insurance * val1) / line.order_id.amount_untaxed) / line.product_qty
                 res[line.id]['insurance'] = insurance_amount
         return res
     

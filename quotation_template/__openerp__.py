@@ -28,8 +28,21 @@
     'website' : 'http://www.openerp.com',
     'summary' : 'Quotation Template',
     'description' : """
-Quotation Template
-=============
+Prepare and propose quotations to your customers quickly!
+============================================================
+This module helps you to create quotations quickly and easily by using pre-defined templates for quotations.
+
+Key Features
+++++++++++++++++++
+The sales manager can prepare quotation templates for products and services, define discount etc. and a sales person can just select template while creating quotations.
+
+* Create quotations quickly
+* Provide Discounts on Templates
+* Use different Pricelists and Currencies
+
+Video Tutorial: http://www.youtube.com/watch?v=PTy3TOH9tQM
+
+
 """,
     'depends' : ['sale'],
     'data' : [

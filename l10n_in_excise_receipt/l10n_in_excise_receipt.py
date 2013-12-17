@@ -177,15 +177,29 @@ class purchase_order(osv.Model):
     _inherit = "purchase.order"
 
     def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
+        tax_obj = self.pool.get('account.tax')
         res = super(purchase_order, self)._prepare_order_line_move(cr, uid, order=order, order_line=order_line, picking_id=picking_id, context=context)
+        price = order_line.price_unit * (1 - (order_line.discount or 0.0) / 100.0)
+        taxes = tax_obj.compute_all(cr, uid, order_line.taxes_id, price, order_line.product_qty, order_line.product_id, order_line.order_id.partner_id)
+
+        excise = cess = st = 0.0
+        for tax in taxes.get('taxes', []):
+            tax_type = tax_obj.browse(cr, uid, tax.get('id', 0)).tax_categ
+            if tax_type == ('excise'):
+                excise += tax.get('amount', 0)
+            elif tax_type == ('cess'):
+                cess += tax.get('amount', 0)
+            elif tax_type == ('hedu_cess'):
+                st += tax.get('amount', 0)
+
         res = dict(res, 
             package_and_forwording = order_line.package_and_forwording,
             freight = order_line.freight,
             insurance = order_line.insurance,
             discount = order_line.discount,
-            excies = 0.0,
-            cess = 0.0,
-            higher_cess = 0.0,
+            excies = excise,
+            cess = cess,
+            higher_cess = st,
         )
         return res
 

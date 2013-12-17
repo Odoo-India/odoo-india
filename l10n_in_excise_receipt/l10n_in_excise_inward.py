@@ -118,7 +118,7 @@ class stock_picking(osv.Model):
             freight += move.freight * move.product_qty
             insurance += move.insurance * move.product_qty
             package_and_forwording += move.package_and_forwording * move.product_qty
-        res = dict(res, freight=freight, insurance=insurance, package_and_forwording=package_and_forwording, advance_amount=advance_amount,vat_amount=vat_amount, purchase_id=purchase_id, picking_in_id=picking_in_id, picking_receipt_id=picking_receipt_id)
+        res = dict(res, freight=freight, insurance=insurance, package_and_forwording=package_and_forwording, purchase_id=purchase_id, picking_in_id=picking_in_id, picking_receipt_id=picking_receipt_id)
         return res
 
     def action_invoice_create(self, cr, uid, ids, journal_id=False, group=False, type='out_invoice', context=None):

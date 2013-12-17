@@ -73,16 +73,12 @@ class stock_picking_receipt(osv.Model):
             total = 0.0
             for move in receipt.move_lines:
                 total += move.rate
- 
+
             per_unit = receipt.freight / total if total else 1.0
-            if receipt.freight > 0:
-                for move in receipt.move_lines:
-                    diff  = move.rate * per_unit * 100 / move.rate if move.rate else 1.0
-                    move_obj.write(cr, uid, [move.id], {'freight_receipt': diff}, context=context)
-            elif receipt.freight < 0:
-                for move in receipt.move_lines:
-                    diff  = move.rate * per_unit * 100 / move.rate if move.rate else 1.0
-                    move_obj.write(cr, uid, [move.id], {'freight_receipt': diff}, context=context)
+
+            for move in receipt.move_lines:
+                diff  = move.rate * per_unit
+                move_obj.write(cr, uid, [move.id], {'freight_receipt': diff}, context=context)
         return True
 
     def create(self, cr, user, vals, context=None):
@@ -135,7 +131,7 @@ class stock_move(osv.osv):
     _columns = {
         'rate': fields.function(_total_cost, multi='cals', type='float', string='Sub Total'),
         'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'), ('receipt', 'Receipt'), ('opening', 'Opening')], string='Shipping Type', store=True),
-        'excies': fields.float('Excies'),
+        'excies': fields.float('Excise'),
         'cess': fields.float('Cess'),
         'higher_cess': fields.float('Higher Cess'),
         'import_duty': fields.float('Import Duty'),

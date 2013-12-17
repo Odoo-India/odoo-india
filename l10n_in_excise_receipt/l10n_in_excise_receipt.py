@@ -210,7 +210,7 @@ class stock_partial_picking(osv.osv_memory):
 
     def default_get(self, cr, uid, fields, context=None):
         if context is None: context = {}
-        res = super(stock_partial_picking, self).default_get(cr, uid, fields, context=context)
+        res = {}
         picking_ids = context.get('active_ids', [])
         active_model = context.get('active_model')
 

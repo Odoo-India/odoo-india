@@ -26,7 +26,7 @@
     'sequence': 120,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Manage warehouse and purchase, Indian localization',
+    'summary' : 'Indent, Purchase, Issue, Receipts, Invoice, Serial Tracking',
     'description' : """
 Store & Purchase Management, Indian localization
 ====================================================
@@ -82,7 +82,8 @@ You can manage calculation of various charges by different options like Fix Amou
         'product_container', 
         'stock_indent_gatepass', 
         'stock_sale_gatepass', 
-        'stock_serial_tracking', 
+        'stock_serial_tracking',
+        'product_container_tracking',
         'l10n_in_purchase',
         'l10n_in_excise_receipt'
     ],

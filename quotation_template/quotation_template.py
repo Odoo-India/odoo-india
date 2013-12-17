@@ -27,7 +27,7 @@ class sale_order(osv.Model):
 
     _columns = {
         'is_template': fields.boolean('Template'),
-        'template_id': fields.many2one('sale.order', 'Template', domain=[('is_template', '=', True)]),
+        'template_id': fields.many2one('sale.order', 'Offer', domain=[('is_template', '=', True)]),
     }
 
     def onchange_template(self, cr, uid, ids, template=False, partner_id=False, pricelist_id=False, fiscal_position=False):
@@ -40,6 +40,7 @@ class sale_order(osv.Model):
 
         if not partner_id:
             raise osv.except_osv(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the template form.'))
+        
         template = self.browse(cr, uid, template)
         order_lines = template.order_line
         for line in order_lines:

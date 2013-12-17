@@ -186,7 +186,7 @@
                                     <field name="import_duty" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <div class="oe_subtotal_footer_separator oe_inline">
                                         <label for="amount_total"/>
-                                        <button name="button_dummy" states="draft,assigned,approved,confirmed"
+                                        <button name="button_dummy" states="draft,assigned,approved,confirmed,done"
                                             string="(update)" type="object" class="oe_edit_only oe_link"/>
                                     </div>
                                     <field name="amount_total" nolabel="1"

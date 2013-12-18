@@ -116,11 +116,10 @@
                                         <button name="%(stock.track_line)d" string="Split in Serial Number"
                                             groups="stock.group_production_lot" type="action" icon="gtk-justify-fill"
                                             states="draft,waiting,confirmed,assigned"/>
-                                        <field name="excies" sum="Total Excise" on_change="onchange_excise(excies, cess, higher_cess, import_duty)"/>
-                                        <field name="cess" sum="Total Cess" on_change="onchange_excise(excies, cess, higher_cess,import_duty)"/>
-                                        <field name="higher_cess" sum="Total Higher Cess" on_change="onchange_excise(excies, cess, higher_cess, import_duty)"/>
-                                        <field name="import_duty"
-                                            on_change="onchange_excise(excies, cess, higher_cess, import_duty)" sum="Total Import Duty"/>
+                                        <field name="excies" sum="Total Excise" />
+                                        <field name="cess" sum="Total Cess"/>
+                                        <field name="higher_cess" sum="Total Higher Cess"/>
+                                        <field name="import_duty" sum="Total Import Duty"/>
                                         <field name="exe_excies" sum="Total CENVAT" invisible="1"/>
                                         <field name="exe_cess" sum="Total Cess" invisible="1"/>
                                         <field name="exe_higher_cess" sum="Total Higher Cess" invisible="1"/>
@@ -160,16 +159,17 @@
                                         </group>
                                         <group>
                                             <group>
-                                                <field name="excies" on_change="onchange_excise(excies, cess, higher_cess, import_duty)"/>
-                                                <field name="cess" on_change="onchange_excise(excies, cess, higher_cess,import_duty)"/>
-                                                <field name="higher_cess" on_change="onchange_excise(excies, cess, higher_cess,import_duty)"/>
-                                                <field name="import_duty" on_change="onchange_excise(excies, cess, higher_cess,import_duty)"/>
+                                                <field name="excies" on_change="onchange_excise(excies, import_duty)"/>
+                                                <field name="cess"/>
+                                                <field name="higher_cess"/>
+                                                <field name="import_duty" on_change="onchange_excise(excies, import_duty)"/>
                                             </group>
                                             <group>
-                                                <field name="exe_excies"/>
-                                                <field name="exe_cess"/>
-                                                <field name="exe_higher_cess"/>
-                                                <field name="exe_import_duty"/>
+                                                <field name="is_same"/>
+                                                <field name="exe_excies" attrs="{'invisible': [('is_same', '=', True)]}"/>
+                                                <field name="exe_cess" attrs="{'invisible': [('is_same', '=', True)]}"/>
+                                                <field name="exe_higher_cess" attrs="{'invisible': [('is_same', '=', True)]}"/>
+                                                <field name="exe_import_duty" attrs="{'invisible': [('is_same', '=', True)]}"/>
                                             </group>
                                         </group>
                                         <group>

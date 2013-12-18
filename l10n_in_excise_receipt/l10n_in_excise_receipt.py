@@ -147,13 +147,19 @@ class stock_move(osv.osv):
         'insurance': fields.float('Insurance', digits_compute=dp.get_precision('Account')),
         'analytic_account_id':fields.many2one('account.analytic.account','Project'),
         'discount': fields.float('Discount'),
+        'is_same': fields.boolean('Exempted Excies is same as receipt'),
     }
 
     _defaults = {
         'name': '/',
+        'is_same': True,
     }
 
-    def onchange_excise(self, cr, uid, ids, excise, cess, higher_cess, import_duty, context=None):
+    def onchange_excise(self, cr, uid, ids, excise, import_duty, context=None):
+        cess = higher_cess = 0.0
+        if excise > 0:
+            cess = excise * 0.02
+            higher_cess = excise * 0.01
         res = {
             'excise': excise or 0.0, 
             'exe_excies':excise or 0.0, 

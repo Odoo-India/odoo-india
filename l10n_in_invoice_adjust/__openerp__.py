@@ -40,6 +40,7 @@ When a company or contact is supplier as well as customer, you can adjust paymen
 
 Create Customer Payment and select Agrolait as customer and the system will automatically adjust $1000 Credit with $900 Debit entries. So you can collect only $100 from Agrolait. Both the invoices will be paid once you reconcile the entries.
 
+Video Tutorial: http://www.youtube.com/watch?v=2Zeg0WYJcbg
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

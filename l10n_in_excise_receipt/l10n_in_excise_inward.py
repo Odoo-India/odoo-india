@@ -107,6 +107,41 @@ class stock_picking(osv.Model):
     def _get_discount_invoice(self, cr, uid, move_line):
         return move_line.discount
 
+    def _get_taxes_invoice(self, cr, uid, move_line, type):
+        account_tax_obj = self.pool.get('account.tax')
+
+        old_tax_ids = super(stock_picking, self)._get_taxes_invoice(cr, uid, move_line, type)
+        tax_ids = []
+        if move_line.po_excies != move_line.excies:
+            for tax in account_tax_obj.browse(cr, uid, old_tax_ids):
+                if tax.tax_categ != 'excise':
+                    tax_ids.append(tax.id)
+
+            tax_amount = round(move_line.excies / move_line.product_qty, 3)
+            name = str(tax_amount) + ' per unit (Edu.cess 2% + H.Edu cess 1%)'
+            excise_ids = account_tax_obj.search(cr, uid, [('tax_categ', '=', 'excise'), ('amount', '=', tax_amount)])
+            if excise_ids:
+                tax_ids += excise_ids
+            else:
+                new_tax_vals = {
+                    'name': name,
+                    'tax_categ': 'excise',
+                    'amount': tax_amount,
+                    'type':'fixed',
+                    'sequence': 1,
+                    'include_base_amount': True
+                }
+                child_tax = {}
+                if move_line.excies and move_line.cess != 0 and move_line.higher_cess != 0:
+                    child_tax = account_tax_obj.onchange_tax_type(cr, uid, False, str(tax_amount), 'excise')
+                    new_tax_vals.update(child_tax.get('value'))
+                tax_id = account_tax_obj.create(cr, uid, new_tax_vals)
+                tax_ids.append(tax_id)
+        else:
+            tax_ids = old_tax_ids
+
+        return tax_ids
+
     def _prepare_invoice(self, cr, uid, picking, partner, inv_type, journal_id, context=None):
         res = super(stock_picking, self)._prepare_invoice(cr, uid, picking=picking, partner=partner, inv_type=inv_type, journal_id=journal_id, context=context)
         freight = insurance = package_and_forwording = vat_amount = advance_amount = retention_amount = 0.0

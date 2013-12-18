@@ -232,6 +232,9 @@ class purchase_order_line(osv.Model):
     _columns = {
         'discount': fields.float('Discount (%)'),
         'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
+        'package_and_forwording': fields.float('Packing Unit'),
+        'insurance': fields.float('Insurance Unit'),
+        'freight': fields.float('Freight Unit'),
     }
 
 purchase_order_line()

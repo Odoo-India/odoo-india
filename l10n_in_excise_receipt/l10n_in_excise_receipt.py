@@ -131,6 +131,7 @@ class stock_move(osv.osv):
     _columns = {
         'rate': fields.function(_total_cost, multi='cals', type='float', string='Sub Total'),
         'type': fields.related('picking_id', 'type', type='selection', selection=[('out', 'Sending Goods'), ('in', 'Getting Goods'), ('internal', 'Internal'), ('receipt', 'Receipt'), ('opening', 'Opening')], string='Shipping Type', store=True),
+        'po_excies': fields.float('PO Excise'),
         'excies': fields.float('Excise'),
         'cess': fields.float('Cess'),
         'higher_cess': fields.float('Higher Cess'),
@@ -199,6 +200,7 @@ class purchase_order(osv.Model):
             freight = order_line.freight,
             insurance = order_line.insurance,
             discount = order_line.discount,
+            po_excies = excise,
             excies = excise,
             cess = cess,
             higher_cess = st,

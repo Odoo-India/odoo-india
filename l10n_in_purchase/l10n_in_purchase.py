@@ -102,7 +102,8 @@ class purchase_order(osv.Model):
                 'company_id': order.company_id.id,
                 'package_and_forwording':order.amount_package_and_forwording,
                 'freight':order.amount_freight,
-                'insurance':order.amount_insurance
+                'insurance':order.amount_insurance,
+                'round_off':order.round_off
             }
             inv_id = inv_obj.create(cr, uid, inv_data, context=context)
 

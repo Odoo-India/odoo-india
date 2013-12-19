@@ -85,7 +85,9 @@ You can manage calculation of various charges by different options like Fix Amou
         'stock_serial_tracking',
         'product_container_tracking',
         'l10n_in_purchase',
-        'l10n_in_excise_receipt'
+        'l10n_in_excise_receipt',
+        'l10n_in_account_tax',
+        'l10n_in_invoice_adjust'
     ],
     'data' : [
         

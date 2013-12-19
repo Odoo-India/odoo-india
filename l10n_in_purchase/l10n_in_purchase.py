@@ -18,8 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.osv import fields, osv
 from openerp import netsvc
+from openerp.osv import fields, osv
+from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 
 class purchase_order(osv.Model):
@@ -70,7 +71,7 @@ class purchase_order(osv.Model):
             
             for line in order.order_line:
                 order_total += line.price_subtotal
-            
+
             for line in order.order_line:
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
                 val1 += (price * line.product_qty)
@@ -81,25 +82,37 @@ class purchase_order(osv.Model):
                 
                 if order.freight_type == 'per_unit' and order.freight:
                     other_charges += (order.freight * line.product_qty)
-
-                #Add fixed amount to order included in price
-                pre_line = round((price * 100) / order_total,2)
-                line_part = 0.0
-                if order.package_and_forwording_type == 'include' and order.package_and_forwording:
-                    line_part = order.package_and_forwording * (pre_line / 100)
-                    price -= line_part
-                    
-                if order.freight_type == 'include' and order.freight:
-                    line_part = order.freight  * (pre_line / 100)
-                    price -= line_part
-                    
-                if order.insurance_type == 'include' and order.insurance:
-                    line_part = order.insurance  * (pre_line / 100)
-                    price -= line_part
+                
+                if order_total > 0:
+                    #Add fixed amount to order included in price
+                    pre_line = round((price * 100) / order_total,2)
+                    line_part = 0.0
+                    if order.package_and_forwording_type == 'include' and order.package_and_forwording:
+                        line_part = order.package_and_forwording * (pre_line / 100)
+                        price -= line_part
+                        
+                    if order.freight_type == 'include' and order.freight:
+                        line_part = order.freight  * (pre_line / 100)
+                        price -= line_part
+                        
+                    if order.insurance_type == 'include' and order.insurance:
+                        line_part = order.insurance  * (pre_line / 100)
+                        price -= line_part
                 
                 taxes = tax_obj.compute_all(cr, uid, line.taxes_id, price, line.product_qty, line.product_id, line.order_id.partner_id)
                 tax_total += taxes.get('total_included', 0.0) - taxes.get('total', 0.0)
             
+            if order_total > 0:
+                #Add fixed amount to order percentage
+                if order.package_and_forwording_type == 'percentage' and order.package_and_forwording:
+                    other_charges += order_total * (order.package_and_forwording / 100)
+                
+                if order.freight_type == 'percentage' and order.freight:
+                    other_charges += order_total * (order.freight / 100)
+                    
+                if order.insurance_type == 'percentage' and order.insurance:
+                    other_charges += order_total * (order.insurance/100)
+                
             #Add fixed amount to order included in price
             if order.package_and_forwording_type == 'include' and order.package_and_forwording:
                 included_price += order.package_and_forwording
@@ -123,19 +136,8 @@ class purchase_order(osv.Model):
             if order.insurance_type in ('fix', 'include') and order.insurance:
                 other_charges += order.insurance
             
-            #Add fixed amount to order percentage
-            if order.package_and_forwording_type == 'percentage' and order.package_and_forwording:
-                other_charges += order_total * (order.package_and_forwording / 100)
-            
-            if order.freight_type == 'percentage' and order.freight:
-                other_charges += order_total * (order.freight / 100)
-                
-            if order.insurance_type == 'percentage' and order.insurance:
-                other_charges += order_total * (order.insurance/100)
-
             tax_total = cur_obj.round(cr, uid, cur, tax_total)
-            untax_amount = cur_obj.round(cr, uid, cur, untax_amount)  - included_price
-            
+            untax_amount = cur_obj.round(cr, uid, cur, untax_amount)  - included_price            
             order_total = other_charges + tax_total + untax_amount + order.round_off
             
             res[order.id]['amount_tax'] = tax_total

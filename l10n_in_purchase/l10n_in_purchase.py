@@ -166,21 +166,10 @@ class purchase_order(osv.Model):
                     if order.insurance_type == 'include' and order.insurance:
                         line_part = order.insurance  * (pre_line / 100)
                         price -= line_part
-                
+
                 taxes = tax_obj.compute_all(cr, uid, line.taxes_id, price, line.product_qty, line.product_id, line.order_id.partner_id)
                 tax_total += taxes.get('total_included', 0.0) - taxes.get('total', 0.0)
             
-            if order_total > 0:
-                #Add fixed amount to order percentage
-                if order.package_and_forwording_type == 'percentage' and order.package_and_forwording:
-                    other_charges += order_total * (order.package_and_forwording / 100)
-                
-                if order.freight_type == 'percentage' and order.freight:
-                    other_charges += order_total * (order.freight / 100)
-                    
-                if order.insurance_type == 'percentage' and order.insurance:
-                    other_charges += order_total * (order.insurance/100)
-                
             #Add fixed amount to order included in price
             if order.package_and_forwording_type == 'include' and order.package_and_forwording:
                 included_price += order.package_and_forwording
@@ -194,6 +183,17 @@ class purchase_order(osv.Model):
                 included_price += order.insurance
                 order_total -= order.insurance
             
+            if order_total > 0:
+                #Add fixed amount to order percentage
+                if order.package_and_forwording_type == 'percentage' and order.package_and_forwording:
+                    other_charges += order_total * (order.package_and_forwording / 100)
+                
+                if order.freight_type == 'percentage' and order.freight:
+                    other_charges += order_total * (order.freight / 100)
+                    
+                if order.insurance_type == 'percentage' and order.insurance:
+                    other_charges += order_total * (order.insurance/100)
+                
             #Add fixed amount to order untax_amount
             if order.package_and_forwording_type in ('fix', 'include') and order.package_and_forwording:
                 other_charges += order.package_and_forwording
@@ -215,14 +215,15 @@ class purchase_order(osv.Model):
             
         return res
     
+    #Need action : removed ,('include', 'Include in Price') from all options, need to remove rlated code to make it clean
     _columns = {
-        'package_and_forwording_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage'), ('per_unit', 'Per Unit'), ('actual', 'At actual'),('include', 'Include in Price')], 'Packaging & Forwarding Type', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),
+        'package_and_forwording_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage'), ('per_unit', 'Per Unit'), ('actual', 'At actual')], 'Packaging & Forwarding Type', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),
         'package_and_forwording': fields.float('Packaging & Forwarding', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),
-        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage'), ('include', 'Include in Price')], 'Insurance Type', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),  
+        'insurance_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage')], 'Insurance Type', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),  
         'insurance': fields.float('Insurance', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),
         'delivery_id': fields.many2one('mill.delivery', 'Mill Delivery', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),
         'freight': fields.float('Freight', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),
-        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage'), ('per_unit', 'Per Unit'),('actual', 'At actual'), ('include', 'Include in Price')], 'Freight Type', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),
+        'freight_type': fields.selection([('fix', 'Fix Amount'), ('percentage', 'Percentage'), ('per_unit', 'Per Unit'),('actual', 'At actual')], 'Freight Type', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}),
         'round_off': fields.float('Round Off', states={'confirmed':[('readonly', True)], 'approved':[('readonly', True)], 'done':[('readonly', True)]}, help="Round Off Amount"),
         'amount_untaxed': fields.function(_amount_all, digits_compute= dp.get_precision('Account'), string='Untaxed Amount',
             store={
@@ -335,8 +336,8 @@ class purchase_order(osv.Model):
             
             order_vals = {
                 'amount_package_and_forwording':total_pandf,
-                'amount_insurance':total_freight,
-                'amount_freight':total_insurance
+                'amount_insurance':total_insurance,
+                'amount_freight':total_freight
             }
             self.write(cr, uid, [order.id], order_vals)
 

@@ -204,6 +204,9 @@ class purchase_order(osv.Model):
             excies = excise,
             cess = cess,
             higher_cess = st,
+            exe_excies = excise,
+            exe_cess = cess,
+            exe_higher_cess = st
         )
         return res
 

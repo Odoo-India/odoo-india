@@ -96,5 +96,18 @@
         <!-- Product Sub Group Menu -->
         <menuitem id="menu_product_sub_group" action="action_product_sub_group" parent="stock.menu_product_in_config_stock"/>
 
+        <!-- Product Form View -->
+        <record id="view_product_groups_form" model="ir.ui.view">
+            <field name="name">product.groups.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <field name="default_code" position="before">
+                    <field name="major_group_id" required="1"/>
+                    <field name="sub_group_id" required="1"/>
+                </field>
+            </field>
+        </record>
+
     </data>
 </openerp>

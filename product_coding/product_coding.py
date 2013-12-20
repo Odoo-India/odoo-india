@@ -76,4 +76,14 @@ class product_sub_group(osv.Model):
 
 product_sub_group()
 
+class product_product(osv.Model):
+    _inherit = 'product.product'
+ 
+    _columns = {
+        'major_group_id': fields.many2one('product.major.group', 'Major Group'),
+        'sub_group_id': fields.many2one('product.sub.group', 'Sub Group'),
+    }
+ 
+product_product()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -311,7 +311,7 @@ class purchase_order(osv.Model):
                 
                 if order.package_and_forwording_type == 'per_unit' and order.package_and_forwording:
                     res_vals.update({'package_and_forwording':order.package_and_forwording})
-                    total_pandf = order.package_and_forwording * line.product_qty
+                    total_pandf += order.package_and_forwording * line.product_qty
                 elif not order.package_and_forwording_type == 'per_unit' and total_pandf:
                     per_line = total_pandf * (line_rario / 100)
                     per_unit = per_line / line.product_qty
@@ -319,7 +319,7 @@ class purchase_order(osv.Model):
                 
                 if order.freight_type == 'per_unit' and order.freight:
                     res_vals.update({'freight':order.freight})
-                    total_freight = order.freight * line.product_qty
+                    total_freight += order.freight * line.product_qty
                 elif not order.freight_type == 'per_unit' and total_freight:
                     per_line = total_freight * (line_rario / 100)
                     per_unit = per_line / line.product_qty

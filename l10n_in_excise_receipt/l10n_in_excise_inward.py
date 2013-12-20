@@ -155,9 +155,9 @@ class stock_picking(osv.Model):
             package_and_forwording += move.package_and_forwording * move.product_qty
         res = dict(
             res, 
-            freight=round(freight), 
-            insurance=round(insurance), 
-            package_and_forwording=round(package_and_forwording), 
+            freight=round(freight, 2), 
+            insurance=round(insurance, 2), 
+            package_and_forwording=round(package_and_forwording, 2), 
             purchase_id=purchase_id, 
             picking_in_id=picking_in_id, 
             picking_receipt_id=picking_receipt_id

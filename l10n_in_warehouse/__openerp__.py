@@ -74,7 +74,7 @@ This module allows you to manage different charges on Purchase orders & Supplier
 * Insurance
 * Mill Delivery
 
-You can manage calculation of various charges by different options like Fix Amount, Percentage, Per Unit, At actual, Include in Price.
+You can manage calculation of various charges by different options like Fix Amount, Percentage, Per Unit, At actual.
 """,
     'depends' : [
         'stock_indent', 

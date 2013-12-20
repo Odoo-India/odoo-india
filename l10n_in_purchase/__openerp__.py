@@ -44,7 +44,6 @@ You can manage calculation of various charges by different applicable options.
 * **Percentage**: Amount in percentage applicable on total price
 * **Per Unit**: Fix amount applicable per unit on total quantity of items
 * **At actual**: Charge different rates over time
-* **Include in Price**: Recomputes price of items to adjust amount in price of items
 
 Reports
 ++++++++++

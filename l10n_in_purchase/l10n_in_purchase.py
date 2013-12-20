@@ -306,7 +306,6 @@ class purchase_order(osv.Model):
             if order.insurance_type in ('fix', 'include') and order.insurance:
                 total_insurance = order.insurance
             
-            line_ids = []
             for line in order.order_line:
                 line_rario = round((line.price_subtotal * 100) / order.amount_untaxed,2)
                 
@@ -331,9 +330,7 @@ class purchase_order(osv.Model):
                     per_unit = per_line / line.product_qty
                     res_vals.update({'insurance':per_unit})
                 
-                line_ids.append(line.id)
-            
-            order_line_pool.write(cr, uid, line_ids, res_vals)
+                order_line_pool.write(cr, uid, [line.id], res_vals, context=context)
             
             order_vals = {
                 'amount_package_and_forwording':total_pandf,

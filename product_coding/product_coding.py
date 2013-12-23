@@ -92,19 +92,39 @@ class product_product(osv.Model):
         'coding_method': 'category',
     }
 
-    #Need to discuss: how to generate the number?
     def create(self, cr, uid, vals, context=None):
-        number = False
+        vals['default_code'] = self.generate_default_code(cr, uid, vals, context=context)
+        return super(product_product, self).create(cr, uid, vals, context=context)
+
+    def generate_default_code(self, cr, uid, vals, context=None):
+        default_code = '/'
         coding_method = vals.get('coding_method')
         if coding_method == 'category':
-            categ = self.pool.get('product.category').browse(cr, uid, vals.get('categ_id'), context=context).name
-            number = categ
+            categ_code = self.pool.get('product.category').browse(cr, uid, vals.get('categ_id'), context=context).code
+            product_ids = self.search(cr, uid, [('categ_id', '=', vals.get('categ_id'))], order='id', context=context)
+            sequences = [product.id for product in self.browse(cr, uid, product_ids, context=context) if product.default_code and str(product.default_code).isdigit()]
+            if len(sequences):
+                last_rec = self.browse(cr, uid, sequences[-1], context=context)
+                if int(last_rec.default_code[-3:]) == 999:
+                    raise osv.except_osv(_('Warning!'), _('Maximum Number reached for this category.'))
+                product_code = int(last_rec.default_code[-3:]) + 1
+                default_code = str(categ_code) + "%03d" % (product_code)
+            else:
+                default_code = str(categ_code) + "001"
         else:
-            major_group = self.pool.get('product.major.group').browse(cr, uid, vals.get('major_group_id'), context=context).code
-            sub_group = self.pool.get('product.sub.group').browse(cr, uid, vals.get('sub_group_id'), context=context).code
-            number = major_group + '/' + sub_group
-        vals['default_code'] = number
-        return super(product_product, self).create(cr, uid, vals, context=context)
+            major_code = self.pool.get('product.major.group').browse(cr, uid, vals.get('major_group_id'), context=context).code
+            sub_code = self.pool.get('product.sub.group').browse(cr, uid, vals.get('sub_group_id'), context=context).code
+            product_ids = self.search(cr, uid, [('major_group_id', '=', vals.get('major_group_id')), ('sub_group_id', '=', vals.get('sub_group_id'))], order='id', context=context)
+            sequences = [product.id for product in self.browse(cr, uid, product_ids, context=context) if product.default_code and str(product.default_code).isdigit()]
+            if len(sequences):
+                last_rec = self.browse(cr, uid, sequences[-1], context=context)
+                if int(last_rec.default_code[-3:]) == 999:
+                    raise osv.except_osv(_('Warning!'), _('Maximum Number reached for this group.'))
+                product_code = int(last_rec.default_code[-3:]) + 1
+                default_code = str(major_code) + str(sub_code) + "%03d" % (product_code)
+            else:
+                default_code = str(major_code) + str(sub_code) + "001"
+        return default_code
 
 product_product()
 

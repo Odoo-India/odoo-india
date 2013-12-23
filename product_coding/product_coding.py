@@ -27,7 +27,7 @@ class product_major_group(osv.Model):
 
     _columns = {
         'name': fields.char('Name', size=256, required=True),
-        'code': fields.char('Code', size=64, required=True),
+        'code': fields.integer('Code', size=64, required=True),
     }
 
     _sql_constraints = [
@@ -54,12 +54,12 @@ class product_sub_group(osv.Model):
 
     _columns = {
         'name': fields.char('Name', size=256, required=True),
-        'code': fields.char('Code', size=64, required=True),
+        'code': fields.integer('Code', size=64, required=True),
         'major_group_id': fields.many2one('product.major.group', 'Major Group'),
     }
 
     _sql_constraints = [
-        ('code_uniq', 'unique (code,major_group_id)', 'The code of the product sub group must be unique!')
+        ('code_uniq', 'unique (code, major_group_id)', 'The code of the product sub group must be unique!')
     ]
 
     def name_get(self, cr, uid, ids, context=None):
@@ -107,5 +107,18 @@ class product_product(osv.Model):
         return super(product_product, self).create(cr, uid, vals, context=context)
 
 product_product()
+
+class product_category(osv.Model):
+    _inherit = 'product.category'
+
+    _columns = {
+        'code': fields.integer('Code', size=64),
+    }
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The code of the product category group must be unique!')
+    ]
+
+product_category()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

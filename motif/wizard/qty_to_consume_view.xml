@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="view_process_qty_to_consume" model="ir.ui.view">
+			<field name="name">Consume Quantity</field>
+			<field name="model">qty.to.consume</field>
+			<field name="arch" type="xml">
+				<form string="Accept Or Reject Process" version="7.0">
+					<group>
+						<field name="product_id" />
+					</group>
+					<group>
+						<group>
+							<field name="process_qty" string="In Process Qty" />
+						</group>
+						<group>
+							<field name="consume_qty" />
+						</group>
+					</group>
+					<footer>
+						<button name="to_consume_qty" string="_Apply" type="object"
+							class="oe_highlight" />
+						or
+						<button string="Cancel" class="oe_link" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+	</data>
+</openerp>
+

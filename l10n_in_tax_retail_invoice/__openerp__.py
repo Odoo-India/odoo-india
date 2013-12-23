@@ -41,7 +41,7 @@ Reports
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['sale_stock', 'delivery', 'account_tax_fix', 'sale_order_dates'],
+    'depends': ['sale_stock', 'delivery', 'l10n_in_account_tax', 'sale_order_dates'],
     'data': [
         'l10n_in_tax_retail_invoice_installer.xml', 
         'report/tax_invoice.xml',

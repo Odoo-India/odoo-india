@@ -50,7 +50,7 @@ product_major_group()
 
 class product_sub_group(osv.Model):
     _name = 'product.sub.group'
-    _description = 'Product Major Group'
+    _description = 'Product Sub Group'
 
     _columns = {
         'name': fields.char('Name', size=256, required=True),
@@ -91,6 +91,20 @@ class product_product(osv.Model):
     _defaults = {
         'coding_method': 'category',
     }
+
+    #Need to discuss: how to generate the number?
+    def create(self, cr, uid, vals, context=None):
+        number = False
+        coding_method = vals.get('coding_method')
+        if coding_method == 'category':
+            categ = self.pool.get('product.category').browse(cr, uid, vals.get('categ_id'), context=context).name
+            number = categ
+        else:
+            major_group = self.pool.get('product.major.group').browse(cr, uid, vals.get('major_group_id'), context=context).code
+            sub_group = self.pool.get('product.sub.group').browse(cr, uid, vals.get('sub_group_id'), context=context).code
+            number = major_group + '/' + sub_group
+        vals['default_code'] = number
+        return super(product_product, self).create(cr, uid, vals, context=context)
 
 product_product()
 

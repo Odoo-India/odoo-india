@@ -36,6 +36,7 @@ Product Coding
     ],
     'update_xml' : [
         'product_coding_view.xml',
+        'res_config_view.xml',
     ],
 
     'demo': [

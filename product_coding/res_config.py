@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    OpenERP, Open Source Business Applications
+#    Copyright (C) 2004-2012 OpenERP S.A. (<http://openerp.com>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,8 +18,21 @@
 #
 ##############################################################################
 
-import product_coding
-import res_config
+from openerp.osv import fields, osv
+
+class product_config_settings(osv.osv_memory):
+    _name = 'product.config.settings'
+    _inherit = 'res.config.settings'
+
+    _columns = {
+        'default_coding_method': fields.selection([
+            ('category', 'Based on categories'),
+            ('group', 'Based on major and sub groups'),
+            ], 'Default coding method', required=True, default_model='product.product'),
+    }
+
+    _defaults = {
+        'default_coding_method': 'category',
+    }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

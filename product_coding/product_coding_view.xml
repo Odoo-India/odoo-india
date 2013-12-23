@@ -105,6 +105,7 @@
                 <field name="default_code" position="before">
                     <field name="major_group_id" required="1"/>
                     <field name="sub_group_id" required="1"/>
+                    <field name="coding_method"/>
                 </field>
             </field>
         </record>

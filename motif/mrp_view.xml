@@ -154,7 +154,7 @@
 				</xpath>
 
 				<xpath expr="//field[@name='workcenter_lines']/form" position="inside">
-					<notebook attrs="{'invisible':[('order_type', '=', 'out')]}">
+					<notebook>
 						<page string="Raw Materials To Process">
 							<group string="Raw Materials To Process" colspan="4">
 								<field name="moves_workorder" nolabel="1" colspan="4"

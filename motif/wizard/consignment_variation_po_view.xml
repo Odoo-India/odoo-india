@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="view_consignment_variation_po" model="ir.ui.view">
+			<field name="name">Consignment Variation</field>
+			<field name="model">consignment.variation.po</field>
+			<field name="arch" type="xml">
+				<form string="Consignment Variation" version="7.0">
+					<div class="address_format">
+						<field name="sign" style="width: 10%%" />
+						<field name="variation" style="width: 12%%" />
+						<field name="uom" style="width: 5%%" />
+					</div>
+					<footer>
+						<button name="to_update" string="_Apply" type="object"
+							class="oe_highlight" />
+						or
+						<button string="Cancel" class="oe_link" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+	</data>
+</openerp>
+

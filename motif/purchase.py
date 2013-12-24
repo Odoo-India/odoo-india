@@ -20,6 +20,7 @@
 ##############################################################################
 
 from openerp.osv import osv,fields
+from openerp.tools.translate import _
 
 class purchase_order(osv.osv):
     _inherit = 'purchase.order'
@@ -39,13 +40,16 @@ class purchase_order_line(osv.osv):
         return res and res[0] or False
 
     _columns = {
-        'line_qty': fields.float('Purchase Quantity',required=True),
-        'line_uom_id':  fields.many2one('product.uom','Purchase UoM',required=True),
+        'line_qty': fields.float('Purchase Quantity'),
+        'line_uom_id':  fields.many2one('product.uom','Purchase UoM'),
+        'consignment_variation': fields.char('Variation(±)')
     }
 
     _defaults = {
-        'line_uom_id':_get_p_uom_id
+        'line_uom_id':_get_p_uom_id,
+        'consignment_variation':'0.0'
     }
+
     def onchange_product_id(self, cr, uid, ids, pricelist_id, product_id, qty, uom_id,
             partner_id, date_order=False, fiscal_position_id=False, date_planned=False,
             name=False, price_unit=False, context=None):
@@ -71,6 +75,32 @@ class purchase_order_line(osv.osv):
                 -Future use
         """
         return super(purchase_order_line,self).create(cr, uid, vals, context=context)
+
+
+    def add_variations(self, cr, uid, ids ,context=None):
+        """
+            Process
+                -call wizard to add variation on line
+        """
+        context = context or {}
+        models_data = self.pool.get('ir.model.data')
+        # Get consume wizard
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_consignment_variation_po')
+        current = self.browse(cr, uid, ids[0], context=context)
+        context.update({
+                        'uom': current.line_uom_id.name,
+                        })
+        return {
+            'name': _('Add Consignment Variation'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'context':context,
+            'res_model': 'consignment.variation.po',
+            'views': [(form_view or False, 'form')],
+            'type': 'ir.actions.act_window',
+            'target':'new'
+        }
+
 
 purchase_order_line()
 

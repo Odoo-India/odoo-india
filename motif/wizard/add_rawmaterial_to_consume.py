@@ -51,7 +51,7 @@ class add_rawmaterial_to_consume(osv.osv_memory):
         'finish_move_id': fields.many2one('stock.move', 'Move'),
         'workorder_id':fields.many2one('mrp.production.workcenter.line', 'WorkOrder'),
         'product_id': fields.many2one('product.product', 'Product', required=True),
-        'uom_id': fields.many2one('product.uom', 'Unit Of Measure', required=True, readonly=True),
+        'uom_id': fields.many2one('product.uom', 'Unit Of Measure', readonly=True),
         'qty_to_consume': fields.float('Quantity To Consume', digits_compute=dp.get_precision('Product Unit of Measure')),
     }
 

@@ -27,4 +27,5 @@ import reallocate_rejected_move
 import generate_service_order
 import qty_to_consume
 import add_rawmaterial_to_consume
+import consignment_variation_po
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

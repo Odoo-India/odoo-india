@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
-        <report id="report_petty_cash_voucher" model="account.voucher" name="petty.cash.voucher" string="Petty Cash Voucher" rml="l10n_in_tax_retail_invoice/report/petty_cash_voucher.rml"/>
-    </data>
-</openerp>

@@ -1,9 +1,0 @@
-"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-
-"access_fleet_equipment_status","fleet.equipment.status","model_fleet_equipment_status","fleet.group_fleet_user",1,0,0,0
-"access_fleet_vehicle_fault","fleet.vehicle.fault","model_fleet_vehicle_fault","fleet.group_fleet_user",1,0,0,0
-"access_job_product_lines","job.product.lines","model_job_product_lines","fleet.group_fleet_user",1,0,0,0
-
-"access_fleet_equipment_status","fleet.equipment.status","model_fleet_equipment_status","fleet.group_fleet_manager",1,1,1,1
-"access_fleet_vehicle_fault","fleet.vehicle.fault","model_fleet_vehicle_fault","fleet.group_fleet_manager",1,1,1,1
-"access_job_product_lines","job.product.lines","model_job_product_lines","fleet.group_fleet_manager",1,1,1,1

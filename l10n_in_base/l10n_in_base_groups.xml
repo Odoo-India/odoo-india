@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-	<data>
+	<data noupdate="1">
 		<record id="group_cst_config" model="res.groups">
 	        <field name="name">CST Number on Partners</field>
 	        <field name="category_id" ref="base.module_category_accounting_and_finance"/>

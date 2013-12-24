@@ -179,11 +179,11 @@ class res_partner(osv.osv):
     _inherit = "res.partner"
     
     _columns = {
-        'tin_no': fields.char('Tax Identification Number', size=32, help="Tax Identification Number"),
-        'tin_date': fields.date('Tax Identification Number Date', help="Tax Identification Number Date of Company"),
+        'tin_no': fields.char('TIN Number', size=32, help="Tax Identification Number"),
+        'tin_date': fields.date('TIN Number Issue Date', help="Tax Identification Number Date of Company"),
         
-        'cst_no': fields.char('Central Sales Tax', size=32, help='Central Sales Tax Number of Company'),
-        'cst_date': fields.date('Central Sales Tax Date', help='Central Sales Tax Date of Company'),
+        'cst_no': fields.char('CST Number', size=32, help='Central Sales Tax Number of Company'),
+        'cst_date': fields.date('CST Number Issue Date', help='Central Sales Tax Date of Company'),
         
         'vat_no' : fields.char('VAT Number', size=32, help="Value Added Tax Number"),
         'vat_date': fields.date('VAT Number Issue Date', help='VAT Number Issue Date'),
@@ -191,8 +191,8 @@ class res_partner(osv.osv):
         'excise_no': fields.char('Excise Control Code', size=32, help="Excise Control Code"),
         'excise_date': fields.date('Excise Code Issue Date',  help="Excise Code Issue Date"),
         
-        'service_no' : fields.char('Service Tax Number', size=32, help="Service Tax Number"),
-        'service_date' : fields.date('Service Tax Date', help="Issue Date of Service Tax Number"),
+        'service_no' : fields.char('ST Number', size=32, help="Service Tax Number"),
+        'service_date' : fields.date('ST Number Issue Date', help="Issue Date of Service Tax Number"),
         
         'pan_no' : fields.char('PAN', size=32, help="Permanent Account Number")
     }

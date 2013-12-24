@@ -1,33 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data>
+	<data>
 
-        <!-- Account Tax Form View -->
-        <record id="view_account_tax_inherit_form_taxcateg" model="ir.ui.view">
-            <field name="name">account.tax.inherit.form.tax.categ</field>
-            <field name="model">account.tax</field>
-            <field name="inherit_id" ref="account.view_tax_form"/>
-            <field name="arch" type="xml">
-                <field name="description" position="after">
-                    <field name="tax_categ"/>
-                </field>
-            </field>
-        </record>
+		<!-- Account Tax Form View -->
+		<record id="view_account_tax_inherit_form_taxcateg" model="ir.ui.view">
+			<field name="name">account.tax.inherit.form.tax.categ</field>
+			<field name="model">account.tax</field>
+			<field name="inherit_id" ref="account.view_tax_form" />
+			<field name="arch" type="xml">
+				<field name="description" position="after">
+					<field name="tax_categ" />
+				</field>
+			</field>
+		</record>
 
-        <!-- Account Tax Search View -->
-        <record id="view_account_tax_categ_search" model="ir.ui.view">
-            <field name="name">account.tax.categ.search</field>
-            <field name="model">account.tax</field>
-            <field name="inherit_id" ref="account.view_account_tax_search"/>
-            <field name="arch" type="xml">
-                <field name="company_id" position="after">
-                    <field name="tax_categ"/>
-                    <group expand="0" string="Group By...">
-                        <filter string="Category" context="{'group_by': 'tax_categ'}"/>
-                    </group>
-                </field>
-            </field>
-        </record>
+		<!-- Account Tax Search View -->
+		<record id="view_account_tax_categ_search" model="ir.ui.view">
+			<field name="name">account.tax.categ.search</field>
+			<field name="model">account.tax</field>
+			<field name="inherit_id" ref="account.view_account_tax_search" />
+			<field name="arch" type="xml">
+				<field name="company_id" position="after">
+					<field name="tax_categ" />
+					<group expand="0" string="Group By...">
+						<filter string="Category" context="{'group_by': 'tax_categ'}" />
+					</group>
+				</field>
+			</field>
+		</record>
 
-    </data>
+		<record id="view_partner_property_form" model="ir.ui.view">
+			<field name="name">res.partner.property.form.inherit</field>
+			<field name="model">res.partner</field>
+			<field name="priority">2</field>
+			<field name="inherit_id" ref="base.view_partner_form" />
+			<field name="arch" type="xml">
+				<field name="date" position="before">
+					<field name="pan_no"/>				
+				</field>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_partner_property_form">
+			<field name="name">res.parrner.tax.config</field>
+			<field name="inherit_id" ref="account.view_partner_property_form" />
+			<field name="model">res.partner</field>
+			<field name="arch" type="xml">
+				<xpath expr="//notebook/page[@string='Accounting']/group"
+					position="after">
+					<group>
+						<group>
+							<field name="tin_no" groups="l10n_in_base.group_tin_config" />
+							<field name="tin_date" groups="l10n_in_base.group_tin_config" />
+
+							<field name="excise_no" groups="l10n_in_base.group_excise_config" />
+							<field name="excise_date" groups="l10n_in_base.group_excise_config" />
+						</group>
+
+						<group>
+							<field name="cst_no" groups="l10n_in_base.group_cst_config" />
+							<field name="cst_date" groups="l10n_in_base.group_cst_config" />
+
+							<field name="service_no" groups="l10n_in_base.group_service_config" />
+							<field name="service_date" groups="l10n_in_base.group_service_config" />
+						</group>
+					</group>
+				</xpath>
+			</field>
+		</record>
+
+	</data>
 </openerp>

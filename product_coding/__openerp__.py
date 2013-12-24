@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2013 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,24 +20,31 @@
 ##############################################################################
 
 {
-    'name': 'Indian Tax Category',
-    'version': '1.1',
-    'category': 'Indian Localization',
-    'description': """Configure Indian Tax with Category
-===================================================================================================
-- Added tax category on tax to determine different types of taxes during computation and calculations
-- Fix a problem of computation of tax (with child tax) on tax, i.e VAT 5% on (product cost + Excise 12.36 %)
+    'name' : 'Product Coding',
+    'version' : '1.0',
+    'author' : 'OpenERP S.A.',
+    'sequence': 120,
+    'category': 'Warehouse Management',
+    'website' : 'http://www.openerp.com',
+    'summary' : 'Product Coding',
+    'description' : """
+Product Coding
+==============
 """,
-    'author': 'OpenERP SA',
-    'website': 'http://www.openerp.com',
-    'images': [],
-    'depends': ['account', 'l10n_in_base'],
-    'data': [
-        'l10n_in_account_tax_view.xml'
+    'depends' : ['product'],
+    'data' : [
     ],
-    'demo': [],
-    'installable': True,
-    'auto_install': False,
+    'update_xml' : [
+        'product_coding_view.xml',
+        'res_config_view.xml',
+    ],
+
+    'demo': [
+    ],
+
+    'installable' : True,
+    'application' : True,
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

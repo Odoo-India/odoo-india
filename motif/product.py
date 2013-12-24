@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2013 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,25 +19,26 @@
 #
 ##############################################################################
 
-{
-    'name': 'Indian Tax Category',
-    'version': '1.1',
-    'category': 'Indian Localization',
-    'description': """Configure Indian Tax with Category
-===================================================================================================
-- Added tax category on tax to determine different types of taxes during computation and calculations
-- Fix a problem of computation of tax (with child tax) on tax, i.e VAT 5% on (product cost + Excise 12.36 %)
-""",
-    'author': 'OpenERP SA',
-    'website': 'http://www.openerp.com',
-    'images': [],
-    'depends': ['account', 'l10n_in_base'],
-    'data': [
-        'l10n_in_account_tax_view.xml'
-    ],
-    'demo': [],
-    'installable': True,
-    'auto_install': False,
-}
+from openerp.osv import osv,fields
+
+class product_product(osv.osv):
+    _inherit = 'product.product'
+
+    def _get_p_uom_id(self, cr, uid, *args):
+        cr.execute('select id from product_uom order by id limit 1')
+        res = cr.fetchone()
+        return res and res[0] or False
+
+    _columns = {
+        'p_coefficient': fields.float('Purchase Coefficient'),
+        'p_uom_id': fields.many2one('product.uom','Purchase UoM',required=True),
+    }
+    _defaults = {
+        'type':'product',
+        'p_coefficient':1.0,
+        'p_uom_id':_get_p_uom_id
+    }
+
+product_product()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2013 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,24 +20,30 @@
 ##############################################################################
 
 {
-    'name': 'Indian Tax Category',
-    'version': '1.1',
+    'name' : 'l10n_in_base',
+    'version' : '1.0',
+    'author' : 'OpenERP S.A.',
+    'sequence': 110,
     'category': 'Indian Localization',
-    'description': """Configure Indian Tax with Category
-===================================================================================================
-- Added tax category on tax to determine different types of taxes during computation and calculations
-- Fix a problem of computation of tax (with child tax) on tax, i.e VAT 5% on (product cost + Excise 12.36 %)
+    'website' : 'http://www.openerp.com',
+    'summary' : 'Indian Localization',
+    'description' : """
+Provides the configuration for whole business suite according to indian localization.
+=====================================================================================
 """,
-    'author': 'OpenERP SA',
-    'website': 'http://www.openerp.com',
-    'images': [],
-    'depends': ['account', 'l10n_in_base'],
-    'data': [
-        'l10n_in_account_tax_view.xml'
+    'depends' : ['base'],
+    'data' : [
     ],
-    'demo': [],
-    'installable': True,
-    'auto_install': False,
+    'update_xml' : [
+        'res_config_view.xml',
+        'l10n_in_base_groups.xml'
+    ],
+
+    'demo': [
+    ],
+
+    'installable' : True,
+    'application' : True,
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

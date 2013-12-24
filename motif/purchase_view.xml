@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="workorders_purchase_order" model="ir.ui.view">
+			<field name="name">workorder.purchase.order</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form" />
+			<field name="arch" type="xml">
+				<field name="partner_ref" position="after">
+					<field name="service_order" attrs="{'invisible':[('service_order', '=', False)]}" />
+					<field name="workorder_id" attrs="{'invisible':[('workorder_id', '=', False)]}" />
+				</field>
+				<xpath expr="//field[@name='order_line']/tree/field[@name='product_uom']"
+					position="after">
+					<field name="line_qty" required="1" />
+					<field name="line_uom_id" required="1" />
+					<field name="consignment_variation" readonly="1" />
+					<field name="state" invisible="1" />
+					<button name="add_variations" string="Add Consignment Variation"
+						icon="gtk-execute" help="Add Consignment Variation" type="object"
+						attrs="{'invisible': [('state','=','draft')]}" />
+				</xpath>
+				<xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']"
+					position="attributes">
+					<attribute name="string">Issue Quantity</attribute>
+				</xpath>
+				<xpath expr="//field[@name='order_line']/tree/field[@name='product_uom']"
+					position="attributes">
+					<attribute name="string">Issue UoM</attribute>
+				</xpath>
+			</field>
+		</record>
+
+		<record id="purchase_order_line_form_coffiecient" model="ir.ui.view">
+			<field name="name">purchase.order.line.form.coffiecient</field>
+			<field name="model">purchase.order.line</field>
+			<field name="inherit_id" ref="purchase.purchase_order_line_form" />
+			<field name="arch" type="xml">
+				<field name="product_id" position="after">
+					<field name="line_qty" required="1" />
+					<field name="line_uom_id" required="1" />
+					<field name="state" invisible="1" />
+					<field name="consignment_variation" readonly="1" />
+					<button name="add_variations" string="Add Consignment Variation"
+						icon="gtk-execute" help="Add Consignment Variation" type="object"
+						attrs="{'invisible': [('state','=','draft')]}" />
+				</field>
+			</field>
+		</record>
+
+	</data>
+</openerp>

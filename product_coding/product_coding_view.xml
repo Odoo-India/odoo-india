@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <!-- Product Major Group Form View -->
+        <record id="view_product_major_group_form" model="ir.ui.view">
+            <field name="name">product.major.group.form</field>
+            <field name="model">product.major.group</field>
+            <field name="arch" type="xml">
+                <form string="Major Groups" version="7.0">
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="code"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Product Major Group Tree View -->
+        <record id="view_product_major_group_tree" model="ir.ui.view">
+            <field name="name">product.major.group.tree</field>
+            <field name="model">product.major.group</field>
+            <field name="arch" type="xml">
+                <tree string="Major Groups">
+                    <field name="name"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Product Major Group Action -->
+        <record id='action_product_major_group' model='ir.actions.act_window'>
+            <field name="name">Major Groups</field>
+            <field name="res_model">product.major.group</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new product major group.
+                </p>
+            </field>
+        </record>
+
+        <!-- Product Major Group Menu -->
+        <menuitem id="menu_product_major_group" action="action_product_major_group" parent="stock.menu_product_in_config_stock"/>
+
+        <!-- Product Sub Group Form View -->
+        <record id="view_product_sub_group_form" model="ir.ui.view">
+            <field name="name">product.sub.group.form</field>
+            <field name="model">product.sub.group</field>
+            <field name="arch" type="xml">
+                <form string="Sub Groups" version="7.0">
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="code"/>
+                            <field name="major_group_id"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Product Sub Group Tree View -->
+        <record id="view_product_sub_group_tree" model="ir.ui.view">
+            <field name="name">product.sub.group.tree</field>
+            <field name="model">product.sub.group</field>
+            <field name="arch" type="xml">
+                <tree string="Sub Groups">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="major_group_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Product Sub Group Action -->
+        <record id='action_product_sub_group' model='ir.actions.act_window'>
+            <field name="name">Sub Groups</field>
+            <field name="res_model">product.sub.group</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new product sub group.
+                </p>
+            </field>
+        </record>
+
+        <!-- Product Sub Group Menu -->
+        <menuitem id="menu_product_sub_group" action="action_product_sub_group" parent="stock.menu_product_in_config_stock"/>
+
+        <!-- Product Form View -->
+        <record id="view_product_groups_form" model="ir.ui.view">
+            <field name="name">product.groups.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <field name="default_code" position="before">
+                    <field name="major_group_id" required="1"/>
+                    <field name="sub_group_id" required="1"/>
+                    <field name="coding_method"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Product Category Form View -->
+        <record id="view_product_category_inherited_form" model="ir.ui.view">
+            <field name="name">product.category.inherited.form</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <div class="oe_title" position="replace">
+                    <label for="code" class="oe_edit_only" string="Category Code and Name"/>
+                    <h1>
+                        <field name="code" class="oe_inline" placeholder="Category code" style="width: 6em" required="1"/> -
+                        <field name="name" class="oe_inline" placeholder="Category name"/>
+                    </h1>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</openerp>

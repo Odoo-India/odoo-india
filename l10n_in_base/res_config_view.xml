@@ -27,6 +27,32 @@
                             </div>
                         </div>
                     </group>
+                    
+                    <separator string="Finance"/>
+                    <group>
+                        <label for="id" string="Tax Configuration"/>
+                        <div name="tax_features">
+                        	<div name='group_tin_config'>
+                                <field name="group_tin_config" class="oe_inline"/>
+                                <label for="group_tin_config"/>
+                            </div>
+                            
+                            <div name='group_cst_config'>
+                                <field name="group_cst_config" class="oe_inline"/>
+                                <label for="group_cst_config"/>
+                            </div>
+                            
+                            <div name='group_excise_config'>
+                                <field name="group_excise_config" class="oe_inline"/>
+                                <label for="group_excise_config"/>
+                            </div>
+                            
+                            <div name='group_service_config'>
+                                <field name="group_service_config" class="oe_inline"/>
+                                <label for="group_service_config"/>
+                            </div>
+                        </div>
+                    </group>
                 </form>
             </field>
         </record>
@@ -41,7 +67,7 @@
         </record>
 
         <!-- Base Config Settings Menu -->
-        <menuitem id="menu_indian_base_configuration" action="action_indian_base_configuration" name="Indian Localization" parent="base.menu_config" sequence="1"/>
+        <menuitem id="menu_indian_base_configuration" action="action_indian_base_configuration" name="Indian Localization" parent="base.menu_config" sequence="100"/>
 
     </data>
 </openerp>

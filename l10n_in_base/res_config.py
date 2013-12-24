@@ -30,12 +30,16 @@ class indian_base_configuration(osv.osv_memory):
     _inherit = 'res.config.settings'
 
     _columns = {
-        'module_stock_indent': fields.boolean('Use indent management',
+        'module_stock_indent': fields.boolean('Manage Internal material, service request through Indents.',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
-        'module_stock_gatepass': fields.boolean('Use gatepass system',
+        'module_stock_gatepass': fields.boolean('Track outgoing material through Gatepass',
             help = """Allows gate keeper to pass the outgoing materials, products, etc. and keeps track of returning items.
             It installs the stock_gatepass module."""),
+        'group_cst_config':fields.boolean('Enable Central Sales Tax on Partners', implied_group='l10n_in_base.group_cst_config', help = """TODO"""),
+        'group_excise_config':fields.boolean('Enable Excise Control Code on Partners', implied_group='l10n_in_base.group_excise_config', help = """TODO"""),
+        'group_tin_config':fields.boolean('Enable Tax Identification Number on Partners', implied_group='l10n_in_base.group_tin_config', help = """TODO"""),
+        'group_service_config':fields.boolean('Enable Service Tax Number on Partnere', implied_group='l10n_in_base.group_service_config', help = """TODO"""),
     }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

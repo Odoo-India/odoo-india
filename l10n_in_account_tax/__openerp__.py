@@ -31,7 +31,7 @@
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['account'],
+    'depends': ['account', 'l10n_in_base'],
     'data': [
         'l10n_in_account_tax_view.xml'
     ],

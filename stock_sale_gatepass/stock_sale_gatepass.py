@@ -76,6 +76,7 @@ class stock_gatepass(osv.Model):
         package_serial_entry = {}
         
         for line in gatepass.line_ids:
+            result = None
             if line.product_id.container_id:
                 result = dict(name=line.product_id.container_id.name, 
                     product_id=line.product_id.container_id.id, 
@@ -113,7 +114,9 @@ class stock_gatepass(osv.Model):
                     prodlot_id = line.prodlot_id.id,
                     origin=gatepass.name
                 )
-            move_obj.create(cr, uid, result, context=context)
+            
+            if result:
+                move_obj.create(cr, uid, result, context=context)
         
         return in_picking_id
 

@@ -36,6 +36,7 @@ Provides the configuration for whole business suite according to indian localiza
     ],
     'update_xml' : [
         'res_config_view.xml',
+        'l10n_in_base_groups.xml'
     ],
 
     'demo': [

@@ -20,7 +20,7 @@
 							<div name='module_product_coding'>
 								<field name="module_product_coding" class="oe_inline" />
 								<label for="module_product_coding" />
-								<field name="module_product_coding_type" class="oe_inline" />
+								<field name="default_coding_method" class="oe_inline" />
 							</div>
 							<div name='module_product_container'>
 								<field name="module_product_container" class="oe_inline" />
@@ -174,6 +174,22 @@
 							<div name='group_service_config'>
 								<field name="group_service_config" class="oe_inline" />
 								<label for="group_service_config" />
+							</div>
+						</div>
+					</group>
+					
+					<separator string="Tools" />
+					<group>
+						<label for="id" string="Web Tools" />
+						<div name="web_features">
+							<div name='module_web_group_expand'>
+								<field name="module_web_group_expand" class="oe_inline" />
+								<label for="module_web_group_expand" />
+							</div>
+
+							<div name='module_attachment_size_limit'>
+								<field name="module_attachment_size_limit" class="oe_inline" />
+								<label for="module_attachment_size_limit" />
 							</div>
 						</div>
 					</group>

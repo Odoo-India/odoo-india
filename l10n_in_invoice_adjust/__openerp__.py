@@ -45,7 +45,7 @@ Video Tutorial: http://www.youtube.com/watch?v=2Zeg0WYJcbg
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['account_voucher'],
+    'depends': ['l10n_in_base', 'account_voucher'],
     'data': [
         
     ],

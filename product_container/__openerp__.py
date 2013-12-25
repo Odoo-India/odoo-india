@@ -59,7 +59,7 @@ You can also configure a container to carry more than one quantity of product by
 * Select quantity of products and packaging in product sales tab
 * Track containers per multiple quantities of product
 """,
-    'depends' : ['product'],
+    'depends' : ['l10n_in_base', 'product'],
     'data' : [
         
     ],

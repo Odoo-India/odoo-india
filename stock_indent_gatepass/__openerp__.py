@@ -49,7 +49,7 @@ Transfer to the Department
 ---------------------------
 After the repaired Laptop has arrived from supplier, you can issue the products to the department for which the repairing indent was created. Once the internal transfer has been done, the indent will be completed and changed to Received status.
 """,
-    'depends' : ['stock_indent', 'stock_gatepass'],
+    'depends' : ['l10n_in_base', 'stock_indent', 'stock_gatepass'],
     'data' : [
     ],
     'update_xml' : [

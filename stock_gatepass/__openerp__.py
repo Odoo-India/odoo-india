@@ -46,7 +46,7 @@ Gate Pass Receipt
 The report to print the details of gate pass with products and shipping details.
 
 """,
-    'depends' : ['stock'],
+    'depends' : ['l10n_in_base', 'stock'],
     'data' : [
         'stock_gatepass_sequence.xml',
         'stock_gatepass_data.xml',

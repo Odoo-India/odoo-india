@@ -49,22 +49,25 @@ class sale_order_line(osv.osv):
             packaging = res.get('value', {}).get('product_packaging', False)
         
         package_product = False
+        qty_factor = 0
         if product:
             package = product_pool.browse(cr, uid, product)
             if package.container_id:
                 package_product = package.container_id
+                qty_factor = qty
 
         if not package_product and packaging:
             package = package_pool.browse(cr, uid, packaging)
             if package.ul.container_id:
                 package_product = package.ul.container_id
+                qty_factor = round(qty / package.qty)
             else:
                 raise osv.except_osv(_('Warning!'),_('Unable to compute packaging cost as you have not define product on box %s' % (package.ul.name)))
-            
+        
         if package_product:
             packing_res = super(sale_order_line, self).product_id_change(cr, uid, ids, pricelist, package_product.id, qty=1,
                             uom=package_product.uom_id.id, partner_id=partner_id, lang=lang, fiscal_position=fiscal_position, flag=flag, context=context)
-            res['value']['packaging_cost'] = qty * packing_res['value']['price_unit']
+            res['value']['packaging_cost'] = qty_factor * packing_res['value']['price_unit']
         else:
             res['value']['packaging_cost'] = 0.0
         return res

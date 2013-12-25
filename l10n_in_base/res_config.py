@@ -84,6 +84,10 @@ class indian_base_configuration(osv.osv_memory):
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
                 
+        'module_l10n_in_sales_packing': fields.boolean('Add packaging cost on sales order line, to compute the packaging cost for product',
+            help = """Allows you to keeps track of internal material request.
+            It installs the stock_indent module."""),
+                
 
         'group_cst_config':fields.boolean('Enable Central Sales Tax on Partners', implied_group='l10n_in_base.group_cst_config', help = """TODO"""),
         'group_excise_config':fields.boolean('Enable Excise Control Code on Partners', implied_group='l10n_in_base.group_excise_config', help = """TODO"""),

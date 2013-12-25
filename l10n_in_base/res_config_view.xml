@@ -95,6 +95,14 @@
 								<label for="group_round_off_sale_config" />
 							</div>
 						</div>
+						
+						<label for="id" string="Other Costs"/>
+						<div name="sale_other_features">
+							<div name='module_l10n_in_sales_packing'>
+								<field name="module_l10n_in_sales_packing" class="oe_inline" />
+								<label for="module_l10n_in_sales_packing" />
+							</div>
+						</div>
 					</group>
 
 					<separator string="Purchase" />

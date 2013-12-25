@@ -135,15 +135,27 @@
 								<field name="group_insurance_config" class="oe_inline" />
 								<label for="group_insurance_config" />
 							</div>
-
-
 						</div>
 					</group>
 
 					<separator string="Finance" />
 					<group>
-						<label for="id" string="Tax Configuration" />
-						<div name="tax_features">
+						<label for="id" string="Finance Feature" />
+						<div name="finance_features">
+							<div name='module_l10n_in_invoice_adjust'>
+								<field name="module_l10n_in_invoice_adjust" class="oe_inline" />
+								<label for="module_l10n_in_invoice_adjust" />
+							</div>
+
+							<div name='module_l10n_in_account_tax'>
+								<field name="module_l10n_in_account_tax" class="oe_inline" />
+								<label for="module_l10n_in_account_tax" />
+							</div>
+						</div>
+						<label for="id" string="Tax Configuration"
+							attrs="{'invisible':[('module_l10n_in_account_tax','=',False)]}" />
+						<div name="tax_features"
+							attrs="{'invisible':[('module_l10n_in_account_tax','=',False)]}">
 							<div name='group_tin_config'>
 								<field name="group_tin_config" class="oe_inline" />
 								<label for="group_tin_config" />

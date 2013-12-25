@@ -69,7 +69,14 @@ class indian_base_configuration(osv.osv_memory):
         'module_sale_after_service': fields.boolean('Manage after sale service using service contracts for products',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
-
+        
+        'module_l10n_in_account_tax': fields.boolean('Manage categories on Tax to differentiate taxes as per Indian Taxonomy',
+            help = """Allows you to keeps track of internal material request.
+            It installs the stock_indent module."""),
+        'module_l10n_in_invoice_adjust': fields.boolean('Adjust payable and receivables with each other using vouchers',
+            help = """Allows you to keeps track of internal material request.
+            It installs the stock_indent module."""),
+                
         'group_cst_config':fields.boolean('Enable Central Sales Tax on Partners', implied_group='l10n_in_base.group_cst_config', help = """TODO"""),
         'group_excise_config':fields.boolean('Enable Excise Control Code on Partners', implied_group='l10n_in_base.group_excise_config', help = """TODO"""),
         'group_tin_config':fields.boolean('Enable Tax Identification Number on Partners', implied_group='l10n_in_base.group_tin_config', help = """TODO"""),

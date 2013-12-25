@@ -13,6 +13,7 @@
 						or
 						<button string="Cancel" type="object" name="cancel" class="oe_link" />
 					</header>
+					
 					<separator string="Products" />
 					<group>
 						<label for="id" string="Product Features" />
@@ -20,7 +21,7 @@
 							<div name='module_product_coding'>
 								<field name="module_product_coding" class="oe_inline" />
 								<label for="module_product_coding" />
-								<field name="module_product_coding_type" class="oe_inline" />
+								<field name="default_coding_method" class="oe_inline" />
 							</div>
 							<div name='module_product_container'>
 								<field name="module_product_container" class="oe_inline" />
@@ -92,6 +93,14 @@
 							<div name='group_round_off_sale_config'>
 								<field name="group_round_off_sale_config" class="oe_inline" />
 								<label for="group_round_off_sale_config" />
+							</div>
+						</div>
+						
+						<label for="id" string="Other Costs"/>
+						<div name="sale_other_features">
+							<div name='module_l10n_in_sales_packing'>
+								<field name="module_l10n_in_sales_packing" class="oe_inline" />
+								<label for="module_l10n_in_sales_packing" />
 							</div>
 						</div>
 					</group>
@@ -177,6 +186,23 @@
 							</div>
 						</div>
 					</group>
+
+					<separator string="Tools" />
+					<group>
+						<label for="id" string="Web Tools" />
+						<div name="web_features">
+							<div name='module_web_group_expand'>
+								<field name="module_web_group_expand" class="oe_inline" />
+								<label for="module_web_group_expand" />
+							</div>
+
+							<div name='module_attachment_size_limit'>
+								<field name="module_attachment_size_limit" class="oe_inline" />
+								<label for="module_attachment_size_limit" />
+							</div>
+						</div>
+					</group>
+
 				</form>
 			</field>
 		</record>

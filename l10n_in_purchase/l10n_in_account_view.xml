@@ -12,9 +12,9 @@
                 <xpath expr="//page[@string='Invoice']/div[@class='oe_clear']" position='before'>
                     <group>
                         <group>
-                            <field name="package_and_forwording"/>
-                            <field name="freight"/>
-                            <field name="insurance"/>
+                            <field name="package_and_forwording" groups="l10n_in_base.group_packing_config"/>
+                            <field name="freight" groups="l10n_in_base.group_freight_config"/>
+                            <field name="insurance" groups="l10n_in_base.group_insurance_config"/>
                             <field name="delivery_id"/>
                             <field name="payment_term"/>
                         </group>
@@ -28,7 +28,7 @@
                             </div>
                             <field name="amount_tax" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="other_charges"/>
-                            <field name="round_off"/>
+                            <field name="round_off" groups="l10n_in_base.group_round_off_purchase_config"/>
                             <field name="amount_total" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="residual" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="reconciled" invisible="1"/>

@@ -41,6 +41,7 @@ The contract is created from delivery order if delivery order line has serial nu
     'website': 'http://www.openerp.com',
     'images': [],
     'depends': [
+        'l10n_in_base', 
         'sale_stock', 
         'account_analytic_analysis', 
         'crm'

@@ -31,7 +31,7 @@ Sale order link on Delivery Gatepass
 =====================================
 * Linking of Sales order and Delivery order on gatepass which was already created based on sales confirmation
 """,
-    'depends' : ['stock', 'stock_gatepass', 'product_container_tracking'],
+    'depends' : ['l10n_in_base', 'stock', 'stock_gatepass', 'product_container_tracking'],
     'data' : [
     ],
     'update_xml' : [

@@ -44,7 +44,7 @@ Video Tutorial: http://www.youtube.com/watch?v=PTy3TOH9tQM
 
 
 """,
-    'depends' : ['sale'],
+    'depends' : ['l10n_in_base', 'sale'],
     'data' : [
     ],
     'update_xml' : [

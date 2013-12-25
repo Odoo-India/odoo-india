@@ -49,7 +49,7 @@ Reports
 ++++++++++
 It also prints reports of Purchase orders and Supplier Invoices with Freight/Packaging etc. information.
 """,
-    'depends' : ['purchase'],
+    'depends' : ['l10n_in_base', 'purchase'],
     'data' : [
     ],
     'update_xml' : ['l10n_in_purchase_view.xml',

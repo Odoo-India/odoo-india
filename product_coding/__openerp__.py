@@ -31,7 +31,7 @@
 Product Coding
 ==============
 """,
-    'depends' : ['product'],
+    'depends' : ['l10n_in_base', 'product'],
     'data' : [
     ],
     'update_xml' : [

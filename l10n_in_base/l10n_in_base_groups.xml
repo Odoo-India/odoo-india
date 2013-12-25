@@ -27,6 +27,48 @@
 	        <field name="category_id" ref="base.module_category_accounting_and_finance"/>
 	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
 	        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-	    </record>	
+	    </record>
+	    
+	    <record id="group_packing_config" model="res.groups">
+	        <field name="name">Packaging and Forwarding on Purchase</field>
+	        <field name="category_id" ref="base.module_category_hidden"/>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+	    </record>
+	    
+	    <record id="group_freight_config" model="res.groups">
+	        <field name="name">Freight on Purchase</field>
+	        <field name="category_id" ref="base.module_category_hidden"/>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+	    </record>
+	    
+	    <record id="group_insurance_config" model="res.groups">
+	        <field name="name">Insurance on Purchase</field>
+	        <field name="category_id" ref="base.module_category_hidden"/>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+	    </record>
+	    
+	    <record id="group_discount_purchase_config" model="res.groups">
+	        <field name="name">Discounts on Purchase Order</field>
+	        <field name="category_id" ref="base.module_category_hidden"/>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+	    </record>
+	    
+	    <record id="group_round_off_purchase_config" model="res.groups">
+	        <field name="name">Round-Off on Purchase Order</field>
+	        <field name="category_id" ref="base.module_category_hidden"/>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+	    </record>
+	    
+	    <record id="group_round_off_sale_config" model="res.groups">
+	        <field name="name">Round-Off on Sales Order</field>
+	        <field name="category_id" ref="base.module_category_hidden"/>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+	    </record>
 	</data>
 </openerp>

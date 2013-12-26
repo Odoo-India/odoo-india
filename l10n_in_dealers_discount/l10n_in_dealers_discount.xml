@@ -12,8 +12,8 @@
 					expr="//notebook//page[@string='Order Lines']//field[@name='price_unit']"
 					position="after">
 					<field name="price_dealer" groups="l10n_in_base.group_dealer_price_on_sale_config" />
-					<field name="dealer_discount" invisible="1" />
-					<field name="dealer_discount_per" invisible="1" />
+					<field name="dealer_discount" invisible="1"/>
+					<field name="dealer_discount_per" invisible="1"/>
 				</xpath>
 
 				<xpath
@@ -23,7 +23,7 @@
 					<field name="dealer_discount" invisible="1" />
 					<field name="dealer_discount_per" invisible="1" />
 				</xpath>
-				
+
 				<xpath
 					expr="//notebook//page[@string='Order Lines']//field[@name='product_id']"
 					position="replace">
@@ -36,7 +36,7 @@
 					expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_id']"
 					position="replace">
 
-					<field name="product_id" 
+					<field name="product_id"
 						context="{'dealer_id':parent.dealer_id, 'dealer_pricelist_id':parent.dealer_pricelist_id, 'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
 						groups="base.group_user"
 						on_change="product_id_change(parent.pricelist_id, product_id, product_uom_qty, product_uom, product_uos_qty, product_uos, name, parent.partner_id, False, True, parent.date_order, False, parent.fiscal_position, False, context)" />
@@ -51,11 +51,28 @@
 			<field name="inherit_id" ref="sale.view_order_form" />
 			<field name="arch" type="xml">
 				<field name="partner_id" position="after">
-					<field name="dealer_id" on_change="onchange_dealer_id(dealer_id, context)"/>
-					<field name="dealer_pricelist_id" groups="product.group_sale_pricelist"/>
-				</field>				
+					<field name="dealer_id" on_change="onchange_dealer_id(dealer_id, context)" />
+					<field name="dealer_pricelist_id" groups="product.group_sale_pricelist" />
+				</field>
 			</field>
 		</record>
 
+		<!-- Account Invoice Form View -->
+		<record id="view_account_invoice_dealer_form" model="ir.ui.view">
+			<field name="name">account.invoice.packing.form</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_form" />
+			<field name="arch" type="xml">
+				<xpath
+					expr="//page[@string='Invoice Lines']/field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']"
+					position="after">
+					<field name="price_dealer" groups="l10n_in_base.group_dealer_price_on_sale_config"/>
+				</xpath>
+				<field name="partner_id" position="after">
+					<field name="dealer_id" on_change="onchange_dealer_id(dealer_id, context)" />
+				</field>
+				
+			</field>
+		</record>
 	</data>
 </openerp>

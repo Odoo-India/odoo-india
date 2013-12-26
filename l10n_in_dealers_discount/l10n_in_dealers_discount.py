@@ -19,8 +19,11 @@
 #
 ##############################################################################
 
+import time
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
+import openerp.addons.decimal_precision as dp
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 
 class sale_order_line(osv.osv):
     _inherit = 'sale.order.line'
@@ -30,6 +33,11 @@ class sale_order_line(osv.osv):
         'dealer_discount': fields.float('Dealer Discount'),
         'dealer_discount_per': fields.float('Dealer Discount (%)')
     }
+    
+    def _prepare_order_line_invoice_line(self, cr, uid, line, account_id=False, context=None):
+        res = super(sale_order_line, self)._prepare_order_line_invoice_line(cr, uid, line=line, account_id=account_id, context=context)
+        res = dict(res, price_dealer=line.price_dealer * line.product_uom_qty, dealer_discount=line.dealer_discount * line.product_uom_qty, dealer_discount_per=line.dealer_discount_per)
+        return res
 
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
             uom=False, qty_uos=0, uos=False, name='', partner_id=False,
@@ -64,6 +72,14 @@ class sale_order_line(osv.osv):
     
 sale_order_line()
 
+class account_invoice(osv.Model):
+    _inherit = 'account.invoice'
+
+    _columns = {
+        'dealer_id': fields.many2one('res.partner', 'Dealer')
+    }
+account_invoice()
+
 class sale_order(osv.Model):
     _inherit = 'sale.order'
 
@@ -71,7 +87,6 @@ class sale_order(osv.Model):
         'dealer_id': fields.many2one('res.partner', 'Dealer'),
         'dealer_pricelist_id': fields.many2one('product.pricelist', 'Dealer Pricelist', domain=[('type','=','sale')])
     }
-
     
     def onchange_dealer_id(self, cr, uid, ids, part, context=None):
         if not part:
@@ -84,4 +99,98 @@ class sale_order(osv.Model):
         if pricelist:
             val['dealer_pricelist_id'] = pricelist
         return {'value': val}
+
+    def _make_invoice(self, cr, uid, order, lines, context=None):
+        inv_obj = self.pool.get('account.invoice')
+        obj_invoice_line = self.pool.get('account.invoice.line')
+        if context is None:
+            context = {}
+        invoiced_sale_line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', order.id), ('invoiced', '=', True)], context=context)
+        from_line_invoice_ids = []
+        for invoiced_sale_line_id in self.pool.get('sale.order.line').browse(cr, uid, invoiced_sale_line_ids, context=context):
+            for invoice_line_id in invoiced_sale_line_id.invoice_lines:
+                if invoice_line_id.invoice_id.id not in from_line_invoice_ids:
+                    from_line_invoice_ids.append(invoice_line_id.invoice_id.id)
+                
+        for preinv in order.invoice_ids:
+            if preinv.state not in ('cancel',) and preinv.id not in from_line_invoice_ids:
+                for preline in preinv.invoice_line:
+                    res = {
+                        'invoice_id': False, 
+                        'price_unit': -preline.price_unit,
+                        'price_dealer': -preline.price_dealer, 
+                        'dealer_discount': -preline.dealer_discount,
+                        'dealer_discount_per': -preline.dealer_discount_per
+                    }
+                    inv_line_id = obj_invoice_line.copy(cr, uid, preline.id, res)
+                    lines.append(inv_line_id)
+        inv = self._prepare_invoice(cr, uid, order, lines, context=context)
+        inv.update({
+            'dealer_id':order.dealer_id.id
+        })
+        inv_id = inv_obj.create(cr, uid, inv, context=context)
+        data = inv_obj.onchange_payment_term_date_invoice(cr, uid, [inv_id], inv['payment_term'], time.strftime(DEFAULT_SERVER_DATE_FORMAT))
+        if data.get('value', False):
+            inv_obj.write(cr, uid, [inv_id], data['value'], context=context)
+        inv_obj.button_compute(cr, uid, [inv_id])
+        return inv_id
+
 sale_order()
+
+class account_invoice_line(osv.Model):
+    _inherit = 'account.invoice.line'
+
+    _columns = {
+        'price_dealer': fields.float('Dealer Price'),
+        'dealer_discount': fields.float('Dealer Discount'),
+        'dealer_discount_per': fields.float('Dealer Discount (%)')
+    }
+account_invoice_line()
+
+class sale_advance_payment_inv(osv.osv_memory):
+    _inherit = 'sale.advance.payment.inv'
+
+    def _prepare_advance_invoice_vals(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        
+        result = super(sale_advance_payment_inv, self)._prepare_advance_invoice_vals(cr, uid, ids, context)
+        
+        sale_obj = self.pool.get('sale.order')
+        wizard = self.browse(cr, uid, ids[0], context)
+        sale_ids = context.get('active_ids', [])
+        
+        update_val = {}
+        for sale in sale_obj.browse(cr, uid, sale_ids, context=context):
+            total_price_dealer = total_dealer_discount = 0.0
+            price_dealer = dealer_discount = 0.0
+            for line in sale.order_line:
+                total_price_dealer += line.price_dealer * line.product_uom_qty
+                total_dealer_discount += line.dealer_discount * line.product_uom_qty
+            
+            res = {}
+            total_amount = 0.0
+            if wizard.advance_payment_method == 'percentage':
+                price_dealer = total_price_dealer * (wizard.amount / 100)
+                dealer_discount = total_dealer_discount * (wizard.amount / 100)
+                total_amount = (sale.amount_total * wizard.amount) / 100
+            else:
+                inv_amount = wizard.amount
+                percent = inv_amount / sale.amount_total
+                total_amount = inv_amount
+                price_dealer = total_price_dealer * percent
+                dealer_discount = total_dealer_discount * percent
+            
+            res['price_dealer'] = price_dealer
+            res['dealer_discount'] = dealer_discount
+            res['dealer_discount_per'] =  dealer_discount / total_amount
+            update_val[sale.id] = res
+
+        for line in result:
+            line[1].get('invoice_line')[0][2].update(update_val.get(line[0]))
+        
+        return result
+
+sale_advance_payment_inv()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

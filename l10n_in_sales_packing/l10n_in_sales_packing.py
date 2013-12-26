@@ -21,13 +21,28 @@
 
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
+import openerp.addons.decimal_precision as dp
 
 class sale_order_line(osv.osv):
-    
     _inherit = 'sale.order.line'
-    
+
+    def _amount_line(self, cr, uid, ids, field_name, arg, context=None):
+        tax_obj = self.pool.get('account.tax')
+        cur_obj = self.pool.get('res.currency')
+        res = {}
+        if context is None:
+            context = {}
+        for line in self.browse(cr, uid, ids, context=context):
+            price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            taxes = tax_obj.compute_all(cr, uid, line.tax_id, price, line.product_uom_qty, line.product_id, line.order_id.partner_id)
+            cur = line.order_id.pricelist_id.currency_id
+            total = taxes['total'] + line.packaging_cost
+            res[line.id] = cur_obj.round(cr, uid, cur, total)
+        return res
+
     _columns = {
-        'packaging_cost': fields.float('Packing Cost')
+        'packaging_cost': fields.float('Packing Cost'),
+        'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
     }
     
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,

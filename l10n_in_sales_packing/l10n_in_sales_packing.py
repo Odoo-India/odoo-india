@@ -26,25 +26,10 @@ import openerp.addons.decimal_precision as dp
 class sale_order_line(osv.osv):
     _inherit = 'sale.order.line'
 
-    def _amount_line(self, cr, uid, ids, field_name, arg, context=None):
-        tax_obj = self.pool.get('account.tax')
-        cur_obj = self.pool.get('res.currency')
-        res = {}
-        if context is None:
-            context = {}
-        for line in self.browse(cr, uid, ids, context=context):
-            price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-            taxes = tax_obj.compute_all(cr, uid, line.tax_id, price, line.product_uom_qty, line.product_id, line.order_id.partner_id)
-            cur = line.order_id.pricelist_id.currency_id
-            total = taxes['total'] + line.packaging_cost
-            res[line.id] = cur_obj.round(cr, uid, cur, total)
-        return res
-
     _columns = {
         'packaging_cost': fields.float('Packing Cost'),
-        'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
     }
-    
+
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
             uom=False, qty_uos=0, uos=False, name='', partner_id=False,
             lang=False, update_tax=True, date_order=False, packaging=False, fiscal_position=False, flag=False, context=None):
@@ -86,3 +71,53 @@ class sale_order_line(osv.osv):
         else:
             res['value']['packaging_cost'] = 0.0
         return res
+
+class sale_order(osv.Model):
+    _inherit = 'sale.order'
+
+    def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
+        cur_obj = self.pool.get('res.currency')
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = {
+                'amount_untaxed': 0.0,
+                'amount_tax': 0.0,
+                'amount_total': 0.0,
+                'amount_packing': 0.0,
+            }
+            val = val1 = val2 = 0.0
+            cur = order.pricelist_id.currency_id
+            for line in order.order_line:
+                val1 += line.price_subtotal
+                val += self._amount_line_tax(cr, uid, line, context=context)
+                val2 += line.packaging_cost
+            res[order.id]['amount_tax'] = cur_obj.round(cr, uid, cur, val)
+            res[order.id]['amount_untaxed'] = cur_obj.round(cr, uid, cur, val1)
+            res[order.id]['amount_packing'] = cur_obj.round(cr, uid, cur, val2)
+            res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax'] + res[order.id]['amount_packing']
+        return res
+
+    def _get_order(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('sale.order.line').browse(cr, uid, ids, context=context):
+            result[line.order_id.id] = True
+        return result.keys()
+
+    _columns = {
+        'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
+            store={
+                'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
+                'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty', 'packaging_cost'], 10),
+            },
+            multi='sums', help="The total amount."),
+        'amount_packing': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Packing Cost',
+            store={
+                'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
+                'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty', 'packaging_cost'], 10),
+            },
+            multi='sums', help="The total amount."),
+    }
+
+sale_order()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

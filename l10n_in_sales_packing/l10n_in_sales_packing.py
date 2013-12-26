@@ -41,13 +41,13 @@ class sale_order_line(osv.osv):
         res = super(sale_order_line, self).product_id_change(cr, uid, ids, pricelist, product, qty=qty,
             uom=uom, qty_uos=qty_uos, uos=uos, name=name, partner_id=partner_id,
             lang=lang, update_tax=update_tax, date_order=date_order, packaging=packaging, fiscal_position=fiscal_position, flag=flag, context=context)
-        
+
         product_pool = self.pool.get('product.product')
         package_pool = self.pool.get('product.packaging')
         
         if not packaging:
             packaging = res.get('value', {}).get('product_packaging', False)
-        
+
         package_product = False
         qty_factor = 0
         if product:
@@ -94,7 +94,7 @@ class sale_order(osv.Model):
             res[order.id]['amount_tax'] = cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed'] = cur_obj.round(cr, uid, cur, val1)
             res[order.id]['amount_packing'] = cur_obj.round(cr, uid, cur, val2)
-            res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax'] + res[order.id]['amount_packing']
+            res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax'] + res[order.id]['amount_packing'] + order.round_off
         return res
 
     def _get_order(self, cr, uid, ids, context=None):
@@ -106,7 +106,7 @@ class sale_order(osv.Model):
     _columns = {
         'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
             store={
-                'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
+                'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line', 'round_off'], 10),
                 'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty', 'packaging_cost'], 10),
             },
             multi='sums', help="The total amount."),
@@ -116,6 +116,7 @@ class sale_order(osv.Model):
                 'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty', 'packaging_cost'], 10),
             },
             multi='sums', help="The total amount."),
+        'round_off': fields.float('Round Off', help="Round Off Amount"),
     }
 
 sale_order()

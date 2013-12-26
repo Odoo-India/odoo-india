@@ -24,6 +24,8 @@
             <field name="arch" type="xml">
                 <field name="amount_tax" position="after">
                     <field name="amount_packing" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                    <field name="round_off" widget="monetary"  options="{'currency_field': 'currency_id'}"
+                        groups="l10n_in_base.group_round_off_sale_config"/>
                 </field>
             </field>
         </record>

@@ -139,6 +139,13 @@ class sale_order(osv.Model):
         'round_off': fields.float('Round Off', help="Round Off Amount"),
     }
 
+    def _get_default_values(self, cr, uid, preline, context=None):
+        res = super(sale_order, self)._get_default_values(cr, uid, preline=preline, context=context)
+        res = dict(res,
+          packaging_cost = -preline.packaging_cost
+        )
+        return res
+
     def _make_invoice(self, cr, uid, order, lines, context=None):
         inv_obj = self.pool.get('account.invoice')
         obj_invoice_line = self.pool.get('account.invoice.line')
@@ -153,7 +160,8 @@ class sale_order(osv.Model):
         for preinv in order.invoice_ids:
             if preinv.state not in ('cancel',) and preinv.id not in from_line_invoice_ids:
                 for preline in preinv.invoice_line:
-                    inv_line_id = obj_invoice_line.copy(cr, uid, preline.id, {'invoice_id': False, 'price_unit': -preline.price_unit, 'packaging_cost': -preline.packaging_cost})
+                    res = self._get_default_values(cr, uid, preline, context=context)
+                    inv_line_id = obj_invoice_line.copy(cr, uid, preline.id, res, context=context)
                     lines.append(inv_line_id)
         inv = self._prepare_invoice(cr, uid, order, lines, context=context)
         inv_id = inv_obj.create(cr, uid, inv, context=context)

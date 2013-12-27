@@ -20,22 +20,22 @@
 ##############################################################################
 
 {
-    'name': 'Dealer Price',
+    'name': 'Sale Invoice',
     'version': '1.0',
-    'category': 'Indian Localization',
-    'summary': 'Dealer Price, Compute discount for Dealers',
+    'category': 'Hidden',
+    'summary':'Sale Invoice',
     'description': """
-Module for Dealers Price & Discount functionality on Sales.
-===========================================================
+Sale Invoice.
+=============
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['l10n_in_base', 'l10n_in_sale_invoice_reverse'],
+    'depends': ['l10n_in_base', 'sale'],
     'data': [
-        'l10n_in_dealers_discount.xml'
     ],
     'installable': True,
     'auto_install': False,
 }
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

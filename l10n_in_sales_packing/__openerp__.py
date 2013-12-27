@@ -31,7 +31,7 @@ Module for packing cost.
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['l10n_in_base', 'product_container', 'sale'],
+    'depends': ['l10n_in_base', 'product_container', 'l10n_in_sale_invoice_reverse'],
     'data': [
         'l10n_in_sale_packing.xml'
     ],

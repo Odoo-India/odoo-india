@@ -101,15 +101,14 @@ class sale_order(osv.Model):
         return {'value': val}
 
     def _get_default_values(self, cr, uid, preline, context=None):
-        res = {
-            'invoice_id': False, 
-            'price_unit': -preline.price_unit,
-            'price_dealer': -preline.price_dealer, 
-            'dealer_discount': -preline.dealer_discount,
-            'dealer_discount_per': -preline.dealer_discount_per
-        }
+        res = super(sale_order, self)._get_default_values(cr, uid, preline=preline, context=context)
+        res = dict(res,
+            price_dealer = -preline.price_dealer, 
+            dealer_discount = -preline.dealer_discount,
+            dealer_discount_per = -preline.dealer_discount_per
+        )
         return res
-    
+
     def _make_invoice(self, cr, uid, order, lines, context=None):
         inv_obj = self.pool.get('account.invoice')
         obj_invoice_line = self.pool.get('account.invoice.line')
@@ -125,13 +124,8 @@ class sale_order(osv.Model):
         for preinv in order.invoice_ids:
             if preinv.state not in ('cancel',) and preinv.id not in from_line_invoice_ids:
                 for preline in preinv.invoice_line:
-                    res = {
-                        'invoice_id': False, 
-                        'price_unit': -preline.price_unit
-                    }
-                    res.update(self._get_default_values(cr, uid, preline, context))
-                    
-                    inv_line_id = obj_invoice_line.copy(cr, uid, preline.id, res)
+                    res = self._get_default_values(cr, uid, preline, context=context)
+                    inv_line_id = obj_invoice_line.copy(cr, uid, preline.id, res, context=context)
                     lines.append(inv_line_id)
         inv = self._prepare_invoice(cr, uid, order, lines, context=context)
         inv.update({

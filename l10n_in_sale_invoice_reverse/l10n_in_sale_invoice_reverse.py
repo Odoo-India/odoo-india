@@ -19,23 +19,18 @@
 #
 ##############################################################################
 
-{
-    'name': 'Dealer Price',
-    'version': '1.0',
-    'category': 'Indian Localization',
-    'summary': 'Dealer Price, Compute discount for Dealers',
-    'description': """
-Module for Dealers Price & Discount functionality on Sales.
-===========================================================
-""",
-    'author': 'OpenERP SA',
-    'website': 'http://www.openerp.com',
-    'images': [],
-    'depends': ['l10n_in_base', 'l10n_in_sale_invoice_reverse'],
-    'data': [
-        'l10n_in_dealers_discount.xml'
-    ],
-    'installable': True,
-    'auto_install': False,
-}
+from openerp.osv import fields, osv
+
+class sale_order(osv.Model):
+    _inherit = 'sale.order'
+
+    def _get_default_values(self, cr, uid, preline, context=None):
+        res = {
+            'invoice_id': False, 
+            'price_unit': -preline.price_unit,
+        }
+        return res
+
+sale_order()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

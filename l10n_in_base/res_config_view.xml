@@ -94,6 +94,11 @@
 								<field name="group_round_off_sale_config" class="oe_inline" />
 								<label for="group_round_off_sale_config" />
 							</div>
+							
+							<div name='module_l10n_in_dealers_discount'>
+								<field name="module_l10n_in_dealers_discount" class="oe_inline" />
+								<label for="module_l10n_in_dealers_discount" />
+							</div>
 						</div>
 						
 						<label for="id" string="Other Costs"/>
@@ -101,6 +106,11 @@
 							<div name='module_l10n_in_sales_packing'>
 								<field name="module_l10n_in_sales_packing" class="oe_inline" />
 								<label for="module_l10n_in_sales_packing" />
+							</div>
+							
+							<div name='group_dealer_price_on_sale_config'>
+								<field name="group_dealer_price_on_sale_config" class="oe_inline" />
+								<label for="group_dealer_price_on_sale_config" />
 							</div>
 						</div>
 					</group>

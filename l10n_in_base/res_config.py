@@ -87,8 +87,11 @@ class indian_base_configuration(osv.osv_memory):
         'module_l10n_in_sales_packing': fields.boolean('Add packaging cost on sales order line, to compute the packaging cost for product',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
-                
-
+        
+        'module_l10n_in_dealers_discount': fields.boolean('Add dealer discount on sales order line, to compute the commission for dealer',
+            help = """Allows you to keeps track of internal material request.
+            It installs the stock_indent module."""),
+        
         'group_cst_config':fields.boolean('Enable Central Sales Tax on Partners', implied_group='l10n_in_base.group_cst_config', help = """TODO"""),
         'group_excise_config':fields.boolean('Enable Excise Control Code on Partners', implied_group='l10n_in_base.group_excise_config', help = """TODO"""),
         'group_tin_config':fields.boolean('Enable Tax Identification Number on Partners', implied_group='l10n_in_base.group_tin_config', help = """TODO"""),
@@ -106,6 +109,8 @@ class indian_base_configuration(osv.osv_memory):
         
         'group_round_off_purchase_config':fields.boolean('Round-off feature on Purchase Order', implied_group='l10n_in_base.group_round_off_purchase_config', help = """TODO"""),
         'group_round_off_sale_config':fields.boolean('Round-off feature on Sales Order', implied_group='l10n_in_base.group_round_off_sale_config', help = """TODO"""),
+        
+        'group_dealer_price_on_sale_config':fields.boolean('Display dealer price on sales order line', implied_group='l10n_in_base.group_dealer_price_on_sale_config', help = """TODO"""),
     }        
     
     _defaults = {

@@ -144,24 +144,26 @@ class stock_picking(osv.Model):
 
     def _prepare_invoice(self, cr, uid, picking, partner, inv_type, journal_id, context=None):
         res = super(stock_picking, self)._prepare_invoice(cr, uid, picking=picking, partner=partner, inv_type=inv_type, journal_id=journal_id, context=context)
-        freight = insurance = package_and_forwording = vat_amount = advance_amount = retention_amount = 0.0
-        purchase_id =  picking.purchase_id.id,
-        picking_in_id = self.search(cr, uid, [('type','=','in'), ('purchase_id','=',picking.purchase_id.id)], context=context)[0],
-        picking_receipt_id = picking.type == 'receipt' and picking.id
-
-        for move in picking.move_lines:
-            freight += move.freight * move.product_qty
-            insurance += move.insurance * move.product_qty
-            package_and_forwording += move.package_and_forwording * move.product_qty
-        res = dict(
-            res, 
-            freight=round(freight, 2), 
-            insurance=round(insurance, 2), 
-            package_and_forwording=round(package_and_forwording, 2), 
-            purchase_id=purchase_id, 
-            picking_in_id=picking_in_id, 
-            picking_receipt_id=picking_receipt_id
-        )
+        
+        if inv_type == 'in_invoice':
+            freight = insurance = package_and_forwording = vat_amount = advance_amount = retention_amount = 0.0
+            purchase_id =  picking.purchase_id.id,
+            picking_in_id = self.search(cr, uid, [('type','=','in'), ('purchase_id','=',picking.purchase_id.id)], context=context)[0],
+            picking_receipt_id = picking.type == 'receipt' and picking.id
+    
+            for move in picking.move_lines:
+                freight += move.freight * move.product_qty
+                insurance += move.insurance * move.product_qty
+                package_and_forwording += move.package_and_forwording * move.product_qty
+            res = dict(
+                res, 
+                freight=round(freight, 2), 
+                insurance=round(insurance, 2), 
+                package_and_forwording=round(package_and_forwording, 2), 
+                purchase_id=purchase_id, 
+                picking_in_id=picking_in_id, 
+                picking_receipt_id=picking_receipt_id
+            )
         return res
 
     def action_invoice_create(self, cr, uid, ids, journal_id=False, group=False, type='out_invoice', context=None):

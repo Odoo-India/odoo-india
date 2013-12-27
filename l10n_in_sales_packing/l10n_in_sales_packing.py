@@ -171,6 +171,11 @@ class sale_order(osv.Model):
         inv_obj.button_compute(cr, uid, [inv_id])
         return inv_id
 
+    def _prepare_order_line_move(self, cr, uid, order, line, picking_id, date_planned, context=None):
+        res = super(sale_order, self)._prepare_order_line_move(cr, uid, order=order, line=line, picking_id=picking_id, date_planned=date_planned, context=context)
+        res = dict(res, packaging_cost = line.packaging_cost/line.product_uom_qty)
+        return res
+
 sale_order()
 
 class account_invoice_line(osv.Model):
@@ -342,5 +347,25 @@ class sale_advance_payment_inv(osv.osv_memory):
         return result
 
 sale_advance_payment_inv()
+
+class stock_move(osv.Model):
+    _inherit = 'stock.move'
+
+    _columns = {
+        'packaging_cost': fields.float('Packing Cost'),
+    }
+
+stock_move()
+
+class stock_picking(osv.Model):
+    _inherit = "stock.picking"
+    _table = "stock_picking"
+
+    def _prepare_invoice_line(self, cr, uid, group, picking, move_line, invoice_id, invoice_vals, context=None):
+        res = super(stock_picking, self)._prepare_invoice_line(cr, uid, group=group, picking=picking, move_line=move_line, invoice_id=invoice_id, invoice_vals=invoice_vals, context=context)
+        res = dict(res, packaging_cost = move_line.packaging_cost * move_line.product_qty)
+        return res
+
+stock_picking()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

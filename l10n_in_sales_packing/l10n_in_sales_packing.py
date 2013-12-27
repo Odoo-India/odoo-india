@@ -242,7 +242,8 @@ account_invoice()
 
 class sale_advance_payment_inv(osv.osv_memory):
     _inherit = 'sale.advance.payment.inv'
-
+    
+    #TODO: improve this method need to call super
     def _prepare_advance_invoice_vals(self, cr, uid, ids, context=None):
         if context is None:
             context = {}

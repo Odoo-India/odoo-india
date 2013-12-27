@@ -36,7 +36,7 @@ class sale_order_line(osv.osv):
     
     def _prepare_order_line_invoice_line(self, cr, uid, line, account_id=False, context=None):
         res = super(sale_order_line, self)._prepare_order_line_invoice_line(cr, uid, line=line, account_id=account_id, context=context)
-        res = dict(res, price_dealer=line.price_dealer * line.product_uom_qty, dealer_discount=line.dealer_discount * line.product_uom_qty, dealer_discount_per=line.dealer_discount_per)
+        res = dict(res, price_dealer=line.price_dealer * line.product_uom_qty, dealer_discount=line.dealer_discount * line.product_uom_qty, dealer_discount_per=line.dealer_discount_per/100)
         return res
 
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
@@ -100,6 +100,16 @@ class sale_order(osv.Model):
             val['dealer_pricelist_id'] = pricelist
         return {'value': val}
 
+    def _get_default_values(self, cr, uid, preline, context=None):
+        res = {
+            'invoice_id': False, 
+            'price_unit': -preline.price_unit,
+            'price_dealer': -preline.price_dealer, 
+            'dealer_discount': -preline.dealer_discount,
+            'dealer_discount_per': -preline.dealer_discount_per
+        }
+        return res
+    
     def _make_invoice(self, cr, uid, order, lines, context=None):
         inv_obj = self.pool.get('account.invoice')
         obj_invoice_line = self.pool.get('account.invoice.line')
@@ -117,11 +127,10 @@ class sale_order(osv.Model):
                 for preline in preinv.invoice_line:
                     res = {
                         'invoice_id': False, 
-                        'price_unit': -preline.price_unit,
-                        'price_dealer': -preline.price_dealer, 
-                        'dealer_discount': -preline.dealer_discount,
-                        'dealer_discount_per': -preline.dealer_discount_per
+                        'price_unit': -preline.price_unit
                     }
+                    res.update(self._get_default_values(cr, uid, preline, context))
+                    
                     inv_line_id = obj_invoice_line.copy(cr, uid, preline.id, res)
                     lines.append(inv_line_id)
         inv = self._prepare_invoice(cr, uid, order, lines, context=context)
@@ -186,6 +195,7 @@ class sale_advance_payment_inv(osv.osv_memory):
             res['dealer_discount_per'] =  dealer_discount / total_amount
             update_val[sale.id] = res
 
+        #TODO: Need to re-implement it in best way
         for line in result:
             line[1].get('invoice_line')[0][2].update(update_val.get(line[0]))
         

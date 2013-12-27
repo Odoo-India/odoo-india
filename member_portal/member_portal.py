@@ -28,7 +28,9 @@ class res_partner(osv.osv):
         'member': fields.boolean('Member', help="If checked, this is member partner."),
         'sex':fields.selection([('male','Male'), ('female','Female')], 'Sex'),
         'educaion_ids': fields.one2many('res.partner.history', 'partner_edu_id', 'Education', domain=[('type','=','Education')]),
-        'professional_ids': fields.one2many('res.partner.history', 'partner_pro_id', 'Professional', domain=[('type','=','Professional')])
+        'professional_ids': fields.one2many('res.partner.history', 'partner_pro_id', 'Professional', domain=[('type','=','Professional')]),
+        
+        'current_company_id': fields.many2one('res.partner.history', 'Current Company', domain=[('type','=','Professional')])
     }
     
     _defaults = {
@@ -44,8 +46,11 @@ class res_partner(osv.osv):
         member_id = self.pool.get('res.users').browse(cr, uid, uid).partner_id.id
         if uid in allow_users or member_id in ids:
             res = super(res_partner, self).write(cr, uid, ids, vals, context)
+            
+            
+            
         else:
-            raise osv.except_osv(_('Error!'),_('You are not allows to change details of other member !'))
+            raise osv.except_osv(_('Error!'),_('You are not allowed to change details of other member !'))
         return res
 
 res_partner()

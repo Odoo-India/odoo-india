@@ -20,21 +20,20 @@
 ##############################################################################
 
 {
-    'name': 'Dealer Price',
+    'name': 'Packing Cost Transfer to Invoice',
     'version': '1.0',
-    'category': 'Indian Localization',
-    'summary': 'Dealer Price, Compute discount for Dealers',
+    'category': 'Localization',
+    'summary':'Packing Cost transfer to Invoice from Warehouse',
     'description': """
-Module for Dealers Price & Discount functionality on Sales.
-===========================================================
+Packing Cost transfer to Invoice from Warehouse
+====================================================
+* Transfer packaging cost to customer invoice when preparing invoice from warehouse
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['l10n_in_base', 'l10n_in_sale_invoice_reverse', 'sale_stock'],
-    'data': [
-        'l10n_in_dealers_discount.xml'
-    ],
+    'depends': ['l10n_in_base', 'l10n_in_sales_packing', 'sale_stock'],
+    'data': [],
     'installable': True,
     'auto_install': False,
 }

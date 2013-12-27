@@ -33,7 +33,7 @@ class indian_base_configuration(osv.osv_memory):
         'module_product_coding': fields.boolean('Define automatic codings on products',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
-        'module_product_container': fields.boolean('Define container and repairable products',
+        'module_product_container': fields.boolean('Define container or packaging and repairable products',
             help = """Allows gate keeper to pass the outgoing materials, products, etc. and keeps track of returning items.
             It installs the stock_gatepass module."""),
         
@@ -92,6 +92,15 @@ class indian_base_configuration(osv.osv_memory):
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
         
+        'module_l10n_in_packing_stock_invoice': fields.boolean('Transfer Packaging cost on customer invoice when invoice prepared based on Delivery Order',
+            help = """Allows you to keeps track of internal material request.
+            It installs the stock_indent module."""),
+                
+        'module_l10n_in_dealer_discount_stock_invoice': fields.boolean('Transfer Dealers discount on customer invoice when invoice prepared based on Delivery Order',
+            help = """Allows you to keeps track of internal material request.
+            It installs the stock_indent module."""),
+                
+                
         'group_cst_config':fields.boolean('Enable Central Sales Tax on Partners', implied_group='l10n_in_base.group_cst_config', help = """TODO"""),
         'group_excise_config':fields.boolean('Enable Excise Control Code on Partners', implied_group='l10n_in_base.group_excise_config', help = """TODO"""),
         'group_tin_config':fields.boolean('Enable Tax Identification Number on Partners', implied_group='l10n_in_base.group_tin_config', help = """TODO"""),

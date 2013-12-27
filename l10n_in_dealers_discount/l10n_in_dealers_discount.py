@@ -29,9 +29,9 @@ class sale_order_line(osv.osv):
     _inherit = 'sale.order.line'
 
     _columns = {
-        'price_dealer': fields.float('Dealer Price'),
-        'dealer_discount': fields.float('Dealer Discount'),
-        'dealer_discount_per': fields.float('Dealer Discount (%)')
+        'price_dealer': fields.float('Dealer Price', readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
+        'dealer_discount': fields.float('Dealer Discount', readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
+        'dealer_discount_per': fields.float('Dealer Discount (%)', readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})
     }
     
     def _prepare_order_line_invoice_line(self, cr, uid, line, account_id=False, context=None):
@@ -76,7 +76,7 @@ class account_invoice(osv.Model):
     _inherit = 'account.invoice'
 
     _columns = {
-        'dealer_id': fields.many2one('res.partner', 'Dealer')
+        'dealer_id': fields.many2one('res.partner', 'Dealer', readonly=True, states={'draft':[('readonly',False)]})
     }
 account_invoice()
 
@@ -192,6 +192,7 @@ class sale_advance_payment_inv(osv.osv_memory):
             res['price_dealer'] = price_dealer
             res['dealer_discount'] = dealer_discount
             res['dealer_discount_per'] =  dealer_discount / total_amount
+
             update_val[sale.id] = res
 
         #TODO: Need to re-implement it in best way
@@ -201,27 +202,5 @@ class sale_advance_payment_inv(osv.osv_memory):
         return result
 
 sale_advance_payment_inv()
-
-class stock_move(osv.Model):
-    _inherit = 'stock.move'
-
-    _columns = {
-        'price_dealer': fields.float('Dealer Price'),
-        'dealer_discount': fields.float('Dealer Discount'),
-        'dealer_discount_per': fields.float('Dealer Discount (%)'),
-    }
-
-stock_move()
-
-class stock_picking(osv.Model):
-    _inherit = "stock.picking"
-    _table = "stock_picking"
-
-    def _prepare_invoice_line(self, cr, uid, group, picking, move_line, invoice_id, invoice_vals, context=None):
-        res = super(stock_picking, self)._prepare_invoice_line(cr, uid, group=group, picking=picking, move_line=move_line, invoice_id=invoice_id, invoice_vals=invoice_vals, context=context)
-        res = dict(res, price_dealer = move_line.price_dealer * move_line.product_qty, dealer_discount=move_line.dealer_discount * move_line.product_qty, dealer_discount_per=move_line.dealer_discount_per)
-        return res
-
-stock_picking()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

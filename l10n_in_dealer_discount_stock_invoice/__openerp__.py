@@ -20,21 +20,20 @@
 ##############################################################################
 
 {
-    'name': 'Dealer Price',
+    'name': 'Dealer Discount Transfer to Invoice',
     'version': '1.0',
-    'category': 'Indian Localization',
-    'summary': 'Dealer Price, Compute discount for Dealers',
+    'category': 'Localization',
+    'summary':'Dealer Discount Transfer to Invoice from Warehouse',
     'description': """
-Module for Dealers Price & Discount functionality on Sales.
-===========================================================
+Dealer Discount Transfer to Invoice from Warehouse
+====================================================
+* Transfer dealer discount to customer invoice when preparing invoice from warehouse
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['l10n_in_base', 'l10n_in_sale_invoice_reverse', 'sale_stock'],
-    'data': [
-        'l10n_in_dealers_discount.xml'
-    ],
+    'depends': ['l10n_in_base', 'l10n_in_dealers_discount', 'sale_stock'],
+    'data': [],
     'installable': True,
     'auto_install': False,
 }

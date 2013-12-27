@@ -70,7 +70,7 @@ class sale_order_line(osv.osv):
                 package_product = package.ul.container_id
                 qty_factor = round(qty / package.qty)
             else:
-                raise osv.except_osv(_('Warning!'),_('Unable to compute packaging cost as you have not define product on box %s' % (package.ul.name)))
+                raise osv.except_osv(_('Warning!'), _('Unable to compute packaging cost as you have not define product on box %s' % (package.ul.name)))
         
         if package_product:
             packing_res = super(sale_order_line, self).product_id_change(cr, uid, ids, pricelist, package_product.id, qty=1,
@@ -142,7 +142,7 @@ class sale_order(osv.Model):
     def _get_default_values(self, cr, uid, preline, context=None):
         res = super(sale_order, self)._get_default_values(cr, uid, preline=preline, context=context)
         res = dict(res,
-          packaging_cost = -preline.packaging_cost
+          packaging_cost=-preline.packaging_cost
         )
         return res
 
@@ -173,7 +173,7 @@ class sale_order(osv.Model):
 
     def _prepare_order_line_move(self, cr, uid, order, line, picking_id, date_planned, context=None):
         res = super(sale_order, self)._prepare_order_line_move(cr, uid, order=order, line=line, picking_id=picking_id, date_planned=date_planned, context=context)
-        res = dict(res, packaging_cost = line.packaging_cost/line.product_uom_qty)
+        res = dict(res, packaging_cost=line.packaging_cost / line.product_uom_qty)
         return res
 
 sale_order()
@@ -224,28 +224,28 @@ class account_invoice(osv.osv):
             store={
                 'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),
                 'account.invoice.tax': (_get_invoice_tax, None, 20),
-                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id', 'packaging_cost'], 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit', 'invoice_line_tax_id', 'quantity', 'discount', 'invoice_id', 'packaging_cost'], 20),
             },
             multi='all'),
         'amount_tax': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Tax',
             store={
                 'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),
                 'account.invoice.tax': (_get_invoice_tax, None, 20),
-                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id', 'packaging_cost'], 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit', 'invoice_line_tax_id', 'quantity', 'discount', 'invoice_id', 'packaging_cost'], 20),
             },
             multi='all'),
         'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
             store={
                 'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line', 'round_off'], 20),
                 'account.invoice.tax': (_get_invoice_tax, None, 20),
-                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id', 'packaging_cost'], 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit', 'invoice_line_tax_id', 'quantity', 'discount', 'invoice_id', 'packaging_cost'], 20),
             },
             multi='all'),
         'amount_packing': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Packing Cost',
             store={
                 'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),
                 'account.invoice.tax': (_get_invoice_tax, None, 20),
-                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id', 'packaging_cost'], 20),
+                'account.invoice.line': (_get_invoice_line, ['price_unit', 'invoice_line_tax_id', 'quantity', 'discount', 'invoice_id', 'packaging_cost'], 20),
             },
             multi='all'),
         'round_off': fields.float('Round Off', help="Round Off Amount"),
@@ -256,116 +256,38 @@ account_invoice()
 class sale_advance_payment_inv(osv.osv_memory):
     _inherit = 'sale.advance.payment.inv'
     
-    #TODO: improve this method need to call super
+    # TODO: improve this method need to call super
     def _prepare_advance_invoice_vals(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
+        
+        result = super(sale_advance_payment_inv, self)._prepare_advance_invoice_vals(cr, uid, ids, context)
+        
         sale_obj = self.pool.get('sale.order')
-        ir_property_obj = self.pool.get('ir.property')
-        fiscal_obj = self.pool.get('account.fiscal.position')
-        inv_line_obj = self.pool.get('account.invoice.line')
         wizard = self.browse(cr, uid, ids[0], context)
         sale_ids = context.get('active_ids', [])
-
-        result = []
+        
+        update_val = {}
         for sale in sale_obj.browse(cr, uid, sale_ids, context=context):
-            val = inv_line_obj.product_id_change(cr, uid, [], wizard.product_id.id,
-                    uom_id=False, partner_id=sale.partner_id.id, fposition_id=sale.fiscal_position.id)
-            res = val['value']
-
-            # determine and check income account
-            if not wizard.product_id.id :
-                prop = ir_property_obj.get(cr, uid,
-                            'property_account_income_categ', 'product.category', context=context)
-                prop_id = prop and prop.id or False
-                account_id = fiscal_obj.map_account(cr, uid, sale.fiscal_position or False, prop_id)
-                if not account_id:
-                    raise osv.except_osv(_('Configuration Error!'),
-                            _('There is no income account defined as global property.'))
-                res['account_id'] = account_id
-            if not res.get('account_id'):
-                raise osv.except_osv(_('Configuration Error!'),
-                        _('There is no income account defined for this product: "%s" (id:%d).') % \
-                            (wizard.product_id.name, wizard.product_id.id,))
-
-            # determine invoice amount
-            if wizard.amount <= 0.00:
-                raise osv.except_osv(_('Incorrect Data'),
-                    _('The value of Advance Amount must be positive.'))
+            res = {}
             if wizard.advance_payment_method == 'percentage':
-                inv_amount = (sale.amount_total * wizard.amount / 100 - sale.amount_packing * wizard.amount / 100)
                 packing_amount = sale.amount_packing * wizard.amount / 100
-                if not res.get('name'):
-                    res['name'] = _("Advance of %s %%") % (wizard.amount)
             else:
                 inv_amount = wizard.amount
-                percent = inv_amount * 100 / sale.amount_total
+                percent = inv_amount / sale.amount_total
                 packing_amount = sale.amount_packing * percent / 100
-                inv_amount = inv_amount - packing_amount
-                if not res.get('name'):
-                    #TODO: should find a way to call formatLang() from rml_parse
-                    symbol = sale.pricelist_id.currency_id.symbol
-                    if sale.pricelist_id.currency_id.position == 'after':
-                        res['name'] = _("Advance of %s %s") % (inv_amount, symbol)
-                    else:
-                        res['name'] = _("Advance of %s %s") % (symbol, inv_amount)
-
-            # determine taxes
-            if res.get('invoice_line_tax_id'):
-                res['invoice_line_tax_id'] = [(6, 0, res.get('invoice_line_tax_id'))]
-            else:
-                res['invoice_line_tax_id'] = False
-
-            # create the invoice
-            inv_line_values = {
-                'name': res.get('name'),
-                'origin': sale.name,
-                'account_id': res['account_id'],
-                'price_unit': inv_amount,
-                'quantity': wizard.qtty or 1.0,
-                'discount': False,
-                'uos_id': res.get('uos_id', False),
-                'product_id': wizard.product_id.id,
-                'invoice_line_tax_id': res.get('invoice_line_tax_id'),
-                'account_analytic_id': sale.project_id.id or False,
-                'packaging_cost': packing_amount,
+            
+            res = {
+             'packaging_cost': packing_amount
             }
-            inv_values = {
-                'name': sale.client_order_ref or sale.name,
-                'origin': sale.name,
-                'type': 'out_invoice',
-                'reference': False,
-                'account_id': sale.partner_id.property_account_receivable.id,
-                'partner_id': sale.partner_invoice_id.id,
-                'invoice_line': [(0, 0, inv_line_values)],
-                'currency_id': sale.pricelist_id.currency_id.id,
-                'comment': '',
-                'payment_term': sale.payment_term.id,
-                'fiscal_position': sale.fiscal_position.id or sale.partner_id.property_account_position.id
-            }
-            result.append((sale.id, inv_values))
+            update_val[sale.id] = res
+        
+        #TODO: Need to re-implement it in best way
+        for line in result:
+            line[1].get('invoice_line')[0][2].update(update_val.get(line[0]))
+    
         return result
-
+    
 sale_advance_payment_inv()
-
-class stock_move(osv.Model):
-    _inherit = 'stock.move'
-
-    _columns = {
-        'packaging_cost': fields.float('Packing Cost'),
-    }
-
-stock_move()
-
-class stock_picking(osv.Model):
-    _inherit = "stock.picking"
-    _table = "stock_picking"
-
-    def _prepare_invoice_line(self, cr, uid, group, picking, move_line, invoice_id, invoice_vals, context=None):
-        res = super(stock_picking, self)._prepare_invoice_line(cr, uid, group=group, picking=picking, move_line=move_line, invoice_id=invoice_id, invoice_vals=invoice_vals, context=context)
-        res = dict(res, packaging_cost = move_line.packaging_cost * move_line.product_qty)
-        return res
-
-stock_picking()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

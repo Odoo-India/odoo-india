@@ -35,8 +35,7 @@ Product Coding
     'data' : [
     ],
     'update_xml' : [
-        'product_coding_view.xml',
-        'res_config_view.xml',
+        'product_coding_view.xml'
     ],
 
     'demo': [

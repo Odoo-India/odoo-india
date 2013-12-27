@@ -13,7 +13,14 @@
 						or
 						<button string="Cancel" type="object" name="cancel" class="oe_link" />
 					</header>
-					
+
+					<separator string="Indian Localization" />
+					<div>
+						<p>
+							<label
+								string="Allows you to configure options related to products, sales, purchase, warehouse and finance for your business according to indian localization. You may also find some tools that makes your life easier while workign with OpenERP." />
+						</p>
+					</div>
 					<separator string="Products" />
 					<group>
 						<label for="id" string="Product Features" />
@@ -43,7 +50,9 @@
 								<label for="module_stock_gatepass" />
 							</div>
 						</div>
+					</group>
 
+					<group>
 						<label for="id" string="Product Tracking" />
 						<div name="product_features">
 							<div name='module_stock_serial_tracking'>
@@ -55,7 +64,9 @@
 								<label for="module_product_container_tracking" />
 							</div>
 						</div>
+					</group>
 
+					<group>
 						<label for="id" string="Gatepass Extensions" />
 						<div name="gatepass_features">
 							<div name='module_stock_indent_gatepass'>
@@ -67,27 +78,31 @@
 								<label for="module_stock_sale_gatepass" />
 							</div>
 						</div>
+					</group>
 
+					<group>
 						<label for="id" string="Finance Linking" />
 						<div name="finalce_linking">
 							<div name='module_l10n_in_excise_receipt'>
 								<field name="module_l10n_in_excise_receipt" class="oe_inline" />
 								<label for="module_l10n_in_excise_receipt" />
 							</div>
-							
+
 							<div name='module_l10n_in_packing_stock_invoice'>
 								<field name="module_l10n_in_packing_stock_invoice" class="oe_inline" />
 								<label for="module_l10n_in_packing_stock_invoice" />
 							</div>
-							
+
 							<div name='module_l10n_in_dealer_discount_stock_invoice'>
-								<field name="module_l10n_in_dealer_discount_stock_invoice" class="oe_inline" />
+								<field name="module_l10n_in_dealer_discount_stock_invoice"
+									class="oe_inline" />
 								<label for="module_l10n_in_dealer_discount_stock_invoice" />
 							</div>
 						</div>
 					</group>
 
 					<separator string="Sales" />
+
 					<group>
 						<label for="id" string="Sales Features" />
 						<div name="sale_features">
@@ -104,20 +119,22 @@
 								<field name="group_round_off_sale_config" class="oe_inline" />
 								<label for="group_round_off_sale_config" />
 							</div>
-							
+
 							<div name='module_l10n_in_dealers_discount'>
 								<field name="module_l10n_in_dealers_discount" class="oe_inline" />
 								<label for="module_l10n_in_dealers_discount" />
 							</div>
 						</div>
-						
-						<label for="id" string="Other Costs"/>
+					</group>
+
+					<group>
+						<label for="id" string="Other Costs" />
 						<div name="sale_other_features">
 							<div name='module_l10n_in_sales_packing'>
 								<field name="module_l10n_in_sales_packing" class="oe_inline" />
 								<label for="module_l10n_in_sales_packing" />
 							</div>
-							
+
 							<div name='group_dealer_price_on_sale_config'>
 								<field name="group_dealer_price_on_sale_config" class="oe_inline" />
 								<label for="group_dealer_price_on_sale_config" />
@@ -125,7 +142,9 @@
 						</div>
 					</group>
 
+
 					<separator string="Purchase" />
+
 					<group>
 						<label for="id" string="Purchase Features" />
 						<div name="purchase_features">
@@ -145,8 +164,9 @@
 								<field name="group_round_off_purchase_config" class="oe_inline" />
 								<label for="group_round_off_purchase_config" />
 							</div>
-
 						</div>
+					</group>
+					<group>
 						<label for="id" string="Other Costs"
 							attrs="{'invisible':[('module_l10n_in_purchase','=',False)]}" />
 						<div name="purchase_features"
@@ -167,7 +187,9 @@
 						</div>
 					</group>
 
+
 					<separator string="Finance" />
+
 					<group>
 						<label for="id" string="Finance Feature" />
 						<div name="finance_features">
@@ -181,6 +203,24 @@
 								<label for="module_l10n_in_account_tax" />
 							</div>
 						</div>
+					</group>
+					
+					<group>
+						<label for="id" string="Invoice Printing" />
+						<div name="finance_invoice_features">
+							<div name='module_l10n_in_tax_invoice'>
+								<field name="module_l10n_in_tax_invoice" class="oe_inline" />
+								<label for="module_l10n_in_tax_invoice" />
+							</div>
+
+							<div name='module_l10n_in_excise_invoice'>
+								<field name="module_l10n_in_excise_invoice" class="oe_inline" />
+								<label for="module_l10n_in_excise_invoice" />
+							</div>
+						</div>
+					</group>
+
+					<group>
 						<label for="id" string="Tax Configuration"
 							attrs="{'invisible':[('module_l10n_in_account_tax','=',False)]}" />
 						<div name="tax_features"

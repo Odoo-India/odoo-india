@@ -37,7 +37,7 @@ class indian_base_configuration(osv.osv_memory):
             help = """Allows gate keeper to pass the outgoing materials, products, etc. and keeps track of returning items.
             It installs the stock_gatepass module."""),
         
-        'default_coding_method':fields.selection([('category','Based on the Category'), ('groups','Based on Major / Sub Groups')], required=True, default_model='product.product'),
+        'default_coding_method':fields.selection([('category','Based on the Category'), ('group','Based on Major / Sub Groups')], required=True, default_model='product.product'),
         
         'module_stock_indent': fields.boolean('Manage internal requests for material, service through Indents.',
             help = """Allows you to keeps track of internal material request.
@@ -99,7 +99,14 @@ class indian_base_configuration(osv.osv_memory):
         'module_l10n_in_dealer_discount_stock_invoice': fields.boolean('Transfer Dealers discount on customer invoice when invoice prepared based on Delivery Order',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
+        
+        'module_l10n_in_tax_invoice': fields.boolean('Print Tax / Retail Invoice in 4 copies, Original, Duplicate, Triplicate and Extra Copy',
+            help = """Allows you to keeps track of internal material request.
+            It installs the stock_indent module."""),
                 
+        'module_l10n_in_excise_invoice': fields.boolean('Print Excise Invoice in 4 copies, Original for Buyer, Duplicate for Transporter, Triplicate for Assessee and Extra Copy not for CENVAT',
+            help = """Allows you to keeps track of internal material request.
+            It installs the stock_indent module."""),
                 
         'group_cst_config':fields.boolean('Enable Central Sales Tax on Partners', implied_group='l10n_in_base.group_cst_config', help = """TODO"""),
         'group_excise_config':fields.boolean('Enable Excise Control Code on Partners', implied_group='l10n_in_base.group_excise_config', help = """TODO"""),

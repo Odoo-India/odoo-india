@@ -32,8 +32,10 @@ TAX_TYPES = [('excise', 'Central Excise'),
     ('tds','Tax Deducted at Source'),
     ('tcs','Tax Collected at Source'),
     ('cform','C Form'),
-    ('fform','F Form'),
     ('hform','H Form'),
+    ('fform','F Form'),
+    ('iform', 'I Form'), 
+    ('e1form', 'E1 Form'),
     ('import_duty','Import Duty'),
     ('other', 'Other')
 ]
@@ -42,7 +44,8 @@ class account_tax(osv.osv):
     _inherit = 'account.tax'
     
     _columns = {
-        'tax_categ': fields.selection(TAX_TYPES, 'Tax Category')
+        'tax_categ': fields.selection(TAX_TYPES, 'Tax Category'),
+        'is_form': fields.boolean('Inter-State Tax')
     }
     
     def _unit_compute(self, cr, uid, taxes, price_unit, product=None, partner=None, quantity=0):
@@ -51,7 +54,8 @@ class account_tax(osv.osv):
         cur_price_unit = price_unit
         for tax in taxes:
             # we compute the amount for the current tax object and append it to the result
-            data = {'id':tax.id,
+            data = {
+                'id':tax.id,
                 'name':tax.description and tax.description + " - " + tax.name or tax.name,
                 'account_collected_id':tax.account_collected_id.id,
                 'account_paid_id':tax.account_paid_id.id,
@@ -157,7 +161,10 @@ class account_invoice_tax(osv.osv):
     _inherit = 'account.invoice.tax'
     
     _columns = {
-        'tax_categ': fields.selection(TAX_TYPES, 'Tax Category')
+        'tax_categ': fields.selection(TAX_TYPES, 'Tax Category'),
+        'form_no': fields.char('Form No'),
+        'date_iseeu': fields.date('Issue Date'),
+        'is_form': fields.boolean('Inter-State Tax')
     }
     
     def compute(self, cr, uid, invoice_id, context=None):
@@ -168,8 +175,9 @@ class account_invoice_tax(osv.osv):
             base_code_id = key[1]
             tax_id = account_tax_obj.search(cr, uid, [('tax_code_id', '=', tax_code_id), ('base_code_id', '=', base_code_id)], context=context)
             for id in tax_id:
-                tax_categ = account_tax_obj.browse(cr, uid, id, context=context).tax_categ
-                res[key]['tax_categ'] = tax_categ
+                tax = account_tax_obj.browse(cr, uid, id, context=context)
+                res[key]['tax_categ'] = tax.tax_categ
+                res[key]['is_form'] = tax.is_form
         return res
 
 account_invoice_tax()

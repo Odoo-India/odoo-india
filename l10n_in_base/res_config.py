@@ -127,6 +127,7 @@ class indian_base_configuration(osv.osv_memory):
         'group_round_off_sale_config':fields.boolean('Round-off feature on Sales Order', implied_group='l10n_in_base.group_round_off_sale_config', help = """TODO"""),
         
         'group_dealer_price_on_sale_config':fields.boolean('Display dealer price on sales order line', implied_group='l10n_in_base.group_dealer_price_on_sale_config', help = """TODO"""),
+        'group_inter_state_tax_config':fields.boolean('Maintain Register of Forms to be issue and to be receive for Inter-State, Intet-Warehouse or Export Sales', implied_group='l10n_in_base.group_inter_state_tax_config', help = """i.e. C-Form, H-Form, E1-Form, etc"""),
     }        
     
     _defaults = {

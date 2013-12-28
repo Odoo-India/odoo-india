@@ -78,6 +78,19 @@ class account_invoice(osv.Model):
     _columns = {
         'dealer_id': fields.many2one('res.partner', 'Dealer', readonly=True, states={'draft':[('readonly',False)]})
     }
+    
+    def onchange_dealer_id(self, cr, uid, ids, part, context=None):
+        if not part:
+            return {'value': {'dealer_pricelist_id': False}}
+        
+        val = {}
+        part = self.pool.get('res.partner').browse(cr, uid, part, context=context)
+        pricelist = part.property_product_pricelist and part.property_product_pricelist.id or False
+
+        if pricelist:
+            val['dealer_pricelist_id'] = pricelist
+        return {'value': val}
+
 account_invoice()
 
 class sale_order(osv.Model):

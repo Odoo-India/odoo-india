@@ -202,6 +202,11 @@
 								<field name="module_l10n_in_account_tax" class="oe_inline" />
 								<label for="module_l10n_in_account_tax" />
 							</div>
+							
+							<div name='group_inter_state_tax_config'>
+								<field name="group_inter_state_tax_config" class="oe_inline" />
+								<label for="group_inter_state_tax_config" />
+							</div>
 						</div>
 					</group>
 					

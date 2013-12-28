@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-2013 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,30 +20,21 @@
 ##############################################################################
 
 {
-    'name' : 'Product Coding',
-    'version' : '1.0',
-    'author' : 'OpenERP S.A.',
-    'sequence': 120,
-    'category': 'Warehouse Management',
-    'website' : 'http://www.openerp.com',
-    'summary' : 'Product Coding',
-    'description' : """
-Product Coding
-==============
+    'name': 'Dealer Discount Transfer to Invoice',
+    'version': '1.0',
+    'category': 'Localization',
+    'summary':'Dealer Discount Transfer to Invoice from Warehouse',
+    'description': """
+Dealer Discount Transfer to Invoice from Warehouse
+====================================================
+* Transfer dealer discount to customer invoice when preparing invoice from warehouse
 """,
-    'depends' : ['l10n_in_base', 'product'],
-    'data' : [
-    ],
-    'update_xml' : [
-        'product_coding_view.xml'
-    ],
-
-    'demo': [
-    ],
-
-    'installable' : True,
-    'application' : True,
+    'author': 'OpenERP SA',
+    'website': 'http://www.openerp.com',
+    'images': [],
+    'depends': ['l10n_in_base', 'l10n_in_dealers_discount', 'sale_stock'],
+    'data': [],
+    'installable': True,
+    'auto_install': False,
 }
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

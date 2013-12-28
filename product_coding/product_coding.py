@@ -83,11 +83,11 @@ class product_product(osv.Model):
         'major_group_id': fields.many2one('product.major.group', 'Major Group'),
         'sub_group_id': fields.many2one('product.sub.group', 'Sub Group'),
         'coding_method': fields.selection([
-            ('category', 'Based on categories'),
-            ('group', 'Based on major and sub groups'),
+                ('category', 'Based on categories'),
+                ('group', 'Based on major and sub groups'),
             ], 'Coding Method', required=True),
     }
-
+    
     _defaults = {
         'coding_method': 'category',
     }

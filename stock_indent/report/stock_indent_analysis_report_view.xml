@@ -9,20 +9,20 @@
             <field name="model">stock.indent.analysis.report</field>
             <field name="arch" type="xml">
                 <tree string="Indent Analysis" create="false" delete="false">
-                    <field name="indent_id"/>
-                    <field name="indentor_id" invisible="1"/>
-                    <field name="department_id"/>
-                    <field name="product_id" invisible="1"/>
+                    <field name="indent_id" invisible="context.get('view_indent_id')"/>
+                    <field name="indentor_id" invisible="context.get('view_indentor_id')"/>
+                    <field name="department_id" invisible="context.get('view_department_id')"/>
+                    <field name="product_id" invisible="context.get('view_product_id')"/>
                     
                     <field name="uom_id"/>
                     
                     <field name="procure_type" invisible="1"/>
-                    <field name="indent_date" invisible="1"/>
-                    <field name="approve_date"/>
+                    <field name="indent_date" invisible="context.get('view_indent_date')"/>
+                    <field name="approve_date" invisible="context.get('view_approve_date')"/>
                     
-                    <field name="type"/>
-                    <field name="item_for"/>
-                    <field name="project_id"/>
+                    <field name="type" invisible="1"/>
+                    <field name="item_for" invisible="context.get('view_item_for')"/>
+                    <field name="project_id" invisible="context.get('view_project_id')"/>
                     
                     <field name="equipment_id" invisible="1"/>
                     <field name="section_id" invisible="1"/>
@@ -45,11 +45,42 @@
                 <search string="Indent Analysis">
                     <field name="indent_id"/>
                     <field name="indentor_id"/>
+                    <filter string="Draft" name="state_draft" domain="[('state','=','draft')]"/>
+                    <filter string="Confirmed" name="state_draft" domain="[('state','=','confirm')]"/>
+                    <filter string="Waiting for Approval" name="state_draft" domain="[('state','=','waiting_approval')]"/>
+                    <filter string="Inprogress" name="state_confirmed" domain="[('state','=','inprogress')]"/>
+                    <filter string="Received" name="state_received" domain="[('state','=','received')]"/>
+                    <separator/>
+                    <filter string="Purchase Indent" name="indent_purchase" domain="[('type','=','new')]"/>
+                    <filter string="Repair Indent" name="indent_repair" domain="[('type','=','existing')]"/>
+                    <separator/>
+                    <filter string="Procure from Stock" name="indent_purchase" domain="[('procure_type','=','make_to_stock')]"/>
+                    <filter string="Procure by Purchase" name="indent_repair" domain="[('procure_type','=','make_to_order')]"/>
+                    
                     <group expand="1" string="Group By...">
+                        <filter string="Product" name="product_id_group" context="{'group_by':'product_id', 'view_indentor_id':True}"/>
+                       	<separator/>
+                       	
+                        <filter string="Indentor" name="indentor_id_group" context="{'group_by':'indentor_id', 'view_indentor_id':True}"/>
+                        <filter string="Department" name="department_id_group" context="{'group_by':'department_id', 'view_department_id':True}"/>
+                        <filter string="Project" name="project_id_group" context="{'group_by':'project_id'}"/>
+                        <filter string="Warehouse" name="warehouse_id_group" context="{'group_by':'warehouse_id'}"/>
+                        <separator/>
+                        
+                        <filter string="Type" name="type_group" context="{'group_by':'type'}"/>
+                        <filter string="Purchase for" name="item_for_group" context="{'group_by':'item_for'}"/>
+                        <filter string="Procurement" name="procure_type_group" context="{'group_by':'procure_type'}"/>
+                        <separator/>
+                        
+                        <filter string="Equipment" name="equipment_id_group" context="{'group_by':'equipment_id'}"/>
+                        <filter string="Section" name="section_id_group" context="{'group_by':'section_id'}"/>
+                        <separator/>
+                        
+                        <filter string="Indent Date" name="indent_date_group" context="{'group_by':'indent_date'}"/>
                         <filter string="Aprrove Date" name="approve_date_group" context="{'group_by':'approve_date'}"/>
                         <separator/>
-                        <filter string="Product" name="product_id_group" context="{'group_by':'product_id'}"/>
-                        <filter string="Indentor" name="indentor_id_group" context="{'group_by':'indentor_id'}"/>
+                        
+                        <filter string="State" name="state_group" context="{'group_by':'state'}"/>
                     </group>
                 </search>
             </field>
@@ -63,6 +94,7 @@
             <field name="view_mode">tree</field>
             <field name="search_view_id" ref="view_stock_indent_analysis_report_search"/>
             <field name="view_id" ref="view_stock_indent_analysis_report_tree"/>
+            <field name="context">{'search_default_product_id_group':1}</field>
         </record>
 
         <!-- Indent Report Menus -->

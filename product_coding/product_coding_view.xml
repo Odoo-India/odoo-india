@@ -103,8 +103,8 @@
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <field name="default_code" position="before">
-                    <field name="major_group_id" required="1"/>
-                    <field name="sub_group_id" required="1"/>
+                    <field name="major_group_id" attrs="{'invisible':[('coding_method','=','category')], 'required':[('coding_method','=','group')]}"/>
+                    <field name="sub_group_id" attrs="{'invisible':[('coding_method','=','category')], 'required':[('coding_method','=','group')]}"/>
                     <field name="coding_method"/>
                 </field>
             </field>

@@ -29,9 +29,9 @@ class sale_order_line(osv.osv):
     _inherit = 'sale.order.line'
 
     _columns = {
-        'price_dealer': fields.float('Dealer Price'),
-        'dealer_discount': fields.float('Dealer Discount'),
-        'dealer_discount_per': fields.float('Dealer Discount (%)')
+        'price_dealer': fields.float('Dealer Price', readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
+        'dealer_discount': fields.float('Dealer Discount', readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
+        'dealer_discount_per': fields.float('Dealer Discount (%)', readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]})
     }
     
     def _prepare_order_line_invoice_line(self, cr, uid, line, account_id=False, context=None):
@@ -76,8 +76,21 @@ class account_invoice(osv.Model):
     _inherit = 'account.invoice'
 
     _columns = {
-        'dealer_id': fields.many2one('res.partner', 'Dealer')
+        'dealer_id': fields.many2one('res.partner', 'Dealer', readonly=True, states={'draft':[('readonly',False)]})
     }
+    
+    def onchange_dealer_id(self, cr, uid, ids, part, context=None):
+        if not part:
+            return {'value': {'dealer_pricelist_id': False}}
+        
+        val = {}
+        part = self.pool.get('res.partner').browse(cr, uid, part, context=context)
+        pricelist = part.property_product_pricelist and part.property_product_pricelist.id or False
+
+        if pricelist:
+            val['dealer_pricelist_id'] = pricelist
+        return {'value': val}
+
 account_invoice()
 
 class sale_order(osv.Model):
@@ -101,15 +114,14 @@ class sale_order(osv.Model):
         return {'value': val}
 
     def _get_default_values(self, cr, uid, preline, context=None):
-        res = {
-            'invoice_id': False, 
-            'price_unit': -preline.price_unit,
-            'price_dealer': -preline.price_dealer, 
-            'dealer_discount': -preline.dealer_discount,
-            'dealer_discount_per': -preline.dealer_discount_per
-        }
+        res = super(sale_order, self)._get_default_values(cr, uid, preline=preline, context=context)
+        res = dict(res,
+            price_dealer = -preline.price_dealer, 
+            dealer_discount = -preline.dealer_discount,
+            dealer_discount_per = -preline.dealer_discount_per
+        )
         return res
-    
+
     def _make_invoice(self, cr, uid, order, lines, context=None):
         inv_obj = self.pool.get('account.invoice')
         obj_invoice_line = self.pool.get('account.invoice.line')
@@ -125,13 +137,8 @@ class sale_order(osv.Model):
         for preinv in order.invoice_ids:
             if preinv.state not in ('cancel',) and preinv.id not in from_line_invoice_ids:
                 for preline in preinv.invoice_line:
-                    res = {
-                        'invoice_id': False, 
-                        'price_unit': -preline.price_unit
-                    }
-                    res.update(self._get_default_values(cr, uid, preline, context))
-                    
-                    inv_line_id = obj_invoice_line.copy(cr, uid, preline.id, res)
+                    res = self._get_default_values(cr, uid, preline, context=context)
+                    inv_line_id = obj_invoice_line.copy(cr, uid, preline.id, res, context=context)
                     lines.append(inv_line_id)
         inv = self._prepare_invoice(cr, uid, order, lines, context=context)
         inv.update({
@@ -143,6 +150,11 @@ class sale_order(osv.Model):
             inv_obj.write(cr, uid, [inv_id], data['value'], context=context)
         inv_obj.button_compute(cr, uid, [inv_id])
         return inv_id
+
+    def _prepare_order_line_move(self, cr, uid, order, line, picking_id, date_planned, context=None):
+        res = super(sale_order, self)._prepare_order_line_move(cr, uid, order=order, line=line, picking_id=picking_id, date_planned=date_planned, context=context)
+        res = dict(res, price_dealer = line.price_dealer, dealer_discount=line.dealer_discount, dealer_discount_per=line.dealer_discount_per)
+        return res
 
 sale_order()
 
@@ -193,6 +205,7 @@ class sale_advance_payment_inv(osv.osv_memory):
             res['price_dealer'] = price_dealer
             res['dealer_discount'] = dealer_discount
             res['dealer_discount_per'] =  dealer_discount / total_amount
+
             update_val[sale.id] = res
 
         #TODO: Need to re-implement it in best way

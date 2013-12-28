@@ -10,6 +10,7 @@
 			<field name="arch" type="xml">
 				<field name="description" position="after">
 					<field name="tax_categ" />
+					<field name="is_form" groups="l10n_in_base.group_inter_state_tax_config"/>
 				</field>
 			</field>
 		</record>
@@ -36,6 +37,20 @@
 			<field name="arch" type="xml">
 				<field name="lang" position="after">
 					<field name="pan_no"/>				
+				</field>
+			</field>
+		</record>
+
+		<!-- Account Tax Form View -->
+		<record id="view_invoice_form_inherit_form" model="ir.ui.view">
+			<field name="name">account.invoice.form</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_form" />
+			<field name="arch" type="xml">
+				<field name="base_amount" position="before">
+					<field name="is_form" invisible="1"/>
+					<field name="form_no" attrs="{'required':[('is_form','=',True)]}" groups="l10n_in_base.group_inter_state_tax_config"/>
+					<field name="date_iseeu" attrs="{'required':[('is_form','=',True)]}" groups="l10n_in_base.group_inter_state_tax_config"/>
 				</field>
 			</field>
 		</record>

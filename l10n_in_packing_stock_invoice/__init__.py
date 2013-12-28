@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-2013 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,31 +19,6 @@
 #
 ##############################################################################
 
-{
-    'name' : 'Product Coding',
-    'version' : '1.0',
-    'author' : 'OpenERP S.A.',
-    'sequence': 120,
-    'category': 'Warehouse Management',
-    'website' : 'http://www.openerp.com',
-    'summary' : 'Product Coding',
-    'description' : """
-Product Coding
-==============
-""",
-    'depends' : ['l10n_in_base', 'product'],
-    'data' : [
-    ],
-    'update_xml' : [
-        'product_coding_view.xml'
-    ],
-
-    'demo': [
-    ],
-
-    'installable' : True,
-    'application' : True,
-}
+import l10n_in_packing_stock_invoice
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

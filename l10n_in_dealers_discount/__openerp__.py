@@ -31,7 +31,7 @@ Module for Dealers Price & Discount functionality on Sales.
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['l10n_in_base', 'sale'],
+    'depends': ['l10n_in_base', 'l10n_in_sale_invoice_reverse', 'sale_stock'],
     'data': [
         'l10n_in_dealers_discount.xml'
     ],

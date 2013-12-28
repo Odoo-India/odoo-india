@@ -77,5 +77,12 @@
 	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
 	        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
 	    </record>
+	    
+	    <record id="group_inter_state_tax_config" model="res.groups">
+	        <field name="name">Inter-State Sales Forms</field>
+	        <field name="category_id" ref="base.module_category_accounting_and_finance"/>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+	    </record>
 	</data>
 </openerp>

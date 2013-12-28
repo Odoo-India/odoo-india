@@ -100,11 +100,11 @@ class indian_base_configuration(osv.osv_memory):
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
         
-        'module_l10n_in_tax_invoice': fields.boolean('Print Tax / Retail Invoice in 4 copies, Original, Duplicate, Triplicate and Extra Copy',
+        'module_l10n_in_tax_invoice': fields.boolean('Print Tax / Retail Invoice in 4 copies',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
                 
-        'module_l10n_in_excise_invoice': fields.boolean('Print Excise Invoice in 4 copies, Original for Buyer, Duplicate for Transporter, Triplicate for Assessee and Extra Copy not for CENVAT',
+        'module_l10n_in_excise_invoice': fields.boolean('Print Excise Invoice in 4 copies',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
                 

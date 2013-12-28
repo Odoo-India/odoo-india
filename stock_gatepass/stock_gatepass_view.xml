@@ -72,8 +72,7 @@
 												<field name="price_unit" />
 											</group>
 											<group>
-												<field name="prodlot_id" groups="stock.group_production_lot"
-													domain="[('product_id','=',product_id), ('current_location_id','=',location_id)]" />
+												<field name="prodlot_id" groups="stock.group_production_lot" />
 											</group>
 											<group>
 												<field name="location_id" />

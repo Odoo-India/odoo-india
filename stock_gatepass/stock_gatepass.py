@@ -132,6 +132,39 @@ class stock_gatepass(osv.Model):
         'user_id': lambda self, cr, uid, context: uid,
     }
 
+    def onchange_delivery_order(self, cr, uid, ids, order_id=False, *args, **kw):
+        result = {'line_ids': []}
+        lines = []
+ 
+        if not order_id:
+            return {'value': result}
+        
+        order = self.pool.get('stock.picking.out').browse(cr, uid, order_id)
+        products = order.move_lines
+        
+        for product in products:
+            vals = dict(
+                product_id = product.product_id.id, 
+                product_qty = product.product_qty, 
+                uom_id= product.product_uom.id, 
+                name = product.product_id.name, 
+                location_id = product.location_id.id,
+                location_dest_id = product.location_dest_id.id,
+                prodlot_id=product.prodlot_id.id
+            )
+            
+            #TODO: need to check in other ways whether sale module is installed or not instead of try and except..
+            try:
+                if product.sale_line_id:
+                    vals['price_unit'] = product.sale_line_id.price_unit
+            except:
+                vals['price_unit'] = product.product_id.list_price
+            lines.append(vals)
+        result['line_ids'] = lines
+        result['partner_id'] = order.partner_id.id
+        return {'value': result}
+
+
     def create_delivery_order(self, cr, uid, gatepass, context=None):
         picking_out_obj = self.pool.get('stock.picking.out')
         move_obj = self.pool.get('stock.move')

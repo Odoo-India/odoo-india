@@ -13,7 +13,7 @@
 					<field name="out_picking_id" on_change="onchange_delivery_order(out_picking_id)"
 						attrs="{'invisible': [('sales_delivery', '=', False)], 
                         'required': [('sales_delivery', '=', True)]}"
-						domain="[('state', '=', 'done')]" />
+						domain="[('state', '=', 'done'), ('type','=','out')]"  />
 				</field>
 			</field>
 		</record>

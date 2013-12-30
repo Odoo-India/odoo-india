@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Account Invoice Form View -->
+        <record id="view_account_invoice_packing_form" model="ir.ui.view">
+            <field name="name">account.invoice.packing.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name="amount_tax" position="after">
+                    <field name="amount_packing" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                    <field name="round_off" widget="monetary"  options="{'currency_field': 'currency_id'}"
+                        groups="l10n_in_base.group_round_off_sale_config"/>
+                </field>
+                <xpath expr="//page[@string='Invoice Lines']/field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']" position="after">
+                    <field name="packaging_cost"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

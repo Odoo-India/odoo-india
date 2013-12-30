@@ -72,27 +72,6 @@ class sale_order_line(osv.osv):
     
 sale_order_line()
 
-class account_invoice(osv.Model):
-    _inherit = 'account.invoice'
-
-    _columns = {
-        'dealer_id': fields.many2one('res.partner', 'Dealer', readonly=True, states={'draft':[('readonly',False)]})
-    }
-    
-    def onchange_dealer_id(self, cr, uid, ids, part, context=None):
-        if not part:
-            return {'value': {'dealer_pricelist_id': False}}
-        
-        val = {}
-        part = self.pool.get('res.partner').browse(cr, uid, part, context=context)
-        pricelist = part.property_product_pricelist and part.property_product_pricelist.id or False
-
-        if pricelist:
-            val['dealer_pricelist_id'] = pricelist
-        return {'value': val}
-
-account_invoice()
-
 class sale_order(osv.Model):
     _inherit = 'sale.order'
 
@@ -157,16 +136,6 @@ class sale_order(osv.Model):
         return res
 
 sale_order()
-
-class account_invoice_line(osv.Model):
-    _inherit = 'account.invoice.line'
-
-    _columns = {
-        'price_dealer': fields.float('Dealer Price'),
-        'dealer_discount': fields.float('Dealer Discount'),
-        'dealer_discount_per': fields.float('Dealer Discount (%)')
-    }
-account_invoice_line()
 
 class sale_advance_payment_inv(osv.osv_memory):
     _inherit = 'sale.advance.payment.inv'

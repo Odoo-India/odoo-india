@@ -19,23 +19,33 @@
 #
 ##############################################################################
 
-{
-    'name': 'Dealer Price',
-    'version': '1.0',
-    'category': 'Indian Localization',
-    'summary': 'Dealer Price, Compute discount for Dealers',
-    'description': """
-Module for Dealers Price & Discount functionality on Sales.
-===========================================================
-""",
-    'author': 'OpenERP SA',
-    'website': 'http://www.openerp.com',
-    'images': [],
-    'depends': ['l10n_in_base', 'l10n_in_dealer_discount_invoice', 'l10n_in_sale_invoice_reverse', 'sale_stock'],
-    'data': [
-        'l10n_in_dealers_discount.xml'
-    ],
-    'installable': True,
-    'auto_install': False,
-}
+from openerp.osv import fields, osv
+
+class res_company(osv.Model):
+    _inherit = 'res.company'
+
+    _header = """
+    <header>
+    <pageTemplate>
+        <frame id="first" x1="1.3cm" y1="2.0cm" height="26.0cm" width="19.0cm"/>
+        <pageGraphics>
+            <!-- You Logo - Change X,Y,Width and Height -->
+<drawRightString x="7.6cm" y="27.8cm">[[ company.name ]]</drawRightString>
+            <image x="16.5cm" y="27.7cm" height="40.0" >[[ company.logo or removeParentNode('image') ]]</image>
+            <setFont name="DejaVu Sans" size="8"/>
+            <fill color="black"/>
+            <stroke color="black"/>
+            <lines>1.3cm 27.7cm 20cm 27.7cm</lines>
+            <!--page bottom-->
+            <lines>1.2cm 2.15cm 19.9cm 2.15cm</lines>
+            <drawCentredString x="10.6cm" y="1.8cm">[[ company.rml_footer ]] </drawCentredString>
+        </pageGraphics>
+    </pageTemplate>"""
+
+    _defaults ={
+        'rml_header2': _header,
+    }
+
+res_company()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

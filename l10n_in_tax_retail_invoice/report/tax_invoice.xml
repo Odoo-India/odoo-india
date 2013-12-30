@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <report auto="False"
+        id="tax_invoice_report"
+        model="account.invoice"
+        name="account.invoice.tax.excise"
+        rml="l10n_in_tax_retail_invoice/report/tax_invoice.rml"
+        string="Tax Invoice"/>
+
+    </data>
+</openerp>

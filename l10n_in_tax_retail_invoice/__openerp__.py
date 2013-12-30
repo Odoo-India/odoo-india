@@ -20,22 +20,23 @@
 ##############################################################################
 
 {
-    'name': 'Dealer Price',
+    'name': 'Tax / Retail Invoice',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary': 'Dealer Price, Compute discount for Dealers',
+    'summary':'Print Tax / Retail Invoice in 4 copies',
     'description': """
-Module for Dealers Price & Discount functionality on Sales.
-===========================================================
+Tax / Retail Invoice.
+========================
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['l10n_in_base', 'l10n_in_dealer_discount_invoice', 'l10n_in_sale_invoice_reverse', 'sale_stock'],
+    'depends': ['l10n_in_base', 'l10n_in_account_tax', 'l10n_in_dealer_discount_invoice', 'l10n_in_packing_invoice'],
     'data': [
-        'l10n_in_dealers_discount.xml'
+        'report/tax_invoice.xml',
     ],
     'installable': True,
     'auto_install': False,
 }
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

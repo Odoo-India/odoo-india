@@ -19,23 +19,6 @@
 #
 ##############################################################################
 
-{
-    'name': 'Dealer Price',
-    'version': '1.0',
-    'category': 'Indian Localization',
-    'summary': 'Dealer Price, Compute discount for Dealers',
-    'description': """
-Module for Dealers Price & Discount functionality on Sales.
-===========================================================
-""",
-    'author': 'OpenERP SA',
-    'website': 'http://www.openerp.com',
-    'images': [],
-    'depends': ['l10n_in_base', 'l10n_in_dealer_discount_invoice', 'l10n_in_sale_invoice_reverse', 'sale_stock'],
-    'data': [
-        'l10n_in_dealers_discount.xml'
-    ],
-    'installable': True,
-    'auto_install': False,
-}
+import l10n_in_packing_invoice
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

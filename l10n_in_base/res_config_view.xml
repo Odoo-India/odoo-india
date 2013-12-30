@@ -30,6 +30,10 @@
 								<label for="module_product_coding" />
 								<field name="default_coding_method" class="oe_inline" />
 							</div>
+                            <div name='group_major_sub_group_config'>
+                                <field name="group_major_sub_group_config" class="oe_inline"/>
+                                <label for="group_major_sub_group_config"/>
+                            </div>
 							<div name='module_product_container'>
 								<field name="module_product_container" class="oe_inline" />
 								<label for="module_product_container" />
@@ -206,6 +210,22 @@
 							<div name='group_inter_state_tax_config'>
 								<field name="group_inter_state_tax_config" class="oe_inline" />
 								<label for="group_inter_state_tax_config" />
+							</div>
+						</div>
+					</group>
+					
+					<group>
+						<label for="id" string="Sales Features" />
+						<div name="sales_invoice_features">
+							<div name='module_l10n_in_dealer_discount_invoice'>
+								<field name="module_l10n_in_dealer_discount_invoice" class="oe_inline" />
+								<label for="module_l10n_in_dealer_discount_invoice" />
+								<span class="oe_grey">Manage without Sale Order</span>
+							</div>
+							<div name='module_l10n_in_packing_invoice'>
+								<field name="module_l10n_in_packing_invoice" class="oe_inline" />
+								<label for="module_l10n_in_packing_invoice" />
+								<span class="oe_grey">Manage without Sale Order</span>
 							</div>
 						</div>
 					</group>

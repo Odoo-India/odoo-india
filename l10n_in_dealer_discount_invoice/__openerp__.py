@@ -18,22 +18,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
 {
-    'name': 'Dealer Price',
+    'name': 'Dealer Price on Invoice',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary': 'Dealer Price, Compute discount for Dealers',
+    'summary': 'Dealer Price, Compute discount for Dealers on Invoice',
     'description': """
-Module for Dealers Price & Discount functionality on Sales.
+Module for Dealers Price & Discount functionality on Invoice.
 ===========================================================
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['l10n_in_base', 'l10n_in_dealer_discount_invoice', 'l10n_in_sale_invoice_reverse', 'sale_stock'],
+    'depends': ['l10n_in_base', 'product_container', 'account'],
     'data': [
-        'l10n_in_dealers_discount.xml'
+        'l10n_in_dealer_discount_invoice.xml'
     ],
     'installable': True,
     'auto_install': False,

@@ -20,22 +20,23 @@
 ##############################################################################
 
 {
-    'name': 'Packing Cost',
+    'name': 'Packing Cost On Invoice',
     'version': '1.0',
     'category': 'Localization',
-    'summary':'Packing cost on sales order',
+    'summary':'Packing cost on invoice',
     'description': """
-Module for packing cost.
+Packing cost on invoice.
 ========================
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['l10n_in_base', 'product_container', 'l10n_in_sale_invoice_reverse', 'l10n_in_packing_invoice'],
+    'depends': ['l10n_in_base', 'product_container'],
     'data': [
-        'l10n_in_sale_packing.xml'
+        'l10n_in_packing_invoice.xml'
     ],
     'installable': True,
     'auto_install': False,
 }
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

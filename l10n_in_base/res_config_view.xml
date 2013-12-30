@@ -30,6 +30,10 @@
 								<label for="module_product_coding" />
 								<field name="default_coding_method" class="oe_inline" />
 							</div>
+                            <div name='group_major_sub_group_config'>
+                                <field name="group_major_sub_group_config" class="oe_inline"/>
+                                <label for="group_major_sub_group_config"/>
+                            </div>
 							<div name='module_product_container'>
 								<field name="module_product_container" class="oe_inline" />
 								<label for="module_product_container" />

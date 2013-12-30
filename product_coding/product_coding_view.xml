@@ -46,7 +46,7 @@
         </record>
 
         <!-- Product Major Group Menu -->
-        <menuitem id="menu_product_major_group" action="action_product_major_group" parent="stock.menu_product_in_config_stock"/>
+        <menuitem id="menu_product_major_group" action="action_product_major_group" parent="product.prod_config_main" sequence="3"/>
 
         <!-- Product Sub Group Form View -->
         <record id="view_product_sub_group_form" model="ir.ui.view">
@@ -94,7 +94,7 @@
         </record>
 
         <!-- Product Sub Group Menu -->
-        <menuitem id="menu_product_sub_group" action="action_product_sub_group" parent="stock.menu_product_in_config_stock"/>
+        <menuitem id="menu_product_sub_group" action="action_product_sub_group" parent="product.prod_config_main" sequence="4"/>
 
         <!-- Product Form View -->
         <record id="view_product_groups_form" model="ir.ui.view">

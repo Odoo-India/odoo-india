@@ -31,7 +31,7 @@ Packing cost on invoice.
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
-    'depends': ['l10n_in_base', 'product_container'],
+    'depends': ['l10n_in_base', 'product_container', 'account'],
     'data': [
         'l10n_in_packing_invoice.xml'
     ],

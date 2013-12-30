@@ -20,7 +20,6 @@
 ##############################################################################
 
 import res_company
-import l10n_in_tax_retail_invoice
 import report
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

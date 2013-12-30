@@ -30,7 +30,16 @@ class account_invoice_line(osv.Model):
     }
 
     def product_id_change(self, cr, uid, ids, product, uom_id, qty=0, name='', type='out_invoice', partner_id=False, fposition_id=False, price_unit=False, currency_id=False, context=None, company_id=None):
-        res = super(account_invoice_line, self).product_id_change(self, cr, uid, ids, product=product, uom_id=uom_id, qty=qty, name=name, type=type, partner_id=partner_id, fposition_id=fposition_id, price_unit=price_unit, currency_id=currency_id, context=context, company_id=company_id)
+        res = super(account_invoice_line, self).product_id_change(cr, uid, ids, product=product, uom_id=uom_id, qty=qty, name=name, type=type, partner_id=partner_id, fposition_id=fposition_id, price_unit=price_unit, currency_id=currency_id, context=context, company_id=company_id)
+        
+        product_pool = self.pool.get('product.product')
+        
+        res['value']['packaging_cost'] = 0.0
+        if product:
+            package = product_pool.browse(cr, uid, product)
+            if package.container_id:
+                res['value']['packaging_cost'] = package.container_id.list_price
+                
         return res
 
 account_invoice_line()
@@ -49,7 +58,7 @@ class account_invoice(osv.osv):
             }
             for line in invoice.invoice_line:
                 res[invoice.id]['amount_untaxed'] += line.price_subtotal
-                res[invoice.id]['amount_packing'] += line.packaging_cost
+                res[invoice.id]['amount_packing'] += line.packaging_cost * line.quantity
             for line in invoice.tax_line:
                 res[invoice.id]['amount_tax'] += line.amount
             res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + res[invoice.id]['amount_packing'] + invoice.round_off

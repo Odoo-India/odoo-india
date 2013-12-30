@@ -24,18 +24,6 @@ from openerp.osv import fields, osv
 class res_company(osv.Model):
     _inherit = 'res.company'
 
-    _columns = {
-        'ecc_no': fields.char('ECC', size=32, help="Excise Control Code"),
-        'tin_no': fields.char('TIN', size=32, help="Tax Identification Number"),
-        'cst_no': fields.char('CST', size=32, help='Central Sales Tax Number of Company'),
-        'tin_date': fields.date('TIN Date', help="Tax Identification Number Date of Company"),
-        'cst_date': fields.date('CST Date', help='Central Sales Tax Date of Company'),
-        'vat_no' : fields.char('VAT Number', size=32, help="Value Added Tax Number"),
-        'packing_cost': fields.boolean('Allow packing cost feature', help="Allows you to use packing cost feature."),
-        'freight': fields.boolean('Allow freight feature', help="Allows you to use freight feature. This installs the module purchase_freight."),
-        'dealers_discount': fields.boolean('Allow dealers discount feature', help="Allows you to use dealers discount feature.")
-    }
-
     _header = """
     <header>
     <pageTemplate>

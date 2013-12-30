@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record model="ir.ui.view" id="res_company_tax_invoice_report">
+            <field name="name">res.company.tax.invoice.report</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="model">res.company</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@string='Configuration']" position="after">
+                    <page string="Tax Details">
+                        <group name="tax_info">
+                            <group>
+                                <field name="tin_no"/>
+                                <field name="cst_no"/>
+                                <field name="ecc_no"/>
+                                <field name="vat_no"/>
+                            </group>
+                            <group>
+                                <field name="tin_date"/>
+                                <field name="cst_date"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_invoice_inherit_form_reference_fields" model="ir.ui.view">
+            <field name="name">account.invoice.inherit.form.reference.fields</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name="origin" position="after">
+                    <field name="date"/>
+                    <field name="delivery_date"/>
+                    <field name="delivery_name"/>
+                    <field name="carrier_id" string="Dispatched Through"/>
+                    <field name="delivery_address_id"/>
+                    <field name="delivery_order_id"/>
+                </field>
+                <field name="date_due" position="after">
+                    <field name="dispatch_doc_no"/>
+                    <field name="dispatch_doc_date"/>
+                </field>
+                <field name="fiscal_position" position="after">
+                    <label string=""/>
+                    <field name="consignee_account" nolabel="1"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</openerp>

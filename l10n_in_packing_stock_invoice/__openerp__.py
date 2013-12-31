@@ -22,7 +22,7 @@
 {
     'name': 'Packing Cost Transfer to Invoice',
     'version': '1.0',
-    'category': 'Localization',
+    'category': 'Indian Localization',
     'summary':'Packing Cost transfer to Invoice from Warehouse',
     'description': """
 Packing Cost transfer to Invoice from Warehouse

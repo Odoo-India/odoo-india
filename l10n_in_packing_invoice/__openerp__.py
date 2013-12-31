@@ -22,7 +22,7 @@
 {
     'name': 'Packing Cost On Invoice',
     'version': '1.0',
-    'category': 'Localization',
+    'category': 'Indian Localization',
     'summary':'Packing cost on invoice',
     'description': """
 Packing cost on invoice.

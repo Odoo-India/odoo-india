@@ -21,7 +21,7 @@
 {
     'name': 'After Sales Service Contracts',
     'version': '1.0',
-    'category': 'Sales',
+    'category': 'Sales Management',
     'summary' : 'Manage Service Contracts',
     'description': """
 Manage service contract for the products after sales

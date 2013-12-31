@@ -21,8 +21,8 @@
 
 {
     'name' : 'Member Portal',
-    'version' : '1.1',
-    'author' : 'Mantavya Gajjar',
+    'version' : '1.0',
+    'author' : 'OpenERP SA',
     'sequence': 120,
     'category': 'Portal',
     'website' : 'http://www.mantavyagajjar.in',

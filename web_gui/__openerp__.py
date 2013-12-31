@@ -1,6 +1,8 @@
 {
     "name" : "Web GUI Improvement",
     "category": "Hidden",
+    "version" : '1.0',
+    "author" : 'OpenERP SA',
     "description":
         """
 OpenERP Web GUI Improvement

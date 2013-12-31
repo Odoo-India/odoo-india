@@ -22,7 +22,7 @@
 {
     'name' : 'l10n_in_base',
     'version' : '1.0',
-    'author' : 'OpenERP S.A.',
+    'author' : 'OpenERP SA',
     'sequence': 110,
     'category': 'Indian Localization',
     'website' : 'http://www.openerp.com',

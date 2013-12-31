@@ -42,7 +42,8 @@ class purchase_order_line(osv.osv):
     _columns = {
         'line_qty': fields.float('Purchase Quantity'),
         'line_uom_id':  fields.many2one('product.uom','Purchase UoM'),
-        'consignment_variation': fields.char('Variation(±)')
+        'consignment_variation': fields.char('Variation(±)'),
+        'process_move_id':fields.many2one('stock.moves.workorder', 'Process Line'),
     }
 
     _defaults = {
@@ -85,7 +86,7 @@ class purchase_order_line(osv.osv):
         context = context or {}
         models_data = self.pool.get('ir.model.data')
         # Get consume wizard
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_consignment_variation_po')
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_consignment_variation_po')
         current = self.browse(cr, uid, ids[0], context=context)
         context.update({
                         'uom': current.line_uom_id.name,

@@ -41,8 +41,8 @@
 					expr="//field[@name='workcenter_lines']/form//button[@name='button_draft']"
 					position="before">
 					<button name="add_consume_product" string="+(Add Product)"
-						help="Add consume product to work-order"
-						type="object" class="oe_highlight"  attrs="{'invisible': ['|',('state','not in', ('startworking','pause')), ('order_type','=','out')]}"/>
+						help="Add consume product to work-order" type="object" class="oe_highlight"
+						attrs="{'invisible': ['|',('state','not in', ('startworking','pause')), ('order_type','=','out')]}" />
 
 					<button name="dummy_button" string="⟳ (Update)" help="Take-In to WorkCenter"
 						type="object" class="oe_highlight" />
@@ -60,9 +60,10 @@
 				<xpath
 					expr="//field[@name='workcenter_lines']/form//field[@name='cycle']"
 					position="before">
+					<field name="delay" readonly="1" string="Total Time" />
 					<field name="date_start" readonly="1" string="Start Date" />
 					<field name="temp_date_finished" readonly="1" string="Stop Date" />
-					<field name="delay" readonly="1" string="Total Time" />
+
 				</xpath>
 
 				<xpath
@@ -132,9 +133,18 @@
 					position="replace">
 				</xpath>
 
-				<field name="location_dest_id" position="after">
-					<field name="moves_to_workorder" string="Raw materials moved to workcenter?"
+				<xpath expr="//sheet/group/group[3]" position="replace">
+				</xpath>
+
+				<field name="date_planned" position="after">
+					<field name="moves_to_workorder" string="Materials moved to workcenter?"
 						readonly="1" />
+					<field name="location_src_id" domain="[('usage','=','internal')]"
+						on_change="location_id_change(location_src_id,location_dest_id)" />
+				</field>
+
+				<field name="origin" position="after">
+					<field name="location_dest_id" domain="[('usage','=','internal')]" />
 				</field>
 
 				<xpath expr="//button[@name='button_produce']" position="before">
@@ -145,6 +155,12 @@
 				<xpath expr="//button[@name='button_produce']" position="replace" />
 				<xpath expr="//button[@string='Produce']" position="replace" />
 				<xpath expr="//button[@name='force_production']" position="replace" />
+
+                <xpath expr="//button[@name='action_cancel']" position="before">
+                    <button name="open_procurements" string="Open Procurements"
+                        states="confirmed" help="Procurments to check for waiting materials.."
+                        type="object" class="oe_highlight"/>
+                </xpath>
 
 				<xpath
 					expr="//field[@name='workcenter_lines']/tree//button[@name='button_done']"
@@ -173,6 +189,16 @@
 										<field name="rejected_qty" readonly="1" />
 										<field name="start_date" readonly="1" />
 										<field name="end_date" readonly="1" />
+
+										<!-- For OutSourcing Process -->
+										<field name="order_type" invisible="1" />
+										<field name="service_supplier_id"
+											attrs="{'invisible':[('order_type','=','in')], 'required':[('order_type','=','out')]}" />
+										<field name="po_order_id" readonly="1"
+											attrs="{'invisible':[('order_type','=','in')]}" />
+										<field name="delivery_order_id" readonly="1"
+											attrs="{'invisible':[('order_type','=','in')]}" />
+
 										<field name="state" readonly="1" />
 										<!-- field name="reason" readonly="1" / -->
 										<button name="button_to_start" string="Start" states="draft"
@@ -259,12 +285,11 @@
 				<xpath expr="//field[@name='workcenter_lines']/form//field[@name='name']"
 					position="after">
 					<field name="order_type" />
-					<field name="po_order_id" attrs="{'invisible':[('order_type','!=','out')]}"
-						readonly="1" />
-					<field name="service_supplier_id"
-						attrs="{'required':[('order_type','=','out')], 'invisible':[('order_type','!=','out')]}" />
-					<field name="service_description"
-						attrs="{'required':[('order_type','=','out')], 'invisible':[('order_type','!=','out')]}" />
+					<!-- field name="po_order_id" attrs="{'invisible':[('order_type','!=','out')]}" 
+						readonly="1" /> <field name="service_supplier_id" attrs="{'required':[('order_type','=','out')], 
+						'invisible':[('order_type','!=','out')]}" /> <field name="service_description" 
+						attrs="{'required':[('order_type','=','out')], 'invisible':[('order_type','!=','out')]}" 
+						/ -->
 
 				</xpath>
 
@@ -299,6 +324,16 @@
 									<field name="rejected_qty" readonly="1" />
 									<field name="start_date" readonly="1" />
 									<field name="end_date" readonly="1" />
+
+									<!-- For OutSourcing Process -->
+									<field name="order_type" invisible="1" />
+									<field name="service_supplier_id" readonly="1"
+										attrs="{'invisible':[('order_type','=','in')]}" />
+									<field name="po_order_id" readonly="1"
+										attrs="{'invisible':[('order_type','=','in')]}" />
+									<field name="delivery_order_id" readonly="1"
+										attrs="{'invisible':[('order_type','=','in')]}" />
+
 									<field name="state" readonly="1" />
 									<!-- field name="reason" readonly="1" / -->
 									<button name="button_to_start" string="Start" states="draft"
@@ -372,11 +407,9 @@
 
 				<field name="sequence" position="after">
 					<field name="order_type" readonly="1" />
-					<field name="po_order_id" attrs="{'invisible':[('order_type','!=','out')]}"
-						readonly="1" />
-					<field name="service_supplier_id"
-						attrs="{'required':[('order_type','=','out')], 'invisible':[('order_type','!=','out')]}"
-						readonly="1" />
+					<!-- field name="po_order_id" attrs="{'invisible':[('order_type','!=','out')]}" 
+						readonly="1" /> <field name="service_supplier_id" attrs="{'required':[('order_type','=','out')], 
+						'invisible':[('order_type','!=','out')]}" readonly="1" / -->
 				</field>
 
 				<button name="button_start_working" position="replace" />
@@ -413,8 +446,8 @@
 			<field name="arch" type="xml">
 				<field name="workcenter_id" position="after">
 					<field name="order_type" required="1" />
-					<field name="service_supplier_id"
-						attrs="{'required':[('order_type','=','out')], 'invisible':[('order_type','!=','out')]}" />
+					<!-- field name="service_supplier_id" attrs="{'required':[('order_type','=','out')], 
+						'invisible':[('order_type','!=','out')]}" / -->
 				</field>
 				<label for="note" position="replace" />
 				<field name="note" position="replace">

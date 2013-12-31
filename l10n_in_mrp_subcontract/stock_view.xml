@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<menuitem action="stock.action_picking_tree4" id="stock.menu_action_picking_tree4"
+			name="QC Inword" parent="stock.menu_stock_warehouse_mgmt" sequence="1" />
+		<menuitem action="stock.action_picking_tree6" id="stock.menu_action_picking_tree6"
+			name="Store Inword" parent="stock.menu_stock_warehouse_mgmt"
+			sequence="2" groups="stock.group_locations" />
+
+
+		<record id="stock_picking_out_service_out_order" model="ir.ui.view">
+			<field name="name">Outgoing picking Inherited Service Order</field>
+			<field name="model">stock.picking.out</field>
+			<field name="inherit_id" ref="stock.view_picking_out_form" />
+			<field name="arch" type="xml">
+				<field name="stock_journal_id" position="after">
+					<field name="service_order" readonly="1" attrs="{'invisible':[('service_order', '=', False)]}" />
+					<field name="workorder_id" readonly="1" attrs="{'invisible':[('workorder_id', '=', False)]}" />
+				</field>
+			</field>
+		</record>
+
+	</data>
+</openerp>

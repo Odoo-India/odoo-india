@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record model="ir.ui.view" id="product_form_view_p_coefficient">
+			<field name="name">product.product.procurement.p.coefficient</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="product.product_normal_form_view" />
+			<field name="arch" type="xml">
+				<field name="default_code" position="after">
+					<field name="p_coefficient" />
+					<field name="p_uom_id" />
+				</field>
+				<group name="procurement_uom" position="attributes">
+					<attribute name="invisible">1</attribute>
+				</group>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="product_form_view_production_location_required">
+			<field name="name">production.location.required</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="stock.view_normal_procurement_locations_form" />
+			<field name="arch" type="xml">
+				<field name="property_stock_production" position="attributes">
+					<attribute name="required">1</attribute>
+				</field>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="product_form_view_bom_button_hide">
+			<field name="name">product.product.button.hide</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="mrp.product_form_view_bom_button" />
+			<field name="arch" type="xml">
+				<button string="Bill of Materials" position="attributes">
+					<attribute name="attrs">{'invisible':[('supply_method', '=',
+						'buy')]}</attribute>
+				</button>
+			</field>
+		</record>
+
+		<record model="ir.ui.view"
+			id="product_form_view_procurement_button_hide_button">
+			<field name="name">product.product.procurement.hide.button</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="procurement.product_form_view_procurement_button" />
+			<field name="arch" type="xml">
+				<button string="Orderpoints" position="attributes">
+					<attribute name="attrs">{'invisible':[('supply_method', '=',
+						'produce')]}</attribute>
+				</button>
+			</field>
+		</record>
+
+	</data>
+</openerp>

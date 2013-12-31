@@ -49,11 +49,52 @@ def rounding(f, r):
 
 class mrp_production(osv.osv):
     _inherit = 'mrp.production'
+    _order = "id desc"
     _columns = {
         'workcenter_lines': fields.one2many('mrp.production.workcenter.line', 'production_id', 'Work Centers Utilisation',
             readonly=False, states={'done':[('readonly', True)]}),
-        'moves_to_workorder': fields.boolean('Raw Materials Moves To Work-Center?'),
+        'moves_to_workorder': fields.boolean('Materials Moves To Work-Center?'),
     }
+
+    def open_procurements(self, cr, uid, ids, context=None):
+        """
+        -Process
+            -Open Procurments, which is waiting for what .. ??
+            -User easily handles procurments from manufacturing order.
+        """
+        context = context or {}
+        procurment_obj = self.pool.get('procurement.order')
+        models_data = self.pool.get('ir.model.data')
+        data= self.browse(cr, uid, ids[0])
+        procurments_ids = procurment_obj.search(cr, uid, [('origin','ilike',':'+data.name)], context=context)
+        # Get opportunity views
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'procurement', 'procurement_form_view')
+        dummy, tree_view = models_data.get_object_reference(cr, uid, 'procurement', 'procurement_tree_view')
+        return {
+                'domain': "[('id','in',["+','.join(map(str, procurments_ids))+"])]",
+                'name': 'Procurements Order',
+                'view_mode': 'form',
+                'view_type': 'form',
+                'res_model': 'procurement.order',
+                'type': 'ir.actions.act_window',
+                'view_id': False,
+                'views': [(tree_view or False, 'tree'),
+                          (form_view or False, 'form'),
+                        ],
+                }
+
+    def action_cancel(self, cr, uid, ids, context=None):
+        """ Cancels the production order and related stock moves.
+        @return: True
+        -Process
+            -Cancel all process lines in workorder
+        """
+        for data in self.browse(cr, uid, ids, context=context):
+            for wrkorder in data.workcenter_lines:
+                for process_mv in wrkorder.moves_workorder:
+                    if process_mv.state == 'in_progress':
+                        raise osv.except_osv(_('Can"t cancel Production order!'), _('Process line has been started in workorder(%s)'%(wrkorder.name)))
+        return super(mrp_production, self).action_cancel(cr, uid, ids, context=context)
 
     def product_moves_to_workcenter(self, cr, uid, ids , context=None):
         """
@@ -388,6 +429,12 @@ class stock_moves_workorder(osv.osv):
         'rejected_qty': fields.float('Reject Quantity', digits_compute=dp.get_precision('Product Unit of Measure')),
         #'reason': fields.text('Reason'),
         'state': fields.selection(STATE_SELECTION, 'Status', readonly=True),
+
+        #For outsourcing process
+        'order_type': fields.related('workorder_id', 'order_type', type='selection', selection=[('in', 'Inside'), ('out', 'Outside')], string='Order Type', store=True), 
+        'service_supplier_id': fields.many2one('res.partner', 'Supplier',domain=[('supplier','=',True)]),
+        'po_order_id': fields.many2one('purchase.order', 'Service Order'),
+        'delivery_order_id': fields.many2one('stock.picking', 'Delivery Order'),
     }
 
     _defaults = {
@@ -404,8 +451,14 @@ class stock_moves_workorder(osv.osv):
                 -Update State, Start Date, Process Qty
             -Start WorkOrder Also
         """
-        wf_service = netsvc.LocalService("workflow")
+        #All process moves have its own PO, DO, INWORD
         currnt_data = self.browse(cr, uid, ids[0], context=context)
+        if currnt_data.order_type == 'out':
+            currnt_data.workorder_id.dummy_button()
+            if not currnt_data.service_supplier_id: raise osv.except_osv(_('Warning!!!'),_('1)Define supplier on line or \n2)Click "⟳ (Update)" button to save the record!'))
+            return self._call_service_order(cr, uid, ids, context=context)
+
+        wf_service = netsvc.LocalService("workflow")
         self.write(cr, uid, ids, {
                                   'state':'in_progress',
                                   'start_date':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
@@ -415,6 +468,27 @@ class stock_moves_workorder(osv.osv):
         wf_service.trg_validate(uid, 'mrp.production.workcenter.line', currnt_data.workorder_id.id, 'button_start_working', cr)
         #currnt_data.workorder_id.action_start_working(context=context)
         return True
+
+    def _call_service_order(self, cr, uid, ids, context=None):
+        """
+        Process
+            -call wizard to ask for service order
+        """
+        # Get service order wizard
+        models_data = self.pool.get('ir.model.data')
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_generate_service_order')
+
+        return {
+            'name': _('Service Order'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'context':context,
+            'res_model': 'generate.service.order',
+            'views': [(form_view or False, 'form')],
+            'type': 'ir.actions.act_window',
+            'target':'new'
+        }
+
 
     def button_to_reject(self, cr, uid, ids , context=None):
         """
@@ -426,7 +500,7 @@ class stock_moves_workorder(osv.osv):
         context = context or {}
         models_data = self.pool.get('ir.model.data')
         # Get Rejected wizard
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_process_qty_to_update_reject')
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_process_qty_to_update_reject')
         currnt_data = self.browse(cr, uid, ids[0], context=context)
         context.update({
                         'total_qty':currnt_data.total_qty,
@@ -456,7 +530,7 @@ class stock_moves_workorder(osv.osv):
         context = context or {}
         models_data = self.pool.get('ir.model.data')
         # Get Accepted wizard
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_process_qty_to_finished')
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_process_qty_to_finished')
         currnt_data = self.browse(cr, uid, ids[0], context=context)
         context.update({
                         'already_accepted_qty':currnt_data.accepted_qty,
@@ -486,7 +560,7 @@ class stock_moves_workorder(osv.osv):
         context = context or {}
         models_data = self.pool.get('ir.model.data')
         # Get Accepted wizard
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_process_qty_to_consume')
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_process_qty_to_consume')
         currnt_data = self.browse(cr, uid, ids[0], context=context)
         context.update({
                         'already_accepted_qty':currnt_data.accepted_qty,
@@ -539,7 +613,7 @@ class stock_moves_rejection(osv.osv):
         context = context or {}
         models_data = self.pool.get('ir.model.data')
         # Get Accepted wizard
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_reallocate_rejected_move')
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_reallocate_rejected_move')
         currnt_data = self.browse(cr, uid, ids[0], context=context)
         context.update({
                         'total_qty':currnt_data.rejected_qty,
@@ -567,9 +641,9 @@ class mrp_production_workcenter_line(osv.osv):
         'moves_workorder': fields.one2many('stock.moves.workorder', 'workorder_id', 'Raw Material To Process'),
         'moves_rejection': fields.one2many('stock.moves.rejection', 'rejected_workorder_id', 'Rejected Raw Material'),
         #'service_product_id': fields.many2one('product.product', 'Service Product'),
-        'service_supplier_id': fields.many2one('res.partner', 'Partner',domain=[('supplier','=',True)]),
-        'service_description': fields.text('Description'),
-        'po_order_id': fields.many2one('purchase.order', 'Service Order'),
+        #'service_supplier_id': fields.many2one('res.partner', 'Partner',domain=[('supplier','=',True)]),
+        #'service_description': fields.text('Description'),
+        #'po_order_id': fields.many2one('purchase.order', 'Service Order'),
         'order_type': fields.selection([('in', 'Inside'), ('out', 'Outside')], 'WorkOrder Process', readonly=True, states={'draft':[('readonly', False)]}),
         'workcenter_id': fields.many2one('mrp.workcenter', 'Work Center', required=True , readonly=True, states={'draft':[('readonly', False)]}),
         'temp_date_finished':fields.related('date_finished', type="datetime",store=True),
@@ -638,26 +712,25 @@ class mrp_production_workcenter_line(osv.osv):
             raise osv.except_osv(_('Raw Material not found!'), _('You cannot %s work-order without any raw material') % (process))
         return True
 
-    def _call_service_order(self, cr, uid, ids, context=None):
-        """
-        Process
-            -call wizard to ask for service order
-        """
-        # Get service order wizard
-        models_data = self.pool.get('ir.model.data')
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_generate_service_order')
-
-        return {
-            'name': _('Service Order'),
-            'view_type': 'form',
-            'view_mode': 'form',
-            'context':context,
-            'res_model': 'generate.service.order',
-            'views': [(form_view or False, 'form')],
-            'type': 'ir.actions.act_window',
-            'target':'new'
-        }
-
+#    def _call_service_order(self, cr, uid, ids, context=None):
+#        """
+#        Process
+#            -call wizard to ask for service order
+#        """
+#        # Get service order wizard
+#        models_data = self.pool.get('ir.model.data')
+#        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_generate_service_order')
+#
+#        return {
+#            'name': _('Service Order'),
+#            'view_type': 'form',
+#            'view_mode': 'form',
+#            'context':context,
+#            'res_model': 'generate.service.order',
+#            'views': [(form_view or False, 'form')],
+#            'type': 'ir.actions.act_window',
+#            'target':'new'
+#        }
 
     def action_draft(self, cr, uid, ids, context=None):
         """ 
@@ -677,13 +750,26 @@ class mrp_production_workcenter_line(osv.osv):
             -same super call
         """
         context = context or {}
-        wrk_rec = self.browse(cr, uid, ids[0], context=context)
-        if wrk_rec.order_type == 'out':
-            return self._call_service_order(cr, uid, ids, context=context)
-        #this is only for "Inside" Process
+
+#        This has been moved to process moves because all process moves have its own PO, DO, INWORD
+#        wrk_rec = self.browse(cr, uid, ids[0], context=context)
+#        if wrk_rec.order_type == 'out':
+#            return self._call_service_order(cr, uid, ids, context=context)
+
         self._check_for_process_none_qty(cr, uid, ids, 'start', context=context)
         self.modify_production_order_state(cr, uid, ids, 'start')
         self.write(cr, uid, ids, {'state':'startworking', 'date_start': time.strftime('%Y-%m-%d %H:%M:%S')}, context=context)
+        return True
+
+    def _check_out_all_lines(self, cr, uid, current_data, context=None):
+        """
+        Process(OutSide)
+            -Check to finished all process move lines
+        """
+        context = context or {}
+        for lines in current_data.moves_workorder:
+            if lines.state in ('draft','in_progress'):
+                raise osv.except_osv(_('Couldn"t finish workorder!'), _('You must finish all work-order process lines first.'))
         return True
 
     def action_finish(self, cr, uid, ids, context=None):
@@ -699,8 +785,10 @@ class mrp_production_workcenter_line(osv.osv):
         models_data = self.pool.get('ir.model.data')
         mrp_obj = self.pool.get('mrp.production')
         # Get Accepted wizard
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_all_in_once_qty_to_finished')
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_all_in_once_qty_to_finished')
         currnt_data = self.browse(cr, uid, ids[0], context=context)
+        if currnt_data.order_type == 'out':
+            self._check_out_all_lines(cr, uid, currnt_data, context)
         next_stage_workorder_id = mrp_obj.to_find_next_wrkorder(cr, uid, currnt_data.production_id.id, ids[0], currnt_data.sequence, context=context)
         all_process_moves_ids = []
         for find_pm in currnt_data.moves_workorder:
@@ -743,7 +831,7 @@ class mrp_production_workcenter_line(osv.osv):
         models_data = self.pool.get('ir.model.data')
         mrp_obj = self.pool.get('mrp.production')
         # Get Cancel wizard
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_all_in_once_qty_to_cancelled')
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_all_in_once_qty_to_cancelled')
         currnt_data = self.browse(cr, uid, ids[0], context=context)
         next_stage_workorder_id = mrp_obj.to_find_next_wrkorder(cr, uid, currnt_data.production_id.id, ids[0], currnt_data.sequence, context=context)
         all_process_moves_cancel_ids = []
@@ -804,7 +892,7 @@ class mrp_production_workcenter_line(osv.osv):
         context = context or {}
         models_data = self.pool.get('ir.model.data')
         # Get consume wizard
-        dummy, form_view = models_data.get_object_reference(cr, uid, 'motif', 'view_add_rawmaterial_to_consume')
+        dummy, form_view = models_data.get_object_reference(cr, uid, 'l10n_in_mrp_subcontract', 'view_add_rawmaterial_to_consume')
         current = self.browse(cr, uid, ids[0], context=context).production_id
         finish_move_id = False
 
@@ -847,9 +935,9 @@ mrp_production_workcenter_line()
 class mrp_routing_workcenter(osv.osv):
     _inherit = 'mrp.routing.workcenter'
     _columns = {
-        'service_supplier_id': fields.many2one('res.partner', 'Partner',domain=[('supplier','=',True)]),
-        'service_description': fields.text('Description'),
-        'po_order_id': fields.many2one('purchase.order', 'Service Order'),
+#        'service_supplier_id': fields.many2one('res.partner', 'Partner',domain=[('supplier','=',True)]),
+#        'service_description': fields.text('Description'),
+#        'po_order_id': fields.many2one('purchase.order', 'Service Order'),
         'order_type': fields.selection([('in', 'Inside'), ('out', 'Outside')], 'WorkOrder Process'),
     }
     _defaults = {'order_type':'in'}
@@ -911,7 +999,7 @@ class mrp_bom(osv.osv):
                         'workcenter_id': wc.id,
                         'order_type':wc_use.order_type,
                         'service_description':wc_use.note,
-                        'service_supplier_id':wc_use.service_supplier_id and wc_use.service_supplier_id.id or False,
+                        #'service_supplier_id':wc_use.service_supplier_id and wc_use.service_supplier_id.id or False,
                         'sequence': level+(wc_use.sequence or 0),
                         'cycle': cycle,
                         'hour': float(wc_use.hour_nbr*mult + ((wc.time_start or 0.0)+(wc.time_stop or 0.0)+cycle*(wc.time_cycle or 0.0)) * (wc.time_efficiency or 1.0)),

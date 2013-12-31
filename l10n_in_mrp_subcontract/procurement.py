@@ -21,13 +21,18 @@
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from openerp.osv import osv
+from openerp.osv import osv,fields
 from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP
 from openerp.tools.translate import _
 
 class procurement_order(osv.osv):
     _inherit = 'procurement.order'
+    _columns= {
+        'origin': fields.char('Source Document', size=64,
+            help="Reference of the document that created this Procurement.\n"
+            "This is automatically completed by OpenERP." ,readonly=True),
+    }
 
     def make_mo(self, cr, uid, ids, context=None):
         """

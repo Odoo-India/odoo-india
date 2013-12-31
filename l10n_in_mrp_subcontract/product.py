@@ -39,6 +39,22 @@ class product_product(osv.osv):
         'p_uom_id':_get_p_uom_id
     }
 
+    #Thats depends on industry
+#    def _manufacture_mto_produce(self, cr, uid, ids, context=None):
+#        """
+#        -Process
+#            -Configuration
+#                Manufacture product, always configure as "Make to Order".
+#        """
+#        for product in self.browse(cr, uid, ids, context=context):
+#            if product.supply_method == 'produce' and product.procure_method == "make_to_stock":
+#                return False
+#        return True
+#
+#    _constraints = [
+#        (_manufacture_mto_produce, '\nWrong Configuration !!!.\n Manufacture product, always configure as "Make to Order"', ['procure_method']),
+#    ]
+
 product_product()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

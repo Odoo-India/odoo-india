@@ -22,6 +22,8 @@
 {
     'name': 'Zoom Image',
     'category': 'Tools',
+    'version' : '1.0',
+    'author' : 'OpenERP SA',
     'description': """
 Zoom Images In Mail Attachment
 ==============================

@@ -22,7 +22,7 @@
 {
     'name' : 'Quotation Template',
     'version' : '1.0',
-    'author' : 'OpenERP S.A.',
+    'author' : 'OpenERP SA',
     'sequence': 120,
     'category': 'Sales Management',
     'website' : 'http://www.openerp.com',

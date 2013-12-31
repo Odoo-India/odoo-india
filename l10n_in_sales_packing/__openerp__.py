@@ -22,7 +22,7 @@
 {
     'name': 'Packing Cost',
     'version': '1.0',
-    'category': 'Localization',
+    'category': 'Indian Localization',
     'summary':'Packing cost on sales order',
     'description': """
 Module for packing cost.

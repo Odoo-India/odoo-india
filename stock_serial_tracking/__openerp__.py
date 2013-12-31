@@ -22,7 +22,7 @@
 {
     'name' : 'Serial Number Tracking',
     'version' : '1.0',
-    'author' : 'OpenERP S.A.',
+    'author' : 'OpenERP SA',
     'sequence': 120,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',

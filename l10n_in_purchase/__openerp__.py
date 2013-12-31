@@ -20,10 +20,10 @@
 ##############################################################################
 {
     'name' : 'l10n_in_purchase',
-    'version' : '0.1',
-    'author' : 'OpenERP S.A.',
+    'version' : '1.0',
+    'author' : 'OpenERP SA',
     'sequence': 111,
-    'category': 'Purchase Management',
+    'category': 'Indian Localization',
     'website' : 'http://www.openerp.com',
     'summary' : 'Purchase Management, Indian localization',
     'description' : """

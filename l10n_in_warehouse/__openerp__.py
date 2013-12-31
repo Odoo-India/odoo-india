@@ -21,7 +21,7 @@
 
 {
     'name' : 'Store & Purchase Management',
-    'version' : '1.1',
+    'version' : '1.0',
     'author' : 'OpenERP S.A.',
     'sequence': 120,
     'category': 'Warehouse Management',

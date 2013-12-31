@@ -1,6 +1,8 @@
 {
     "name" : "Group Expand Buttons",
     "category": "Hidden",
+    "version" : '1.0',
+    "author" : 'OpenERP SA',
     "description":
         """
 Group Expand Buttons

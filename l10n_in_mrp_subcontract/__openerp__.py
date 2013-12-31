@@ -22,11 +22,11 @@
 {
     'name': 'Indian Manufacturing Subcontract',
     'version': '1.0',
-    'category' : 'mrp',
+    'category' : 'Indian Localization',
     'description':'''
 		Extend the flow of manufacturing process
     ''',
-    'author': 'OpenERP sa',
+    'author': 'OpenERP SA',
     'depends': ['base','mrp_operations','mrp_jit','sale_stock'],
     'data': ['mrp_view.xml','purchase_view.xml','product_view.xml', 'stock_view.xml','wizard/process_qty_to_reject_view.xml','wizard/process_qty_to_finished_view.xml',
              'wizard/all_in_once_qty_to_finished_view.xml','wizard/all_in_once_qty_to_cancelled_view.xml',

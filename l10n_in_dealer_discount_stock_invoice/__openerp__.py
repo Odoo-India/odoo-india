@@ -22,7 +22,7 @@
 {
     'name': 'Dealer Discount Transfer to Invoice',
     'version': '1.0',
-    'category': 'Localization',
+    'category': 'Indian Localization',
     'summary':'Dealer Discount Transfer to Invoice from Warehouse',
     'description': """
 Dealer Discount Transfer to Invoice from Warehouse

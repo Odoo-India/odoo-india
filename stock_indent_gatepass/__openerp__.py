@@ -20,8 +20,8 @@
 ##############################################################################
 {
     'name' : 'Repair\'s Gatepass',
-    'version' : '0.1',
-    'author' : 'OpenERP S.A.',
+    'version' : '1.0',
+    'author' : 'OpenERP SA',
     'sequence': 110,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',

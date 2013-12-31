@@ -22,9 +22,9 @@
 {
     'name' : 'Excisable Receipt',
     'version' : '1.0',
-    'author' : 'OpenERP S.A.',
+    'author' : 'OpenERP SA',
     'sequence': 120,
-    'category': 'Warehouse Management',
+    'category': 'Indian Localization',
     'website' : 'http://www.openerp.com',
     'description' : """
 Excise Duties in the Goods Receipt

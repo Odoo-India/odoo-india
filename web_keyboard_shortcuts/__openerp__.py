@@ -21,7 +21,8 @@
 
 {
     'name': 'Keyboard shortcuts',
-    'version': '1.1',
+    'version' : '1.0',
+    'author' : 'OpenERP SA',
     'category': 'Tools',
     'description': """
 Shortcuts and GUI Improvement.

@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'Launchpad Analysis',
-    'version': '7.0',
+    'version': '1.0',
     'category': 'Generic Modules/Project Management',
     'description': """
 Launchpad Integration

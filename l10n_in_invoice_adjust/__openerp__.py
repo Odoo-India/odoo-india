@@ -22,7 +22,7 @@
 {
     'name': 'Payable vs Receivable Adjustments',
     'version': '1.0',
-    'category': 'Accounting',
+    'category': 'Indian Localization',
     'summary' : 'Adjust Payable vs Receivable Accounts',
     'description': """
 Adjust Customer and Suppliers Invoices

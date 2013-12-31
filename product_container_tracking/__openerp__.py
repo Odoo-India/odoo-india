@@ -21,7 +21,7 @@
 {
     'name' : 'Product Container Tracking',
     'version' : '1.0',
-    'author' : 'OpenERP S.A.',
+    'author' : 'OpenERP SA',
     'sequence': 110,
     'category': 'Warehouse Management',
     'website' : 'http://www.openerp.com',

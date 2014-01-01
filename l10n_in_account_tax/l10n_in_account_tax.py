@@ -245,6 +245,15 @@ class account_invoice(osv.osv):
     _columns = {
         'invoice_type_id': fields.many2one('account.invoice.type', 'Invoice')
     }
+    
+    def onchange_invoice_type(self, cr, uid, ids, invoice_type_id, context=None):
+        res = {}
+        if invoice_type_id:
+            type_pool = self.pool.get('account.invoice.type')
+            type = type_pool.browse(cr, uid, invoice_type_id)
+            res.update({'journal_id':type.journal_id.id})
+        
+        return {'value':res}
 res_company()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

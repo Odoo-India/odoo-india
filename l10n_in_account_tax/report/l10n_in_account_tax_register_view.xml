@@ -57,9 +57,9 @@
 					<filter string="Cancelled" name="state_confirmed" domain="[('state','=','cancel')]" />
 
 					<separator />
-					<filter string="All Tax Lines" name="is_form_all"
+					<filter string="All Sales" name="is_form_all"
 						domain="[('is_form','=','True')]" />
-					<filter string="Inter-State Tax Lines" name="is_form_forms"
+					<filter string="Inter-State Sales" name="is_form_forms"
 						domain="[('is_form','=','False')]" />
 					<separator />
 					<filter string="Customer Invoices" name="indent_purchase"
@@ -93,7 +93,7 @@
 			<field name="view_mode">tree</field>
 			<field name="search_view_id" ref="view_account_tax_register_search" />
 			<field name="view_id" ref="view_account_tax_register_tree" />
-			<field name="context">{'search_default_partner_id_group':1, 'search_default_is_form_forms':1, 'search_default_tax_code_id_group':1}</field>
+			<field name="context">{'search_default_is_form_forms':1}</field>
 		</record>
 
 		<!-- Indent Report Menus -->

@@ -54,6 +54,21 @@
 					<field name="date_iseeu" attrs="{'required':[('is_form','=',True)]}"
 						groups="l10n_in_base.group_inter_state_tax_config" />
 				</field>
+				<field name="partner_id" position="before">
+					<field name="invoice_type_id" domain="[('type','=',type)]"/>
+				</field>
+			</field>
+		</record>
+		
+		<!-- Account Tax Form View -->
+		<record id="view_invoice_form_supplier_inherit_form" model="ir.ui.view">
+			<field name="name">account.invoice.supplier.form</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_supplier_form" />
+			<field name="arch" type="xml">
+				<field name="partner_id" position="before">
+					<field name="invoice_type_id" domain="[('type','=',type)]"/>
+				</field>
 			</field>
 		</record>
 
@@ -108,9 +123,10 @@
 					
 					<field name="factor_base" invisible="True" />
 					<field name="factor_tax" invisible="True" />
+					<field name="is_form"/>
 					<field name="form_no" attrs="{'required':[('is_form','=',True)]}" />
 					<field name="date_iseeu" attrs="{'required':[('is_form','=',True)]}"/>
-					<field name="is_form" invisible="1"/>
+					
 				</tree>
 			</field>
 		</record>

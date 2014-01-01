@@ -220,5 +220,31 @@ class res_company(osv.osv):
     }
 res_company()
 
+class account_invoice_type(osv.osv):
+    
+    _name = 'account.invoice.type'
+    _description = "Invoice Type"
+    
+    _columns = {
+        'name': fields.char('Name', size=64),
+        'journal_id': fields.many2one('account.journal', 'Account Journal'),
+        'type': fields.selection([
+            ('out_invoice','Customer Invoice'),
+            ('in_invoice','Supplier Invoice'),
+            ('out_refund','Customer Refund'),
+            ('in_refund','Supplier Refund'),
+            ],'Type', select=True),
+        'report': fields.many2one('ir.actions.report.xml', 'Report', domain=[('model','=','account.invoice')])
+    }
+res_company()
+
+class account_invoice(osv.osv):
+    
+    _inherit = 'account.invoice'
+    
+    _columns = {
+        'invoice_type_id': fields.many2one('account.invoice.type', 'Invoice')
+    }
+res_company()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

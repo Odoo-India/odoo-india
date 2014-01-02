@@ -9,7 +9,7 @@
 			<field name="inherit_id" ref="account.view_tax_form" />
 			<field name="arch" type="xml">
 				<field name="description" position="after">
-					<field name="tax_categ" />
+					<field name="tax_categ" on_change="onchange_tax_type(name, tax_categ)"/>
 					<field name="is_form" groups="l10n_in_base.group_inter_state_tax_config" />
 				</field>
 			</field>

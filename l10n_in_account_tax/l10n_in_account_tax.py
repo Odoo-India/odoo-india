@@ -22,7 +22,8 @@
 import time
 from openerp.osv import fields, osv
 
-TAX_TYPES = [('excise', 'Central Excise'),
+TAX_TYPES = [
+    ('excise', 'Central Excise'),
     ('cess', 'Cess'),
     ('hedu_cess', 'Higher Education Cess'),
     ('vat', 'VAT'),
@@ -32,10 +33,13 @@ TAX_TYPES = [('excise', 'Central Excise'),
     ('tds','Tax Deducted at Source'),
     ('tcs','Tax Collected at Source'),
     ('cform','C Form'),
-    ('hform','H Form'),
-    ('fform','F Form'),
-    ('iform', 'I Form'), 
+    ('dform','D Form'),
     ('e1form', 'E1 Form'),
+    ('e2form', 'E2 Form'),
+    ('fform','F Form'),
+    ('hform','H Form'),
+    ('iform', 'I Form'),
+    ('jform', 'J Form'),
     ('import_duty','Import Duty'),
     ('other', 'Other')
 ]
@@ -45,7 +49,7 @@ class account_tax(osv.osv):
     
     _columns = {
         'tax_categ': fields.selection(TAX_TYPES, 'Tax Category'),
-        'is_form': fields.boolean('Inter-State Tax')
+        'is_form': fields.boolean('Form ?')
     }
     
     def _unit_compute(self, cr, uid, taxes, price_unit, product=None, partner=None, quantity=0):
@@ -129,7 +133,7 @@ class account_tax(osv.osv):
     def onchange_tax_type(self, cr, uid, ids, name, tax_type=False, context=None):
         result = {}
         vals = []
-        if tax_type == 'excise':
+        if tax_type == 'excise' and name:
             base_code_id = self.pool.get('account.tax.code').create(cr,uid,{'name':'Edu.cess 2% on '+name})
             vals = [(0,0, {'name':'Edu.cess 2% on '+name,
                  'tax_type':'cess',
@@ -150,11 +154,14 @@ class account_tax(osv.osv):
                 'base_code_id':base_code_id,
                 'tax_code_id':base_code_id,
                  })]
+            base_code_parent_id = self.pool.get('account.tax.code').create(cr,uid,{'name':name})
+            result['include_base_amount'] = True
+            result['base_code_id'] = base_code_parent_id
+            result['tax_code_id'] = base_code_parent_id
+        elif tax_type == 'excise' and not name:
+            result['tax_categ'] = False
+            result['name'] = 'Excise @ ?? %'
         result['child_ids'] = vals
-        base_code_parent_id = self.pool.get('account.tax.code').create(cr,uid,{'name':name})
-        result['include_base_amount'] = True
-        result['base_code_id'] = base_code_parent_id
-        result['tax_code_id'] = base_code_parent_id
         return {'value': result}
 
 class account_invoice_tax(osv.osv):

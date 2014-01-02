@@ -5,7 +5,9 @@
         <tr class="oe_header_row oe_custom_filter_tabs">
             <td colspan="4">
                 <div class="oe_searchview_custom_tabs_div">
-                    <ul class="oe_searchview_custom_tabs"/>
+                    <div>
+                        <ul class="oe_searchview_custom_tabs"/>
+                    </div>
                 </div>
             </td>
         </tr>

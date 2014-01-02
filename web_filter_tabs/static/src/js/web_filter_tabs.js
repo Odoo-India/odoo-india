@@ -8,7 +8,7 @@ instance.web.search.CustomFilters.include({
         this._super.apply(this, arguments);
         this.filters_tabs = {};
         this.$filters_tabs = {};
-        this.color_pallete = ['#4986E7', '#16A765', '#FFC7C7', '#FFF1C7', '#E3FFC7', '#C7FFD5', '#C7FFFF', '#C7D5FF', '#E3C7FF', '#FFC7F1'];
+        this.color_pallete = ['#4986E7', '#16A765', '#F24646', '#F0D278', '#A2F252', '#83F29F', '#7FF0F0', '#B0C1F5', '#D2ADF7', '#F7B0E5'];
         this.color_number = 0;
         //var parent = this.view.getParent();
         //$("<tr><td colspan='4' class='oe_custom_filter_tabs'></td></tr>").appendTo(parent.$el.find('.oe_view_manager_header'));
@@ -20,7 +20,7 @@ instance.web.search.CustomFilters.include({
         this._super.apply(this, arguments);
         //_(this.filters).map(_.bind(this.append_filter_tabs, this));
         var parent = this.view.getParent();
-        $('<div title="Add Current Filter"><span>+</span></div>').appendTo(parent.$el.find('.oe_searchview_custom_tabs_div'))
+        $('<div title="Add Current Filter"><span>+</span></div>').appendTo(parent.$el.find('.oe_searchview_custom_tabs_div div'))
         .addClass('oe_searchview_add_custom_tab')
         .click(function(){
             var $dialog = instance.web.dialog($('<div>'), {
@@ -68,7 +68,7 @@ instance.web.search.CustomFilters.include({
                     }
                 }, function() {
                     if(!$(this).hasClass('oe_active_tab'))
-                        $(this).css({'border-top': 'thin solid #414141'});
+                        $(this).css({'border-top': 'thin solid #cacaca'});
                 });
             $('<span></span>').appendTo($filter_tab);
             $filter_tab.find('span').text(filter.name);
@@ -142,7 +142,7 @@ instance.web.search.CustomFilters.include({
         });
         var previous_active_tab = _(this.$filters_tabs).detect(function($filter) {return $filter.hasClass('oe_active_tab');});
         if (previous_active_tab) {
-            previous_active_tab.removeClass('oe_active_tab').css({'border-top': 'thin solid #414141'});
+            previous_active_tab.removeClass('oe_active_tab').css({'border-top': 'thin solid #cacaca'});
         }
         if (!current) {
             return;
@@ -164,7 +164,7 @@ instance.web.search.CustomFilters.include({
         this._super.apply(this, arguments);
         var previous_active_tab = _(this.$filters_tabs).detect(function($filter) {return $filter.hasClass('oe_active_tab');});
         if (previous_active_tab) {
-            previous_active_tab.removeClass('oe_active_tab').css({'border-top': 'thin solid #414141'});
+            previous_active_tab.removeClass('oe_active_tab').css({'border-top': 'thin solid #cacaca'});
         }
     },
 });

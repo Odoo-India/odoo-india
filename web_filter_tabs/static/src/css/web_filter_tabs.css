@@ -3,8 +3,8 @@
 .openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_add_custom_tab {
     display: inline-block;
     padding-right: 10px;
-    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
-    border: thin solid #414141;
+    background-color: #ededed !important;
+    border: thin solid #cacaca;
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
     overflow: visible;
@@ -13,20 +13,23 @@
 .oe_searchview_custom_public > span, .oe_searchview_custom_private > span, .oe_searchview_add_custom_tab > span {
     padding: 5px;
 }
-.oe_header_row.oe_custom_filter_tabs div {
-    border-bottom: thin solid #CCCCCC;
-    padding-top: 4px;
+.openerp .oe_view_manager table.oe_view_manager_header .oe_header_row > td {
+    line-height: 30px !important;
 }
-/*
-.openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_custom_public:hover,
-.openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_custom_private:hover,
-.openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_add_custom_tab:hover {
-    background: #B8B3B3 !important;
+.oe_header_row.oe_custom_filter_tabs .oe_searchview_custom_tabs_div {
+    border-bottom: thin solid #cacaca;
+    margin-top: 4px;
 }
-*/
+.openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_add_custom_tab {
+    margin-top: 4px;
+}
 .openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_custom_public.oe_active_tab,
-.openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_custom_private.oe_active_tab {
-    background: white !important;
+.openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_custom_private.oe_active_tab,
+.openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_custom_private.oe_active_tab > a,
+.openerp .oe_view_manager table.oe_view_manager_header .oe_custom_filter_tabs .oe_searchview_custom_public.oe_active_tab > a {
+    background: #7C7BAD !important;
+    color: #FFFFFF !important;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
     //border: thin solid #333333;
 }
 .openerp .oe_view_manager table.oe_view_manager_header .oe_searchview_custom_tabs {

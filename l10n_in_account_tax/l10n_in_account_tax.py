@@ -22,7 +22,8 @@
 import time
 from openerp.osv import fields, osv
 
-TAX_TYPES = [('excise', 'Central Excise'),
+TAX_TYPES = [
+    ('excise', 'Central Excise'),
     ('cess', 'Cess'),
     ('hedu_cess', 'Higher Education Cess'),
     ('vat', 'VAT'),
@@ -32,10 +33,13 @@ TAX_TYPES = [('excise', 'Central Excise'),
     ('tds','Tax Deducted at Source'),
     ('tcs','Tax Collected at Source'),
     ('cform','C Form'),
-    ('hform','H Form'),
-    ('fform','F Form'),
-    ('iform', 'I Form'), 
+    ('dform','D Form'),
     ('e1form', 'E1 Form'),
+    ('e2form', 'E2 Form'),
+    ('fform','F Form'),
+    ('hform','H Form'),
+    ('iform', 'I Form'),
+    ('jform', 'J Form'),
     ('import_duty','Import Duty'),
     ('other', 'Other')
 ]
@@ -45,7 +49,7 @@ class account_tax(osv.osv):
     
     _columns = {
         'tax_categ': fields.selection(TAX_TYPES, 'Tax Category'),
-        'is_form': fields.boolean('Inter-State Tax')
+        'is_form': fields.boolean('Form ?')
     }
     
     def _unit_compute(self, cr, uid, taxes, price_unit, product=None, partner=None, quantity=0):
@@ -129,7 +133,7 @@ class account_tax(osv.osv):
     def onchange_tax_type(self, cr, uid, ids, name, tax_type=False, context=None):
         result = {}
         vals = []
-        if tax_type == 'excise':
+        if tax_type == 'excise' and name:
             base_code_id = self.pool.get('account.tax.code').create(cr,uid,{'name':'Edu.cess 2% on '+name})
             vals = [(0,0, {'name':'Edu.cess 2% on '+name,
                  'tax_type':'cess',
@@ -150,11 +154,14 @@ class account_tax(osv.osv):
                 'base_code_id':base_code_id,
                 'tax_code_id':base_code_id,
                  })]
+            base_code_parent_id = self.pool.get('account.tax.code').create(cr,uid,{'name':name})
+            result['include_base_amount'] = True
+            result['base_code_id'] = base_code_parent_id
+            result['tax_code_id'] = base_code_parent_id
+        elif tax_type == 'excise' and not name:
+            result['tax_categ'] = False
+            result['name'] = 'Excise @ ?? %'
         result['child_ids'] = vals
-        base_code_parent_id = self.pool.get('account.tax.code').create(cr,uid,{'name':name})
-        result['include_base_amount'] = True
-        result['base_code_id'] = base_code_parent_id
-        result['tax_code_id'] = base_code_parent_id
         return {'value': result}
 
 class account_invoice_tax(osv.osv):
@@ -220,5 +227,40 @@ class res_company(osv.osv):
     }
 res_company()
 
+class account_invoice_type(osv.osv):
+    
+    _name = 'account.invoice.type'
+    _description = "Invoice Type"
+    
+    _columns = {
+        'name': fields.char('Name', size=64),
+        'journal_id': fields.many2one('account.journal', 'Account Journal'),
+        'type': fields.selection([
+            ('out_invoice','Customer Invoice'),
+            ('in_invoice','Supplier Invoice'),
+            ('out_refund','Customer Refund'),
+            ('in_refund','Supplier Refund'),
+            ],'Type', select=True),
+        'report': fields.many2one('ir.actions.report.xml', 'Report', domain=[('model','=','account.invoice')])
+    }
+res_company()
+
+class account_invoice(osv.osv):
+    
+    _inherit = 'account.invoice'
+    
+    _columns = {
+        'invoice_type_id': fields.many2one('account.invoice.type', 'Invoice')
+    }
+    
+    def onchange_invoice_type(self, cr, uid, ids, invoice_type_id, context=None):
+        res = {}
+        if invoice_type_id:
+            type_pool = self.pool.get('account.invoice.type')
+            type = type_pool.browse(cr, uid, invoice_type_id)
+            res.update({'journal_id':type.journal_id.id})
+        
+        return {'value':res}
+res_company()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

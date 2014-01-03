@@ -8,8 +8,6 @@ instance.web.search.CustomFilters.include({
         this._super.apply(this, arguments);
         this.filters_tabs = {};
         this.$filters_tabs = {};
-        this.color_pallete = ['#4986E7', '#16A765', '#F24646', '#F0D278', '#A2F252', '#83F29F', '#7FF0F0', '#B0C1F5', '#D2ADF7', '#F7B0E5'];
-        this.color_number = 0;
         //var parent = this.view.getParent();
         //$("<tr><td colspan='4' class='oe_custom_filter_tabs'></td></tr>").appendTo(parent.$el.find('.oe_view_manager_header'));
         //var $tabs_template = QWeb.render('CustomFilter.Tabs', {'widget': this});
@@ -20,7 +18,7 @@ instance.web.search.CustomFilters.include({
         this._super.apply(this, arguments);
         //_(this.filters).map(_.bind(this.append_filter_tabs, this));
         var parent = this.view.getParent();
-        $('<div title="Add Current Filter"><span>+</span></div>').appendTo(parent.$el.find('.oe_searchview_custom_tabs_div div'))
+        $('<div title="Add Current Filter"><span></span></div>').appendTo(parent.$el.find('.oe_searchview_custom_tabs_div div'))
         .addClass('oe_searchview_add_custom_tab')
         .click(function(){
             var $dialog = instance.web.dialog($('<div>'), {
@@ -55,21 +53,15 @@ instance.web.search.CustomFilters.include({
             var id = filter.id;
             this.filters_tabs[key] = filter;
 
+            //Get the color number to add color class 
+            //so that border top color remains same according to length of filter 
+            var color_number = _(this.filters_tabs).toArray().length % 10;
             //Add tab in header row
             $filter_tab = this.$filters_tabs[key] = $('<li></li>')
                 .appendTo(parent.$el.find('.oe_searchview_custom_tabs'))
-                .addClass(filter.user_id ? 'oe_searchview_custom_private'
-                                         : 'oe_searchview_custom_public')
+                .addClass(filter.user_id ? 'oe_searchview_custom_private oe_color'+color_number
+                                         : 'oe_searchview_custom_public oe_color'+color_number)
                 .toggleClass('oe_searchview_custom_default', filter.is_default)
-                .hover(function(){
-                    if(!$(this).hasClass('oe_active_tab')) {
-                        self.color_number = Math.floor((Math.random()*10)+1);
-                        $(this).css({'border-top': 'thick solid '+self.color_pallete[self.color_number]});
-                    }
-                }, function() {
-                    if(!$(this).hasClass('oe_active_tab'))
-                        $(this).css({'border-top': 'thin solid #cacaca'});
-                });
             $('<span></span>').appendTo($filter_tab);
             $filter_tab.find('span').text(filter.name);
         }
@@ -108,7 +100,7 @@ instance.web.search.CustomFilters.include({
                 .appendTo($filter);
         }
         if(!$filter_tab.has('a').length) {
-            $('<a class="oe_searchview_custom_delete">x</a>')
+            $('<a class="oe_filter_tab_delete oe_searchview_custom_delete"></a>')
                 .click(function (e) {
                     e.stopPropagation();
                     if (!(filter.user_id || confirm(warning))) {
@@ -142,12 +134,12 @@ instance.web.search.CustomFilters.include({
         });
         var previous_active_tab = _(this.$filters_tabs).detect(function($filter) {return $filter.hasClass('oe_active_tab');});
         if (previous_active_tab) {
-            previous_active_tab.removeClass('oe_active_tab').css({'border-top': 'thin solid #cacaca'});
+            previous_active_tab.removeClass('oe_active_tab');
         }
         if (!current) {
             return;
         }
-        this.$filters_tabs[this.key_for(filter)].addClass('oe_active_tab').css({'border-top': 'thick solid '+this.color_pallete[this.color_number]});
+        this.$filters_tabs[this.key_for(filter)].addClass('oe_active_tab');
     },
     /*
     toggle_tabs: function(filter, preventSearch) {
@@ -164,7 +156,7 @@ instance.web.search.CustomFilters.include({
         this._super.apply(this, arguments);
         var previous_active_tab = _(this.$filters_tabs).detect(function($filter) {return $filter.hasClass('oe_active_tab');});
         if (previous_active_tab) {
-            previous_active_tab.removeClass('oe_active_tab').css({'border-top': 'thin solid #cacaca'});
+            previous_active_tab.removeClass('oe_active_tab');
         }
     },
 });

@@ -11,6 +11,10 @@
 					<field name="service_order" readonly="1" attrs="{'invisible':[('service_order', '=', False)]}" />
 					<field name="workorder_id" readonly="1" attrs="{'invisible':[('workorder_id', '=', False)]}" />
 				</field>
+				<field name="location_id" position="replace">
+				    <field name="location_id" groups="stock.group_locations" attrs="{'readonly':['|',('service_order', '=', True),('state','in',('confirmed','approved','done'))]}" />
+				</field>
+				
 				<xpath expr="//field[@name='order_line']/tree/field[@name='product_uom']"
 					position="after">
 					<field name="line_qty" required="1" />

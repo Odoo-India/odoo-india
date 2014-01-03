@@ -109,12 +109,18 @@
 				<xpath expr="//field[@name='move_lines2']" position="attributes">
 					<attribute name="readonly">1</attribute>
 				</xpath>
+
+                <xpath expr="//field[@name='move_lines2']/tree/field[@name='product_id']" position="after">
+                    <field name="extra_consumed" readonly="1"/>
+                </xpath>
+
 				<xpath expr="//field[@name='move_created_ids']" position="attributes">
 					<attribute name="readonly">1</attribute>
 				</xpath>
 				<xpath expr="//field[@name='move_created_ids2']" position="attributes">
 					<attribute name="readonly">1</attribute>
 				</xpath>
+
 
 				<xpath expr="//field[@name='workcenter_lines']/tree" position="attributes">
 					<attribute name="colors">blue:state in

@@ -23,7 +23,6 @@ import netsvc
 
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
-from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 STATE_SELECTION = [

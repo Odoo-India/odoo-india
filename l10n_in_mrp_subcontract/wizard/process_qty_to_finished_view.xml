@@ -7,14 +7,23 @@
 			<field name="model">process.qty.to.finished</field>
 			<field name="arch" type="xml">
 				<form string="Accept Quantity" version="7.0">
-					<group>
-						<field name="product_id" />
-					</group>
+					<div>
+						<h1>
+							<div>
+							<field name="product_id" class="oe_inline" />
+                            <span class="oe_grey" style="font-size:18px;padding: 10px"> moves to </span>
+                            <field name="next_stage_workorder_id"
+                                on_change="onchange_workorder_id(next_stage_workorder_id, production_id, context)"
+                                class="oe_inline"  options='{"no_open": True}'/>
+							</div>
+						</h1>
+					</div>
 					<group>
 						<group>
 							<field name="process_qty" string="In Process Qty" />
-							<field name="production_id" invisible="1"/>
-							<field name="next_stage_workorder_id" on_change="onchange_workorder_id(next_stage_workorder_id, production_id, context)" />
+							<field name="production_id" invisible="1" />
+							<!-- field name="next_stage_workorder_id" on_change="onchange_workorder_id(next_stage_workorder_id, 
+								production_id, context)" / -->
 						</group>
 						<group>
 							<field name="accepted_qty" />
@@ -22,7 +31,7 @@
 					</group>
 					<footer>
 						<button name="to_finish_qty" string="_Apply" type="object"
-							class="oe_highlight"/>
+							class="oe_highlight" />
 						or
 						<button string="Cancel" class="oe_link" special="cancel" />
 					</footer>

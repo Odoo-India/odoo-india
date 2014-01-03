@@ -7,9 +7,11 @@
 			<field name="model">process.qty.to.update.reject</field>
 			<field name="arch" type="xml">
 				<form string="Accept Or Reject Process" version="7.0">
-					<group>
-						<field name="product_id" />
-					</group>
+					<div class="oe_title">
+						<h1>
+							<field name="product_id" />
+						</h1>
+					</div>
 					<group>
 						<group>
 							<field name="process_qty" string="In Process Qty" />

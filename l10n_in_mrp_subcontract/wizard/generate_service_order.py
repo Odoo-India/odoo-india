@@ -21,7 +21,7 @@
 import time
 import netsvc
 
-from openerp.osv import fields, osv
+from openerp.osv import osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT

@@ -23,7 +23,6 @@ import netsvc
 
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
-from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 STATE_SELECTION = [
@@ -135,6 +134,7 @@ class all_in_once_qty_to_cancelled(osv.osv_memory):
         if current_wrkorder_line_id:
             self.pool.get('mrp.production.workcenter.line').action_cancel(cr,uid,[current_wrkorder_line_id])
             wf_service.trg_validate(uid, 'mrp.production.workcenter.line', current_wrkorder_line_id, 'button_cancel', cr)
+            #self.pool.get('mrp.production.workcenter.line').modify_production_order_state(cr, uid, [current_wrkorder_line_id], 'cancel')
 
         return True
 

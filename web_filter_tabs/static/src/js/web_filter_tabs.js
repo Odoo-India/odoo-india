@@ -18,7 +18,7 @@ instance.web.search.CustomFilters.include({
         this._super.apply(this, arguments);
         //_(this.filters).map(_.bind(this.append_filter_tabs, this));
         var parent = this.view.getParent();
-        $('<div title="Add Current Filter"><span></span></div>').appendTo(parent.$el.find('.oe_searchview_custom_tabs_div div'))
+        $('<div title="Add Current Filter"><span></span></div>').appendTo(parent.$el.find('.oe_searchview_custom_tabs_div'))
         .addClass('oe_searchview_add_custom_tab')
         .click(function(){
             var $dialog = instance.web.dialog($('<div>'), {

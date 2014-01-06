@@ -180,14 +180,13 @@
     <paraStyle name="P23" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT"/>
     <paraStyle name="P24" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT"/>
     <paraStyle name="P25" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT"/>
-    <paraStyle name="P26" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT"/>
+    <paraStyle name="P26" fontName="Helvetica" fontSize="8.0" leading="10"/>
     <paraStyle name="P27" fontName="Helvetica" fontSize="8.0" leading="10"/>
     <paraStyle name="P28" fontName="Helvetica" fontSize="8.0" leading="10"/>
-    <paraStyle name="P29" fontName="Helvetica" fontSize="8.0" leading="10"/>
-    <paraStyle name="P30" fontName="Helvetica" fontSize="8.0" leading="10"/>
-    <paraStyle name="P31" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
-    <paraStyle name="P32" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER"/>
-    <paraStyle name="P33" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
+    <paraStyle name="P29" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
+    <paraStyle name="P30" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER"/>
+    <paraStyle name="P31" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER"/>
+    <paraStyle name="P32" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
     <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
@@ -351,7 +350,7 @@
             <para style="P6">Description of Goods</para>
           </td>
           <td>
-            <para style="P32">
+            <para style="P30">
               <font face="Helvetica">Ex-chapeter No.</font>
             </para>
           </td>
@@ -360,7 +359,9 @@
             <para style="P6">Clasification</para>
           </td>
           <td>
-            <para style="P6">Quanti<font face="Helvetica">t</font>y</para>
+            <para style="P31">
+              <font face="Helvetica">Quantity</font>
+            </para>
           </td>
           <td>
             <para style="P6">Rate</para>
@@ -376,7 +377,7 @@
       <para style="P1">
         <font color="white"> </font>
       </para>
-      <blockTable colWidths="184.0,55.0,61.0,56.0,57.0,56.0,71.0" style="Table3">
+      <blockTable colWidths="183.0,55.0,62.0,56.0,57.0,56.0,71.0" style="Table3">
         <tr>
           <td>
             <para style="P14">[[ repeatIn(o.invoice_line, 'l') ]]</para>
@@ -414,10 +415,10 @@
           <font face="Helvetica"/>
         </para>
       </section>
-      <blockTable colWidths="183.0,54.0,61.0,57.0,57.0,56.0,71.0" style="Table11">
+      <blockTable colWidths="183.0,55.0,61.0,56.0,57.0,56.0,71.0" style="Table11">
         <tr>
           <td>
-            <para style="P30">
+            <para style="P28">
               <font face="Helvetica">[[ repeatIn(o.tax_line,'t') ]]</font>
             </para>
             <para style="Table Contents">
@@ -451,16 +452,16 @@
             </para>
           </td>
           <td>
-            <para style="P24">
+            <para style="P23">
               <font face="Helvetica">[[ formatLang(t.amount, digits=get_digits(dp='Account')) ]]</font>
             </para>
           </td>
         </tr>
       </blockTable>
-      <blockTable colWidths="183.0,55.0,61.0,57.0,57.0,57.0,70.0" style="Table12">
+      <blockTable colWidths="183.0,55.0,61.0,56.0,57.0,56.0,71.0" style="Table12">
         <tr>
           <td>
-            <para style="P33">
+            <para style="P32">
               <font face="Helvetica">Total:</font>
             </para>
           </td>
@@ -475,7 +476,7 @@
             </para>
           </td>
           <td>
-            <para style="P26">
+            <para style="P25">
               <font face="Helvetica">[[ get_quantity(0) ]]</font>
             </para>
           </td>
@@ -490,7 +491,7 @@
             </para>
           </td>
           <td>
-            <para style="P25">
+            <para style="P24">
               <font face="Helvetica">[[ formatLang(o.amount_total, digits=get_digits(dp='Account')) ]] [[ o.currency_id.symbol ]]</font>
             </para>
           </td>

@@ -23,6 +23,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from openerp.osv import osv,fields
 from openerp import netsvc
+from openerp import pooler
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
 
@@ -183,6 +184,102 @@ class procurement_order(osv.osv):
         self.message_post(cr, uid, ids, body=_("Draft Purchase Order created"), context=context)
         return res
 
+    def _procure_orderpoint_confirm(self, cr, uid, automatic=False,\
+            use_new_cursor=False, context=None, user_id=False):
+        '''
+        Create procurement based on Orderpoint
+        use_new_cursor: False or the dbname
+
+        @param self: The object pointer
+        @param cr: The current row, from the database cursor,
+        @param user_id: The current user ID for security checks
+        @param context: A standard dictionary for contextual values
+        @param param: False or the dbname
+        @return:  Dictionary of values
+
+        @Overwrite Process
+        -Process
+            -IDS TO GET Filter values
+                -Find procurement active_id,
+                    -Find product ids of those all procurements,
+                        -Find to all minimum order rules bases on product_ids.
+                            -Run those order points.
+        '''
+
+        def _get_product_ids(ids_to):
+            p_ids = []
+            procurement_obj = self.pool.get('procurement.order')
+            for proc in procurement_obj.browse(cr, uid, ids_to):
+                p_ids.append(proc.product_id.id)
+            return filter(None,set(p_ids))
+
+        if context is None:
+            context = {}
+        if use_new_cursor:
+            cr = pooler.get_db(use_new_cursor).cursor()
+        orderpoint_obj = self.pool.get('stock.warehouse.orderpoint')
+
+        procurement_obj = self.pool.get('procurement.order')
+        wf_service = netsvc.LocalService("workflow")
+        offset = 0
+        ids = [1]
+        if automatic:
+            self.create_automatic_op(cr, uid, context=context)
+        while ids:
+
+            #Process Overwrite
+            if context and context.get('active_model') == 'procurement.order' and context.get('active_ids'):
+                product_ids = _get_product_ids(context['active_ids'])
+                ids = orderpoint_obj.search(cr, uid, [('active','=',True),('product_id','in',product_ids)], offset=offset, limit=100)
+            else:
+                ids = orderpoint_obj.search(cr, uid, [], offset=offset, limit=100)
+
+            for op in orderpoint_obj.browse(cr, uid, ids, context=context):
+                prods = self._product_virtual_get(cr, uid, op)
+                if prods is None:
+                    continue
+                if prods < op.product_min_qty:
+                    qty = max(op.product_min_qty, op.product_max_qty)-prods
+
+                    reste = qty % op.qty_multiple
+                    if reste > 0:
+                        qty += op.qty_multiple - reste
+
+                    if qty <= 0:
+                        continue
+                    if op.product_id.type not in ('consu'):
+                        if op.procurement_draft_ids:
+                        # Check draft procurement related to this order point
+                            pro_ids = [x.id for x in op.procurement_draft_ids]
+                            procure_datas = procurement_obj.read(
+                                cr, uid, pro_ids, ['id', 'product_qty'], context=context)
+                            to_generate = qty
+                            for proc_data in procure_datas:
+                                if to_generate >= proc_data['product_qty']:
+                                    wf_service.trg_validate(uid, 'procurement.order', proc_data['id'], 'button_confirm', cr)
+                                    procurement_obj.write(cr, uid, [proc_data['id']],  {'origin': op.name}, context=context)
+                                    to_generate -= proc_data['product_qty']
+                                if not to_generate:
+                                    break
+                            qty = to_generate
+
+                    if qty:
+                        proc_id = procurement_obj.create(cr, uid,
+                                                         self._prepare_orderpoint_procurement(cr, uid, op, qty, context=context),
+                                                         context=context)
+                        wf_service.trg_validate(uid, 'procurement.order', proc_id,
+                                'button_confirm', cr)
+                        wf_service.trg_validate(uid, 'procurement.order', proc_id,
+                                'button_check', cr)
+                        orderpoint_obj.write(cr, uid, [op.id],
+                                {'procurement_id': proc_id}, context=context)
+            offset += len(ids)
+            if use_new_cursor:
+                cr.commit()
+        if use_new_cursor:
+            cr.commit()
+            cr.close()
+        return {}
 
 procurement_order()
 

@@ -67,6 +67,8 @@ class mrp_production(osv.osv):
         # Get opportunity views
         dummy, form_view = models_data.get_object_reference(cr, uid, 'procurement', 'procurement_form_view')
         dummy, tree_view = models_data.get_object_reference(cr, uid, 'procurement', 'procurement_tree_view')
+        context.update({'active_model': 'procurement.order', 'active_ids': procurments_ids})
+        procurment_obj._procure_orderpoint_confirm(cr, uid, context=context)
         return {
                 'domain': "[('id','in',["+','.join(map(str, procurments_ids))+"])]",
                 'name': 'Procurements Order',

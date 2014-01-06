@@ -33,8 +33,7 @@ Tax / Retail Invoice.
     'images': [],
     'depends': ['l10n_in_base', 'l10n_in_account_tax', 'l10n_in_dealer_discount_invoice', 'l10n_in_packing_invoice'],
     'data': [
-        'l10n_in_tax_retail_invoice.xml',
-        'report/tax_invoice.xml',
+        'report/tax_invoice.xml'
     ],
     'installable': True,
     'auto_install': False,

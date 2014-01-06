@@ -233,9 +233,9 @@
 					<group>
 						<label for="id" string="Invoice Printing" />
 						<div name="finance_invoice_features">
-							<div name='module_l10n_in_tax_invoice'>
-								<field name="module_l10n_in_tax_invoice" class="oe_inline" />
-								<label for="module_l10n_in_tax_invoice" />
+							<div name='module_l10n_in_tax_retail_invoice'>
+								<field name="module_l10n_in_tax_retail_invoice" class="oe_inline" />
+								<label for="module_l10n_in_tax_retail_invoice" />
 								<span class="oe_grey">Original, Duplicate, Triplicate and Extra Copy</span>
 							</div>
 

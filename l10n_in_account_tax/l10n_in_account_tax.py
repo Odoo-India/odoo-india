@@ -263,4 +263,14 @@ class account_invoice(osv.osv):
         return {'value':res}
 res_company()
 
+class product_category(osv.Model):
+    _inherit = 'product.category'
+
+    _columns = {
+        'hsn': fields.char('HSN Classification', size=256),
+        'chapter_no': fields.char('Ex-Chapeter No.', size=256),
+    }
+
+product_category()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -27,7 +27,9 @@ class stock_move(osv.osv):
     """
     _inherit = 'stock.move'
     _columns = {
-        'moves_to_workorder': fields.boolean('Raw Material Move To Work-Center?')
+        'moves_to_workorder': fields.boolean('Raw Material Move To Work-Center?'),
+        #This field used for add raw materials dynamicaly on production order
+        'extra_consumed': fields.boolean('Extra Consumed ?',help="Extra consumed raw material on production order")
     }
 
     def _prepare_chained_picking(self, cr, uid, picking_name, picking, picking_type, moves_todo, context=None):

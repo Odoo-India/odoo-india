@@ -20,7 +20,7 @@
 ##############################################################################
 import time
 
-from openerp.osv import fields, osv, orm
+from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
@@ -88,6 +88,8 @@ class add_rawmaterial_to_consume(osv.osv_memory):
             'move_dest_id': finish_move_id,
             'state': 'waiting',
             'company_id': production.company_id.id,
+            #True means its consumed dynamically on production order.
+            'extra_consumed':True
         })
         production.write({'move_lines': [(4, move_id)]}, context=context)
         return move_id

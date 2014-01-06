@@ -7,17 +7,25 @@
 			<field name="model">reallocate.rejected.move</field>
 			<field name="arch" type="xml">
 				<form string="Reallocate Product" version="7.0">
-					<group>
-						<field name="product_id" />
-					</group>
+
+					<div>
+						<h1>
+							<div>
+								<field name="product_id" class="oe_inline" />
+								<span class="oe_grey" style="font-size:18px;padding: 10px"> re-allocate to </span>
+								<field name="next_stage_workorder_id"
+									on_change="onchange_workorder_id(next_stage_workorder_id, production_id, context)"
+									class="oe_inline" options='{"no_open": True}' />
+							</div>
+						</h1>
+					</div>
 					<group>
 						<group>
 							<field name="total_qty" string="Reallocate Quantity" />
 							<field name="production_id" invisible="1" />
 						</group>
 						<group>
-                            <field name="next_stage_workorder_id"
-                                on_change="onchange_workorder_id(next_stage_workorder_id, production_id, context)" />
+
 						</group>
 					</group>
 					<footer>

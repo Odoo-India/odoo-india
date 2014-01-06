@@ -33,7 +33,7 @@ class indian_base_configuration(osv.osv_memory):
         'module_product_coding': fields.boolean('Define automatic codings on products',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
-        'group_major_sub_group_config':fields.boolean('Allows to create major/sub groups', implied_group='l10n_in_base.group_major_sub_group_config', help = """TODO"""),
+        'group_major_sub_group_config':fields.boolean('Allows to configure Major and Sub Groups', implied_group='l10n_in_base.group_major_sub_group_config', help = """TODO"""),
         'module_product_container': fields.boolean('Define container or packaging and repairable products',
             help = """Allows gate keeper to pass the outgoing materials, products, etc. and keeps track of returning items.
             It installs the stock_gatepass module."""),
@@ -101,7 +101,7 @@ class indian_base_configuration(osv.osv_memory):
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
         
-        'module_l10n_in_tax_invoice': fields.boolean('Print Tax / Retail Invoice in 4 copies',
+        'module_l10n_in_tax_retail_invoice': fields.boolean('Print Tax / Retail Invoice in 4 copies',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
                 

@@ -25,10 +25,7 @@ from openerp.osv import osv, fields
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.tools import float_compare
-from datetime import datetime
-from operator import itemgetter
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
-from openerp.tools.translate import _
 from openerp import tools
 
 STATE_SELECTION = [
@@ -70,6 +67,8 @@ class mrp_production(osv.osv):
         # Get opportunity views
         dummy, form_view = models_data.get_object_reference(cr, uid, 'procurement', 'procurement_form_view')
         dummy, tree_view = models_data.get_object_reference(cr, uid, 'procurement', 'procurement_tree_view')
+        context.update({'active_model': 'procurement.order', 'active_ids': procurments_ids})
+        procurment_obj._procure_orderpoint_confirm(cr, uid, context=context)
         return {
                 'domain': "[('id','in',["+','.join(map(str, procurments_ids))+"])]",
                 'name': 'Procurements Order',
@@ -161,7 +160,8 @@ class mrp_production(osv.osv):
 
             # Calculate already consumed qtys
             for consumed in production.move_lines2:
-                if consumed.scrapped:
+                #added dynamic raw material to compare with moves lines(Because of wan't breack any standard flow)
+                if consumed.scrapped or consumed.extra_consumed:
                     continue
                 if not consumed_data.get(consumed.product_id.id, False):
                     consumed_data[consumed.product_id.id] = 0
@@ -364,7 +364,7 @@ class mrp_production(osv.osv):
             - blank workorder lines
         """
         if default is None: default = {}
-        default.update({'workcenter_lines' : []})
+        default.update({'workcenter_lines' : [],'moves_to_workorder':False})
         return super(mrp_production, self).copy(cr, uid, id, default, context)
 
     def _find_production_id(self, cr, uid, workorder):
@@ -638,6 +638,7 @@ stock_moves_rejection()
 class mrp_production_workcenter_line(osv.osv):
     _inherit = 'mrp.production.workcenter.line'
     _columns = {
+        'sequence': fields.integer('Sequence', required=True, help="Gives the sequence order when displaying a list of work orders.",readonly=True, states={'draft':[('readonly', False)]}),
         'moves_workorder': fields.one2many('stock.moves.workorder', 'workorder_id', 'Raw Material To Process'),
         'moves_rejection': fields.one2many('stock.moves.rejection', 'rejected_workorder_id', 'Rejected Raw Material'),
         #'service_product_id': fields.many2one('product.product', 'Service Product'),

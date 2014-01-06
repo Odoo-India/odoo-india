@@ -99,7 +99,7 @@ class stock_indent_analysis_report(osv.osv):
                 t.date_iseeu as date_iseeu,
                 i.date_invoice as date_invoice, 
                 i.partner_id as partner_id, 
-                i.amount_untaxed as amount_untaxed, 
+                i.amount_total as amount_untaxed, 
                 i.type as type, 
                 i.state as state,
                 i.number as number, 

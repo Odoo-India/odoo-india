@@ -7,15 +7,22 @@
 			<field name="model">add.rawmaterial.to.consume</field>
 			<field name="arch" type="xml">
 				<form string="Add Material" version="7.0">
+					<div class="oe_title">
+						<div class="oe_edit_only">
+							<label for="product_id" string="Product Name" />
+						</div>
+						<h1>
+							<field name="product_id"
+								domain="[('type','!=','service'),('supply_method','=','buy')]"
+								on_change="onchange_product_id(product_id)" />
+						</h1>
+					</div>
 					<group>
-						<group>
-							<field name="product_id" domain="[('type','!=','service'),('supply_method','=','buy')]" on_change="onchange_product_id(product_id)"/>
-						</group>
-						<group>
-						      <field name="uom_id" />
-						    
-							<field name="qty_to_consume" />
-						</group>
+					   <label for="qty_to_consume"/>
+    					   <div class="address_format">
+							   <field name="qty_to_consume" style="width: 13%%"  />
+							   <field name="uom_id"  style="width: 20%%"/>
+						   </div>
 					</group>
 					<footer>
 						<button name="add_consume_qty" string="_Apply" type="object"

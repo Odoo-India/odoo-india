@@ -19,6 +19,7 @@
 #
 ##############################################################################
 
+import l10n_in_tax_retail_invoice
 import res_company
 import report
 

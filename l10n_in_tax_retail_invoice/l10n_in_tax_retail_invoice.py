@@ -20,13 +20,14 @@
 ##############################################################################
 from openerp.osv import fields, osv
 
-class product_product(osv.Model):
-    _inherit = 'product.product'
+class product_category(osv.Model):
+    _inherit = 'product.category'
 
     _columns = {
         'hsn': fields.char('HSN Classification', size=256),
+        'chapter_no': fields.char('Ex-chapeter No.', size=256),
     }
 
-product_product()
+product_category()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

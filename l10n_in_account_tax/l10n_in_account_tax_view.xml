@@ -142,6 +142,20 @@
 
 		<menuitem action="action_view_invoice_tax_tree" id="menu_action_view_invoice_tax_tree"
 			parent="account.menu_finance_entries" sequence="0" groups="l10n_in_base.group_inter_state_tax_config"/>
-
+	
+		<!-- Product Category Form View -->
+        <record id="view_product_category_inherited_form" model="ir.ui.view">
+            <field name="name">product.category.inherited.form</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="account.view_category_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@string='Account Properties']" position="after">
+                    <group string="Product Classification" colspan="2" name="Classification">
+                        <field name="hsn" groups="l10n_in_base.group_cst_config"/>
+                        <field name="chapter_no" groups="l10n_in_base.group_excise_config"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
 	</data>
 </openerp>

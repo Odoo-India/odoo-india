@@ -27,11 +27,21 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 class account_invoice(osv.Model):
     _inherit = 'account.invoice'
 
+    def _total_dealer_disc(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for invoice in self.browse(cr, uid, ids, context=context):
+            total = 0.0
+            for line in invoice.invoice_line:
+                total += line.dealer_discount
+            res[invoice.id] = total
+        return res
+
     _columns = {
         'dealer_id': fields.many2one('res.partner', 'Dealer', readonly=True, states={'draft':[('readonly',False)]}),
-        'dealer_pricelist_id': fields.many2one('product.pricelist', 'Dealer Pricelist', domain=[('type','=','sale')])
+        'dealer_pricelist_id': fields.many2one('product.pricelist', 'Dealer Pricelist', domain=[('type','=','sale')]),
+        'total_dealer_disc': fields.function(_total_dealer_disc, digits_compute=dp.get_precision('Account'), string='Total Dealer Disc.'),
     }
-    
+
     def onchange_dealer_id(self, cr, uid, ids, part, context=None):
         if not part:
             return {'value': {'dealer_pricelist_id': False}}

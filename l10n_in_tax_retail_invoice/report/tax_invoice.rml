@@ -424,7 +424,7 @@
         <tr>
           <td>
             <para style="P9">[[ repeatIn(o.tax_line,'t') ]]</para>
-            <para style="P16">
+            <para style="P10">
               <font face="Helvetica" size="8.0">[[ t.name ]]</font>
               <font face="Helvetica" size="8.0">[[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font')]]</font>
             </para>

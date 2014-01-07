@@ -192,17 +192,14 @@
     <paraStyle name="P9" fontName="Helvetica" fontSize="8.0" leading="10" alignment="LEFT"/>
     <paraStyle name="P10" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT"/>
     <paraStyle name="P11" fontName="Helvetica" fontSize="8.0" leading="10" alignment="CENTER"/>
-    <paraStyle name="P12" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER"/>
-    <paraStyle name="P13" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
-    <paraStyle name="P14" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="LEFT"/>
-    <paraStyle name="P15" fontName="Helvetica" fontSize="8.0" leading="10"/>
-    <paraStyle name="P16" fontName="Helvetica" fontSize="8.0" leading="10" alignment="LEFT"/>
-    <paraStyle name="P17" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT"/>
-    <paraStyle name="P18" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT"/>
+    <paraStyle name="P12" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
+    <paraStyle name="P13" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="CENTER"/>
+    <paraStyle name="P14" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
+    <paraStyle name="P15" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="LEFT"/>
+    <paraStyle name="P16" fontName="Helvetica" alignment="RIGHT"/>
+    <paraStyle name="P17" fontName="Helvetica" fontSize="8.0" leading="10" spaceBefore="14.0" spaceAfter="14.0"/>
+    <paraStyle name="P18" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
     <paraStyle name="P19" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT"/>
-    <paraStyle name="P20" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
-    <paraStyle name="P21" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
-    <paraStyle name="P22" fontName="Helvetica" alignment="RIGHT"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
     <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
@@ -230,7 +227,7 @@
           <blockTable colWidths="264.0" style="Table8">
             <tr>
               <td>
-                <para style="P14">Company</para>
+                <para style="P15">Company</para>
                 <para style="P8">[[ (o.company_id and o.company_id.partner_id and o.company_id.partner_id.title.name) or '' ]] [[ (o.company_id and o.company_id.partner_id and o.company_id.partner_id.name) or '' ]] [[ display_address(o.company_id.partner_id) or '' ]]</para>
               </td>
             </tr>
@@ -243,11 +240,11 @@
           <blockTable colWidths="132.0,132.0" style="Table9">
             <tr>
               <td>
-                <para style="P13">Invoice No</para>
+                <para style="P14">Invoice No</para>
                 <para style="P8">[[ (o.number) or '' ]]</para>
               </td>
               <td>
-                <para style="P13"><font face="Helvetica">Invoice </font>Date</para>
+                <para style="P14"><font face="Helvetica">Invoice </font>Date</para>
                 <para style="P8">[[ formatLang((o.date_invoice), date=True) or ' ' ]]</para>
               </td>
             </tr>
@@ -257,7 +254,7 @@
                 <para style="P8">[[ (o.number) or '' ]]</para>
               </td>
               <td>
-                <para style="P13">Dispatch Date</para>
+                <para style="P14">Dispatch Date</para>
                 <para style="P8">[[ formatLang((o.date_invoice), date=True) or ' ' ]]</para>
               </td>
             </tr>
@@ -272,7 +269,7 @@
           <blockTable colWidths="264.0" style="Table4">
             <tr>
               <td>
-                <para style="P13">Buyer's Name</para>
+                <para style="P14">Buyer's Name</para>
                 <para style="P8">[[ (o.partner_id and o.partner_id.title and o.partner_id.title.name) or '' ]] [[ (o.partner_id and o.partner_id.name) or '' ]] [[ display_address(o.partner_id) ]]</para>
               </td>
             </tr>
@@ -285,21 +282,21 @@
           <blockTable colWidths="132.0,132.0" style="Table5">
             <tr>
               <td>
-                <para style="P13">Excise Invoice No</para>
+                <para style="P14">Excise Invoice No</para>
                 <para style="P7">[[ (o.number) or '' ]]</para>
               </td>
               <td>
-                <para style="P13"><font face="Helvetica">Excise Invoice </font>Date</para>
+                <para style="P14"><font face="Helvetica">Excise Invoice </font>Date</para>
                 <para style="P7">[[ formatLang((o.date_invoice), date=True) or ' ' ]]</para>
               </td>
             </tr>
             <tr>
               <td>
-                <para style="P13">Buyers Order No</para>
+                <para style="P14">Buyers Order No</para>
                 <para style="P7">[[ (o.name) or '' ]]</para>
               </td>
               <td>
-                <para style="P13"><font face="Helvetica">Buyers Order </font>Date</para>
+                <para style="P14"><font face="Helvetica">Buyers Order </font>Date</para>
                 <para style="P7">[[ formatLang((o.date_invoice), date=True) or ' ' ]]</para>
               </td>
             </tr>
@@ -314,7 +311,7 @@
           <blockTable colWidths="264.0" style="Table6">
             <tr>
               <td>
-                <para style="P13">Consignee</para>
+                <para style="P14">Consignee</para>
                 <para style="P7">[[ (o.delivery_address_id and o.delivery_address_id.title and o.delivery_address_id.title.name) or '' ]] [[ display_address(o.delivery_address_id) ]]</para>
                 <para style="P8">
                   <font color="white"> </font>
@@ -330,23 +327,23 @@
           <blockTable colWidths="132.0,132.0" style="Table10">
             <tr>
               <td>
-                <para style="P13">Delivery Note</para>
+                <para style="P14">Delivery Note</para>
                 <para style="P7">[[ (o.number) or '' ]]</para>
               </td>
               <td>
-                <para style="P13"><font face="Helvetica">Delivery </font>Date</para>
+                <para style="P14"><font face="Helvetica">Delivery </font>Date</para>
                 <para style="P7">[[ (o.number) or '' ]]</para>
               </td>
             </tr>
             <tr>
               <td>
-                <para style="P13">LR Number</para>
+                <para style="P14">LR Number</para>
                 <para style="P7">
                   <font color="white"> </font>
                 </para>
               </td>
               <td>
-                <para style="P13">Date</para>
+                <para style="P14">Date</para>
               </td>
             </tr>
           </blockTable>
@@ -363,26 +360,26 @@
       <blockTable colWidths="215.0,54.0,54.0,54.0,54.0,54.0,54.0" style="Table2">
         <tr>
           <td>
-            <para style="P12">Description of Goods</para>
+            <para style="P13">Description of Goods</para>
           </td>
           <td>
-            <para style="P12">Ex-chapeter No.</para>
+            <para style="P13">Ex-chapeter No.</para>
           </td>
           <td>
-            <para style="P12">Tariff / HSN</para>
-            <para style="P12">Clasification</para>
+            <para style="P13">Tariff / HSN</para>
+            <para style="P13">Clasification</para>
           </td>
           <td>
-            <para style="P12">Quantity</para>
+            <para style="P13">Quantity</para>
           </td>
           <td>
-            <para style="P12">Rate</para>
+            <para style="P13">Rate</para>
           </td>
           <td>
-            <para style="P12">Discount</para>
+            <para style="P13">Discount</para>
           </td>
           <td>
-            <para style="P12">Amount</para>
+            <para style="P13">Amount</para>
           </td>
         </tr>
       </blockTable>
@@ -427,7 +424,7 @@
         <tr>
           <td>
             <para style="P9">[[ repeatIn(o.tax_line,'t') ]]</para>
-            <para style="P22">
+            <para style="P16">
               <font face="Helvetica" size="8.0">[[ t.name ]]</font>
               <font face="Helvetica" size="8.0">[[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font')]]</font>
             </para>
@@ -458,14 +455,14 @@
             </para>
           </td>
           <td>
-            <para style="P18">[[ formatLang(t.amount, digits=get_digits(dp='Account')) ]]</para>
-            <para style="P18">
+            <para style="P10">[[ formatLang(t.amount, digits=get_digits(dp='Account')) ]]</para>
+            <para style="P10">
               <font color="white"> </font>
             </para>
-            <para style="P18">
+            <para style="P10">
               <font color="white"> </font>
             </para>
-            <para style="P18">
+            <para style="P10">
               <font color="white"> </font>
             </para>
           </td>
@@ -474,9 +471,7 @@
       <blockTable colWidths="215.0,54.0,54.0,54.0,54.0,54.0,54.0" style="Table12">
         <tr>
           <td>
-            <para style="P21">
-              <font face="Helvetica">Dealer Disc.</font>
-            </para>
+            <para style="P18">Dealer Disc.</para>
           </td>
           <td>
             <para style="P6">
@@ -504,16 +499,14 @@
             </para>
           </td>
           <td>
-            <para style="P19">
-              <font face="Helvetica">[[ formatLang(o.total_dealer_disc, digits=get_digits(dp='Account')) ]]</font>
-            </para>
+            <para style="P19">[[ formatLang(o.total_dealer_disc, digits=get_digits(dp='Account')) ]]</para>
           </td>
         </tr>
       </blockTable>
       <blockTable colWidths="215.0,54.0,54.0,54.0,54.0,54.0,54.0" style="Table13">
         <tr>
           <td>
-            <para style="P20">Total:</para>
+            <para style="P12">Total:</para>
           </td>
           <td>
             <para style="P6">
@@ -550,13 +543,15 @@
     <para style="P2">
       <font color="white"> </font>
     </para>
-    <para style="P2">Remarks: [[ (o.comment) or '' ]] </para>
-    <para style="P2">Company's VAT TIN: </para>
-    <para style="P2">Company's CST No.: </para>
-    <para style="P2">Company's ECC No.: </para>
-    <para style="P2">Buyer's VAT TIN: [[ (o.partner_id.tin_no) or '' ]] </para>
-    <para style="P2">Buyer's CST No.: [[ (o.partner_id.cst_no) or '' ]]</para>
-    <para style="P2"/>
+    <para style="P17">Remarks: [[ (o.comment) or '' ]] </para>
+    <para style="P17">Company's VAT TIN: </para>
+    <para style="P17">Company's CST No.: </para>
+    <para style="P17">Company's ECC No.: </para>
+    <para style="P17">Buyer's VAT TIN: [[ (o.partner_id.tin_no) or '' ]] </para>
+    <para style="P17">Buyer's CST No.: [[ (o.partner_id.cst_no) or '' ]]</para>
+    <para style="P2">
+      <font color="white"> </font>
+    </para>
     <blockTable colWidths="269.0,269.0" style="Table1">
       <tr>
         <td>

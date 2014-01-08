@@ -20,13 +20,16 @@
 ##############################################################################
 
 {
-    'name': 'Packing Cost On Invoice',
+    'name': 'Packing Cost on Invoice',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary':'Packing cost on invoice',
+    'summary':'Packing Cost on Invoice',
     'description': """
-Packing cost on invoice.
-========================
+Packing Cost on Invoice
+===========================
+This module allows you to manage packing cost of the products on invoices.
+
+When the product is packed in a container, you can take into account the cost of the container in the invoice.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

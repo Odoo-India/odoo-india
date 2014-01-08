@@ -27,9 +27,17 @@
     'website' : 'http://www.openerp.com',
     'summary' : 'Delivery Order link on Delivery Gatepass',
     'description' : """
-Sale order link on Delivery Gatepass
-=====================================
-* Linking of Sales order and Delivery order on gatepass which was already created based on sales confirmation
+Process delivery of goods via Gatepass
+==========================================
+This module lets you choose the delivery order on the gatepass to deliver the goods of company's sales via gatepass. This way you can automate the pickings of returnable products such as containers etc.
+
+Gatepass with Sales Delivery
+-------------------------------
+When the goods are delivered to customers through gatepass, you can create gatepass of type sales delivery. While selecting the delivery order on gatepass, OpenERP will automatically fill the partner and product information based on the selected delivery order.
+
+Gatepass with Returnable Sales Delivery
+----------------------------------------------
+When the goods are delivered in containers and if the containers are to be taken back from customers, you can create gatepass of type returnable delivery. While processing the products out for the delivery, you should put them in one pack to track the container. Once this gatepass is confirmed, OpenERP will automatically create incoming shipment for the containers that are coming back on the same gatepass.
 """,
     'depends' : ['l10n_in_base', 'stock', 'stock_gatepass', 'product_container_tracking'],
     'data' : [

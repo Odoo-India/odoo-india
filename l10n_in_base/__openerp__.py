@@ -20,13 +20,13 @@
 ##############################################################################
 
 {
-    'name' : 'l10n_in_base',
+    'name' : 'Indian Localization',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,
     'category': 'Indian Localization',
     'website' : 'http://www.openerp.com',
-    'summary' : 'Indian Localization',
+    'summary' : 'Indian Localization settings',
     'description' : """
 Provides the configuration for whole business suite according to indian localization.
 ==========================================================================================

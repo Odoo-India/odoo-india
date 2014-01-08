@@ -23,10 +23,13 @@
     'name': 'Packing Cost',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary':'Packing cost on sales order',
+    'summary':'Packing Cost on Sales Order',
     'description': """
-Module for packing cost.
-========================
+Packing Cost on Sales Order
+===============================
+This module allows you to manage packing cost of the products on sales orders.
+
+If you want to sell goods to be delivered in a container (package), You can add extra packaging cost directly then it will calculate container product's sale price as packaging price and calculate final price on the sales order.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

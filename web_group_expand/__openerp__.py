@@ -5,10 +5,9 @@
     "author" : 'OpenERP SA',
     "description":
         """
-Group Expand Buttons
-====================
-
-- This module enables expand and collapse in List Group By
+A group by list can be expanded and collapased with buttons
+===============================================================
+You'll see two buttons appear on top right corner of the list when you perform a group by with which you can expand and collapse grouped records by level.
         """,
     "depends" : ["web"],
     "js": ["static/src/js/web_group_expand.js"],

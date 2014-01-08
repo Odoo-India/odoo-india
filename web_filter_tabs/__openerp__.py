@@ -31,7 +31,7 @@ Add a tab after topbar in order to access custom filter (if any).
     """,
     'author': 'OpenERP SA',
     'website': 'http://openerp.com',
-    'depends': ['base'],
+    'depends': ['base', 'web'],
     'data': [],
     'js' : ['static/src/js/web_filter_tabs.js'],
     'css' : ['static/src/css/web_filter_tabs.css'],

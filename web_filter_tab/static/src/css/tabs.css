@@ -2,6 +2,7 @@
 	background-color: #EEEEEE;
 	margin: 0px;
 	padding: 0px;
+	display:flex;
 }
 
 .openerp .tabs_row>li {
@@ -18,12 +19,18 @@
 	-moz-transition: all 0.2s linear;
 	-o-transition: all 0.2s linear;
 	transition: all 0.2s linear;
+    box-shadow: 0 -4px 4px -3px #888888 inset;
+    -moz-box-shadow: 0 -4px 4px -3px #888888 inset;
+    -webkit-box-shadow: 0 -4px 4px -3px #888888 inset;
 }
 
 .openerp .tabs_row>li:hover {
 	border-top: 3px solid #9B9AC1;
 	background-color: #F5F5F5;
 	padding: 10px;
+    box-shadow: 0 -4px 4px -5px #888888 inset;
+    -moz-box-shadow: 0 -4px 4px -5px #888888 inset;
+    -webkit-box-shadow: 0 -4px 4px -5px #888888 inset;
 }
 
 .openerp .tabs_row>li.oe_selected {
@@ -31,6 +38,9 @@
 	background-color: #EEEEEE;
 	background-color: #EEEEEE;
 	padding: 10px;
+	    box-shadow: -4px 0 2px -2px #AAAAAA;
+    -moz-box-shadow: -4px 0 2px -2px #AAAAAA;
+    -webkit-box-shadow: -4px 0 2px -2px #AAAAAA;
 }
 
 .openerp .tabs_row>li>.oe_searchview_custom_delete {

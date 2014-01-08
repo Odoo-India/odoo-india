@@ -1,7 +1,7 @@
 openerp.web_filter_tab = function(instance) {
     var QWeb = instance.web.qweb,
     _t = instance.web._t;
-    openerp.web.ListView.include({
+    instance.web.ListView.include({
         load_list: function(data) {
             var self = this;
             this._super.apply(this, arguments);

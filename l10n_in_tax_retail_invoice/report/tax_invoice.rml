@@ -197,9 +197,7 @@
     <paraStyle name="P14" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
     <paraStyle name="P15" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="LEFT"/>
     <paraStyle name="P16" fontName="Helvetica" alignment="RIGHT"/>
-    <paraStyle name="P17" fontName="Helvetica" fontSize="8.0" leading="10" spaceBefore="14.0" spaceAfter="14.0"/>
-    <paraStyle name="P18" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
-    <paraStyle name="P19" fontName="Helvetica" fontSize="8.0" leading="10" alignment="RIGHT"/>
+    <paraStyle name="P17" fontName="Helvetica" fontSize="8.0" leading="10" spaceBefore="6.0" spaceAfter="6.0"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
     <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
     <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
@@ -424,7 +422,7 @@
         <tr>
           <td>
             <para style="P9">[[ repeatIn(o.tax_line,'t') ]]</para>
-            <para style="P10">
+            <para style="P16">
               <font face="Helvetica" size="8.0">[[ t.name ]]</font>
               <font face="Helvetica" size="8.0">[[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font')]]</font>
             </para>
@@ -471,7 +469,7 @@
       <blockTable colWidths="215.0,54.0,54.0,54.0,54.0,54.0,54.0" style="Table12">
         <tr>
           <td>
-            <para style="P18">Dealer Disc.</para>
+            <para style="P12">Dealer Disc.</para>
           </td>
           <td>
             <para style="P6">
@@ -499,7 +497,7 @@
             </para>
           </td>
           <td>
-            <para style="P19">[[ formatLang(o.total_dealer_disc, digits=get_digits(dp='Account')) ]]</para>
+            <para style="P10">[[ formatLang(o.total_dealer_disc, digits=get_digits(dp='Account')) ]]</para>
           </td>
         </tr>
       </blockTable>

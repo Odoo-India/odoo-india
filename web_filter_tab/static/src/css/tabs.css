@@ -1,0 +1,47 @@
+.openerp .tabs_row {
+	background-color: #EEEEEE;
+	margin: 0px;
+	padding: 0px;
+}
+
+.openerp .tabs_row>li {
+	float: left;
+	display: inline;
+	padding: 10px;
+	cursor: pointer;
+	background-color: #dddddd;
+	border-top: 3px solid #dfdfdf;
+	border-left: 1px solid #cccccc;
+	border-right: 0px solid #dfdfdf;
+	border-collapse: collapse;
+	-webkit-transition: all 0.2s linear;
+	-moz-transition: all 0.2s linear;
+	-o-transition: all 0.2s linear;
+	transition: all 0.2s linear;
+}
+
+.openerp .tabs_row>li:hover {
+	border-top: 3px solid #9B9AC1;
+	background-color: #F5F5F5;
+	padding: 10px;
+}
+
+.openerp .tabs_row>li.oe_selected {
+	border-top: 3px solid #7C7BAD;
+	background-color: #EEEEEE;
+	background-color: #EEEEEE;
+	padding: 10px;
+}
+
+.openerp .tabs_row>li>.oe_searchview_custom_delete {
+	float: right;
+	padding-right: 4px;
+}
+
+.openerp .oe_view_nocontent {
+display: inline-block;
+}
+
+.openerp table.oe_list_content {
+    float: right;
+}

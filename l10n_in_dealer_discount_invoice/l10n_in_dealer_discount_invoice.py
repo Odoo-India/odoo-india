@@ -27,11 +27,32 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 class account_invoice(osv.Model):
     _inherit = 'account.invoice'
 
+    def _total_dealer_disc(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for invoice in self.browse(cr, uid, ids, context=context):
+            total = 0.0
+            for line in invoice.invoice_line:
+                total += ((line.price_unit - line.price_dealer) * line.product_uom_qty)
+            res[invoice.id] = total
+        return res
+
+    def _get_lines(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('account.invoice.line').browse(cr, uid, ids, context=context):
+            result[line.invoice_id.id] = True
+        return result.keys()
+
     _columns = {
         'dealer_id': fields.many2one('res.partner', 'Dealer', readonly=True, states={'draft':[('readonly',False)]}),
-        'dealer_pricelist_id': fields.many2one('product.pricelist', 'Dealer Pricelist', domain=[('type','=','sale')])
+        'dealer_pricelist_id': fields.many2one('product.pricelist', 'Dealer Pricelist', domain=[('type','=','sale')]),
+        'total_dealer_disc': fields.function(_total_dealer_disc, digits_compute=dp.get_precision('Account'), string='Total Dealer Disc.',
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['dealer_pricelist_id', 'invoice_line'], 10),
+                'account.invoice.line': (_get_lines, ['price_unit', 'price_dealer', 'product_uom_qty'], 10),
+                },
+            ),
     }
-    
+
     def onchange_dealer_id(self, cr, uid, ids, part, context=None):
         if not part:
             return {'value': {'dealer_pricelist_id': False}}

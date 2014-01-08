@@ -27,8 +27,25 @@
     'category': 'Indian Localization',
     'website' : 'http://www.openerp.com',
     'description' : """
-Excise Duties in the Goods Receipt
-================================================================================================================================================================ 
+Excise Duties on the Goods Receipt
+====================================
+This module allows you to manage Goods Receipt and excise duties on the goods receipts and supplier invoices.
+
+Key Features
+++++++++++++++
+* Goods Receipts
+* Manage Import duties, Excise, Cess etc. on goods receipt
+* Manage Packaging & Forwarding, Freight, Excise, Insurance, Cess, etc. on purchase orders
+* Forward all taxes and charges from purchase orders to invoices via goods receipt
+* Cash, Non-Cash, Free of charge inwards
+
+How it works?
+++++++++++++++
+When the indent is approved for a need of specific materials, a purchase order will be generated and Packaging & Forwarding, Freight, Taxes, Excise etc. information can be mentioned on the purchase order if any.
+
+Once the purchase order is confirmed and incoming shipment is received, OpenERP will generate goods receipt instead of moving goods directly in stock. Goods receipt will contain all the details of packaging, excise etc. from the purchase order.
+
+When the invoice is created from goods receipt, the accounting entries also got reflected by different charges and taxes. Thus it will be easy for the accountants to get values of excise, cess, other taxes.
 """,
     'depends' : ['l10n_in_base', 'stock_indent', 'l10n_in_purchase', 'l10n_in_account_tax'],
 

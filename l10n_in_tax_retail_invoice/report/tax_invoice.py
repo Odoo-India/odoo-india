@@ -42,7 +42,7 @@ class tax_invoice(report_sxw.rml_parse):
     def _get_quantity(self, id):
         account_invoice_obj = self.pool.get('account.invoice')
         val = account_invoice_obj._get_qty_total(self.cr, self.uid, self.ids)
-        return int(val[id.id])
+        return int(val.values()[0])
 
     def _convert_int(self, amount):
         amount = int(amount)

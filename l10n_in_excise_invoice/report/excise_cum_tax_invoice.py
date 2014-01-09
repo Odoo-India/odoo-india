@@ -43,7 +43,7 @@ class excice_cum_tax_invoice(report_sxw.rml_parse):
     def _get_quantity(self, id):
         account_invoice_obj = self.pool.get('account.invoice')
         val = account_invoice_obj._get_qty_total(self.cr, self.uid, self.ids)
-        return int(val[id.id])
+        return int(val.values()[0])
 
     def _get_excise_cess(self, ids):
         cess_excise_amount = []
@@ -75,6 +75,6 @@ class excice_cum_tax_invoice(report_sxw.rml_parse):
         amount = int(amount)
         return amount
 
-report_sxw.report_sxw('report.account.invoice.excise', 'account.invoice', 'addons/l10n_in_excise_customer_invoice/report/excise_cum_tax_invoice.rml', parser=excice_cum_tax_invoice, header='internal')
+report_sxw.report_sxw('report.account.invoice.excise', 'account.invoice', 'addons/l10n_in_excise_invoice/report/excise_cum_tax_invoice.rml', parser=excice_cum_tax_invoice, header='internal')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

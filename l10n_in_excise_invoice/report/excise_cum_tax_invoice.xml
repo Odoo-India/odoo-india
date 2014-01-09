@@ -5,9 +5,9 @@
         <report auto="False"
         id="excise_cum_tax_report"
         model="account.invoice"
-        name="account.invoice.excise
-        rml="l10n_in_excise_customer_invoice/report/excise_cum_tax_invoice.rml
-         string="Excise Cum Tax Invoice"/>
+        name="account.invoice.excise"
+        rml="l10n_in_excise_invoice/report/excise_cum_tax_invoice.rml"
+        string="Excise Cum Tax Invoice"/>
 
     </data>
 </openerp>

@@ -19,14 +19,14 @@
 #
 ##############################################################################
 {
-    'name': 'Web Custom Filter Tabs',
+    'name': 'Custom Filter Tabs',
     'version': '1.0',
     'category': 'Tools',
+    'summary': 'Custom Filter Tabs',
     'description': """
-Enable tab feature in the web client.
+Converts custom filters into tabs
 ===========================================
-
-Add a tab after topbar in order to access custom filter (if any).
+A very convenient feature of OpenERP that can convert your custom filters into tabs to make searching easy and enhances your GUI experience.
 
     """,
     'author': 'OpenERP SA',

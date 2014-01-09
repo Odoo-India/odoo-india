@@ -28,8 +28,14 @@
     'website' : 'http://www.openerp.com',
     'summary' : 'Product Coding',
     'description' : """
-Product Coding
-==============
+Autogeneration of internal reference of a product.
+===================================================
+An automatic Internal Reference of the product is generated depending on the coding method you select on a product. Allows two ways of coding:
+
+* Based on product categories
+* Based on major and sub groups
+
+You can also create major and sub groups of products and based on the code provided on those groups it creates an internal reference of a product by combining both.
 """,
     'depends' : ['l10n_in_base', 'product'],
     'data' : [

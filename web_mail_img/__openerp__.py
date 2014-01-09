@@ -25,8 +25,9 @@
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'description': """
-Zoom Images In Mail Attachment
-==============================
+Zoom images in mail attachment
+===============================
+You get a great feature to Zoom-In the images when you perform a mouse over on attached image that you've got in your mails.
     """,
     "author": "OpenERP SA",
     "website": "http://www.openerp.com",

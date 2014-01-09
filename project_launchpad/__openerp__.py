@@ -23,16 +23,16 @@
     'version': '1.0',
     'category': 'Generic Modules/Project Management',
     'description': """
-Launchpad Integration
-======================================================================================
-Provides integration between OpenERP and Launchpad. so that we can get the data launchpad project data in to OpenERP such as
+Provides integration between OpenERP and Launchpad
+===================================================
+We can get the data launchpad project data in to OpenERP such as:
 
-- Branches
-- Merge proposals 
-- Reported Bugs 
-- Linked Users.
+* Branches
+* Merge proposals 
+* Reported Bugs 
+* Linked Users.
 
-So, that we can do analysis on the branch, merge proposals, and bugs for the related proejcts.
+So, that we can analyse the branch, merge proposals and bugs for the related proejcts.
 To generate the launchpad credentials token, run the program lp-token.py with required parameters.
 """,
     'author': 'OpenERP SA',

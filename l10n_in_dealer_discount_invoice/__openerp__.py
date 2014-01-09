@@ -24,8 +24,9 @@
     'category': 'Indian Localization',
     'summary': 'Dealer Price, Compute discount for Dealers on Invoice',
     'description': """
-Module for Dealers Price & Discount functionality on Invoice.
-===========================================================
+Dealer Price on Invoice
+============================
+With the use of this module you can define dealer specific price with the use of dealer's pricelist. On the Invoice you can select the dealer and the relevant pricelist so from the invoice you can get the dealer price amount along with the customer price amount.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

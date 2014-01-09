@@ -20,13 +20,14 @@
 ##############################################################################
 
 {
-    'name': 'Dealer Price',
+    'name': 'Dealer Price on Sales',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary': 'Dealer Price, Compute discount for Dealers',
+    'summary': 'Dealer Price, Discount for Dealers on Sales',
     'description': """
-Module for Dealers Price & Discount functionality on Sales.
-===========================================================
+Dealer Price, Discount for Dealers on Sales
+===============================================
+With the use of this module you can define dealer specific price on Quotations/Sales orders with the use of dealer's pricelist. On the Quotations/Sales orders you can select the dealer and the relevant pricelist so from the sales orders you can get the dealer price amount along with the customer price amount.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

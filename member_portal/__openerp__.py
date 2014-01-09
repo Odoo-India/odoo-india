@@ -28,11 +28,11 @@
     'website' : 'http://www.mantavyagajjar.in',
     'summary' : 'Managing member through portal',
     'description' : """
-Member Portal
-================================================================================ 
-* Managing member list
-* Managing invoices
-* Managing groups and list
+Managing member through portal
+================================
+* Manages member list
+* Manages invoices
+* Manages groups and lists
 """,
     'depends' : [
         'base',

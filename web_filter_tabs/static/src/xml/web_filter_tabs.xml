@@ -3,11 +3,11 @@
     <t t-name="ViewManagerAction" t-extend="ViewManager">
         <t t-jquery=".oe_view_manager_header" t-operation="append">
             <tr class="oe_header_row oe_custom_filter_tabs">
-                <td colspan="4">
+                <th colspan="4">
                     <div class="oe_searchview_custom_tabs_div">
                         <ul class="oe_searchview_custom_tabs"/>
                     </div>
-                </td>
+                </th>
             </tr>
         </t>
     </t>

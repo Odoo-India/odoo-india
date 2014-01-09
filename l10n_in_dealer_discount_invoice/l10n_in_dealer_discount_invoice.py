@@ -32,7 +32,7 @@ class account_invoice(osv.Model):
         for invoice in self.browse(cr, uid, ids, context=context):
             total = 0.0
             for line in invoice.invoice_line:
-                total += ((line.price_unit - line.price_dealer) * line.product_uom_qty)
+                total += ((line.price_unit - line.price_dealer) * line.quantity)
             res[invoice.id] = total
         return res
 

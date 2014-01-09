@@ -1,13 +1,13 @@
-.openerp .oe_header_row.oe_custom_filter_tabs > td {
+.openerp .oe_header_row.oe_custom_filter_tabs > th {
     line-height: 18px !important;
     padding-bottom: 0px !important;
+    font-weight:normal;
 }
 .openerp .oe_header_row.oe_custom_filter_tabs .oe_searchview_custom_tabs_div {
     //background-color: #EEEEEE;
     margin: 0px;
     padding: 0px;
     display: block;
-    border-bottom: 2px solid #CACACA;
 }
 .openerp .oe_searchview_custom_tabs_div .oe_searchview_custom_tabs {
     display: block;

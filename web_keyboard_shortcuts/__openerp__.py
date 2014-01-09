@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Keyboard shortcuts',
+    'name': 'Keyboard Shortcuts',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'category': 'Tools',
@@ -31,22 +31,22 @@ An attractive GUI design for your interface gives you a smart look for main menu
 
 Shortcuts: 
 ----------
-    * **Ctrl + s** -  For Save Current Object(Require:form in edit mode)
-    * **Ctrl + e** -  For Edit Current Object(Require:form in saved mode)
+    * **Ctrl + S** -  For Save Current Object(Require:form in edit mode)
+    * **Ctrl + E** -  For Edit Current Object(Require:form in saved mode)
     * **Ctrl + space** -  For Create New Record(Open Form).
-    * **Alt** -  In Form View Press Alt key and then press AccessKey Passed from Button.
-    * **Ctrl + k** -  Switch to Kanban View.
-    * **Ctrl + l** -  Switch to List View.
+    * **Alt** -  In Form View Press Alt key and then press Access Key Passed from Button.
+    * **Ctrl + K** -  Switch to Kanban View.
+    * **Ctrl + L** -  Switch to List View.
     * **Ctrl + ;** -  Switch to Form View.
     * **Ctrl + F** -  Focus on Search view(Press This shortcut and start searching).
     * **Ctrl + D** -  Disable search view (Hide search view).
     * **Ctrl + >** -  Display Next Page(In Form View).
     * **Ctrl + <** -  Display Previous Page(In Form View).
-    * **Ctrl + Backspace** -  Go in to on stap back if use open page from from view (Example **Sales Orders / SO007 / Invoice** if you press this shortcut then S0007 Display).
-    * **Ctrl + esc** -  For Discard Current Change (Effect Like press Discard Link)
-    * **Ctrl + ↓** -  Expand lines(Need Group By in Tree View ).
-    * **Ctrl + ↑** -  Collapse All lines(Need Group By in Tree View ).
-    * **Ctrl + 1 to Ctrl + 9** -  Change Main Manu according to Number Perssed.
+    * **Ctrl + Backspace** -  Go in to on step back on breadcrumb (Example **Sales Orders / SO007 / Invoice** if you press this shortcut then you will come back at S0007).
+    * **Ctrl + Esc** -  For Discard Current Change (Effect Like press Discard Link)
+    * **Ctrl + ↓ (Down Arrow)** -  Expand lines(Need Group By in Tree View ).
+    * **Ctrl + ↑ (Up Arrow)** -  Collapse All lines(Need Group By in Tree View ).
+    * **Ctrl + 1 to Ctrl + 9** -  Change Main Menu according to Number Pressed.
     * **For Secondary Menu** -  Press **Ctrl + `** (Key above Tab) and then press ↑ or ↓ for movement and then Press Enter
     * **Ctrl + P** -  Give Screenshots of Tree Or Form Or Graph ( Without Menus ).
     * **Ctrl + F11** -  Enable Full Screen Mode.

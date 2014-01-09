@@ -25,8 +25,9 @@
     'category': 'Indian Localization',
     'summary':'Print Tax / Retail Invoice in 4 copies',
     'description': """
-Tax / Retail Invoice.
-========================
+Print Tax / Retail Invoice in 4 copies
+========================================
+This module adds a new report on invoices for printing retail invoice which will contain more detailed information regarding excise, VAT, TIN etc. specifically used for Indian Localization.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

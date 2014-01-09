@@ -27,7 +27,8 @@
     'description': """
 Shortcuts and GUI Improvement.
 ==============================
-    
+An attractive GUI design for your interface gives you a smart look for main menus. A list of keyboard shortcuts provides you an easy way to handle the different operations. You can also search quickly on menus listed in shortcuts by simply pressing characters on the keyboard and get the filtered records on your list.
+
 Shortcuts: 
 ----------
     * **Ctrl + s** -  For Save Current Object(Require:form in edit mode)
@@ -50,6 +51,7 @@ Shortcuts:
     * **Ctrl + P** -  Give Screenshots of Tree Or Form Or Graph ( Without Menus ).
     * **Ctrl + F11** -  Enable Full Screen Mode.
     * **Esc** -  Disable Full Screen Mode.
+
 Search Hint: 
 ------------
 After installing Search View supports hints. You can redirect to any menu from search view.

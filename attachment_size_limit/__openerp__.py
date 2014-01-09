@@ -27,14 +27,13 @@
     'sequence': 120,
     'summary': 'Limits on # file, size on uploads, Block users for uploading',
     'description': """
-Attachment Configuration
-========================
+Define a size limit for the attachments
+=========================================
+In company configuration you can control these three things:
 
-* **Company Configuration you can control this three things.**
-
-  * Maximum files allowed to upload per record.
-  * Maximum size of file that can be uploaded.
-  * Block User.
+* Maximum files allowed to upload per record.
+* Maximum size of file that can be uploaded.
+* Block User.
 """,
     'depends': ['web','base','document'],
     'js': [

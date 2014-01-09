@@ -217,7 +217,7 @@
   </stylesheet>
   <story>
     <para style="P2">[[ repeatIn(objects, 'o') ]]</para>
-    <para style="P2">[[ sentLang(o.partner_id.lang) ]]</para>
+    <para style="P2">[[ setLang(o.partner_id.lang) ]]</para>
     <para style="P5">TAX / RETAIL INVOICE</para>
     <blockTable colWidths="269.0,269.0" style="Table7">
       <tr>

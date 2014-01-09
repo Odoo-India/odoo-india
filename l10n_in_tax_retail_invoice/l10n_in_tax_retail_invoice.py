@@ -19,7 +19,7 @@
 #
 ##############################################################################
 
-from openerp.osv import osv
+from openerp.osv import fields, osv
 from openerp.tools.amount_to_text_en import amount_to_text
 
 class account_invoice(osv.Model):
@@ -46,6 +46,10 @@ class account_invoice(osv.Model):
         if currency == 'INR':
             amount_in_word = amount_in_word.replace("euro", "Rupees").replace("Cents", "Paise").replace("Cent", "Paise")
         return amount_in_word
+
+    _columns = {
+        'delivery_address_id': fields.many2one('res.partner', 'Delivery Address'),
+    }
 
 account_invoice()
 

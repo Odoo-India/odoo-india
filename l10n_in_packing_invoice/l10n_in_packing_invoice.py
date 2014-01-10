@@ -58,7 +58,7 @@ class account_invoice(osv.osv):
             }
             for line in invoice.invoice_line:
                 res[invoice.id]['amount_untaxed'] += line.price_subtotal
-                res[invoice.id]['amount_packing'] += line.packaging_cost * line.quantity
+                res[invoice.id]['amount_packing'] += line.packaging_cost
             for line in invoice.tax_line:
                 res[invoice.id]['amount_tax'] += line.amount
             res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] + res[invoice.id]['amount_packing'] + invoice.round_off

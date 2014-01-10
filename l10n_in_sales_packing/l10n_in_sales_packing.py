@@ -173,7 +173,7 @@ class sale_order(osv.Model):
 
     def _prepare_order_line_move(self, cr, uid, order, line, picking_id, date_planned, context=None):
         res = super(sale_order, self)._prepare_order_line_move(cr, uid, order=order, line=line, picking_id=picking_id, date_planned=date_planned, context=context)
-        res = dict(res, packaging_cost=line.packaging_cost / line.product_uom_qty)
+        res = dict(res, packaging_cost=line.packaging_cost)
         return res
 
 sale_order()
@@ -181,7 +181,6 @@ sale_order()
 class sale_advance_payment_inv(osv.osv_memory):
     _inherit = 'sale.advance.payment.inv'
     
-    # TODO: improve this method need to call super
     def _prepare_advance_invoice_vals(self, cr, uid, ids, context=None):
         if context is None:
             context = {}

@@ -39,7 +39,7 @@ Managing member through portal
         'portal'
     ],
     
-    'data' : [    
+    'data' : [
     ],
     
     'update_xml' : [

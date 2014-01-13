@@ -19,6 +19,8 @@
 #
 ##############################################################################
 
+import time 
+
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 
@@ -38,16 +40,42 @@ class res_partner(osv.osv):
         'member':True
     }
     
+    def create_professional_history(self, cr, uid, ids):
+        jobs_pool = self.pool.get('res.partner.history')
+        
+        for member in ids:
+            previous_job = jobs_pool.search(cr, uid, [('partner_pro_id','=',member)])
+        
+            old_vals = {
+                'end_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'current_position':False
+            }
+            jobs_pool.write(cr, uid, previous_job, old_vals)
+            
+            member_obj = self.browse(cr, uid, member)
+            vals = {
+                'partner_pro_id':member,
+                'orginazation_id':member_obj.parent_id.id,
+                'name':member_obj.function,
+                'start_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'current_position':True,
+                'type':'Professional'
+            }
+            jobs_pool.create(cr, uid, vals)
+    
     def write(self, cr, uid, ids, vals, context):
         res = False
         allow_users = [
             1
         ]
         member_id = self.pool.get('res.users').browse(cr, uid, uid).partner_id.id
-        if uid in allow_users or member_id in ids:
+        member = self.browse(cr, uid, ids[0])
+
+        if uid in allow_users or member_id in ids or member.is_company:
             res = super(res_partner, self).write(cr, uid, ids, vals, context)
             
-            
+            if vals.get('parent_id', False):
+                self.create_professional_history(cr, uid, ids)
             
         else:
             raise osv.except_osv(_('Error!'),_('You are not allowed to change details of other member !'))

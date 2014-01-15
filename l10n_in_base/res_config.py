@@ -116,12 +116,17 @@ class indian_base_configuration(osv.osv_memory):
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
                 
+        
+        'module_purchase_crm': fields.boolean('Get the Supplier price before proposing to Customer on Opportunity',
+            help = """Allows you to keeps track of internal material request.
+            It installs the stock_indent module."""),
+                
         'group_cst_config':fields.boolean('Enable Central Sales Tax on Partners', implied_group='l10n_in_base.group_cst_config', help = """TODO"""),
         'group_excise_config':fields.boolean('Enable Excise Control Code on Partners', implied_group='l10n_in_base.group_excise_config', help = """TODO"""),
         'group_tin_config':fields.boolean('Enable Tax Identification Number on Partners', implied_group='l10n_in_base.group_tin_config', help = """TODO"""),
         'group_service_config':fields.boolean('Enable Service Tax Number on Partner', implied_group='l10n_in_base.group_service_config', help = """TODO"""),
         
-        'module_l10n_in_purchase': fields.boolean('Indian specific calculation on purchase orders',
+        'module_l10n_in_purchase': fields.boolean('Additional feature and computation on purchase orders',
             help = """Allows you to keeps track of internal material request.
             It installs the stock_indent module."""),
                 

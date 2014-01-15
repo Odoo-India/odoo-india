@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_opportunity_to_rfq" model="ir.ui.view">
+            <field name="name">crm.lead.to.rfq.form</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="/form/header/button[@name='case_mark_won']" position="before">
+                    <button string="Convert to RFQ" name="%(purchase_crm.action_opp_to_rfq)d" class="oe_highlight" type="action"/>
+                </xpath>
+            </field>
+       </record>
+
+    </data>
+</openerp>

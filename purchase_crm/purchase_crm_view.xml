@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="/form/header/button[@name='case_mark_won']" position="before">
+                <xpath expr="/form/header/button[@name='case_mark_lost']" position="after">
                     <button string="Create RFQ" name="%(purchase_crm.action_opp_to_rfq)d" class="oe_highlight" type="action"/>
                 </xpath>
             </field>

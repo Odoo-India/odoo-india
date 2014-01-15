@@ -238,11 +238,14 @@
 								<label for="module_l10n_in_tax_retail_invoice" />
 								<span class="oe_grey">Original, Duplicate, Triplicate and Extra Copy</span>
 							</div>
-
 							<div name='module_l10n_in_excise_invoice'>
 								<field name="module_l10n_in_excise_invoice" class="oe_inline" />
 								<label for="module_l10n_in_excise_invoice" />
 								<span class="oe_grey">Original for Buyer, Duplicate for Transporter, Triplicate for Assessee and Extra Copy not for CENVAT</span>
+							</div>
+							<div name='group_invoice_types_config'>
+								<field name="group_invoice_types_config" class="oe_inline" />
+								<label for="group_invoice_types_config" />
 							</div>
 						</div>
 					</group>

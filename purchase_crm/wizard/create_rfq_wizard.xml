@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Opportunity to RFQ Wizard Form View -->
+        <record id="view_opp_to_rfq_wizard_form" model="ir.ui.view">
+            <field name="name">crm.make.purchase.wizard.form</field>
+            <field name="model">crm.make.purchase</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Request For Quotation" version="7.0">
+                    <separator string="Request For Quotation" colspan="4"/>
+                    <group colspan="4" col="6">
+                        <field name="partner_id" domain="[('supplier', '=', True)]"/>
+                        <field name="warehouse_id" widget="selection"/>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Products">
+                            <field name="product_ids" nolabel="1"/>
+                        </page>
+                    </notebook>
+	                <footer>
+	                    <button name="convert_to_rfq" string="_Convert To Quotation" type="object" class="oe_highlight"/>
+	                    or
+	                    <button string="Cancel" class="oe_link" special="cancel" />
+	                </footer>
+               </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_opp_to_rfq">
+            <field name="name">Request For Quotation</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">crm.make.purchase</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</openerp>

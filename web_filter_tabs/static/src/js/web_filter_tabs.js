@@ -9,12 +9,33 @@ openerp.web_filter_tabs = function(instance) {
             this.tab_filters = {};
         },
         append_filter: function(filter) {
+            var self = this;
             this._super.apply(this, arguments);
-            this.add_tab(this.key_for(filter));
+            var key = this.key_for(filter);
+            this.$filters[key].find('a').unbind('click').click(function(e){
+                e.stopPropagation();
+                self.remove_filter(filter, filter.id);
+            });
+            this.add_tab(key);
         },
         add_tab: function(key){
             this.tab_filters[key] = new instance.web.search.TabFilters(this, key);
             this.tab_filters[key].appendTo($('.oe_searchview_custom_tabs'))
+        },
+        remove_filter: function(filter, id) {
+            var self = this;
+            var key = this.key_for(filter);
+            var warning = _t("This filter is global and will be removed for everybody if you continue.");
+            var $filter = this.$filters[key];
+            if (!(filter.user_id || confirm(warning))) {
+                    return;
+                }
+                this.model.call('unlink', [id]).done(function () {
+                    $filter.remove();
+                    delete self.$filters[key];
+                    delete self.filters[key];
+                    self.tab_filters[key].destroy();
+                });
         },
         toggle_filter: function (filter, preventSearch) {
             this._super.apply(this, arguments);
@@ -41,14 +62,6 @@ openerp.web_filter_tabs = function(instance) {
             this.key = key;
             this.filter = parent.$filters[key].clone(true, true);
             this.parent = parent;
-        },
-        start: function(){
-            var self = this;
-            this._super.apply(this, arguments);
-            var self = this;
-            this.filter.find(".oe_searchview_custom_delete").click(function(){
-                self.destroy();
-            });
         },
         renderElement: function(){
             return this.replaceElement(this.filter)

@@ -6,8 +6,18 @@
         id="tax_invoice_report"
         model="account.invoice"
         name="account.invoice.tax.excise"
+        multi="True"
         rml="l10n_in_tax_retail_invoice/report/tax_invoice.rml"
         string="Tax Invoice"/>
 
     </data>
+    
+    <data noupdate="1">
+    	<record model="account.invoice.type" id="tax_invoice_sale">
+			<field name="name">Tax / Retail Invoice</field>
+			<field name="type">out_invoice</field>
+			<field name="report" ref="tax_invoice_report"/>
+		</record>
+    </data>
+    
 </openerp>

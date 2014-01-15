@@ -55,7 +55,7 @@
 						groups="l10n_in_base.group_inter_state_tax_config" />
 				</field>
 				<field name="partner_id" position="before">
-					<field name="invoice_type_id" domain="[('type','=',type)]" on_change="onchange_invoice_type(invoice_type_id)"/>
+					<field name="invoice_type_id" domain="[('type','=',type)]" groups="l10n_in_base.group_invoice_types_config" on_change="onchange_invoice_type(invoice_type_id)"/>
 				</field>
 			</field>
 		</record>
@@ -67,7 +67,7 @@
 			<field name="inherit_id" ref="account.invoice_supplier_form" />
 			<field name="arch" type="xml">
 				<field name="partner_id" position="before">
-					<field name="invoice_type_id" domain="[('type','=',type)]" on_change="onchange_invoice_type(invoice_type_id)"/>
+					<field name="invoice_type_id" domain="[('type','=',type)]" groups="l10n_in_base.group_invoice_types_config" on_change="onchange_invoice_type(invoice_type_id)"/>
 				</field>
 			</field>
 		</record>

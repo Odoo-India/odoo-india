@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-Today Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,39 +18,32 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
 {
-    'name' : 'Member Portal',
-    'version' : '1.0',
-    'author' : 'OpenERP SA',
+    "name" : "Opportunity To Request for Quotation",
+    "version" : "1.0",
+    "author" : "OpenERP SA",
+    "website" : "http://www.openerp.com",
     'sequence': 120,
-    'category': 'Portal',
-    'website' : 'http://www.mantavyagajjar.in',
-    'summary' : 'Managing member through portal',
-    'description' : """
-Managing member through portal
-================================
-* Manages member list
-* Manages invoices
-* Manages groups and lists
-""",
-    'depends' : [
-        'base',
-        'portal'
-    ],
-    
-    'data' : [
-    ],
-    
-    'update_xml' : [
-        'member_portal_view.xml'
-    ],
+    "category": "Purchase Management",
+    'summary' : 'Create Request for Quotation from Opportunity',
+    "description":
+"""
+Opportunity To Request for Quotation
+============================================================
+Create Request for Quotation from Opportunity.
 
-    'demo': [
-    ],
+Module will add button on Opportunity form to create Purchase Quotation directly from Opportunity.
 
-    'installable' : True,
-    'application' : True,
+""",    
+    "depends" : ['crm', 'purchase'],
+    "init_xml" : [],
+    "update_xml" : [
+        "wizard/create_rfq_wizard.xml",
+        "purchase_crm_view.xml",
+        ],
+    "installable": True,
+    "auto_install": False,
+    "application": False,
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

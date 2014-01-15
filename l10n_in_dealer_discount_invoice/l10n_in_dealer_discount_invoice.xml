@@ -13,7 +13,7 @@
 					<field name="price_dealer" groups="l10n_in_base.group_dealer_price_on_sale_config" />
 				</xpath>
 				<field name="partner_id" position="after">
-					<field name="dealer_id" on_change="onchange_dealer_id(dealer_id, context)" />
+					<field name="dealer_id" on_change="onchange_dealer_id(dealer_id, context)" groups="l10n_in_base.group_dealer_price_on_sale_config"/>
 					<field name="dealer_pricelist_id" groups="product.group_sale_pricelist"/>
 				</field>
 				

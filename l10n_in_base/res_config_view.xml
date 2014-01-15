@@ -152,6 +152,11 @@
 					<group>
 						<label for="id" string="Purchase Features" />
 						<div name="purchase_features">
+							<div name='module_purchase_crm'>
+								<field name="module_purchase_crm" class="oe_inline" />
+								<label for="module_purchase_crm" />
+							</div>
+							
 							<div name='module_l10n_in_purchase'>
 								<field name="module_l10n_in_purchase" class="oe_inline" />
 								<label for="module_l10n_in_purchase" />

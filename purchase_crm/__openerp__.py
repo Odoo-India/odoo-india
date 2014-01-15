@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    "name" : "Opportunity To Request for Quotation",
+    "name" : "Opportunity to RFQ",
     "version" : "1.0",
     "author" : "OpenERP SA",
     "website" : "http://www.openerp.com",
@@ -35,12 +35,12 @@ Create Request for Quotation from Opportunity.
 Module will add button on Opportunity form to create Purchase Quotation directly from Opportunity.
 
 """,    
-    "depends" : ['crm', 'purchase'],
+    "depends" : ['crm', 'purchase', 'l10n_in_base'],
     "init_xml" : [],
     "update_xml" : [
         "wizard/create_rfq_wizard.xml",
         "purchase_crm_view.xml",
-        ],
+    ],
     "installable": True,
     "auto_install": False,
     "application": False,

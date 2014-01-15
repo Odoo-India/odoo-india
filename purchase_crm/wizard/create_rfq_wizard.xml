@@ -14,13 +14,10 @@
                         <field name="partner_id" domain="[('supplier', '=', True)]"/>
                         <field name="warehouse_id" widget="selection"/>
                     </group>
-                    <notebook colspan="4">
-                        <page string="Products">
-                            <field name="product_ids" nolabel="1"/>
-                        </page>
-                    </notebook>
+                    <field name="product_ids" nolabel="1" colspan="4"/>
+                   
 	                <footer>
-	                    <button name="convert_to_rfq" string="_Convert To Quotation" type="object" class="oe_highlight"/>
+	                    <button name="convert_to_rfq" string="_Create RFQ" type="object" class="oe_highlight"/>
 	                    or
 	                    <button string="Cancel" class="oe_link" special="cancel" />
 	                </footer>

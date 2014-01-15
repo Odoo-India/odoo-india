@@ -6,6 +6,7 @@
         id="tax_invoice_report"
         model="account.invoice"
         name="account.invoice.tax.excise"
+        multi="True"
         rml="l10n_in_tax_retail_invoice/report/tax_invoice.rml"
         string="Tax Invoice"/>
 

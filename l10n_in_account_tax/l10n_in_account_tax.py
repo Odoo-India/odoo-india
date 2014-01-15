@@ -261,6 +261,20 @@ class account_invoice(osv.osv):
             res.update({'journal_id':type.journal_id.id})
         
         return {'value':res}
+
+    def invoice_print(self, cr, uid, ids, context=None):
+        report = super(account_invoice, self).invoice_print(cr, uid, ids, context)
+        
+        invoice = self.browse(cr, uid, ids[0])
+        if invoice.invoice_type_id and invoice.invoice_type_id.report:
+            report_new = {
+                'type': invoice.invoice_type_id.report.type,
+                'report_name': invoice.invoice_type_id.report.report_name
+            }
+            report.update(report_new)
+            
+        return report
+
 res_company()
 
 class product_category(osv.Model):

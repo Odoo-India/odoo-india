@@ -11,4 +11,13 @@
         string="Tax Invoice"/>
 
     </data>
+    
+    <data noupdate="1">
+    	<record model="account.invoice.type" id="tax_invoice_sale">
+			<field name="name">Tax / Retail Invoice</field>
+			<field name="type">out_invoice</field>
+			<field name="report" ref="tax_invoice_report"/>
+		</record>
+    </data>
+    
 </openerp>

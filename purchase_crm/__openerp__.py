@@ -28,12 +28,11 @@
     'summary' : 'Create Request for Quotation from Opportunity',
     "description":
 """
-Opportunity To Request for Quotation
-============================================================
-Create Request for Quotation from Opportunity.
+Create Request for Quotation from Opportunity
+=====================================================
+This module allows you to generate request for quotation from the opportunity form view.
 
-Module will add button on Opportunity form to create Purchase Quotation directly from Opportunity.
-
+Sometimes your sales person/manager needs to know the price from supplier for some products before making a sales quotation for a prospect/customer. This will add button on Opportunity form to create Purchase Quotation directly from opportunity and store request for quotation we sent to our supplier for future reference.
 """,    
     "depends" : ['crm', 'purchase', 'l10n_in_base'],
     "init_xml" : [],

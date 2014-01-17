@@ -114,9 +114,9 @@ class process_qty_to_finished(osv.osv_memory):
             return True
 
         cr.execute("""
-                    SELECT sm.product_id,sum(sm.product_qty) as qty FROM stock_move sm, stock_picking sp
-                    WHERE sp.id = sm.picking_id
-                    AND sp.purchase_id = %s
+                    SELECT sm.product_id,sum(sm.product_qty) as qty FROM stock_move sm 
+                    LEFT JOIN stock_picking sp on (sp.id = sm.picking_id or sp.id = sm.picking_qc_id)
+                    WHERE sp.purchase_id = %s
                     AND sm.state = 'done'
                     AND sm.location_dest_id = %s
                     GROUP BY sm.product_id

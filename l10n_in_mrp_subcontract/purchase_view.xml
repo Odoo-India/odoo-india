@@ -8,13 +8,20 @@
 			<field name="inherit_id" ref="purchase.purchase_order_form" />
 			<field name="arch" type="xml">
 				<field name="partner_ref" position="after">
-					<field name="service_order" readonly="1" attrs="{'invisible':[('service_order', '=', False)]}" />
-					<field name="workorder_id" readonly="1" attrs="{'invisible':[('workorder_id', '=', False)]}" />
+					<field name="service_order" readonly="1"
+						attrs="{'invisible':[('service_order', '=', False)]}" />
+					<field name="workorder_id" readonly="1"
+						attrs="{'invisible':[('workorder_id', '=', False)]}" />
 				</field>
-				<field name="location_id" position="replace">
-				    <field name="location_id" groups="stock.group_locations" attrs="{'readonly':['|',('service_order', '=', True),('state','in',('confirmed','approved','done'))]}" />
-				</field>
-				
+				<field name="location_id" position="replace" />
+				<xpath expr="//group" position="inside">
+					<group colspan="4" style="font-weight:bold;">
+						<field style="font-weight:bold;font-size: 14px;color:#C0C0C0;" name="location_id" groups="stock.group_locations"
+							attrs="{'readonly':['|',('service_order', '=', True),('state','in',('confirmed','approved','done'))]}"
+							string="Destination Location"/>
+					</group>
+				</xpath>
+
 				<xpath expr="//field[@name='order_line']/tree/field[@name='product_uom']"
 					position="after">
 					<field name="line_qty" required="1" />
@@ -53,16 +60,18 @@
 			</field>
 		</record>
 
-     <record model="ir.ui.view" id="purchase_order_search_inherit_service_order">
-        <field name="name">purchase.order.list.select.inherit.service.order</field>
-        <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
-        <field name="arch" type="xml">
-            <xpath expr="//filter[@name='draft']" position="before">
-                <filter string="Service Order" domain="[('service_order','=',True)]" help="Service order generated from manufacturing order"/>
-            </xpath>
-        </field>
-    </record>
+		<record model="ir.ui.view" id="purchase_order_search_inherit_service_order">
+			<field name="name">purchase.order.list.select.inherit.service.order
+			</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.view_purchase_order_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//filter[@name='draft']" position="before">
+					<filter string="Service Order" domain="[('service_order','=',True)]"
+						help="Service order generated from manufacturing order" />
+				</xpath>
+			</field>
+		</record>
 
 	</data>
 </openerp>

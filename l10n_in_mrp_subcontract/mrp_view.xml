@@ -455,13 +455,13 @@
 					<!-- field name="service_supplier_id" attrs="{'required':[('order_type','=','out')], 
 						'invisible':[('order_type','!=','out')]}" / -->
 				</field>
-				<label for="note" position="replace" />
+				<!-- label for="note" position="replace" />
 				<field name="note" position="replace">
 					<field name="note"
 						attrs="{'required':[('order_type','=','out')], 'invisible':[('order_type','!=','out')]}"
 						placeholder="Add service description here(you could change also in manufacturing order)...."
 						colspan="4" />
-				</field>
+				</field -->
 			</field>
 		</record>
 

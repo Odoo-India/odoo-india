@@ -184,6 +184,26 @@ class procurement_order(osv.osv):
         self.message_post(cr, uid, ids, body=_("Draft Purchase Order created"), context=context)
         return res
 
+    #its should apply for direclty purchase order will be generated in QC location(Stock Input Location)
+    #So another idea we have done, like 
+    #PO generate in Store Location, Incoming Shipment will be geneate first in QC location then Go to Store,
+    #otherwise its directly goes to PO destination location.
+#    def _prepare_orderpoint_procurement(self, cr, uid, orderpoint, product_qty, context=None):
+#        """
+#        -Process
+#            -call super method to generate procurement dictonary
+#            -Overwrite procurement location == Warehouse Location Input Id(Quality Control)
+#            Why need ?
+#                -Standard Process,
+#                    Procurement -> Store,
+#                -Now,
+#                    Procurement -> Quality Control(input id),
+#        """
+#        res = super(procurement_order,self)._prepare_orderpoint_procurement(cr, uid, orderpoint, product_qty, context=context)
+#        if orderpoint and orderpoint.warehouse_id:
+#            res.update({'location_id': orderpoint.warehouse_id.lot_input_id.id})
+#        return res
+
     def _procure_orderpoint_confirm(self, cr, uid, automatic=False,\
             use_new_cursor=False, context=None, user_id=False):
         '''
@@ -262,7 +282,6 @@ class procurement_order(osv.osv):
                                 if not to_generate:
                                     break
                             qty = to_generate
-
                     if qty:
                         proc_id = procurement_obj.create(cr, uid,
                                                          self._prepare_orderpoint_procurement(cr, uid, op, qty, context=context),

@@ -27,12 +27,12 @@
 		Extend the flow of manufacturing process
     ''',
     'author': 'OpenERP SA',
-    'depends': ['base','mrp_operations','mrp_jit','sale_stock'],
+    'depends': ['base','sale_stock','mrp_jit','mrp_operations'],
     'data': ['mrp_view.xml','purchase_view.xml','product_view.xml', 'stock_view.xml','wizard/process_qty_to_reject_view.xml','wizard/process_qty_to_finished_view.xml',
              'wizard/all_in_once_qty_to_finished_view.xml','wizard/all_in_once_qty_to_cancelled_view.xml',
              'wizard/reallocate_rejected_move_view.xml','wizard/generate_service_order_view.xml',
              'wizard/qty_to_consume_view.xml','wizard/add_rawmaterial_to_consume_view.xml',
-             'wizard/consignment_variation_po_view.xml'
+             'wizard/consignment_variation_po_view.xml','wizard/qc2xlocation_view.xml'
              ],
     'demo': [],
     'installable': True,

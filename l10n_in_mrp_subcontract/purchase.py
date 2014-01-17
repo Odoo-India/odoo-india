@@ -19,15 +19,77 @@
 #
 ##############################################################################
 
-from openerp.osv import osv,fields
+from openerp.osv import osv, fields
 from openerp.tools.translate import _
 
 class purchase_order(osv.osv):
     _inherit = 'purchase.order'
     _columns = {
         'service_order': fields.boolean('Service Order'),
-        'workorder_id':  fields.many2one('mrp.production.workcenter.line','Work-Order')
+        'workorder_id':  fields.many2one('mrp.production.workcenter.line', 'Work-Order')
     }
+
+    def _check_warehouse_input_stock(self, cr, uid, order):
+        """
+        -Process
+            -Warehouse, Stock location == input location, as it is
+            otherwise
+                -Warehouse stock location <> Purchase order destination location, as it is,
+                or 
+                -Warehouse input location <> Purchase order destination location, as it is,
+
+                otherwise
+                    -Process flow change
+                        -Moves create from Supplier --> Stock input locations, instead of Supplier --> Order destination locations
+        """
+        stock_location_id = order.warehouse_id.lot_stock_id.id
+        input_location_id = order.warehouse_id.lot_input_id.id
+        location_id = order.location_id.id
+        pass_to_qc = False
+        #if (stock_location_id != input_location_id and stock_location_id == location_id) or (stock_location_id != input_location_id and input_location_id == location_id):
+        if stock_location_id != input_location_id and input_location_id != location_id:
+            location_id = input_location_id
+            pass_to_qc = True
+        return location_id, pass_to_qc
+
+    def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
+        """
+        -Process
+            -call super method to get dictonary of moves
+            -find and check stock input and stock id match or not?
+                - If Its match then as it is flow,
+                otherwise
+                -moves transfer first to QC location(stock input) location then it will be transfered to stock location
+        """
+        res = super(purchase_order, self)._prepare_order_line_move(cr, uid, order, order_line, picking_id, context=context)
+        location_id, pass_to_qc = self._check_warehouse_input_stock(cr, uid, order)
+        res.update({'location_dest_id': location_id,'is_qc':pass_to_qc})
+        return res
+
+    def _prepare_order_picking(self, cr, uid, order, context=None):
+        """
+        -Process
+            -call super method to get dictonary of moves
+            -find and check stock input and stock id match or not?
+                - If Its match then as it is flow,
+                otherwise
+                -Pass to Quality Control or Not ?
+        """
+        res = super(purchase_order, self)._prepare_order_picking(cr, uid, order, context=context)
+        location_id, pass_to_qc = self._check_warehouse_input_stock(cr, uid, order)
+        res.update({'pass_to_qc': pass_to_qc,'move_loc_id': order.location_id.id,'qc_loc_id':location_id})
+        return res
+
+    def onchange_warehouse_id(self, cr, uid, ids, warehouse_id):
+        """
+        -Process
+            -update location on create purchase order = stock location instead of input location
+        """
+        if not warehouse_id:
+            return {}
+        warehouse = self.pool.get('stock.warehouse').browse(cr, uid, warehouse_id)
+        # update lot_stock_id instead of lot_input_id
+        return {'value':{'location_id': warehouse.lot_stock_id.id, 'dest_address_id': False}}
 
 purchase_order()
 
@@ -41,7 +103,7 @@ class purchase_order_line(osv.osv):
 
     _columns = {
         'line_qty': fields.float('Purchase Quantity'),
-        'line_uom_id':  fields.many2one('product.uom','Purchase UoM'),
+        'line_uom_id':  fields.many2one('product.uom', 'Purchase UoM'),
         'consignment_variation': fields.char('Variation(±)'),
         'process_move_id':fields.many2one('stock.moves.workorder', 'Process Line'),
     }
@@ -63,22 +125,22 @@ class purchase_order_line(osv.osv):
             name=name, price_unit=price_unit, context=context)
         if product_id:
             p = prod_obj.browse(cr, uid, product_id)
-            p_qty = res['value'].get('product_qty',0.0)
+            p_qty = res['value'].get('product_qty', 0.0)
             res['value'].update({
                         'line_qty': p_qty * p.p_coefficient,
                         'line_uom_id':p.p_uom_id.id
                         })
         return res
 
-    def create(self, cr, uid, vals ,context=None):
+    def create(self, cr, uid, vals , context=None):
         """
             Process
                 -Future use
         """
-        return super(purchase_order_line,self).create(cr, uid, vals, context=context)
+        return super(purchase_order_line, self).create(cr, uid, vals, context=context)
 
 
-    def add_variations(self, cr, uid, ids ,context=None):
+    def add_variations(self, cr, uid, ids , context=None):
         """
             Process
                 -call wizard to add variation on line

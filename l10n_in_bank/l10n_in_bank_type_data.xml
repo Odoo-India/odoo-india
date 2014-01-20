@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+    
+        <!-- Default bank account description -->
+        <record id="bank_current_deposits" model="res.partner.bank.type">
+            <field name="name">CURRENT DEPOSITS / ACCOUNTS</field>
+            <field name="code">bank_current</field>
+        </record>
+
+        <record id="bank_saving" model="res.partner.bank.type">
+            <field name="name">SAVING BANK / Saving Fund  DEPOSITS / ACCOUNTS</field>
+            <field name="code">bank_saving</field>
+        </record>
+
+        <record id="bank_recurring" model="res.partner.bank.type">
+            <field name="name">RECURRING DEPOSITS / ACCOUNTS</field>
+            <field name="code">bank_recurring</field>
+        </record>
+
+        <record id="bank_fixed" model="res.partner.bank.type">
+            <field name="name">FIXED DEPOSITS / ACCOUNTS OR TERM DEPOSITS</field>
+            <field name="code">bank_fixed</field>
+        </record>
+
+    </data>
+</openerp>

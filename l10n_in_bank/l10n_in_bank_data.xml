@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+		<record model="res.bank" id="res_allahbad_bank">
+		    <field name="name">Allahabad Bank</field>
+		</record>
+		<record model="res.bank" id="res_andhra_bank">
+		    <field name="name">Andhra Bank</field>
+		</record>
+		<record model="res.bank" id="res_bank_of_baroda">
+		    <field name="name">Bank Of Baroda</field>
+		</record>
+		<record model="res.bank" id="res_bank_of_india">
+		    <field name="name">Bank of India</field>
+		</record>             
+		<record model="res.bank" id="res_bank_of_baroda">
+		    <field name="name">Bank of Baroda</field>
+		</record>
+		<record model="res.bank" id="res_bank_of_marashtra">
+		    <field name="name">Bank of Maharashtra</field>
+		</record>
+		<record model="res.bank" id="res_bharatiya_mahila_bank">
+		    <field name="name">Bharatiya Mahila Bank</field>
+		</record>
+		<record model="res.bank" id="res_canara_bank">
+		    <field name="name">Canara bank</field>
+		</record>
+		<record model="res.bank" id="res_central_bank_of_india">
+		    <field name="name">Central Bank of India</field>
+		</record>
+		<record model="res.bank" id="res_corporation_bank">
+		    <field name="name">Corporation Bank</field>
+		</record>
+		<record model="res.bank" id="res_dena_bank">
+		    <field name="name">Dena Bank</field>
+		</record>
+		<record model="res.bank" id="res_idbi_bank">
+		    <field name="name">IDBI Bank</field>
+		</record>
+		<record model="res.bank" id="res_indian_bank">
+		    <field name="name">Indian Bank</field>
+		</record>
+		<record model="res.bank" id="res_indian_overseas_bank">
+		    <field name="name">Indian Overseas Bank</field>
+		</record>
+		<record model="res.bank" id="res_oriental_bank_of_commerce">
+		    <field name="name">Oriental Bank of Commerce</field>
+		</record>
+		<record model="res.bank" id="res_punjab_national_bank">
+		    <field name="name">Punjab National Bank</field>
+		</record>
+		<record model="res.bank" id="res_punjab_sind_bank">
+		    <field name="name">Punjab and Sind Bank</field>
+		</record>
+		<record model="res.bank" id="res_syndicate_bank">
+		    <field name="name">Syndicate Bank</field>
+		</record>
+		<record model="res.bank" id="res_uco_bank">
+		    <field name="name">UCO Bank</field>
+		</record>
+		<record model="res.bank" id="res_union_bank_of_india">
+		    <field name="name">Union Bank of India</field>
+		</record>
+		<record model="res.bank" id="res_united_bank_of_india">
+		    <field name="name">United Bank of India</field>
+		</record>
+		<record model="res.bank" id="res_vijaya_bank">
+		    <field name="name">Vijaya Bank</field>
+		</record>
+    </data>
+    </openerp>

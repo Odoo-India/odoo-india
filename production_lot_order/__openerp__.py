@@ -32,7 +32,7 @@ Module to make ordering on Production Lot / Batch
 - Apply FIFO on Production Lot / Batch.
 - Add actions on dashboards.
 """,        
-    "depends" : ["stock"],
+    "depends" : ["sale_stock"],
     "update_xml" : [
         "production_lot_order_view.xml",
         ],

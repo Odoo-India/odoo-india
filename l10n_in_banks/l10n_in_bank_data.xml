@@ -75,27 +75,27 @@
         <!-- Default bank account description -->
         <record id="bank_current_deposits" model="res.partner.bank.type">
             <field name="name">Current Account</field>
-            <field name="code">current</field>
+            <field name="code">CA</field>
         </record>
 
         <record id="bank_saving" model="res.partner.bank.type">
             <field name="name">Saving Bank Account</field>
-            <field name="code">saving</field>
+            <field name="code">SBA</field>
         </record>
 
         <record id="bank_recurring" model="res.partner.bank.type">
             <field name="name">Recurring Account</field>
-            <field name="code">recurring</field>
+            <field name="code">RA</field>
         </record>
 
         <record id="bank_fixed" model="res.partner.bank.type">
             <field name="name">Fixed Deposit Account</field>
-            <field name="code">fixed</field>
+            <field name="code">FDA</field>
         </record>
 
         <record id="bank_overdraft" model="res.partner.bank.type">
             <field name="name">Overdraft Account</field>
-            <field name="code">overdraft</field>
+            <field name="code">OA</field>
         </record>
 
     </data>

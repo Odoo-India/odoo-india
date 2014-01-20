@@ -23,11 +23,11 @@
     'name': 'Banks Details',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary':'Indian Banks list, Banks Account Type list',
+    'summary':'Indian Banks list, Bank Accounts Type list',
     'description': """
-Indian Bank Details
+Indian Banks Details
 ===============================
-This module contains All Indian Nationalised Banks and Bank Account type data. 
+This module contains All Indian Nationalised Banks and Bank Account types data. 
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

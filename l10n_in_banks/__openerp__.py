@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2013 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-Today Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -25,8 +25,8 @@
     'category': 'Indian Localization',
     'summary':'List of All Indian Nationalised Banks',
     'description': """
-List of All Indian Nationalised Banks
-=======================================
+Module to Add All Indian Nationalized Banks
+=============================================
 This module contains List of All Indian Nationalised Banks and Bank Account types. 
 """,
     'author': 'OpenERP SA',

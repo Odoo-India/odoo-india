@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data noupdate="1">
+    
         <record model="res.bank" id="res_allahbad_bank">
             <field name="name">Allahabad Bank</field>
         </record>
@@ -67,36 +68,34 @@
         <record model="res.bank" id="res_vijaya_bank">
             <field name="name">Vijaya Bank</field>
         </record>
-       
         <record model="res.bank" id="res_state_bank_of_india">
             <field name="name">State Bank of India</field>
         </record>
 
-        
         <!-- Default bank account description -->
         <record id="bank_current_deposits" model="res.partner.bank.type">
             <field name="name">Current Account</field>
-            <field name="code">bank_current</field>
+            <field name="code">current</field>
         </record>
 
         <record id="bank_saving" model="res.partner.bank.type">
             <field name="name">Saving Bank Account</field>
-            <field name="code">bank_saving</field>
+            <field name="code">saving</field>
         </record>
 
         <record id="bank_recurring" model="res.partner.bank.type">
             <field name="name">Recurring Account</field>
-            <field name="code">bank_recurring</field>
+            <field name="code">recurring</field>
         </record>
 
         <record id="bank_fixed" model="res.partner.bank.type">
-            <field name="name">Fixed Account</field>
-            <field name="code">bank_fixed</field>
+            <field name="name">Fixed Deposit Account</field>
+            <field name="code">fixed</field>
         </record>
 
         <record id="bank_overdraft" model="res.partner.bank.type">
-            <field name="name">overdraft account</field>
-            <field name="code">bank_overdraft</field>
+            <field name="name">Overdraft Account</field>
+            <field name="code">overdraft</field>
         </record>
 
     </data>

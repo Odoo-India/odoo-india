@@ -19,8 +19,12 @@
 #
 ##############################################################################
 
+import time
+import re
+
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
+from openerp import tools
 
 class sale_order(osv.Model):
     _inherit = 'sale.order'
@@ -40,7 +44,7 @@ class sale_order(osv.Model):
 
         if not partner_id:
             raise osv.except_osv(_('No Customer Defined!'), _('Before choosing a template,\n select a customer in the template form.'))
-        
+
         template = self.browse(cr, uid, template)
         order_lines = template.order_line
         for line in order_lines:
@@ -66,8 +70,33 @@ class sale_order(osv.Model):
             vals['value']['product_uom'] = line.product_uom and line.product_uom.id or False
             lines.append(vals['value'])
         result['order_line'] = lines
-        result['note'] = template.note
+        result['note'] = self.merge_message(cr, uid, template.note, template, None)
         return {'value': result}
+
+    def merge_message(self, cr, uid, note, template, context=None):
+        if context is None:
+            context = {}
+
+        def merge(match):
+            exp = str(match.group()[2:-2]).strip()
+            result = None
+            try:
+                result = eval(exp,
+                              {
+                                'object': template,
+                                'context': dict(context), # copy context to prevent side-effects of eval
+                                'time': time,
+                              })
+            except:
+                raise osv.except_osv(_('Error!'), _('Wrong python condition defined for template: %s.')% (template.name))
+            if result in (None, False):
+                return str("--------")
+            return tools.ustr(result)
+
+        com = re.compile('(\[\[.+?\]\])')
+        message = com.sub(merge, note)
+
+        return message
 
 sale_order()
 

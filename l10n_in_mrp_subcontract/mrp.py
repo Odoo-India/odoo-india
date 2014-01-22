@@ -62,8 +62,22 @@ class mrp_production(osv.osv):
         context = context or {}
         procurment_obj = self.pool.get('procurement.order')
         models_data = self.pool.get('ir.model.data')
+        orderp_obj = self.pool.get('stock.warehouse.orderpoint')
         data= self.browse(cr, uid, ids[0])
-        procurments_ids = procurment_obj.search(cr, uid, [('origin','ilike',':'+data.name)], context=context)
+        search_args = ':'+data.name
+        raw_material_ids = list(set([x.product_id.id for x in data.move_lines]))
+        filter_rm_ids = orderp_obj.search(cr, uid, [('product_id', 'in' ,raw_material_ids)])
+        for op_data in orderp_obj.browse(cr, uid, filter_rm_ids):
+            search_args += '|'+op_data.name
+        cr.execute("""
+                        SELECT id FROM procurement_order 
+                        WHERE origin SIMILAR TO %s
+                        AND state not in ('done','cancel')
+                        AND product_id in %s
+                    """,
+            [search_args, tuple(raw_material_ids)])
+        procurments_ids = [x[0] for x in cr.fetchall()]
+        #procurments_ids = procurment_obj.search(cr, uid, [('origin','ilike',':'+data.name)], context=context)
         # Get opportunity views
         dummy, form_view = models_data.get_object_reference(cr, uid, 'procurement', 'procurement_form_view')
         dummy, tree_view = models_data.get_object_reference(cr, uid, 'procurement', 'procurement_tree_view')
@@ -999,7 +1013,7 @@ class mrp_bom(osv.osv):
                         'name': tools.ustr(wc_use.name) + ' - '  + tools.ustr(bom.product_id.name),
                         'workcenter_id': wc.id,
                         'order_type':wc_use.order_type,
-                        'service_description':wc_use.note,
+                        #'service_description':wc_use.note,
                         #'service_supplier_id':wc_use.service_supplier_id and wc_use.service_supplier_id.id or False,
                         'sequence': level+(wc_use.sequence or 0),
                         'cycle': cycle,

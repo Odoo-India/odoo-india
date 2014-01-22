@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-Today Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,22 +20,25 @@
 ##############################################################################
 
 {
-    'name': 'Indian Manufacturing Subcontract',
-    'version': '1.0',
-    'category' : 'Indian Localization',
-    'description':'''
-		Extend the flow of manufacturing process
-    ''',
-    'author': 'OpenERP SA',
-    'depends': ['base','sale_stock','mrp_jit','mrp_operations'],
-    'data': ['mrp_view.xml','purchase_view.xml','product_view.xml', 'stock_view.xml','wizard/process_qty_to_reject_view.xml','wizard/process_qty_to_finished_view.xml',
-             'wizard/all_in_once_qty_to_finished_view.xml','wizard/all_in_once_qty_to_cancelled_view.xml',
-             'wizard/reallocate_rejected_move_view.xml','wizard/generate_service_order_view.xml',
-             'wizard/qty_to_consume_view.xml','wizard/add_rawmaterial_to_consume_view.xml',
-             'wizard/consignment_variation_po_view.xml','wizard/qc2xlocation_view.xml'
-             ],
-    'demo': [],
-    'installable': True,
+    "name" : "Production Lot Order",
+    "version" : "1.0",
+    "author" : "OpenERP SA",
+    "website" : "http://www.openerp.com",
+    "category": "Warehouse Management",
+    "complexity": "easy",
+    "description": """
+Module to make ordering on Production Lot / Batch
+=====================================================
+- Apply FIFO on Production Lot / Batch.
+- Add actions on dashboards.
+""",        
+    "depends" : ["sale_stock"],
+    "update_xml" : [
+        "production_lot_order_view.xml",
+        ],
+    "installable": True,
+    "auto_install": False,
+    "application": False,
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

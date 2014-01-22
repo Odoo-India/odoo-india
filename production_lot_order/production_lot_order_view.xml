@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+          <record model="ir.ui.view" id="board_crm_form_inh">
+               <field name="name">Sales Dashboard Form</field>
+               <field name="model">board.board</field>
+               <field name="type">form</field>
+               <field name="inherit_id" ref="sale.board_sales_form"/>
+               <field name="arch" type="xml">
+		      		<xpath expr="/form/board/column" position="inside">
+						 <action name="%(product.product_normal_action)d" string="Product Stock"/>
+					</xpath>
+            </field>
+        </record>
+
+        <record id="board_sales_manager_form_inh" model="ir.ui.view">
+            <field name="name">board.sale.manager.form</field>
+            <field name="model">board.board</field>
+			<field name="inherit_id" ref="sale.board_sales_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+      		<xpath expr="/form/board/column" position="inside">
+				 <action name="%(product.product_normal_action)d" string="Product Stock"/>
+			</xpath>
+            </field>
+        </record>
+
+        <record id="board_account_form_inh" model="ir.ui.view">
+            <field name="name">board.account.form.inh</field>
+            <field name="model">board.board</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account.board_account_form"/>
+            <field name="arch" type="xml">
+      		<xpath expr="/form/board/column" position="inside">
+				 <action name="%(product.product_normal_action)d" string="Product Stock"/>
+				 <action name="%(stock.action_picking_tree)d" string="Delivery Challan"/>
+			</xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

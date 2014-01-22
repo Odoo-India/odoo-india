@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2004-Today Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,15 +19,24 @@
 #
 ##############################################################################
 
-import process_qty_to_reject
-import process_qty_to_finished
-import all_in_once_qty_to_finished
-import all_in_once_qty_to_cancelled
-import reallocate_rejected_move
-import generate_service_order
-import qty_to_consume
-import add_rawmaterial_to_consume
-import consignment_variation_po
-import qc2xlocation
-import stock_return_picking
+
+from osv import fields, osv
+
+class stock_production_lot(osv.osv):
+    _inherit = 'stock.production.lot'
+    _description = 'Production lot'
+    _order = 'date'
+
+stock_production_lot()
+
+class stock_move(osv.osv):
+
+    _inherit = 'stock.move'
+
+    _columns = {
+        'prodlot_id': fields.many2one('stock.production.lot', 'Bill of Entry', states={'done': [('readonly', True)]}, help="Production lot is used to put a serial number on the production", select=True),
+    }
+
+stock_move()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -10,6 +10,7 @@
             <field name="arch" type="xml">
                 <tree string="Annexure 2B" create="false" delete="false">
                     <field name="date"/>
+                    <field name="tin_no"/>
                     <field name="partner_id"/>
                     <field name="invoice_id"/>
                     <field name="account_id"/>

@@ -7,6 +7,7 @@
         model="account.invoice"
         name="account.invoice.tax.excise"
         multi="True"
+        attachment="(object.state in ('open','paid')) and ('INV'+(object.number or '').replace('/',''))"
         rml="l10n_in_tax_retail_invoice/report/tax_invoice.rml"
         string="Tax Invoice"/>
 

@@ -64,7 +64,7 @@ class mrp_production(osv.osv):
         models_data = self.pool.get('ir.model.data')
         orderp_obj = self.pool.get('stock.warehouse.orderpoint')
         data= self.browse(cr, uid, ids[0])
-        search_args = ':'+data.name
+        search_args = (data.origin or '')+':'+(data.name or '')
         raw_material_ids = list(set([x.product_id.id for x in data.move_lines]))
         filter_rm_ids = orderp_obj.search(cr, uid, [('product_id', 'in' ,raw_material_ids)])
         for op_data in orderp_obj.browse(cr, uid, filter_rm_ids):

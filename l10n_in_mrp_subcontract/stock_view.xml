@@ -32,6 +32,7 @@
 				<field name="date" position="after">
 					<field name="pass_to_qc" readonly="1"
 						attrs="{'invisible':[('pass_to_qc', '=', False)]}" />
+						<!-- field name="total_moves_to_xloc"/ -->
 				</field>
 
 				<field name="move_lines" position="attributes">

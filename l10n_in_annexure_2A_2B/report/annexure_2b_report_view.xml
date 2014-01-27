@@ -11,11 +11,11 @@
                 <tree string="Annexure 2B" create="false" delete="false">
                     <field name="date"/>
                     <field name="tin_no"/>
-                    <field name="partner_id"/>
-                    <field name="invoice_id"/>
-                    <field name="account_id"/>
-                    <field name="base_code_id"/>
-                    <field name="tax_code_id"/>
+                    <field name="partner_id" invisible="context.get('partner_id_view', False)"/>
+                    <field name="invoice_id" invisible="context.get('invoice_id_view', False)"/>
+                    <field name="account_id" invisible="context.get('account_id_view', False)"/>
+                    <field name="base_code_id" invisible="context.get('base_code_id_view', False)"/>
+                    <field name="tax_code_id" invisible="context.get('tax_code_id_view', False)"/>
                     <field name="base" sum="Total Base"/>
                     <field name="amount" sum="Total Amount"/>
                     <field name="base_amount" sum="Total Base Code Amount"/>
@@ -37,11 +37,11 @@
                     <field name="base_code_id"/>
                     <field name="tax_code_id"/>
                     <group expand="1" string="Group By...">
-                        <filter string="Partner" name="partner_group" context="{'group_by':'partner_id'}"/>
-                        <filter string="Invoice" context="{'group_by':'invoice_id'}"/>
-                        <filter string="Account" context="{'group_by':'account_id'}"/>
-                        <filter string="Base Code" context="{'group_by':'base_code_id'}"/>
-                        <filter string="Tax Code" context="{'group_by':'tax_code_id'}"/>
+                        <filter string="Partner" name="partner_group" context="{'group_by':'partner_id', 'partner_id_view': True}"/>
+                        <filter string="Invoice" context="{'group_by':'invoice_id', 'invoice_id_view': True}"/>
+                        <filter string="Account" context="{'group_by':'account_id', 'account_id_view': True}"/>
+                        <filter string="Base Code" context="{'group_by':'base_code_id', 'base_code_id_view': True}"/>
+                        <filter string="Tax Code" context="{'group_by':'tax_code_id', 'tax_code_id_view': True}"/>
                         <filter string="Date" context="{'group_by':'date'}"/>
                     </group>
                 </search>

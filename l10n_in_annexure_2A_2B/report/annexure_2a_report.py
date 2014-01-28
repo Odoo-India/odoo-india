@@ -58,16 +58,13 @@ class annexure_2a_report(osv.osv):
                 ait.base_code_id as base_code_id,
                 ait.base_amount as base_amount,
                 ait.tax_code_id as tax_code_id,
-                ait.tax_amount as tax_amount,
-                COALESCE(MIN(tax.amount * 100), 0) AS rate_tax
+                ait.tax_amount as tax_amount
 
             FROM 
                 account_invoice_line ail
                 LEFT JOIN account_invoice ai ON (ail.invoice_id = ai.id)
                 LEFT JOIN account_invoice_tax ait ON (ait.invoice_id = ai.id)
                 LEFT JOIN res_partner rp ON (ai.partner_id = rp.id)
-                LEFT JOIN account_invoice_line_tax ailt ON (ailt.invoice_line_id = ail.id)
-                LEFT JOIN account_tax tax ON (ailt.tax_id = tax.id)
 
                 WHERE ai.type = 'in_invoice'
                 GROUP BY ail.id,

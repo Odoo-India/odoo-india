@@ -46,8 +46,8 @@ class annexure_2b_report(osv.osv):
     def init(self, cr):
         tools.drop_view_if_exists(cr, 'annexure_2b_report')
         cr.execute("""CREATE OR REPLACE view annexure_2b_report AS (
-            select 
-                ail.id as id,
+            select
+                row_number() OVER () AS id,
                 ai.date_invoice AS date,
                 ai.partner_id as partner_id,
                 rp.tin_no as tin_no,

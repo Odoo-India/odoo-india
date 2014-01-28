@@ -2,6 +2,31 @@
 <openerp>
 	<data>
 
+
+        <record id="workorders_form_moves_lines2" model="ir.ui.view">
+            <field name="name">mrp.production.workcenter.tree.buttons</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp_operations.mrp_production_form_inherit_view2" />
+            <field name="arch" type="xml">
+                <xpath
+                    expr="//field[@name='workcenter_lines']/tree//button[@name='button_start_working']"
+                    position="replace">
+                    <button name="action_to_start_working" string="Start"
+                        states="draft" icon="gtk-media-play" help="Start Workingss" type="object" />
+                </xpath>
+                <xpath
+                    expr="//field[@name='workcenter_lines']/tree//button[@name='button_draft']"
+                    position="replace">
+                </xpath>
+                <xpath
+                    expr="//field[@name='workcenter_lines']/tree//button[@name='button_done']"
+                    position="replace">
+                    <button name="action_finish" string="Finished" states="startworking"
+                        icon="terp-check" help="Finish Order" type="object" />
+                </xpath>
+            </field>
+        </record>
+
 		<record id="workorders_form_moves_lines" model="ir.ui.view">
 			<field name="name">mrp.production.form.inherit</field>
 			<field name="model">mrp.production</field>
@@ -23,12 +48,12 @@
 						icon="terp-check" help="Finish Order" type="object" />
 				</xpath>
 
-				<xpath
+				<!-- xpath
 					expr="//field[@name='workcenter_lines']/tree//button[@name='button_start_working']"
 					position="replace">
 					<button name="action_to_start_working" string="Start"
 						states="draft" icon="gtk-media-play" help="Start Workingss" type="object" />
-				</xpath>
+				</xpath -->
 
 				<xpath
 					expr="//field[@name='workcenter_lines']/form//button[@name='button_start_working']"
@@ -52,10 +77,10 @@
 					expr="//field[@name='workcenter_lines']/form//button[@name='button_draft']"
 					position="replace">
 				</xpath>
-				<xpath
+				<!-- xpath
 					expr="//field[@name='workcenter_lines']/tree//button[@name='button_draft']"
 					position="replace">
-				</xpath>
+				</xpath -->
 
 				<xpath
 					expr="//field[@name='workcenter_lines']/form//field[@name='cycle']"
@@ -168,12 +193,12 @@
                         type="object" class="oe_highlight"/>
                 </xpath>
 
-				<xpath
+				<!-- xpath
 					expr="//field[@name='workcenter_lines']/tree//button[@name='button_done']"
 					position="replace">
 					<button name="action_finish" string="Finished" states="startworking"
 						icon="terp-check" help="Finish Order" type="object" />
-				</xpath>
+				</xpath -->
 
 				<xpath expr="//field[@name='workcenter_lines']/form" position="inside">
 					<notebook>

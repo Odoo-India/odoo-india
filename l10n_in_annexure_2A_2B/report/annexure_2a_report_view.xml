@@ -2,13 +2,13 @@
 <openerp>
     <data>
 
-        <!-- Annexure 2B Report Tree View -->
-        <record id="view_annexure_2b_report_tree" model="ir.ui.view">
+        <!-- Annexure 2A Report Tree View -->
+        <record id="view_annexure_2a_report_tree" model="ir.ui.view">
             <field eval="1" name="priority"/>
-            <field name="name">annexure.2b.report.tree</field>
-            <field name="model">annexure.2b.report</field>
+            <field name="name">annexure.2a.report.tree</field>
+            <field name="model">annexure.2a.report</field>
             <field name="arch" type="xml">
-                <tree string="Annexure 2B" create="false" delete="false">
+                <tree string="Annexure 2A" create="false" delete="false">
                     <field name="date"/>
                     <field name="tin_no"/>
                     <field name="partner_id" invisible="context.get('partner_id_view', False)"/>
@@ -24,12 +24,12 @@
             </field>
         </record>
 
-        <!-- Annexure 2B Report Search View -->
-        <record id="view_annexure_2b_report_search" model="ir.ui.view">
-            <field name="name">annexure.2b.report.search</field>
-            <field name="model">annexure.2b.report</field>
+        <!-- Annexure 2A Report Search View -->
+        <record id="view_annexure_2a_report_search" model="ir.ui.view">
+            <field name="name">annexure.2a.report.search</field>
+            <field name="model">annexure.2a.report</field>
             <field name="arch" type="xml">
-                <search string="Annexure 2B">
+                <search string="Annexure 2A">
                     <field name="date"/>
                     <field name="partner_id"/>
                     <field name="invoice_id"/>
@@ -48,20 +48,20 @@
             </field>
         </record>
 
-        <!-- Annexure 2B Report Action -->
-        <record id="action_annexure_2b_report" model="ir.actions.act_window">
-            <field name="name">Annexure 2B</field>
-            <field name="res_model">annexure.2b.report</field>
+        <!-- Annexure 2A Report Action -->
+        <record id="action_annexure_2a_report" model="ir.actions.act_window">
+            <field name="name">Annexure 2A</field>
+            <field name="res_model">annexure.2a.report</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
-            <field name="search_view_id" ref="view_annexure_2b_report_search"/>
-            <field name="view_id" ref="view_annexure_2b_report_tree"/>
+            <field name="search_view_id" ref="view_annexure_2a_report_search"/>
+            <field name="view_id" ref="view_annexure_2a_report_tree"/>
             <field name="domain">[]</field>
             <field name="context">{'search_default_partner_group': 1}</field>
         </record>
 
-        <!-- Annexure 2B Menu -->
-        <menuitem action="action_annexure_2b_report" id="menu_annexure_2b_report" parent="account.menu_finance_reporting" sequence="5"/>
+        <!-- Annexure 2A Menu -->
+        <menuitem action="action_annexure_2a_report" id="menu_annexure_2a_report" parent="account.menu_finance_reporting" sequence="5"/>
 
     </data>
 </openerp>

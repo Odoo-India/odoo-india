@@ -35,6 +35,7 @@ Annexure 2A is the Summary of DVAT-30 (Purchases), and Annexure 2B is the Summar
     'data' : [
     ],
     'update_xml' : [
+        'report/annexure_2a_report_view.xml',
         'report/annexure_2b_report_view.xml',
     ],
 

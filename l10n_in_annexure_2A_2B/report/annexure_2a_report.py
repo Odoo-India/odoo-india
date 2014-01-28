@@ -23,9 +23,9 @@ from openerp import tools
 from openerp.osv import fields, osv
 from openerp.addons.decimal_precision import decimal_precision as dp
 
-class annexure_2b_report(osv.osv):
-    _name = "annexure.2b.report"
-    _description = "Annexure 2B Report"
+class annexure_2a_report(osv.osv):
+    _name = "annexure.2a.report"
+    _description = "Annexure 2A Report"
     _auto = False
 
     _columns = {
@@ -44,8 +44,8 @@ class annexure_2b_report(osv.osv):
     }
 
     def init(self, cr):
-        tools.drop_view_if_exists(cr, 'annexure_2b_report')
-        cr.execute("""CREATE OR REPLACE view annexure_2b_report AS (
+        tools.drop_view_if_exists(cr, 'annexure_2a_report')
+        cr.execute("""CREATE OR REPLACE view annexure_2a_report AS (
             select 
                 ail.id as id,
                 ai.date_invoice AS date,
@@ -69,7 +69,7 @@ class annexure_2b_report(osv.osv):
                 LEFT JOIN account_invoice_line_tax ailt ON (ailt.invoice_line_id = ail.id)
                 LEFT JOIN account_tax tax ON (ailt.tax_id = tax.id)
 
-                WHERE ai.type = 'out_invoice'
+                WHERE ai.type = 'in_invoice'
                 GROUP BY ail.id,
                 ai.date_invoice,
                 ai.partner_id,
@@ -85,6 +85,6 @@ class annexure_2b_report(osv.osv):
                 ait.tax_code_id
                 )""")
 
-annexure_2b_report()
+annexure_2a_report()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

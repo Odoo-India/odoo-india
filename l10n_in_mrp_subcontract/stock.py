@@ -19,7 +19,7 @@
 #
 ##############################################################################
 
-from openerp.osv import osv,fields
+from openerp.osv import osv, fields
 import openerp.addons.decimal_precision as dp
 
 class stock_move(osv.osv):
@@ -48,7 +48,7 @@ class stock_move(osv.osv):
                     if rec.location_dest_id.id == m.location_id.id \
                         and rec.location_id.id == m.location_dest_id.id:
                         return_history[m.id] += (rec.product_qty * rec.product_uom.factor)
-                #TODO:bettter to move in funct_inv
+                # TODO:bettter to move in funct_inv
                 if return_history[m.id] + m.qc_ok_qty == m.product_qty:
                     m.write({'qc_completed': True})
         return return_history
@@ -73,7 +73,7 @@ class stock_move(osv.osv):
                         return_history[m.id] += (rec.product_qty * rec.product_uom.factor)
         return return_history
 
-    #TODO : Better idea to called funct_inv and write to move
+    # TODO : Better idea to called funct_inv and write to move
 #    def _set_qc_completed(self, cr, uid, id, name, value, args, context=None):
 #        """ 
 #        -process
@@ -87,15 +87,22 @@ class stock_move(osv.osv):
 
     _columns = {
         'moves_to_workorder': fields.boolean('Raw Material Move To Work-Center?'),
-        #This field used for add raw materials dynamicaly on production order
-        'extra_consumed': fields.boolean('Extra Consumed ?',help="Extra consumed raw material on production order"),
-        'picking_qc_id': fields.many2one('stock.picking','QC Picking'),
+        # This field used for add raw materials dynamicaly on production order
+        'extra_consumed': fields.boolean('Extra Consumed ?', help="Extra consumed raw material on production order"),
+        'picking_qc_id': fields.many2one('stock.picking', 'QC Picking'),
         'qc_approved': fields.boolean('QC Approved?'),
         'qc_completed': fields.boolean('QC Completed?'),
         'qc_ok_qty': fields.float('QC Qty ', digits_compute=dp.get_precision('Product Unit of Measure'), readonly=True),
         'is_qc': fields.boolean('Can be QC?'),
-        'returned_qty': fields.function(_return_history, string="Return Qty",digits_compute=dp.get_precision('Product Unit of Measure')),
+        'returned_qty': fields.function(_return_history, string="Return Qty", digits_compute=dp.get_precision('Product Unit of Measure')),
     }
+
+    def copy(self, cr, uid, id, default=None, context=None):
+        if default is None:
+            default = {}
+        default = default.copy()
+        default.update({'qc_completed': False, 'qc_ok_qty':0.0,'is_qc':False,'extra_consumed':False})
+        return super(stock_move, self).copy(cr, uid, id, default, context=context)
 
     def _prepare_chained_picking(self, cr, uid, picking_name, picking, picking_type, moves_todo, context=None):
         """Prepare the definition (values) to create a new chained picking.
@@ -127,10 +134,10 @@ class stock_move(osv.osv):
             Call wizard for quality control to next "x"(purchase order destination location) location
         """
         context = context or {}
-        data = self.browse(cr,uid,ids[0])
+        data = self.browse(cr, uid, ids[0])
         if not (data.picking_id and data.picking_id.purchase_id):
             raise osv.except_osv(_('Warning!'), _('You cannot process this move to transfer another location')) 
-        context.update({'product_id':data.product_id.id,'to_qc_qty': data.product_qty - data.qc_ok_qty,'qc_ok_qty':data.qc_ok_qty,'returned_qty': data.returned_qty})
+        context.update({'product_id':data.product_id.id, 'to_qc_qty': data.product_qty - data.qc_ok_qty, 'qc_ok_qty':data.qc_ok_qty, 'returned_qty': data.returned_qty})
         return {
                 'name': 'Transfer Quantity from QC to X location',
                 'view_mode': 'form',
@@ -146,14 +153,55 @@ stock_move()
 
 class stock_picking(osv.osv):
     _inherit = 'stock.picking'
+
+    def copy(self, cr, uid, id, default=None, context=None):
+        if default is None:
+            default = {}
+        default = default.copy()
+        picking_obj = self.browse(cr, uid, id, context=context)
+        default = {
+                   'move_lines_qc2store':False,
+                   'total_moves_to_xloc':False,
+                   'pass_to_qc':False,
+                   'qc_loc_id':False,
+                   'move_loc_id':False,
+                   'service_order':False,
+                   'workorder_id':False
+                   }
+        return super(stock_picking, self).copy(cr, uid, id, default, context)
+
+    def _get_picking(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('stock.move').browse(cr, uid, ids, context=context):
+            result[line.picking_id.id] = True
+        return result.keys()
+
+    def _total_moves_to_store(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = {
+                'total_moves_to_xloc': False,
+            }
+            if len(order.move_lines) and (len(order.move_lines) == len([x.id for x in order.move_lines if x.qc_completed])):
+                res[order.id] = {
+                    'total_moves_to_xloc': True,
+                }
+        return res
+
     _columns = {
         'move_lines': fields.one2many('stock.move', 'picking_id', 'Internal Moves', readonly=True, states={'draft': [('readonly', False)]}),
         'service_order': fields.boolean('Service Order'),
         'pass_to_qc': fields.boolean('QC Test?'),
-        'workorder_id':  fields.many2one('mrp.production.workcenter.line','Work-Order'),
+        'workorder_id':  fields.many2one('mrp.production.workcenter.line', 'Work-Order'),
         'move_lines_qc2store': fields.one2many('stock.move', 'picking_qc_id', 'Store Moves', readonly=True),
-        'qc_loc_id': fields.many2one('stock.location', 'QC Location',readonly=True),
-        'move_loc_id': fields.many2one('stock.location', 'Destination Location',readonly=True),
+        'qc_loc_id': fields.many2one('stock.location', 'QC Location', readonly=True),
+        'move_loc_id': fields.many2one('stock.location', 'Destination Location', readonly=True),
+        'total_moves_to_xloc': fields.function(_total_moves_to_store, digits_compute=dp.get_precision('Account'), string='Total qty moves to x location?', type="boolean",
+            store={
+                'stock.picking': (lambda self, cr, uid, ids, c={}: ids, ['move_lines'], 10),
+                'stock.move': (_get_picking, ['qc_completed'], 10),
+            },
+            ),
     }
 stock_picking()
 
@@ -162,18 +210,61 @@ class stock_picking_out(osv.osv):
     _columns = {
         'service_order': fields.boolean('Service Order'),
         'move_lines': fields.one2many('stock.move', 'picking_id', 'Internal Moves', readonly=True, states={'draft': [('readonly', False)]}),
-        'workorder_id':  fields.many2one('mrp.production.workcenter.line','Work-Order')
+        'workorder_id':  fields.many2one('mrp.production.workcenter.line', 'Work-Order')
     }
 stock_picking_out()
 
 class stock_picking_in(osv.osv):
     _inherit = 'stock.picking.in'
+
+    def copy(self, cr, uid, id, default=None, context=None):
+        if default is None:
+            default = {}
+        default = default.copy()
+        picking_obj = self.browse(cr, uid, id, context=context)
+        default = {
+                   'move_lines_qc2store':False,
+                   'total_moves_to_xloc':False,
+                   'pass_to_qc':False,
+                   'qc_loc_id':False,
+                   'move_loc_id':False,
+                   'service_order':False,
+                   'workorder_id':False
+                   }
+        return super(stock_picking_in, self).copy(cr, uid, id, default, context)
+
+    def _get_picking(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('stock.move').browse(cr, uid, ids, context=context):
+            result[line.picking_id.id] = True
+        return result.keys()
+
+    def _total_moves_to_store(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = {
+                'total_moves_to_xloc': False,
+            }
+            print "len(order.move_lines)",len(order.move_lines)
+            if len(order.move_lines) and (len(order.move_lines) == len([x.id for x in order.move_lines if x.qc_completed])):
+                res[order.id] = {
+                    'total_moves_to_xloc': True,
+                }
+        return res
+
     _columns = {
         'pass_to_qc': fields.boolean('QC Test?'),
         'move_lines': fields.one2many('stock.move', 'picking_id', 'Internal Moves', readonly=True, states={'draft': [('readonly', False)]}),
         'move_lines_qc2store': fields.one2many('stock.move', 'picking_qc_id', 'Store Moves', readonly=True),
-        'qc_loc_id': fields.many2one('stock.location', 'QC Location',readonly=True),
-        'move_loc_id': fields.many2one('stock.location', 'Destination Location',readonly=True),
+        'qc_loc_id': fields.many2one('stock.location', 'QC Location', readonly=True),
+        'move_loc_id': fields.many2one('stock.location', 'Destination Location', readonly=True),
+        'total_moves_to_xloc': fields.function(_total_moves_to_store, digits_compute=dp.get_precision('Account'), string='Total qty moves to x location?', type="boolean",
+            store={
+                'stock.picking': (lambda self, cr, uid, ids, c={}: ids, ['move_lines'], 10),
+                'stock.move': (_get_picking, ['qc_completed'], 10),
+            },
+            ),
+        
     }
 stock_picking_in()
 

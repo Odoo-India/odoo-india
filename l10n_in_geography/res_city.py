@@ -26,7 +26,7 @@ class res_city(osv.Model):
     _columns = {
             'name': fields.char('City Name', size=64, required=True),
             'state_id': fields.many2one('res.country.state', 'State', required=True),
-            'country_id': fields.related('state_id', 'country_id', relation='res.country', type='many2one', string='Country', required=True),
+            'country_id': fields.related('state_id', 'country_id', relation='res.country', type='many2one', string='Country'),
     }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

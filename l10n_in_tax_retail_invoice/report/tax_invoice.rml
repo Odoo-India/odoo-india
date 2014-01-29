@@ -351,9 +351,6 @@
         </td>
       </tr>
     </blockTable>
-    <para style="P3">
-      <font color="white"> </font>
-    </para>
     <section>
       <blockTable colWidths="215.0,54.0,54.0,54.0,54.0,54.0,54.0" style="Table2">
         <tr>
@@ -381,13 +378,10 @@
           </td>
         </tr>
       </blockTable>
-      <para style="P2">
-        <font color="white"> </font>
-      </para>
+      <para style="P6">[[ repeatIn(o.invoice_line, 'l') ]]</para>
       <blockTable colWidths="215.0,54.0,54.0,54.0,54.0,54.0,54.0" style="Table3">
         <tr>
           <td>
-            <para style="P6">[[ repeatIn(o.invoice_line, 'l') ]]</para>
             <para style="P6">[[ l.name ]]</para>
           </td>
           <td>
@@ -410,18 +404,11 @@
           </td>
         </tr>
       </blockTable>
-      <para style="P1">
-        <font color="white"> </font>
-      </para>
       <section>
-        <para style="P1">
-          <font color="white"> </font>
-        </para>
-      </section>
+      <para style="P9">[[ repeatIn(o.tax_line,'t') ]]</para>
       <blockTable colWidths="215.0,54.0,54.0,54.0,54.0,54.0,54.0" style="Table11">
         <tr>
           <td>
-            <para style="P9">[[ repeatIn(o.tax_line,'t') ]]</para>
             <para style="P16">
               <font face="Helvetica" size="8.0">[[ t.name ]]</font>
               <font face="Helvetica" size="8.0">[[ t.tax_categ in ('excise', 'cess', 'cst', 'other') and removeParentNode('font')]]</font>
@@ -466,6 +453,7 @@
           </td>
         </tr>
       </blockTable>
+      </section>
       <blockTable colWidths="215.0,54.0,54.0,54.0,54.0,54.0,54.0" style="Table12">
         <tr>
           <td>

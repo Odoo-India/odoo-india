@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name': 'List of Indian Cities',
+    'name': 'List of Indian Geography',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary':'List of All Indian Cities and Towns',

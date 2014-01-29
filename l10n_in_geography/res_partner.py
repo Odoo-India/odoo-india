@@ -28,9 +28,9 @@ class res_partner(osv.Model):
     }
 
     def onchange_city(self, cr, uid, ids, city_id, context=None):
-        city_obj = self.pool.get('res.city').browse(cr, uid, city_id, context)
-        if city_id:
-            return {'value':{'country_id': city_obj.state_id.country_id.id , 'state_id': city_obj.state_id.id, 'city': city_obj.name}}
-        return {}
+        if not city_id:
+            return {'value': {}}
+        city = self.pool.get('res.city').browse(cr, uid, city_id, context=context)
+        return {'value': {'country_id': city.state_id.country_id.id , 'state_id': city.state_id.id, 'city': city.name}}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

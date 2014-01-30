@@ -31,6 +31,6 @@ class res_partner(osv.Model):
         if not city_id:
             return {'value': {}}
         city = self.pool.get('res.city').browse(cr, uid, city_id, context=context)
-        return {'value': {'country_id': city.state_id.country_id.id , 'state_id': city.state_id.id, 'city': city.name}}
+        return {'value': {'state_id': city.state_id.id, 'city': city.name}}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

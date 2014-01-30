@@ -19,14 +19,16 @@
 #
 ##############################################################################
 {
-    'name': 'List of Indian Geography',
+    'name': 'Indian Geography',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary':'List of All Indian Cities and Towns',
+    'summary':'List of Cities and Towns in India',
     'description': """
-Module to Add All Indian Cities
-=============================================
-This module contains List of All Indian Cities and Towns. 
+List of Cities and Towns in India
+==================================
+This module adds all the major cities of India by state.
+
+In order to work with Indian Localization, these module eases the effort to manually add cities and states of India.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

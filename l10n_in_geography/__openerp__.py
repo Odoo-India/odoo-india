@@ -34,7 +34,12 @@ In order to work with Indian Localization, these module eases the effort to manu
     'website': 'http://www.openerp.com',
     'images': [],
     'depends': ['base'],
-    'data': ['data/res_country_state_data.xml', 'data/res_city_data.xml',  'res_city_view.xml', 'res_partner_view.xml'],
+    'data': [
+        'data/res_country_state_data.xml',
+#        'data/res_city_data.xml',
+#        'res_city_view.xml',
+#        'res_partner_view.xml'
+    ],
     'installable': True,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

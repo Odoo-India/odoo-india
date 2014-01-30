@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+   <data noupdate="1">
+   
+       <!--GUJARAT-->
+       <record id="state_GJ" model="res.country.state">
+           <field name="name">Gujarat</field>
+           <field name="code">GJ</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Jammu and Kashmir-->
+        <record id="state_JK" model="res.country.state">
+           <field name="name">Jammu and Kashmir</field>
+           <field name="code">JK</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+       
+    <!--Maharashtra-->
+        <record id="state_MH" model="res.country.state">
+           <field name="name">Maharashtra</field>
+           <field name="code">MH</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Uttar Pradesh-->
+        <record id="state_UP" model="res.country.state">
+           <field name="name">Uttar Pradesh</field>
+           <field name="code">UP</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+       
+
+    <!--Andhra Pradesh-->
+        <record id="state_AP" model="res.country.state">
+           <field name="name">Andhra Pradesh</field>
+           <field name="code">AN</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Karnataka-->
+        <record id="state_KA" model="res.country.state">
+           <field name="name">Karnataka</field>
+           <field name="code">KA</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Kerala-->
+        <record id="state_KL" model="res.country.state">
+           <field name="name">Kerala</field>
+           <field name="code">KL</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+       
+    <!--West Bengal-->
+        <record id="state_WB" model="res.country.state">
+           <field name="name">West Bengal</field>
+           <field name="code">WB</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Tripura-->  
+        <record id="state_TR" model="res.country.state">
+           <field name="name">Tripura</field>
+           <field name="code">TR</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Chhattisgarh-->  
+        <record id="state_CHH" model="res.country.state">
+           <field name="name">Chhattisgarh</field>
+           <field name="code">CHH</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Arunachal Pradesh-->  
+        <record id="state_ARP" model="res.country.state">
+           <field name="name">Arunachal Pradesh</field>
+           <field name="code">ARP</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Assam-->  
+        <record id="state_AS" model="res.country.state">
+           <field name="name">Assam</field>
+           <field name="code">AS</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Bihar-->  
+        <record id="state_BR" model="res.country.state">
+           <field name="name">Bihar</field>
+           <field name="code">BR</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Goa-->  
+        <record id="state_GA" model="res.country.state">
+           <field name="name">Goa</field>
+           <field name="code">GO</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Haryana-->  
+        <record id="state_HR" model="res.country.state">
+           <field name="name">Haryana</field>
+           <field name="code">HR</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Himachal Pradesh-->  
+        <record id="state_HP" model="res.country.state">
+           <field name="name">Himachal Pradesh</field>
+           <field name="code">HP</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Jharkhand-->  
+        <record id="state_JH" model="res.country.state">
+           <field name="name">Jharkhand</field>
+           <field name="code">JH</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Manipur-->  
+        <record id="state_MN" model="res.country.state">
+           <field name="name">Manipur</field>
+           <field name="code">MNI</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Meghalaya-->  
+        <record id="state_ML" model="res.country.state">
+           <field name="name">Meghalaya</field>
+           <field name="code">ML</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Mizoram-->  
+        <record id="state_MZ" model="res.country.state">
+           <field name="name">Mizoram</field>
+           <field name="code">MZ</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Nagaland-->  
+        <record id="state_NL" model="res.country.state">
+           <field name="name">Nagaland</field>
+           <field name="code">NL</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Odisha-->  
+        <record id="state_OR" model="res.country.state">
+           <field name="name">Odisha</field>
+           <field name="code">OD</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Punjab-->  
+        <record id="state_PB" model="res.country.state">
+           <field name="name">Punjab</field>
+           <field name="code">PB</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Rajasthan-->  
+        <record id="state_RJ" model="res.country.state">
+           <field name="name">Rajasthan</field>
+           <field name="code">RJ</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Sikkim-->  
+        <record id="state_SK" model="res.country.state">
+           <field name="name">Sikkim</field>
+           <field name="code">SK</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Tamil Nadu-->  
+        <record id="state_TN" model="res.country.state">
+           <field name="name">Tamil Nadu</field>
+           <field name="code">TAN</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Uttarakhand-->  
+        <record id="state_UT" model="res.country.state">
+           <field name="name">Uttarakhand</field>
+           <field name="code">UTT</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Madhya Pradesh-->  
+        <record id="state_MP" model="res.country.state">
+           <field name="name">Madhya Pradesh</field>
+           <field name="code">MP</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Lakshadweep-->  
+        <record id="state_LA" model="res.country.state">
+           <field name="name">Lakshadweep</field>
+           <field name="code">LD</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Delhi-->
+        <record id="state_DE" model="res.country.state">
+           <field name="name">Delhi</field>
+           <field name="code">DL</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Chandigarh-->
+        <record id="state_CH" model="res.country.state">
+           <field name="name">Chandigarh</field>
+           <field name="code">CH</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Daman and Diu-->
+        <record id="state_DD" model="res.country.state">
+           <field name="name">Daman and Diu</field>
+           <field name="code">DD</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Puducherry-->
+        <record id="state_PU" model="res.country.state">
+           <field name="name">Puducherry</field>
+           <field name="code">PU</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Andaman and Nicobar Islands-->
+        <record id="state_AI" model="res.country.state">
+           <field name="name">Andaman and Nicobar Islands</field>
+           <field name="code">AI</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+    <!--Dadra and Nagar Haveli-->
+        <record id="state_DN" model="res.country.state">
+           <field name="name">Dadra and Nagar Haveli</field>
+           <field name="code">DN</field>
+           <field name="country_id" ref="base.in"/>
+       </record>
+
+   </data>
+</openerp>

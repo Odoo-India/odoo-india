@@ -19,23 +19,14 @@
 #
 ##############################################################################
 
-{
-    'name': 'Indian Nationalized Banks',
-    'version': '1.0',
-    'category': 'Indian Localization',
-    'summary':'List of All Indian Nationalized Banks',
-    'description': """
-Indian Nationalized Banks and Bank Account types
-==================================================
-This module contains list of all Indian Nationalized Banks and Bank Account types.
+from openerp.osv import osv,fields
 
-In order to work with Indian Localization, these module eases the effort to manually create Nationalized banks and bank account types in India.
-""",
-    'author': 'OpenERP SA',
-    'website': 'http://www.openerp.com',
-    'images': [],
-    'depends': ['base'],
-    'data': ['l10n_in_bank_data.xml'],
-    'installable': True,
-}
+class res_city(osv.Model):
+    _name = "res.city"
+    _columns = {
+            'name': fields.char('City Name', size=64, required=True),
+            'state_id': fields.many2one('res.country.state', 'State', required=True),
+            'country_id': fields.related('state_id', 'country_id', relation='res.country', type='many2one', string='Country'),
+    }
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

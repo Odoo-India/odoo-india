@@ -18,24 +18,28 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
 {
-    'name': 'Indian Nationalized Banks',
+    'name': 'Indian Geography',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary':'List of All Indian Nationalized Banks',
+    'summary':'List of Cities and Towns in India',
     'description': """
-Indian Nationalized Banks and Bank Account types
-==================================================
-This module contains list of all Indian Nationalized Banks and Bank Account types.
+List of Cities and Towns in India
+==================================
+This module adds all the major cities of India by state.
 
-In order to work with Indian Localization, these module eases the effort to manually create Nationalized banks and bank account types in India.
+In order to work with Indian Localization, these module eases the effort to manually add cities and states of India.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     'images': [],
     'depends': ['base'],
-    'data': ['l10n_in_bank_data.xml'],
+    'data': [
+        'data/res_country_state_data.xml',
+#        'data/res_city_data.xml',
+#        'res_city_view.xml',
+#        'res_partner_view.xml'
+    ],
     'installable': True,
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

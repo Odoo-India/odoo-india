@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        
+        <!-- City -->
+        
+        <record id="view_res_city_tree" model="ir.ui.view">
+            <field name="name">res.city.tree</field>
+            <field name="model">res.city</field>
+            <field name="arch" type="xml">
+                <tree string="City">
+                    <field name="name"/>
+                    <field name="state_id"/>
+                    <field name="country_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_res_city_form" model="ir.ui.view">
+            <field name="name">res.city.form</field>
+            <field name="model">res.city</field>
+            <field name="arch" type="xml">
+                <form string="City" version="7.0">
+                    <group>
+                        <field name="name"/>
+                        <field name="state_id"/>
+                        <field name="country_id" options='{"no_open": True}'/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_res_city" model="ir.actions.act_window">
+            <field name="name">Cities</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.city</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_res_city_tree"/>
+            <field name="help">If you are working on the Indian market, you can manage the different cities you are working on from here. Each city is attached to one state and country.</field>
+        </record>
+
+       <menuitem action="action_res_city" id="menu_res_city" parent="base.menu_localisation" groups="base.group_no_one"/>
+
+    </data>
+ </openerp>

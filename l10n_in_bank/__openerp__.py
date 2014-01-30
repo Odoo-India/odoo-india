@@ -20,14 +20,16 @@
 ##############################################################################
 
 {
-    'name': 'List of Indian Banks',
+    'name': 'Indian Nationalized Banks',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary':'List of All Indian Nationalised Banks',
+    'summary':'List of All Indian Nationalized Banks',
     'description': """
-Module to Add All Indian Nationalized Banks
-=============================================
-This module contains List of All Indian Nationalised Banks and Bank Account types. 
+Indian Nationalized Banks and Bank Account types
+==================================================
+This module contains list of all Indian Nationalized Banks and Bank Account types.
+
+In order to work with Indian Localization, these module eases the effort to manually create Nationalized banks and bank account types in India.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

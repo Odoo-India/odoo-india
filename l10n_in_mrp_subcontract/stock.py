@@ -166,7 +166,8 @@ class stock_picking(osv.osv):
                    'qc_loc_id':False,
                    'move_loc_id':False,
                    'service_order':False,
-                   'workorder_id':False
+                   'workorder_id':False,
+                   'move_lines':[]
                    }
         return super(stock_picking, self).copy(cr, uid, id, default, context)
 
@@ -229,7 +230,8 @@ class stock_picking_in(osv.osv):
                    'qc_loc_id':False,
                    'move_loc_id':False,
                    'service_order':False,
-                   'workorder_id':False
+                   'workorder_id':False,
+                   'move_lines':[]
                    }
         return super(stock_picking_in, self).copy(cr, uid, id, default, context)
 
@@ -245,7 +247,6 @@ class stock_picking_in(osv.osv):
             res[order.id] = {
                 'total_moves_to_xloc': False,
             }
-            print "len(order.move_lines)",len(order.move_lines)
             if len(order.move_lines) and (len(order.move_lines) == len([x.id for x in order.move_lines if x.qc_completed])):
                 res[order.id] = {
                     'total_moves_to_xloc': True,

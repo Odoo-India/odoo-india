@@ -12,6 +12,8 @@
 						attrs="{'invisible':[('service_order', '=', False)]}" />
 					<field name="workorder_id" readonly="1"
 						attrs="{'invisible':[('workorder_id', '=', False)]}" />
+                    <field name="service_delivery_order" readonly="1"
+                        attrs="{'invisible':[('workorder_id', '=', False)]}" />
 				</field>
 				<field name="location_id" position="replace" />
 				<xpath expr="//group" position="inside">

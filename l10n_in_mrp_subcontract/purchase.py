@@ -18,16 +18,30 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import time
+import netsvc
 
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class purchase_order(osv.osv):
     _inherit = 'purchase.order'
     _columns = {
         'service_order': fields.boolean('Service Order'),
-        'workorder_id':  fields.many2one('mrp.production.workcenter.line', 'Work-Order')
+        'workorder_id':  fields.many2one('mrp.production.workcenter.line', 'Work-Order'),
+        'service_delivery_order':  fields.many2one('stock.picking', 'Service Delivery Order')
     }
+
+    def copy(self, cr, uid, id, default=None, context=None):
+        if not default:
+            default = {}
+        default.update({
+            'service_order': False,
+            'workorder_id': False,
+            'service_delivery_order': False,
+        })
+        return super(purchase_order, self).copy(cr, uid, id, default, context)
 
     def _check_warehouse_input_stock(self, cr, uid, order):
         """
@@ -90,6 +104,99 @@ class purchase_order(osv.osv):
         warehouse = self.pool.get('stock.warehouse').browse(cr, uid, warehouse_id)
         # update lot_stock_id instead of lot_input_id
         return {'value':{'location_id': warehouse.lot_stock_id.id, 'dest_address_id': False}}
+
+    def _create_delivery_picking(self, cr, uid, order, context=None):
+        """
+        Process
+            -Create Delivery Picking for outsource
+        Return
+            -Dictionary of picking
+        """
+        pick_name = self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.out')
+        production = order.workorder_id.production_id
+        return {
+            'name': pick_name,
+            'origin': production.name,
+            'date': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            'type': 'out',
+            'state': 'draft',
+            'partner_id': order.partner_id.id,
+            'note': order.notes,
+            'invoice_state': 'none',
+            'company_id': order.company_id.id,
+            'service_order':True,
+            'workorder_id': order.workorder_id.id,
+        }
+
+    def _create_delivery_move(self, cr , uid, order, deliver_id, context=None):
+        """
+        Process
+            -Create move for outsource
+                From : Production Location
+                To : Supplier Location
+        Return
+            -Dictionary of move
+        """
+        context = context or {}
+        if not order.workorder_id:
+            raise osv.except_osv(_('Warning!'), _('Can you check again, is this service order??!'))
+        production = order.workorder_id.production_id
+
+        #Delivery Order Locations
+        source_location_id = production.product_id.property_stock_production.id
+        dest_location_id = order.partner_id.property_stock_supplier.id
+        list_data = []
+        for l in order.order_line:
+            if l.product_id and l.product_id.type <> 'service':
+                list_data.append(
+                                    {
+                                        'name': l.product_id.name,
+                                        'picking_id': deliver_id,
+                                        'product_id': l.product_id.id,
+                                        'date': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                                        'date_expected': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                                        'product_qty': l.product_qty or 0.0,
+                                        'product_uom': l.product_id.uom_id.id,
+                                        'product_uos_qty': l.product_qty or 0.0,
+                                        'product_uos': l.product_id.uom_id.id,
+                                        'partner_id': order.partner_id.id,
+                                        'location_id': source_location_id,
+                                        'location_dest_id': dest_location_id,
+                                        'tracking_id': False,
+                                        'state': 'draft',
+                                        'company_id': production.company_id.id,
+                                        'price_unit': l.product_id.standard_price or 0.0
+                                    }
+                                 )
+        return list_data
+
+    def action_picking_create(self, cr, uid, ids, context=None):
+        """
+        -Process
+            -super call()
+            -if service order then at the time of confirmation , it will generate Delivery order from production.
+        """
+        out_pick_obj = self.pool.get('stock.picking')
+        move_obj = self.pool.get('stock.move')
+        wf_service = netsvc.LocalService("workflow")
+        res = super(purchase_order,self).action_picking_create(cr, uid, ids, context=context)
+        for order in self.browse(cr, uid, ids):
+            if order.service_order:
+                # Create Delivery Order
+                delivery_order_id = out_pick_obj.create(cr, uid, self._create_delivery_picking(cr, uid, order, context=context), context=context)
+                # Create Move
+                move_lines = self._create_delivery_move(cr, uid, order, delivery_order_id, context=context)
+                for move in move_lines:
+                    move_obj.create(cr, uid, move, context=context)
+
+                #Picking Directly Done
+                wf_service.trg_validate(uid, 'stock.picking', delivery_order_id, 'button_confirm', cr)
+                out_pick_obj.action_move(cr, uid, [delivery_order_id], context)
+                wf_service.trg_validate(uid, 'stock.picking', delivery_order_id, 'button_done', cr)
+
+                order.write({'service_delivery_order': delivery_order_id})
+                
+        return res
 
 purchase_order()
 

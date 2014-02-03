@@ -227,8 +227,6 @@
 											attrs="{'invisible':[('order_type','=','in')], 'required':[('order_type','=','out')]}" />
 										<field name="po_order_id" readonly="1"
 											attrs="{'invisible':[('order_type','=','in')]}" />
-										<field name="delivery_order_id" readonly="1"
-											attrs="{'invisible':[('order_type','=','in')]}" />
 
 										<field name="state" readonly="1" />
 										<!-- field name="reason" readonly="1" / -->
@@ -361,8 +359,6 @@
 									<field name="service_supplier_id" readonly="1"
 										attrs="{'invisible':[('order_type','=','in')]}" />
 									<field name="po_order_id" readonly="1"
-										attrs="{'invisible':[('order_type','=','in')]}" />
-									<field name="delivery_order_id" readonly="1"
 										attrs="{'invisible':[('order_type','=','in')]}" />
 
 									<field name="state" readonly="1" />

@@ -21,7 +21,7 @@
 
 {
     'name' : 'Indent Management',
-    'version' : '1.0',
+    'version' : '2.0',
     'author' : 'OpenERP SA',
     'sequence': 120,
     'category': 'Warehouse Management',

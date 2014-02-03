@@ -31,7 +31,7 @@
     'website': 'http://www.openerp.com',
     'images': [],
     'depends': ['sale'],
-    'data': ['sparetech_report.xml',
+    'data': ['sparetech_view.xml',
     ],
     'demo': [],
     'test': [],

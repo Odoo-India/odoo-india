@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <report auto="False" id="sale.report_sale_order" model="sale.order" name="sale.order"
+                rml="sparetech_report/report/sparetech_order.rml" string="Quotation / Order"
+                usage="default"/>
+                
+        <record id='view_currency_form' model='ir.ui.view'>
+            <field name="name">product.product.currency.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view" />
+            <field name="arch" type="xml">
+                <field name="cost_method" position="after">
+                    <label for="currency_price"/>
+                    <div>
+                        <field name="currency_price" on_change="onchange_currency_price(currency_price,currency_id)" class="oe_inline"/>
+                        <field name="currency_id" domain="[('company_id','=',company_id)]" on_change="onchange_currency_price(currency_price,currency_id)" class="oe_inline"/>
+                    </div>
+                </field>
+            </field>
+        </record>
+
+    <record model="ir.ui.view" id="view_sparetech_order_line_form2_inherit">
+        <field name="name">sale.order.sparetech.form2.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="/form/sheet/notebook/page[@string='Order Lines']/field[@name='order_line']/form/group/group/field[@name='price_unit']" position="after">
+                <label for="markup"/>
+                <div name="markup">
+                    <field name="markup" class="oe_inline"/> %%
+                </div>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[@string='Order Lines']/field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                <field name="markup"/>
+            </xpath>
+        </field>
+    </record>
+        
+    </data>
+</openerp>

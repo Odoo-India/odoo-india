@@ -155,13 +155,9 @@ class generate_service_order(osv.osv_memory):
         
         """
         context = context or {}
-        wrkorder_obj = self.pool.get('mrp.production.workcenter.line')
         pmove_obj = self.pool.get('stock.moves.workorder')
-        out_pick_obj = self.pool.get('stock.picking')
-        move_obj = self.pool.get('stock.move')
         wf_service = netsvc.LocalService("workflow")
         purchase_obj = self.pool.get('purchase.order')
-        production_obj = self.pool.get('mrp.production')
         purchase_line_obj = self.pool.get('purchase.order.line')
         process_move_id = context and context.get('active_id') or False
         if not process_move_id:
@@ -172,22 +168,12 @@ class generate_service_order(osv.osv_memory):
         # Create PO Lines
         purchase_line_obj.create(cr, uid, self._create_po_line_vals(cr, uid, data, po_id, context=context), context=context)
 
-        # Create Delivery Order
-        delivery_order_id = out_pick_obj.create(cr, uid, self._create_delivery_picking(cr, uid, data, context=context), context=context)
-        # Create Move
-        move_obj.create(cr, uid, self._create_delivery_move(cr, uid, data, delivery_order_id, context=context), context=context)
-
         pmove_obj.write(cr, uid, process_move_id, {
                                   'state':'in_progress',
                                   'start_date':time.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                                   'process_qty':data.total_qty,
                                   'po_order_id':po_id,
-                                  'delivery_order_id':delivery_order_id
                                   })
-        #Picking Directly Done
-        wf_service.trg_validate(uid, 'stock.picking', delivery_order_id, 'button_confirm', cr)
-        out_pick_obj.action_move(cr, uid, [delivery_order_id], context)
-        wf_service.trg_validate(uid, 'stock.picking', delivery_order_id, 'button_done', cr)
 
         #Start Work-Order Also.
         wf_service.trg_validate(uid, 'mrp.production.workcenter.line', data.workorder_id.id, 'button_start_working', cr)

@@ -448,7 +448,6 @@ class stock_moves_workorder(osv.osv):
         'order_type': fields.related('workorder_id', 'order_type', type='selection', selection=[('in', 'Inside'), ('out', 'Outside')], string='Order Type', store=True), 
         'service_supplier_id': fields.many2one('res.partner', 'Supplier',domain=[('supplier','=',True)]),
         'po_order_id': fields.many2one('purchase.order', 'Service Order'),
-        'delivery_order_id': fields.many2one('stock.picking', 'Delivery Order'),
     }
 
     _defaults = {

@@ -19,12 +19,13 @@
 #
 ##############################################################################
 
-import mrp
-import procurement
-import product
-import stock
-import purchase
-import partner
-import invoice
-import wizard
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+from openerp.osv import osv,fields
+
+class res_partner(osv.osv):
+    _inherit = 'res.partner'
+
+    _columns = {
+        'supplier': fields.boolean('Supplier/Service Providers', help="Check this box if this contact is a supplier/Service Providers(For outsourcing materials). If it's not checked, purchase people will not see it when encoding a purchase order."),
+    }
+
+res_partner()

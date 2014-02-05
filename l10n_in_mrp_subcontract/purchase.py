@@ -94,6 +94,16 @@ class purchase_order(osv.osv):
         res.update({'pass_to_qc': pass_to_qc,'move_loc_id': order.location_id.id,'qc_loc_id':location_id})
         return res
 
+    def _prepare_inv_line(self, cr, uid, account_id, order_line, context=None):
+        """
+        -Process
+            -call super()
+            -pass the purchase qty and Purchase Uom to invoice line
+        """
+        res = super(purchase_order, self)._prepare_inv_line(cr, uid, account_id, order_line, context=context)
+        res.update({'pur_line_qty': order_line.line_qty or 0.0,'pur_line_uom_id': order_line.line_uom_id.id or False})
+        return res
+
     def onchange_warehouse_id(self, cr, uid, ids, warehouse_id):
         """
         -Process

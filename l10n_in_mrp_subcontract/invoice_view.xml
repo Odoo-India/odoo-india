@@ -11,6 +11,7 @@
                 <field name="account_id" position="after">
                     <field name="pur_line_qty"/>
                     <field name="pur_line_uom_id"/>
+                    <field name="variation_amount"/>
                 </field>
             </field>
         </record>
@@ -24,15 +25,15 @@
                     <field name="pur_line_qty"/>
                     <field name="pur_line_uom_id"/>
                 </xpath>
+                <xpath expr="//field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']" position="after">
+                    <field name="variation_amount"/>
+                </xpath>
                 <xpath expr="//field[@name='invoice_line']/tree/field[@name='quantity']" position="attributes">
                     <attribute name="string">Issue Qty.</attribute>
                 </xpath>
                 <xpath expr="//field[@name='invoice_line']/tree/field[@name='uos_id']" position="attributes">
                     <attribute name="string">Issue UoM</attribute>
                 </xpath>
-                <field name="amount_tax" position="after">
-                    <field name="variation_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                </field>
             </field>
         </record>
 

@@ -22,9 +22,9 @@
     'name': 'Indian Geography',
     'version': '1.0',
     'category': 'Indian Localization',
-    'summary':'List of Cities and Towns in India',
+    'summary':'List of States and Cities in India',
     'description': """
-List of Cities and Towns in India
+List of States and Cities in India
 ==================================
 This module adds all the major cities of India by state.
 

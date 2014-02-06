@@ -22,43 +22,32 @@
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 
-class account_invoice(osv.osv):
-    def _amount_all(self, cr, uid, ids, name, args, context=None):
-        res = super(account_invoice, self)._amount_all(cr, uid, ids, name, args, context=context)
-        for invoice,data in res.items():
-            res[invoice].update({'amount_total': data.get('amount_total',0.0) + self.browse(cr, uid, invoice).variation_amount or 0.0})
-        return res
-
-    def _get_invoice_line(self, cr, uid, ids, context=None):
-        result = {}
-        for line in self.pool.get('account.invoice.line').browse(cr, uid, ids, context=context):
-            result[line.invoice_id.id] = True
-        return result.keys()
-
-    def _get_invoice_tax(self, cr, uid, ids, context=None):
-        result = {}
-        for tax in self.pool.get('account.invoice.tax').browse(cr, uid, ids, context=context):
-            result[tax.invoice_id.id] = True
-        return result.keys()
-
-    _inherit = "account.invoice"
-    _columns = {
-        'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
-            store={
-                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line','variation_amount'], 20),
-                'account.invoice.tax': (_get_invoice_tax, None, 20),
-                'account.invoice.line': (_get_invoice_line, ['price_unit','invoice_line_tax_id','quantity','discount','invoice_id'], 20),
-            },
-            multi='all'),
-        'variation_amount': fields.float('Variation Amount(±)', digits_compute=dp.get_precision('Account'), readonly=False, states={'paid':[('readonly',True)]}),
-    }
-account_invoice()
-
 class account_invoice_line(osv.osv):
     _inherit = "account.invoice.line"
+
+    def _amount_line(self, cr, uid, ids, prop, unknow_none, unknow_dict):
+        """
+        -Process
+            -added variation amount in line
+        """
+        res = {}
+        tax_obj = self.pool.get('account.tax')
+        cur_obj = self.pool.get('res.currency')
+        for line in self.browse(cr, uid, ids):
+            price = line.price_unit  * (1-(line.discount or 0.0)/100.0)
+            taxes = tax_obj.compute_all(cr, uid, line.invoice_line_tax_id, price, line.quantity, product=line.product_id, partner=line.invoice_id.partner_id)
+            res[line.id] = taxes['total'] + line.variation_amount
+            if line.invoice_id:
+                cur = line.invoice_id.currency_id
+                res[line.id] = cur_obj.round(cr, uid, cur, res[line.id])
+        return res
+
     _columns = {
         'pur_line_qty': fields.float('Purchase Quantity'),
         'pur_line_uom_id':  fields.many2one('product.uom', 'Purchase UoM'),
+        'variation_amount': fields.float('Variation Amount(±)', digits_compute=dp.get_precision('Account')),
+        'price_subtotal': fields.function(_amount_line, string='Amount', type="float",
+            digits_compute= dp.get_precision('Account'), store=True),
     }
 
 account_invoice_line()

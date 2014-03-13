@@ -36,8 +36,6 @@ When the products are moved from one location to another location, the system wi
 """,
     'depends' : ['l10n_in_base', 'stock'],
     'data' : [
-    ],
-    'update_xml' : [
         'stock_serial_tracking_view.xml',
     ],
 

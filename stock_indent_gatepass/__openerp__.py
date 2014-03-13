@@ -51,9 +51,7 @@ After the repaired Laptop has arrived from supplier, you can issue the products 
 """,
     'depends' : ['l10n_in_base', 'stock_indent', 'stock_gatepass'],
     'data' : [
-    ],
-    'update_xml' : [
-        'stock_indent_gatepass_view.xml'
+        'stock_indent_gatepass_view.xml',
     ],
 
     'demo': [],

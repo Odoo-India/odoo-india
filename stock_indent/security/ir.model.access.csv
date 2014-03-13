@@ -1,0 +1,6 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_indent_indent","indent.indent","model_indent_indent","stock.group_stock_user",1,1,1,1
+"access_indent_product_lines","indent.product.lines","model_indent_product_lines","stock.group_stock_user",1,1,1,1
+"access_indent_equipment_section","indent.equipment.section","model_indent_equipment_section","stock.group_stock_user",1,1,1,1
+"access_indent_equipment","indent.equipment","model_indent_equipment","stock.group_stock_user",1,1,1,1
+"access_stock_indent_analysis_report","stock.indent.analysis.report","model_stock_indent_analysis_report","stock.group_stock_user",1,1,1,1

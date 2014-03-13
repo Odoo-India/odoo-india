@@ -61,10 +61,7 @@ You can also configure a container to carry more than one quantity of product by
 """,
     'depends' : ['l10n_in_base', 'product'],
     'data' : [
-        
-    ],
-    'update_xml' : [
-        'product_container_view.xml'
+        'product_container_view.xml',
     ],
 
     'demo': [],

@@ -59,10 +59,7 @@ Container for multiple product
 """,
     'depends' : ['l10n_in_base', 'product_container', 'stock_serial_tracking'],
     'data' : [
-        
-    ],
-    'update_xml' : [
-        'product_container_tracking_view.xml'
+        'product_container_tracking_view.xml',
     ],
 
     'demo': [],

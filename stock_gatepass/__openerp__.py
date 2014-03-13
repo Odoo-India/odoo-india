@@ -48,12 +48,11 @@ The report to print the details of gate pass with products and shipping details.
 """,
     'depends' : ['l10n_in_base', 'stock'],
     'data' : [
-        'stock_gatepass_sequence.xml',
-        'stock_gatepass_data.xml',
-    ],
-    'update_xml' : [
+        'security/ir.model.access.csv',
         'stock_gatepass_view.xml',
         'stock_gatepass_workflow.xml',
+        'stock_gatepass_sequence.xml',
+        'stock_gatepass_data.xml',
         'stock_gatepass_report.xml',
     ],
 

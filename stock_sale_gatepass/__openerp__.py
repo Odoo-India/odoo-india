@@ -41,9 +41,7 @@ When the goods are delivered in containers and if the containers are to be taken
 """,
     'depends' : ['l10n_in_base', 'stock', 'stock_gatepass', 'product_container_tracking'],
     'data' : [
-    ],
-    'update_xml' : [
-        'stock_sale_gatepass_view.xml'
+        'stock_sale_gatepass_view.xml',
     ],
 
     'demo': [],

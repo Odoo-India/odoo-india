@@ -131,7 +131,7 @@ class indent_indent(osv.Model):
         'description': fields.text('Additional Information', readonly=True, states={'draft': [('readonly', False)]}),
         'company_id': fields.many2one('res.company', 'Company', readonly=True, states={'draft': [('readonly', False)]}),
         'active': fields.boolean('Active'),
-                
+        'item_for': fields.selection([('store', 'Store'), ('capital', 'Capital')], 'Purchase for', required=True, readonly=True, states={'draft': [('readonly', False)]}),
         'amount_total': fields.function(_total_amount, type="float", string='Total',
             store={
                 'indent.indent': (lambda self, cr, uid, ids, c={}: ids, ['product_lines'], 20),
@@ -178,11 +178,12 @@ class indent_indent(osv.Model):
         'requirement': 'ordinary',
         'type': 'new',
         'department_id':_default_stock_location,
+        'item_for':'store',
         'company_id': lambda self, cr, uid, c: self.pool.get('res.company')._company_default_get(cr, uid, 'indent.indent', context=c),
         'name':"/",
         'active': True,
         'approver_id':False,
-        'move_type':'direct',
+        'move_type':'one',
         'warehouse_id':_get_default_warehouse
     }
     
@@ -223,6 +224,12 @@ class indent_indent(osv.Model):
             'required_date':required_date
         })
         return super(indent_indent, self).copy(cr, uid, id, default, context=context)
+
+    def onchange_item(self, cr, uid, ids, item_for=False, context=None):
+        result = {}
+        if not item_for or item_for == 'store':
+            result['analytic_account_id'] = False
+        return {'value': result}
     
     def indent_confirm(self, cr, uid, ids, context=None):
         for indent in self.browse(cr, uid, ids, context=context): 

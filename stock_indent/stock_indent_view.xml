@@ -110,7 +110,7 @@
 								<field name="indentor_id" readonly="1" />
 								<field name="department_id"
 									domain="[('location_id', '!=',False), ('usage', '!=', 'view'), ('can_request','=',True)]" />
-								<field name="type" />
+
 							</group>
 							<group>
 								<field name="indent_date" />
@@ -118,13 +118,17 @@
 								<field name="approve_date" />
 							</group>
 							<group>
-								<field name="analytic_account_id" domain="[('indent_close','=',False), ('type','!=','view'), ('type','!=','template')]"/>
-								<field name="company_id" groups="base.group_multi_company" readonly="1" />
+								<field name="item_for" />
+								<field name="analytic_account_id" domain="[('indent_close','=',False), ('type','!=','view'), ('type','!=','template')]"
+									attrs="{'required': [('item_for', '=', 'capital')]}" />
 							</group>
 							<group>
-							     <field name="requirement"
-                                    on_change="onchange_requirement(indent_date, requirement)" />
-                            </group>
+								<field name="requirement"
+									on_change="onchange_requirement(indent_date, requirement)" />
+								<field name="type" />
+								<field name="company_id" groups="base.group_multi_company"
+									readonly="1" />
+							</group>
 						</group>
 						<notebook>
 							<page string="Products">

@@ -2,9 +2,6 @@ Provides the configuration for whole business suite according to indian localiza
 ==========================================================================================
 Here, you can configure the whole business suite based on your requirements. You'll be provided different configuration options in the Settings where by only selecting some booleans you will be able to install several modules and apply access rights in just one go.
 
-Features
-+++++++++++++++
-
 Product Features
 ----------------
 Manage and track containers in which products are delivered to the customers and to be taken back from customers. You can also configure a container to carry more than one quantity of product by selecting the container product in packaging.

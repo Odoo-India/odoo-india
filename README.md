@@ -1,6 +1,7 @@
-Provides the configuration for whole business suite according to indian localization.
-==========================================================================================
-Here, you can configure the whole business suite based on your requirements. You'll be provided different configuration options in the Settings where by only selecting some booleans you will be able to install several modules and apply access rights in just one go.
+Indian localization modules for Odoo
+====================================
+
+Here, you can configure the whole business suite based on your needs. You'll be provided different configuration options in the Settings where by only selecting some options you will be able to install modules for the specific indian need and apply access rights in just one go.
 
 Product Features
 ----------------

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<templates xml:space="preserve">
-    <t t-name="view_tabs">
-        <div class="tabs_row">
-        </div>
-    </t>
-</templates>

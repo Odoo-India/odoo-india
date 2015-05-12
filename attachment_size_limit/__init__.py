@@ -1,1 +1,0 @@
-import res_company

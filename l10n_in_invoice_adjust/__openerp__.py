@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Payable vs Receivable Adjustments',
+    'name': 'Payable vs Receivable Adjustments (Unsupported)',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary' : 'Adjust Payable vs Receivable Accounts',
@@ -41,6 +41,8 @@ When a company or contact is supplier as well as customer, you can adjust paymen
 Create Customer Payment and select Agrolait as customer and the system will automatically adjust $1000 Credit with $900 Debit entries. So you can collect only $100 from Agrolait. Both the invoices will be paid once you reconcile the entries.
 
 Video Tutorial: http://www.youtube.com/watch?v=2Zeg0WYJcbg
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

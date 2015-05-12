@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Store & Purchase Management',
+    'name' : 'Store & Purchase Management (Unsupported)',
     'version' : '1.0',
     'author' : 'OpenERP S.A.',
     'sequence': 120,
@@ -75,6 +75,8 @@ This module allows you to manage different charges on Purchase orders & Supplier
 * Mill Delivery
 
 You can manage calculation of various charges by different options like Fix Amount, Percentage, Per Unit, At actual.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'depends' : [
         'stock_indent', 

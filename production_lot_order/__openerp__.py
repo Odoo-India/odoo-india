@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    "name" : "Production Lot Order",
+    "name" : "Production Lot Order (Unsupported)",
     "version" : "1.0",
     "author" : "OpenERP SA",
     "website" : "http://www.openerp.com",
@@ -31,6 +31,8 @@ Module to make ordering on Production Lot / Batch
 =====================================================
 - Apply FIFO on Production Lot / Batch.
 - Add actions on dashboards.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,        
     "depends" : ["sale_stock"],
     "update_xml" : [

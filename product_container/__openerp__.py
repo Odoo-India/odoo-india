@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name' : 'Product Container',
+    'name' : 'Product Container (Unsupported)',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,

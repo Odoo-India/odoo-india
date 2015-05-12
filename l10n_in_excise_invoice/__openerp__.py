@@ -20,12 +20,14 @@
 ##############################################################################
 
 {
-    'name': 'Excise Invoice',
+    'name': 'Excise Invoice (Unsupported)',
     'version': '1.0',
     'category': 'Indian Localization',
     'description': """
 Module for invoice excise report according to Indian Standard.
 ==============================================================
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

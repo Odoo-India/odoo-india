@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name': 'Indian Geography',
+    'name': 'Indian Geography (Unsupported)',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary':'List of States and Cities in India',
@@ -29,6 +29,8 @@ List of States and Cities in India
 This module adds all the major cities of India by state.
 
 In order to work with Indian Localization, these module eases the effort to manually add cities and states of India.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

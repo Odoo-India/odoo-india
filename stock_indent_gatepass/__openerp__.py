@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name' : 'Repair\'s Gatepass',
+    'name' : 'Repairs Gatepass (Unsupported)',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,
@@ -48,6 +48,8 @@ The incoming shipment for Laptop is also recorded on the same gate pass which is
 Transfer to the Department
 ---------------------------
 After the repaired Laptop has arrived from supplier, you can issue the products to the department for which the repairing indent was created. Once the internal transfer has been done, the indent will be completed and changed to Received status.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'depends' : ['l10n_in_base', 'stock_indent', 'stock_gatepass'],
     'data' : [

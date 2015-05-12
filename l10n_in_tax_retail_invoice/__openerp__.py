@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Tax / Retail Invoice',
+    'name': 'Tax / Retail Invoice (Unsupported)',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary':'Print Tax / Retail Invoice in 4 copies',
@@ -28,6 +28,8 @@
 Print Tax / Retail Invoice in 4 copies
 ========================================
 This module adds a new report on invoices for printing retail invoice which will contain more detailed information regarding excise, VAT, TIN etc. specifically used for Indian Localization.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

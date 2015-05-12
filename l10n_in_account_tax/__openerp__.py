@@ -20,13 +20,15 @@
 ##############################################################################
 
 {
-    'name': 'Indian Tax Category',
+    'name': 'Indian Tax Category (Unsupported)',
     'version': '1.0',
     'category': 'Indian Localization',
     'description': """Configure Indian Tax with Category
-===================================================================================================
+============================================================================================================
 - Added tax category on tax to determine different types of taxes during computation and calculations
 - Fix a problem of computation of tax (with child tax) on tax, i.e VAT 5% on (product cost + Excise 12.36 %)
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

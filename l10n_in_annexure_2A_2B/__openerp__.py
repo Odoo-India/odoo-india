@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Annexure 2A/2B',
+    'name' : 'Annexure 2A/2B (Unsupported)',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 120,
@@ -30,6 +30,8 @@
     'description' : """
 Annexure 2A is the Summary of DVAT-30 (Purchases), and Annexure 2B is the Summary of DVAT-31 (Sales).
 =====================================================================================================
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'depends' : ['l10n_in_base', 'l10n_in_account_tax', 'sale', 'purchase'],
     'data' : [

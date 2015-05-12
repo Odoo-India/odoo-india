@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Quotation Template',
+    'name' : 'Quotation Template (Unsupported)',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 120,
@@ -42,7 +42,7 @@ The sales manager can prepare quotation templates for products and services, def
 
 Video Tutorial: http://www.youtube.com/watch?v=PTy3TOH9tQM
 
-
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'depends' : ['l10n_in_base', 'sale'],
     'data' : [

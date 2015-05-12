@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Indent Management',
+    'name' : 'Indent Management (Unsupported)',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 120,
@@ -52,6 +52,8 @@ Repairing Indents
 A store manager or will create a repairing indent when the product is needed to be sent for repairing. In case of repairing indent you will be able to select product to be repaired and service for repairing of the product.
 
 A purchase order is generated for the service taken for the supplier who repairs the product, and an internal move has been created for the product to be moved for repairing.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'depends' : ['l10n_in_base', 'stock', 'purchase', 'product_container'],
     'data' : [

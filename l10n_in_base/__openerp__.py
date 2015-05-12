@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) OpenERP SA (<http://openerp.com).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Indian Localization',
+    'name' : 'Indian Localization (Unsupported)',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,
@@ -72,16 +72,7 @@ Transfer dealer discount to customer invoice when preparing invoice from warehou
 
 Helps you to adjust Customer and Suppliers Invoices from the same party. You can reconcile customer and suppliers account against each other.
 
-
-Extra Tools
--------------
-In company configuration you can control these three things:
-
-* Maximum files allowed to upload per record.
-* Maximum size of file that can be uploaded.
-* Block User.
-
-Enables expand and collapse in List Group By
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'depends' : ['base'],
     'data' : [

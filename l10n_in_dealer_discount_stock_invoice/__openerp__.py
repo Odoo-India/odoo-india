@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Dealer Discount Transfer to Invoice',
+    'name': 'Dealer Discount Transfer to Invoice (Unsupported)',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary':'Dealer Discount Transfer to Invoice from Warehouse',
@@ -28,6 +28,8 @@
 Transfer Dealer Discount to Invoice from Warehouse
 ====================================================
 This module lets you transfer the dealer's discount from sales orders to invoice when the invoice created is on delivery. On the Quotations/Sales orders you can select the dealer and the relevant pricelist and if the invoicing is from delivery, this amount gets transferred to invoice from the sales orders.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

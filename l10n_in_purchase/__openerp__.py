@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name' : 'l10n_in_purchase',
+    'name' : 'Purchase Management, Indian localization (Unsupported)',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 111,
@@ -48,6 +48,8 @@ You can manage calculation of various charges by different applicable options.
 Reports
 ++++++++++
 It also prints reports of Purchase orders and Supplier Invoices with Freight/Packaging etc. information.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'depends' : ['l10n_in_base', 'purchase'],
     'data' : [

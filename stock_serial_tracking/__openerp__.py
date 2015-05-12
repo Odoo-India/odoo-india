@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Serial Number Tracking',
+    'name' : 'Serial Number Tracking (Unsupported)',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 120,
@@ -33,6 +33,8 @@ Track products with serial numbers on every transactions
 With the use of this module you can track the current location of the product with serial numbers.
 
 When the products are moved from one location to another location, the system will automatically identify the current location of the product based on last movement of the product. So you can get the last location where the products are moved.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'depends' : ['l10n_in_base', 'stock'],
     'data' : [

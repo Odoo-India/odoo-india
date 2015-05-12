@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Packing Cost Transfer to Invoice',
+    'name': 'Packing Cost Transfer to Invoice (Unsupported)',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary':'Packing Cost transfer to Invoice from Warehouse',
@@ -32,6 +32,8 @@ With the use of this module the packing cost will be transferred from Sales orde
 If you want to sell goods to be delivered in a container (package), You can add extra packaging cost directly then it will calculate container product's sale price as packaging price and calculate final price on the sales order.
 
 When the invoice is created for the sales order, the amount is getting transferred to the invoice.
+
+This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

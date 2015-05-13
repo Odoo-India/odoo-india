@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Indian Localization (Unsupported)',
+    'name' : 'Indian Localization',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,
@@ -72,7 +72,7 @@ Transfer dealer discount to customer invoice when preparing invoice from warehou
 
 Helps you to adjust Customer and Suppliers Invoices from the same party. You can reconcile customer and suppliers account against each other.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'depends' : ['base'],
     'data' : [

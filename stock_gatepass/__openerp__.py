@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name' : 'Gate Pass (Unsupported)',
+    'name' : 'Gate Pass',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,
@@ -45,7 +45,7 @@ Gate Pass Receipt
 +++++++++++++++++++
 The report to print the details of gate pass with products and shipping details.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'depends' : ['l10n_in_base', 'stock'],
     'data' : [

@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name' : 'Product Container (Unsupported)',
+    'name' : 'Product Container',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,
@@ -58,6 +58,8 @@ You can also configure a container to carry more than one quantity of product by
 * Select container in packaging
 * Select quantity of products and packaging in product sales tab
 * Track containers per multiple quantities of product
+
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'depends' : ['l10n_in_base', 'product'],
     'data' : [

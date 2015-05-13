@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name' : 'Repairs Gatepass (Unsupported)',
+    'name' : 'Repairs Gatepass',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,
@@ -49,7 +49,7 @@ Transfer to the Department
 ---------------------------
 After the repaired Laptop has arrived from supplier, you can issue the products to the department for which the repairing indent was created. Once the internal transfer has been done, the indent will be completed and changed to Received status.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'depends' : ['l10n_in_base', 'stock_indent', 'stock_gatepass'],
     'data' : [

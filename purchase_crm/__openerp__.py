@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    "name" : "Opportunity to RFQ (Unsupported)",
+    "name" : "Opportunity to RFQ",
     "version" : "1.0",
     "author" : "OpenERP SA",
     "website" : "http://www.openerp.com",
@@ -34,7 +34,7 @@ This module allows you to generate request for quotation from the opportunity fo
 
 Sometimes your sales person/manager needs to know the price from supplier for some products before making a sales quotation for a prospect/customer. This will add button on Opportunity form to create Purchase Quotation directly from opportunity and store request for quotation we sent to our supplier for future reference.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,    
     "depends" : ['crm', 'purchase', 'l10n_in_base'],
     "init_xml" : [],

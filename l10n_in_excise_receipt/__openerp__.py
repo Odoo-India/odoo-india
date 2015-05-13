@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Excisable Receipt (Unsupported)',
+    'name' : 'Excisable Receipt',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 120,
@@ -47,7 +47,7 @@ Once the purchase order is confirmed and incoming shipment is received, OpenERP 
 
 When the invoice is created from goods receipt, the accounting entries also got reflected by different charges and taxes. Thus it will be easy for the accountants to get values of excise, cess, other taxes.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'depends' : ['l10n_in_base', 'stock_indent', 'l10n_in_purchase', 'l10n_in_account_tax'],
 

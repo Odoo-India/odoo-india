@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Store & Purchase Management (Unsupported)',
+    'name' : 'Store & Purchase Management',
     'version' : '1.0',
     'author' : 'OpenERP S.A.',
     'sequence': 120,
@@ -76,7 +76,7 @@ This module allows you to manage different charges on Purchase orders & Supplier
 
 You can manage calculation of various charges by different options like Fix Amount, Percentage, Per Unit, At actual.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'depends' : [
         'stock_indent', 

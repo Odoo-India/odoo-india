@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name' : 'Sales Delivery Gatepass (Unsupported)',
+    'name' : 'Sales Delivery Gatepass',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,
@@ -39,7 +39,7 @@ Gatepass with Returnable Sales Delivery
 ----------------------------------------------
 When the goods are delivered in containers and if the containers are to be taken back from customers, you can create gatepass of type returnable delivery. While processing the products out for the delivery, you should put them in one pack to track the container. Once this gatepass is confirmed, OpenERP will automatically create incoming shipment for the containers that are coming back on the same gatepass.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'depends' : ['l10n_in_base', 'stock', 'stock_gatepass', 'product_container_tracking'],
     'data' : [

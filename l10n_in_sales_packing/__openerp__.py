@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Packing Cost (Unsupported)',
+    'name': 'Packing Cost',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary':'Packing Cost on Sales Order',
@@ -31,7 +31,7 @@ This module allows you to manage packing cost of the products on sales orders.
 
 If you want to sell goods to be delivered in a container (package), You can add extra packaging cost directly then it will calculate container product's sale price as packaging price and calculate final price on the sales order.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

@@ -20,13 +20,13 @@
 ##############################################################################
 
 {
-    'name': 'Indian Manufacturing Subcontract (Unsupported)',
+    'name': 'Indian Manufacturing Subcontract',
     'version': '1.0',
     'category' : 'Indian Localization',
     'description':'''Extend the flow of manufacturing process
 =============================================================
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
     ''',
     'author': 'OpenERP SA',
     'depends': ['base','sale_stock','mrp_jit','mrp_operations'],

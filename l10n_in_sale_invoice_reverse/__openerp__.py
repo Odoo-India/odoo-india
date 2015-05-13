@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Sale Invoice (Unsupported)',
+    'name': 'Sale Invoice',
     'version': '1.0',
     'category': 'Hidden',
     'summary':'Sale Invoice',
@@ -28,7 +28,7 @@
 Sale Invoice.
 =============
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

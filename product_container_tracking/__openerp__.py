@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name' : 'Product Container Tracking (Unsupported)',
+    'name' : 'Product Container Tracking',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 110,
@@ -57,7 +57,7 @@ Container for multiple product
 * Receive incoming shipment of 15 Mouse and Assign serial numbers a0001 for Mouse and select pack 00000017 to indicate that the products are received in the same pack.
 * OpenERP will automatically create a serial number 00000017 for 1 qty of Box 30x40x60 and will assign 00000017 as a container serial number for a0001
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'depends' : ['l10n_in_base', 'product_container', 'stock_serial_tracking'],
     'data' : [

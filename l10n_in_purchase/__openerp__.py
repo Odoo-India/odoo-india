@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name' : 'Purchase Management, Indian localization (Unsupported)',
+    'name' : 'Purchase Management, Indian localization',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 111,
@@ -49,7 +49,7 @@ Reports
 ++++++++++
 It also prints reports of Purchase orders and Supplier Invoices with Freight/Packaging etc. information.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'depends' : ['l10n_in_base', 'purchase'],
     'data' : [

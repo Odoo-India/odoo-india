@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Dealer Price on Sales (Unsupported)',
+    'name': 'Dealer Price on Sales',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary': 'Dealer Price, Discount for Dealers on Sales',
@@ -29,7 +29,7 @@ Dealer Price, Discount for Dealers on Sales
 ===============================================
 With the use of this module you can define dealer specific price on Quotations/Sales orders with the use of dealer's pricelist. On the Quotations/Sales orders you can select the dealer and the relevant pricelist so from the sales orders you can get the dealer price amount along with the customer price amount.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

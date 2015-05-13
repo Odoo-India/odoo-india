@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name': 'Dealer Price on Invoice (Unsupported)',
+    'name': 'Dealer Price on Invoice',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary': 'Dealer Price, Compute discount for Dealers on Invoice',
@@ -27,7 +27,7 @@
 =============================================
 With the use of this module you can define dealer specific price with the use of dealer's pricelist. On the Invoice you can select the dealer and the relevant pricelist so from the invoice you can get the dealer price amount along with the customer price amount.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

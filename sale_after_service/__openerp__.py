@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {
-    'name': 'After Sales Service Contracts (Unsupported)',
+    'name': 'After Sales Service Contracts',
     'version': '1.0',
     'category': 'Sales Management',
     'summary' : 'Manage Service Contracts',
@@ -37,7 +37,7 @@ The contract is created from delivery order if delivery order line has serial nu
 * Created contract has reference of sale order and delivery order to search it easily
 * Serial Number also has reference of created contract, if any
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

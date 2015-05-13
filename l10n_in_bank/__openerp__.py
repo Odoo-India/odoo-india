@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Indian Nationalized Banks (Unsupported)',
+    'name': 'Indian Nationalized Banks',
     'version': '1.0',
     'category': 'Indian Localization',
     'summary':'List of All Indian Nationalized Banks',
@@ -31,7 +31,7 @@ This module contains list of all Indian Nationalized Banks and Bank Account type
 
 In order to work with Indian Localization, these module eases the effort to manually create Nationalized banks and bank account types in India.
 
-This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.
+This module was developed by TinyERP Pvt Ltd (OpenERP India). Not covered under OpenERP / Odoo Maintenance Contract or Business Pack. Contact at india@openerp.com if you are looking for support or customization.
 """,
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',

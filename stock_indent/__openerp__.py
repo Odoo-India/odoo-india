@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name' : 'Indent Management (Unsupported)',
+    'name' : 'Indent Management',
     'version' : '1.0',
     'author' : 'OpenERP SA',
     'sequence': 120,

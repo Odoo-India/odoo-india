@@ -21,7 +21,7 @@
 
 import time
 import datetime
-import netsvc
+from openerp import netsvc
 from datetime import timedelta
 
 from openerp.osv import fields, osv

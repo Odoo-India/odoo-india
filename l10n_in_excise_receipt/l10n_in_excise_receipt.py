@@ -94,7 +94,7 @@ class stock_picking_receipt(osv.Model):
         'inward_date': fields.related('inward_id', 'date_done', type='datetime', string='Inward Date', readonly=True, store=True),
         'other_charges': fields.function(_total_amount, multi='cal', type='float', string='Other Charges'),
         'import_duty': fields.function(_total_amount, multi='cal', type='float', string='Import Duty', store=True),
-        'amount_subtotal': fields.function(_total_amount, multi='cal', type='loat', string='Sub Total'),
+        'amount_subtotal': fields.function(_total_amount, multi='cal', type='float', string='Sub Total'),
         'amount_total': fields.function(_total_amount, multi='cal', type='float', string='Total'),
         'date_done': fields.datetime('Date of Transfer', help="Date of Completion", track_visibility='onchange'),
         'state': fields.selection([

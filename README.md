@@ -36,4 +36,4 @@ Added tax category on tax which will be useful to get exact amount of tax levied
 Transfer dealer discount to customer invoice when preparing invoice from warehouse.
 Helps you to adjust Customer and Suppliers Invoices from the same party. You can reconcile customer and suppliers account against each other.
 
-<b>This module was developed by TinyERP Private Limited (OpenERP India), not supported under any contracts by OpenERP SA or TinyERP.</b>
+<b>This module was developed by TinyERP Private Limited (Odoo India), not supported under any contracts by OpenERP SA or TinyERP.</b>

@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_manager_contract,account.analytic.account,analytic.model_account_analytic_account,group_manage_contract,1,1,1,1
-access_contract_manager_stock_picking,stock.partial.picking,stock.model_stock_partial_picking,group_manage_contract,1,1,1,1

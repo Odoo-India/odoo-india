@@ -1,4 +1,0 @@
-"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_stock_gatepass","stock.gatepass","model_stock_gatepass","stock.group_stock_user",1,1,1,1
-"access__gatepass_type","gatepass.type","model_gatepass_type","stock.group_stock_user",1,1,1,1
-"access_stock_gatepass_line","stock.gatepass.line","model_stock_gatepass_line","stock.group_stock_user",1,1,1,1

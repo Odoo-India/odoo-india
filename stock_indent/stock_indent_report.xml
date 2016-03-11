@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<openerp>
-	<data>
-		<report auto="False" id="report_indent" model="indent.indent"
-			name="indent.indent" rml="stock_indent/report/indent.rml" usage="default"
-			string="Indent" attachment="((object.name or '').replace('/','')+'.pdf')" />
-	</data>
-</openerp>

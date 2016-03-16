@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
+
 from openerp import models, fields, api
 import openerp.addons.decimal_precision as dp
 
@@ -47,11 +51,19 @@ class Indent(models.Model):
     _name = 'stock.indent'
     _description = 'Indent'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
-    _order = 'date_approve desc'
+    _order = 'date_indent desc'
 
-    name = fields.Char('Indent')
 
-    date_indent = fields.Datetime('Indent Date')
+    @api.model
+    def _default_warehouse_id(self):
+        company = self.env.user.company_id.id
+        warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        return warehouse_ids
+
+
+    name = fields.Char('Indent', default='Draft Indent / ')
+
+    date_indent = fields.Datetime('Indent Date', default=fields.Datetime.now)
     date_approve = fields.Datetime('Approve Date')
     date_required = fields.Datetime('Required Date')
 
@@ -63,17 +75,31 @@ class Indent(models.Model):
 
     analytic_account_id = fields.Many2one('account.analytic.account', string='Project')
 
-    indent_type = fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], string='Type')
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('received', 'Received'), ('reject', 'Rejected')], string='State')
+    indent_type = fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], string='Type', default='new')
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('received', 'Received'), ('reject', 'Rejected')], string='State', default='draft')
 
-    warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse')
-    move_type = fields.Selection([('direct', 'Partial'), ('one', 'All at once')], string='Receive Method')
+    warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse', default=_default_warehouse_id)
+    move_type = fields.Selection([('direct', 'Partial'), ('one', 'All at once')], string='Receive Method', default='direct')
 
     equipment_id = fields.Many2one('indent.equipment', string='Equipment')
     equipment_section_id = fields.Many2one('indent.equipment.section', string='Section')
 
     line_ids = fields.One2many('stock.indent.line', 'indent_id', string='Lines')
-    description = fields.Text()
+    description = fields.Text('Additional Note')
+
+    amount_total = fields.Float('Estimated value', readonly=True)
+    items = fields.Integer('Total items', readonly=True)
+
+
+    @api.onchange('date_indent')
+    def _compute_date_required(self):
+        self.date_required = datetime.strptime(self.date_indent, DEFAULT_SERVER_DATETIME_FORMAT) + relativedelta(days=7)
+
+    @api.multi
+    def action_confirm(self):
+        self.write({
+            'state': 'waiting_approval'
+        })
 
 
 class IndentLine(models.Model):
@@ -85,8 +111,12 @@ class IndentLine(models.Model):
     product_id =  fields.Many2one('product.product', 'Product', required=True)
     original_product_id =  fields.Many2one('product.product', 'Product to be Repaired')
     produre_type =  fields.Selection([('make_to_stock', 'Stock'), ('make_to_order', 'Purchase')], string='Procure', required=True)
-    product_uom_qty =  fields.Float('Quantity Required', digits_compute=dp.get_precision('Product UoS'), required=True)
+    
+    product_qty =  fields.Float('Quantity', digits_compute=dp.get_precision('Product UoS'), required=True)
     product_uom =  fields.Many2one('product.uom', 'Unit of Measure', required=True)
+
+    product_available_qty =  fields.Float('Available', readonly=True)
+    product_issued_qty =  fields.Float('Issued', readonly=True)
 
     product_uos_qty =  fields.Float('Quantity (UoS)' ,digits_compute=dp.get_precision('Product UoS'))
     product_uos =  fields.Many2one('product.uom', 'Product UoS')
@@ -95,12 +125,22 @@ class IndentLine(models.Model):
     price_subtotal =  fields.Float(compute='_compute_price_subtotal')
     qty_available =  fields.Float('In Stock')
     virtual_available =  fields.Float('Forecasted Qty')
-    delay =  fields.Float('Lead Time', required=True)
+    delay =  fields.Float('Lead Time', required=True, default=7)
     specification =  fields.Text('Specification')
     sequence = fields.Integer('Sequence')
     indent_type =  fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], 'Type')
 
+
+    @api.onchange('product_id')
+    def _compute_line_based_on_product_id(self):
+        self.product_uom = self.product_id.uom_id
+        self.name = self.product_id.description_purchase or self.product_id.name
+        self.produre_type = 'make_to_stock'
+        self.product_available_qty = self.product_id.qty_available
+        self.price_unit = self.product_id.standard_price
+
+
     @api.multi
     def _compute_price_subtotal(self):
         for line in self:
-            line.price_subtotal = line.price_unit * line.product_uom_qty
+            line.price_subtotal = line.price_unit * line.product_qty

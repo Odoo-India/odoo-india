@@ -40,11 +40,16 @@
       <field name="arch" type="xml">
         <form string="Indent" version="9.0">
           <header>
-            <button name="indent_confirm" string="Confirm" states="draft" class="oe_highlight"/>
-            <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight" />
-            <button name="indent_reject" string="Reject" states="waiting_approval" />
+            <button name="action_confirm" string="Confirm" type="object" states="draft" class="oe_highlight"/>
+
+            <button name="action_approve" string="Approve" type="object" states="waiting_approval" class="oe_highlight"/>
+            <button name="action_reject" string="Reject" type="object" states="waiting_approval"/>
+            <button name="action_cancel" string="Cancel" type="object" states="waiting_approval"/>
+
+         <!--    <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight" />
+            <button name="indent_reject" string="Reject" states="waiting_approval" /> -->
             <!-- <button name="action_deliver_products" string="Transfer for Repair" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('type','=','new'), ('state','in',['draft','confirm', 'waiting_approval','received'])]}"/> -->
-            <button name="action_receive_products" string="Issue Product(s)" states="inprogress" type="object" class="oe_highlight" />
+  <!--           <button name="action_receive_products" string="Issue Product(s)" states="inprogress" type="object" class="oe_highlight" /> -->
             <field name="state" widget="statusbar" statusbar_visible="draft,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}' />
           </header>
           <sheet>
@@ -75,16 +80,31 @@
             <notebook>
               <page string="Products">
                 <field name="line_ids" colspan="4" nolabel="1">
-                  <tree editable="top">
-                    <field name="name" />
+                  <tree editable="bottom">
                     <field name="product_id" />
-                    <field name="product_uom_qty" />
-                    <field name="product_uom" />
                     <field name="produre_type" />
-                    <field name="price_unit" />
-                    <field name="price_subtotal" />
+                    <field name="name" />
+
+                    <field name="product_qty" />
+                    <field name="product_available_qty" />
+                    <field name="product_issued_qty" />
+
+                    <field name="product_uom" />
+                    <field name="price_unit" groups="stock.group_stock_manager"/>
+                    <field name="price_subtotal" groups="stock.group_stock_manager"/>
                   </tree>
                 </field>
+
+                <group class="oe_subtotal_footer oe_right">
+                  <field name="items" />
+                  <field name="amount_total" widget="monetary"
+                    class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}" />
+                </group>
+                <div class="oe_clear">
+                  <label for="description" />
+                </div>
+                <field name="description" class="oe_inline" placeholder="Additional note..." />
+
               </page>
               <page string="Others">
                 <group>

@@ -1,0 +1,14 @@
+<openerp>
+    <data>
+        <record model="res.groups" id="stock_indent_user">
+            <field name="name">Indentor</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record model="res.groups" id="stock_indent_manager">
+            <field name="name">Manager</field>
+            <field name="implied_ids" eval="[(4, ref('stock_indent_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        </record>
+    </data>
+</openerp>

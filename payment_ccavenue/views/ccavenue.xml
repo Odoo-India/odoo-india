@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="ccavenue_acquirer_button">
+        <form t-if="acquirer.ccavenue_merchant_id" t-att-action="tx_url" method="post" target="_self">
+            <input type="hidden" name="encRequest" t-att-value="encRequest" />
+            <input type="hidden" name="access_code" t-att-value="access_code" />
+            <!-- submit -->
+            <button type="submit" width="100px" t-att-class="submit_class">
+                <img t-if="not submit_txt" src="/payment_ccavenue/static/src/img/ccavenue_icon.png"/>
+                <span t-if="submit_txt"><t t-esc="submit_txt"/> <span class="fa fa-long-arrow-right"/></span>
+            </button>
+        </form>
+    </template>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_website_config_settings" model="ir.ui.view">
+            <field name="name">Godaddy settings</field>
+            <field name="model">website.config.settings</field>
+            <field name="inherit_id" ref="website.view_website_config_settings"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='social']" position="inside">
+                      <label for="id" string="GodAddy Account"/>
+                      <div>
+                          <p>Set your Godaddy API access below to be able to find the list of domains.<br/>
+                             You can get your API credentials from <a href="https://in.godaddy.com/" target="new">https://in.godaddy.com/</a>
+                          </p>
+                          <div>
+                              <label for="godaddy_api_key"/>
+                              <field name="godaddy_api_key" class="oe_inline"/>
+                          </div>
+                          <div>
+                              <label for="godaddy_api_secret"/>
+                              <field name="godaddy_api_secret" class="oe_inline"/>
+                          </div>
+                      </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <record id="menu_godaddy_domain" model="website.menu">
+            <field name="name">Pick a Domain</field>
+            <field name="url">/godaddy/domain</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">50</field>
+        </record>
+
+    </data>
+</openerp>

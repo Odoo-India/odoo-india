@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+<template id="event_script" inherit_id="website.assets_frontend" name="Country Events Snippet Script">
+    <xpath expr="/t" position="inside">
+        <script type="text/javascript" src="/website_godaddy/static/src/js/website_godaddy.js"></script>
+    </xpath>
+</template>
+
+
+<!-- Page -->
+<template id="index" name="Godaddy">
+    <t t-call="website.layout">
+      <div id="wrap">
+        <div class="oe_structure"/>
+        <h2 class="ml8"><strong>Domain Finder</strong></h2>
+        <hr/>
+        <form id="godaddy_form" action="/godaddy/domain/response">
+            <div class="container">
+                <div class="row api-error hide">
+                    <div class="col-md-12">
+                        <div class="alert alert-danger" role="alert" style="border-width:0 0 0 6px;border-radius:0;">
+                            <h3>Error!</h3>
+                            <div class="error-details">
+                                <strong>ERROR CODE : </strong><span class="error-code"/> |
+                                <strong>ERROR MESSAGE : </strong><span class="error-message"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 mt8">
+                        <strong>Pick a Domain</strong>
+                    </div>
+                    <div class="col-md-10">
+                        <input type="text" id="domain" name="domain" class="form-control" placeholder="Odoo.com"/>
+                    </div>
+                    <div class="col-md-2 "/>
+                    <div class="col-md-10 mt16">
+                        <button type="submit" id="submit_godaddy" class="btn btn-primary">Suggest some domains</button>
+                        <img src="/website_godaddy/static/src/img/ajax-loader.gif" id="loader_image" class="ml8 hide"/>
+                        <button class="pull-right btn btn-danger">Continue to Cart <i class="fa fa-shopping-cart"/></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <hr/>
+        <span id="response" class="hide">
+            <div class="container">
+                <div class="row check_availability hide">
+                    <div class="col-md-12">
+                        <div class="alert alert-info" style="border-width:0 0 0 6px;background-color:#eef6f8;border-radius:0;border-color:#b8d9e2;">
+                            <div class="available hide">
+                                <h2 class="ml8">Nice!</h2>
+                                <h4 class="ml8"><strong class="domain">Odoo.com</strong> is Available! <a style="color:#449d44" href="#">BUY IT!</a></h4>
+                            </div>
+                            <div class="unavailable hide">
+                                <h2 class="ml8">Bad Luck!</h2>
+                                <h4 class="ml8"><strong class="domain">Odoo.com</strong> is Taken!</h4>
+                            </div>
+                            <div class="ml8">
+                                <strong><span>Price :</span></strong> <span class="price"/> | <strong><span>Currency :</span></strong> <span class="currency"/> | <strong><span>Period(year) : </span></strong> <span class="period"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt16">
+                    <div class="col-md-4">
+                        <hr/>
+                        <h4>Length limit</h4>
+                        <div id="slider-range"></div>
+                        <p>
+                            <label for="amount">Character range:</label>
+                            <input type="text" id="amount" readonly="True" style="border:0; color:#f6931f; font-weight:bold;"/>
+                        </p>
+                        <hr/>
+                        <div id="tld" class="hide" style="height:600px;">
+                            <h4>List of TLDs</h4>
+                            <center><button style="width:100%;" class="btn btn-primary search_domain">Search</button></center><br/>
+                            <ul class="list_tld" style="font-size:17px;list-style-type: none; height:80%; overflow:auto;"></ul>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h3>Try these on for size:</h3>
+                        <table class="table">
+                            <tr class="no_result hide"><td><h4>Uh-oh, no results! Try removing some of your filters.</h4></td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </span>
+        <div class="oe_structure"/>
+      </div>
+    </t>
+</template>
+
+</data>
+</openerp>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_delivery_carrier_form_with_provider_aramex" model="ir.ui.view">
+        <field name="name">delivery.carrier.form.provider.aramex</field>
+        <field name="model">delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.view_delivery_carrier_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='general']" position='after'>
+                <group string='Aramex Configuration' attrs="{'invisible': [('delivery_type', '!=', 'aramex')]}">
+                    <group>
+                        <field name="aramex_user_name" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                        <field name="aramex_password" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                        <field name="aramex_account_number" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                        <field name="aramex_account_entity" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                        <field name="aramex_account_pin" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                        <field name="aramex_test_mode"/>
+                    </group>
+                    <group>
+                        <field name="aramex_weight_unit" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                        <field name="aramex_package_dimension_unit" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                        <field name="aramex_package_height" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                        <field name="aramex_package_width" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                        <field name="aramex_package_length" attrs="{'required': [('delivery_type', '=', 'aramex')]}"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

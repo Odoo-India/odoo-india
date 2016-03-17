@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <record id="delivery_carrier_aramex" model="delivery.carrier">
+        <field name="aramex_user_name">testingapi@aramex.com</field>
+        <field name="aramex_password">R123456789$r</field>
+        <field name="aramex_version">1.0</field>
+        <field name="aramex_account_number">20016</field>
+        <field name="aramex_account_entity">AMM</field>
+        <field name="aramex_account_pin">331421</field>
+        <field name="aramex_country_code">JO</field>
+        <field name="aramex_package_height">10</field>
+        <field name="aramex_package_length">10</field>
+        <field name="aramex_package_width">10</field>
+    </record>
+
+</data>
+</odoo>

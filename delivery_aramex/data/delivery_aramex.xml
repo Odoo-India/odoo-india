@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <record id="aramex_partner" model="res.partner">
+        <field name="name">Aramex</field>
+        <field name="is_company" eval="True"/>
+        <field name="supplier" eval="True"/>
+        <field name="customer" eval="False"/>
+        <field name="street">942 South Shady Grove Road</field>
+        <field name="zip">38120</field>
+        <field name="city">Memphis</field>
+        <field name="state_id" ref="base.state_us_43"/>
+        <field name="website">http://www.aramex.com</field>
+        <field name="country_id" ref="base.us"/>
+        <field name="phone">+1 800 4633339</field>
+    </record>
+
+    <record id="delivery_carrier_aramex" model="delivery.carrier">
+        <field name="name">Aramex</field>
+        <field name="fixed_price">0</field>
+        <field name="partner_id" ref="aramex_partner"/>
+        <field name="product_sale_ok" eval="False"/>
+        <field name="product_type">service</field>
+        <field name="delivery_type">aramex</field>
+        <field name="aramex_weight_unit">LB</field>
+    </record>
+
+</data>
+</odoo>

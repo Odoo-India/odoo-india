@@ -8,11 +8,68 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp import models, fields, api
 import openerp.addons.decimal_precision as dp
 
+
 class StockLocation(models.Model):
     _inherit = 'stock.location'
 
-    manager_id = fields.Many2one('res.users', 'Manager')
-    is_plant = fields.Boolean('Plant')
+    @api.model
+    def _default_warehouse_id(self):
+        company = self.env.user.company_id.id
+        warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        return warehouse_id
+
+    @api.multi
+    def create_operation_type(self):
+        picking_type = self.env['stock.picking.type']
+        sequence = self.env['ir.sequence']
+
+        warehouse = self._default_warehouse_id()
+        if not warehouse:
+            raise UserError(_('You should have at least one warehouse to define production location.'))
+
+        for location in self:
+            sequence_vals = {
+                'name': warehouse.name + ' ' + location.name, 
+                'prefix': location.name + '/INT/', 
+                'padding': 5
+            }
+            seq = sequence.create(sequence_vals)
+
+            res = {
+                'name': location.name,
+                'code': 'internal',
+                'default_location_src_id':warehouse.lot_stock_id.id,
+                'default_location_dest_id':location.id,
+                'warehouse_id':warehouse.id,
+                'active': True,
+                'use_existing_lots': True,
+                'use_create_lots': True,
+                'sequence_id': seq.id
+            }
+            picking_type.create(res)
+
+    @api.model
+    def create(self, vals):
+        location = super(StockLocation, self).create(vals)
+        if location.usage == 'production':
+            location.create_operation_type()
+        return location
+
+
+class StockPickingType(models.Model):
+    _inherit = 'stock.picking.type'
+
+    usage = fields.Selection(related='default_location_dest_id.usage', store=True)
+
+    @api.multi
+    def get_indents(self):
+        #TODO: review this method and improve if required
+        data = self.env['ir.model.data']
+        action = self.env['ir.actions.act_window']
+        action_id = data.xmlid_to_res_id('indent.action_window', raise_if_not_found=True)
+        action_open = action.browse(action_id)
+        action_open = action_open.read()[0]
+        return action_open
 
 
 class Equipment(models.Model):
@@ -68,9 +125,11 @@ class Indent(models.Model):
     date_required = fields.Datetime('Required Date')
 
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
-    department_id = fields.Many2one('stock.location', string='Department', domain=[('is_plant','=', True)])
+
+    picking_type_id = fields.Many2one('stock.picking.type', string='Department')
+    location_id = fields.Many2one('stock.location', string='Location', default='_get_default_location')
     user_id = fields.Many2one('res.users', string='Indentor', default=lambda self: self.env.user)
-    manager_id = fields.Many2one('res.users', string='Manager', related="department_id.manager_id", store=True)
+    #manager_id = fields.Many2one('res.users', string='Manager', related="department_id.manager_id", store=True)
     approve_user_id = fields.Many2one('res.users', string='Approved By')
 
     analytic_account_id = fields.Many2one('account.analytic.account', string='Project')
@@ -90,6 +149,9 @@ class Indent(models.Model):
     amount_total = fields.Float('Estimated value', readonly=True)
     items = fields.Integer('Total items', readonly=True)
 
+    @api.onchange('picking_type_id')
+    def _get_default_location(self):
+        self.location_id = self.picking_type_id.default_location_dest_id
 
     @api.onchange('date_indent')
     def _compute_date_required(self):
@@ -100,6 +162,11 @@ class Indent(models.Model):
         self.write({
             'state': 'waiting_approval'
         })
+
+    @api.model
+    def create(self, vals):
+        indent = super(Indent, self).create(vals)
+        return indent
 
 
 class IndentLine(models.Model):
@@ -138,7 +205,6 @@ class IndentLine(models.Model):
         self.produre_type = 'make_to_stock'
         self.product_available_qty = self.product_id.qty_available
         self.price_unit = self.product_id.standard_price
-
 
     @api.multi
     def _compute_price_subtotal(self):

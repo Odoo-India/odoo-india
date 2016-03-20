@@ -1,6 +1,20 @@
 <openerp>
   <data>
 
+    <record id="stock_picking_type_kanban" model="ir.ui.view">
+      <field name="name">stock.picking.type.kanban</field>
+      <field name="model">stock.picking.type</field>
+      <field name="inherit_id" ref="stock.stock_picking_type_kanban"/>
+      <field name="arch" type="xml">
+        <xpath expr="//button[@name='get_action_picking_tree_ready']" position="after">
+          <br/>
+          <a name="get_indents" type="object">
+            Indents
+          </a>
+        </xpath>
+      </field>
+    </record>
+
     <!-- Project Settings -->
     <record id="view_account_analytic_account_form" model="ir.ui.view">
       <field name="name">account.analytic.account.inherit</field>
@@ -24,7 +38,7 @@
         <tree>
           <field name="name"/>
           <field name="date_indent"/>
-          <field name="department_id"/>
+          <field name="picking_type_id"/>
           <field name="user_id"/>
           <field name="analytic_account_id" invisible="1"/>
           <field name="indent_type"/>
@@ -67,7 +81,8 @@
             <group>
               <group>
                 <field name="indent_type" />
-                <field name="department_id" domain="[('location_id', '!=',False), ('usage', '!=', 'view'), ('is_plant','=',True)]" />
+                <field name="picking_type_id" domain="[('usage','=','production')]"/>
+                <field name="location_id" domain="[('usage', '=', 'production')]" invisible="1"/>
                 <field name="analytic_account_id" />
               </group>
               <group>
@@ -104,8 +119,8 @@
                   <label for="description" />
                 </div>
                 <field name="description" class="oe_inline" placeholder="Additional note..." />
-
               </page>
+
               <page string="Others">
                 <group>
                   <group>
@@ -114,7 +129,7 @@
                   </group>
                   <group>
                     <field name="user_id" readonly="1" />
-                    <field name="manager_id" />
+                    <!-- <field name="manager_id" /> -->
                     <field name="approve_user_id" />
                   </group>
                 </group>
@@ -129,17 +144,36 @@
       </field>
     </record>
 
+    <record id="view_stock_indent_indent_search" model="ir.ui.view">
+      <field name="name">stock.indent.search</field>
+      <field name="model">stock.indent</field>
+      <field name="arch" type="xml">
+        <search string="Indent List">
+          <field name="picking_type_id" filter_domain="[('picking_type_id','=',self)]"/>
+        </search>
+      </field>
+    </record>
+
     <!-- indent action -->
     <record model="ir.actions.act_window" id="indent.action_window">
       <field name="name">Indents</field>
       <field name="res_model">stock.indent</field>
       <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_stock_indent_indent_search"/>
+      <field name="context">{'search_default_picking_type_id':[active_id]}</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="indent.action_window_menu">
+      <field name="name">Indents</field>
+      <field name="res_model">stock.indent</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_stock_indent_indent_search"/>
     </record>
     
     <!-- indent menu -->
     <menuitem name="Indent" id="indent.menu_root" parent="stock.menu_stock_root" sequence="2"/>
 
     <menuitem name="All Indents" id="indent.all_indents" parent="indent.menu_root"
-              action="indent.action_window"/>
+              action="indent.action_window_menu"/>
   </data>
 </openerp>

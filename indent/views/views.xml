@@ -7,10 +7,15 @@
       <field name="inherit_id" ref="stock.stock_picking_type_kanban"/>
       <field name="arch" type="xml">
         <xpath expr="//button[@name='get_action_picking_tree_ready']" position="after">
-          <br/>
-          <a name="get_indents" type="object">
-            Indents
-          </a>
+          <field name="usage" invisible="1"/>
+          <button class="btn btn-primary" name="get_indents" type="object" attrs="{'invisible': [('usage','!=','production')]}">
+            0 Indents
+          </button>
+        </xpath>
+        <xpath expr="//button[@name='get_action_picking_tree_ready']" position="attributes">
+          <attribute name="attrs">
+            {'invisible': [('usage','=','production')]}
+          </attribute>
         </xpath>
       </field>
     </record>

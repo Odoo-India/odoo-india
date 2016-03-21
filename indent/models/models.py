@@ -163,6 +163,11 @@ class Indent(models.Model):
             'state': 'waiting_approval'
         })
 
+    @api.multi
+    def action_approve(self):
+        #TODO: create internal transfer
+        pass
+        
     @api.model
     def create(self, vals):
         indent = super(Indent, self).create(vals)

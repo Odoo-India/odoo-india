@@ -127,6 +127,8 @@ class Indent(models.Model):
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
 
     picking_type_id = fields.Many2one('stock.picking.type', string='Department')
+    picking_id = fields.Many2one('stock.picking','Picking')
+
     location_id = fields.Many2one('stock.location', string='Location', default='_get_default_location')
     user_id = fields.Many2one('res.users', string='Indentor', default=lambda self: self.env.user)
     #manager_id = fields.Many2one('res.users', string='Manager', related="department_id.manager_id", store=True)
@@ -159,6 +161,8 @@ class Indent(models.Model):
 
     @api.multi
     def action_confirm(self):
+        if not self.line_ids:
+            raise UserError(_('You cannot confirm an indent which has no line.'))
         self.write({
             'state': 'waiting_approval'
         })
@@ -166,8 +170,62 @@ class Indent(models.Model):
     @api.multi
     def action_approve(self):
         #TODO: create internal transfer
-        pass
+        company = self.env.user.company_id.id
+        warehouse = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        operation = self.env['stock.move']
+        picking = self.env['stock.picking']
         
+        res = {
+            'location_id':warehouse.lot_stock_id.id,
+            'location_dest_id':self.location_id.id,
+            'company_id':company,
+            'move_type': self.move_type,
+            'priority': '1',
+            'picking_type_id': self.picking_type_id.id,
+        }
+        picking_obj = picking.create(res)
+        self.picking_id = picking_obj
+        for line in self.line_ids:
+            vals = {
+                'name': line.name,
+                'product_id': line.product_id.id,
+                'picking_id': picking_obj.id,
+                'location_id': warehouse.lot_stock_id.id,
+                'location_dest_id':self.location_id.id,
+                'product_uom_qty':line.product_qty,
+                'date': self.date_indent,
+                'date_expected': self.date_indent,
+                'product_uom': line.product_uom.id,
+            }
+            operation.create(vals)
+        picking_obj.action_confirm()
+
+        return self.write({'state': 'inprogress'})
+
+    
+    @api.multi
+    def action_receive_products(self):
+        self.ensure_one()
+        pick = self.picking_id.id
+        if pick:
+            name = _('Receive Item')
+            view_mode = 'form'
+            if self.move_type == 'direct':
+                    name = _('Receive Items')
+                    view_mode = 'tree'
+            return {
+                'name': name,
+                'view_type': 'form',
+                'view_mode': view_mode,
+                'res_model': 'stock.picking',
+                'type': 'ir.actions.act_window',
+                'nodestroy': True,
+                'target': 'current',
+                'res_id': pick,
+                'context': {'active_id': pick},
+            }
+
+
     @api.model
     def create(self, vals):
         indent = super(Indent, self).create(vals)
@@ -210,6 +268,11 @@ class IndentLine(models.Model):
         self.produre_type = 'make_to_stock'
         self.product_available_qty = self.product_id.qty_available
         self.price_unit = self.product_id.standard_price
+
+        if self.product_available_qty > 0:
+            self['produre_type'] = 'make_to_stock'
+        else:
+            self['produre_type'] = 'make_to_order'
 
     @api.multi
     def _compute_price_subtotal(self):

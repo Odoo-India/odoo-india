@@ -5,7 +5,9 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
-from openerp import models, fields, api
+from openerp.exceptions import UserError
+
+from openerp import models, fields, api, _
 import openerp.addons.decimal_precision as dp
 
 
@@ -161,75 +163,86 @@ class Indent(models.Model):
 
     @api.multi
     def action_confirm(self):
-        if not self.line_ids:
-            raise UserError(_('You cannot confirm an indent which has no line.'))
-        self.write({
-            'state': 'waiting_approval'
-        })
+        for indent in self:
+            indent.name = self.env['ir.sequence'].next_by_code('stock.indent')
+            indent.state = 'waiting_approval'
+
+            if not indent.line_ids:
+                raise UserError(_('You cannot confirm an indent which has no line.'))
 
     @api.multi
     def action_approve(self):
-        #TODO: create internal transfer
-        company = self.env.user.company_id.id
-        warehouse = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
-        operation = self.env['stock.move']
-        picking = self.env['stock.picking']
-        
-        res = {
-            'location_id':warehouse.lot_stock_id.id,
-            'location_dest_id':self.location_id.id,
-            'company_id':company,
-            'move_type': self.move_type,
-            'priority': '1',
-            'picking_type_id': self.picking_type_id.id,
-        }
-        picking_obj = picking.create(res)
-        self.picking_id = picking_obj
-        for line in self.line_ids:
-            vals = {
-                'name': line.name,
-                'product_id': line.product_id.id,
-                'picking_id': picking_obj.id,
-                'location_id': warehouse.lot_stock_id.id,
-                'location_dest_id':self.location_id.id,
-                'product_uom_qty':line.product_qty,
-                'date': self.date_indent,
-                'date_expected': self.date_indent,
-                'product_uom': line.product_uom.id,
+        Move = self.env['stock.move']
+        Picking = self.env['stock.picking']
+
+        for indent in self:
+            warehouse = indent._default_warehouse_id()
+            res = {
+                'location_id':warehouse.lot_stock_id.id,
+                'location_dest_id':indent.location_id.id,
+                'company_id':indent.company_id.id,
+                'move_type': indent.move_type,
+                'priority': '1',
+                'picking_type_id': indent.picking_type_id.id,
             }
-            operation.create(vals)
-        picking_obj.action_confirm()
+            picking_id = Picking.create(res)
+            
+            for line in indent.line_ids:
+                vals = {
+                    'name': line.name,
+                    'product_id': line.product_id.id,
+                    'picking_id': picking_id.id,
+                    'location_id': warehouse.lot_stock_id.id,
+                    'location_dest_id':indent.location_id.id,
+                    'product_uom_qty':line.product_qty,
+                    'date': indent.date_indent,
+                    'date_expected': indent.date_indent,
+                    'product_uom': line.product_uom.id,
+                }
+                Move.create(vals)
 
-        return self.write({'state': 'inprogress'})
+            picking_id.action_confirm()
+            indent.picking_id = picking_id
+            indent.state = 'inprogress'
 
-    
+
     @api.multi
     def action_receive_products(self):
         self.ensure_one()
-        pick = self.picking_id.id
-        if pick:
-            name = _('Receive Item')
-            view_mode = 'form'
-            if self.move_type == 'direct':
-                    name = _('Receive Items')
-                    view_mode = 'tree'
-            return {
+        Picking = self.env['stock.picking']
+
+        name = _('Receive Item')
+        view_mode = 'form,tree'
+
+        action = {
+            'view_type': 'form',
+            'res_model': 'stock.picking',
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current'
+        }
+        if self.picking_id.id:
+            backorders = Picking.search([('backorder_id','=',self.picking_id.id)])
+            active_id = self.picking_id.id
+            active_ids = [self.picking_id.id]
+
+            if backorders:
+                active_ids += backorders.ids
+                name = _('Receive Items')
+                view_mode = 'tree,form'
+            else:
+                action.update({
+                    'res_id': active_id
+                })
+
+            action.update({
                 'name': name,
-                'view_type': 'form',
                 'view_mode': view_mode,
-                'res_model': 'stock.picking',
-                'type': 'ir.actions.act_window',
-                'nodestroy': True,
-                'target': 'current',
-                'res_id': pick,
-                'context': {'active_id': pick},
-            }
+                'domain': [('id', 'in', active_ids)],
+                'context': {'active_id': active_id, 'active_ids': active_ids}
+            })
 
-
-    @api.model
-    def create(self, vals):
-        indent = super(Indent, self).create(vals)
-        return indent
+        return action
 
 
 class IndentLine(models.Model):

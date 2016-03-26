@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "indent",
+    'name': "Indent",
 
     'summary': """Manage and track internal material requests""",
 

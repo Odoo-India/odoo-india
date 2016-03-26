@@ -154,7 +154,7 @@
       <field name="model">stock.indent</field>
       <field name="arch" type="xml">
         <search string="Indent List">
-          <field name="picking_type_id" filter_domain="[('picking_type_id','=',self)]"/>
+          <field name="picking_type_id"/>
         </search>
       </field>
     </record>
@@ -166,6 +166,7 @@
       <field name="view_mode">tree,form</field>
       <field name="search_view_id" ref="view_stock_indent_indent_search"/>
       <field name="context">{'search_default_picking_type_id':[active_id]}</field>
+      <field name="domain">[('picking_type_id','=',active_id)]</field>
     </record>
 
     <record model="ir.actions.act_window" id="indent.action_window_menu">

@@ -199,8 +199,7 @@ class Indent(models.Model):
                     'date_expected': indent.date_indent,
                     'product_uom': line.product_uom.id,
                 }
-                Move.create(vals)
-
+                line.move_id = Move.create(vals)
             picking_id.action_confirm()
             indent.picking_id = picking_id
             indent.state = 'inprogress'
@@ -272,7 +271,8 @@ class IndentLine(models.Model):
     specification =  fields.Text('Specification')
     sequence = fields.Integer('Sequence')
     indent_type =  fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], 'Type')
-
+    
+    move_id = fields.Many2one('stock.move', 'Move')    
 
     @api.onchange('product_id')
     def _compute_line_based_on_product_id(self):
@@ -291,3 +291,4 @@ class IndentLine(models.Model):
     def _compute_price_subtotal(self):
         for line in self:
             line.price_subtotal = line.price_unit * line.product_qty
+

@@ -123,7 +123,7 @@ class Indent(models.Model):
     name = fields.Char('Indent', default='Draft Indent / ')
 
     date_indent = fields.Datetime('Indent Date', default=fields.Datetime.now)
-    date_approve = fields.Datetime('Approve Date')
+    date_approve = fields.Datetime('Approve Date', copy=False)
     date_required = fields.Datetime('Required Date')
 
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
@@ -152,6 +152,7 @@ class Indent(models.Model):
 
     amount_total = fields.Float('Estimated value', readonly=True)
     items = fields.Integer('Total items', readonly=True)
+
 
     @api.onchange('picking_type_id')
     def _get_default_location(self):
@@ -203,6 +204,8 @@ class Indent(models.Model):
             picking_id.action_confirm()
             indent.picking_id = picking_id
             indent.state = 'inprogress'
+            indent.date_approve = datetime.now()
+            indent.approve_user_id = self.env.user.id
 
 
     @api.multi
@@ -254,11 +257,11 @@ class IndentLine(models.Model):
     original_product_id =  fields.Many2one('product.product', 'Product to be Repaired')
     produre_type =  fields.Selection([('make_to_stock', 'Stock'), ('make_to_order', 'Purchase')], string='Procure', required=True)
     
-    product_qty =  fields.Float('Quantity', digits_compute=dp.get_precision('Product UoS'), required=True)
+    product_qty =  fields.Float('Quantity', digits_compute=dp.get_precision('Product UoS'), required=True, default=1)
     product_uom =  fields.Many2one('product.uom', 'Unit of Measure', required=True)
 
     product_available_qty =  fields.Float('Available', readonly=True)
-    product_issued_qty =  fields.Float('Issued', readonly=True)
+    product_issued_qty =  fields.Float(compute='_compute_product_issued_qty', string='Issued', readonly=True)
 
     product_uos_qty =  fields.Float('Quantity (UoS)' ,digits_compute=dp.get_precision('Product UoS'))
     product_uos =  fields.Many2one('product.uom', 'Product UoS')
@@ -272,7 +275,12 @@ class IndentLine(models.Model):
     sequence = fields.Integer('Sequence')
     indent_type =  fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], 'Type')
     
-    move_id = fields.Many2one('stock.move', 'Move')    
+    move_id = fields.Many2one('stock.move', 'Move')
+
+
+    def _compute_product_issued_qty(self):
+        for line in self:
+            line.product_issued_qty = 5
 
     @api.onchange('product_id')
     def _compute_line_based_on_product_id(self):

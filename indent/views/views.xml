@@ -43,7 +43,8 @@
         <tree>
           <field name="name"/>
           <field name="date_indent"/>
-          <field name="picking_type_id"/>
+          <field name="date_required"/>
+          <field name="picking_type_id" invisible="1"/>
           <field name="user_id"/>
           <field name="analytic_account_id" invisible="1"/>
           <field name="indent_type"/>
@@ -109,7 +110,7 @@
                     <field name="product_available_qty" />
                     <field name="product_issued_qty" />
 
-                    <field name="product_uom" />
+                    <field name="product_uom" groups="product.group_uom"/>
                     <field name="price_unit" groups="stock.group_stock_manager"/>
                     <field name="price_subtotal" groups="stock.group_stock_manager"/>
                   </tree>

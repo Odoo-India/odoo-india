@@ -185,6 +185,7 @@ class Indent(models.Model):
                 'move_type': indent.move_type,
                 'priority': '1',
                 'picking_type_id': indent.picking_type_id.id,
+                'indent_id': indent.id
             }
             picking_id = Picking.create(res)
             
@@ -224,7 +225,7 @@ class Indent(models.Model):
             'target': 'current'
         }
         if self.picking_id.id:
-            backorders = Picking.search([('backorder_id','=',self.picking_id.id)])
+            backorders = Picking.search([('indent_id','=',self.id)])
             active_id = self.picking_id.id
             active_ids = [self.picking_id.id]
 
@@ -246,6 +247,11 @@ class Indent(models.Model):
 
         return action
 
+
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
+
+    indent_id = fields.Many2one('stock.indent')
 
 class IndentLine(models.Model):
     _name = 'stock.indent.line'
@@ -279,8 +285,15 @@ class IndentLine(models.Model):
 
 
     def _compute_product_issued_qty(self):
+        Move = self.env['stock.move']
+        Picking = self.env['stock.picking']
+
         for line in self:
-            line.product_issued_qty = 5
+            line.product_issued_qty = 0
+            picking_ids = Picking.search([('indent_id','=',line.indent_id.id), ('state','=','done')])
+            moves = Move.read_group([('picking_id','in', picking_ids.ids), ('product_id', '=', line.product_id.id)], ['product_id', 'product_qty'], ['product_id'])
+            if moves:
+                line.product_issued_qty = moves[0].get('product_qty', 0)
 
     @api.onchange('product_id')
     def _compute_line_based_on_product_id(self):

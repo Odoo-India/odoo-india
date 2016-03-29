@@ -139,7 +139,7 @@ class Indent(models.Model):
     analytic_account_id = fields.Many2one('account.analytic.account', string='Project')
 
     indent_type = fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], string='Type', default='new')
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('received', 'Received'), ('reject', 'Rejected')], string='State', default='draft')
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('received', 'Received'), ('reject', 'Rejected')], string='State', default='draft', compute='_compute_state')
 
     warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse', default=_default_warehouse_id)
     move_type = fields.Selection([('direct', 'Partial'), ('one', 'All at once')], string='Receive Method', default='direct')
@@ -150,9 +150,22 @@ class Indent(models.Model):
     line_ids = fields.One2many('stock.indent.line', 'indent_id', string='Lines')
     description = fields.Text('Additional Note')
 
-    amount_total = fields.Float('Estimated value', readonly=True)
+    amount_total = fields.Float('Estimated value', compute='compute_total_amount', readonly=True)
     items = fields.Integer('Total items', readonly=True)
 
+    @api.multi
+    def _compute_state(self):
+        for indent in self:
+            if all(line.state in ['received'] for line in indent.line_ids):
+                indent.state = 'received'
+
+    @api.multi
+    def compute_total_amount(self):
+        for indent in self:
+            total = 0.0
+            for line in indent.line_ids:
+                total += line.price_subtotal
+        indent.amount_total = total
 
     @api.onchange('picking_type_id')
     def _get_default_location(self):
@@ -253,6 +266,17 @@ class StockPicking(models.Model):
 
     indent_id = fields.Many2one('stock.indent')
 
+    @api.multi
+    def do_transfer(self):
+        picking = super(StockPicking, self).do_transfer()
+        for picking in self:
+            for line in picking.indent_id.line_ids:
+                if line.product_qty == line.product_issued_qty:
+                    line.state = 'received'
+                else:
+                    line.state = 'partial'
+        return picking
+
 class IndentLine(models.Model):
     _name = 'stock.indent.line'
     _description = 'Indent Line'
@@ -294,7 +318,7 @@ class IndentLine(models.Model):
             moves = Move.read_group([('picking_id','in', picking_ids.ids), ('product_id', '=', line.product_id.id)], ['product_id', 'product_qty'], ['product_id'])
             if moves:
                 line.product_issued_qty = moves[0].get('product_qty', 0)
-
+    
     @api.onchange('product_id')
     def _compute_line_based_on_product_id(self):
         self.product_uom = self.product_id.uom_id

@@ -151,7 +151,7 @@ class Indent(models.Model):
     description = fields.Text('Additional Note')
 
     amount_total = fields.Float('Estimated value', compute='compute_total_amount', readonly=True)
-    items = fields.Integer('Total items', readonly=True)
+    items = fields.Integer('Total items', compute='compute_total_Items', readonly=True)
 
     # @api.depends('line_ids.state')
     # def _compute_state(self):
@@ -166,6 +166,14 @@ class Indent(models.Model):
             for line in indent.line_ids:
                 total += line.price_subtotal
         indent.amount_total = total
+
+    @api.multi
+    def compute_total_Items(self):
+        for indent in self:
+            items = 0.0
+            for line in indent.line_ids:
+                items += line.product_qty
+        indent.items = items
 
     @api.onchange('picking_type_id')
     def _get_default_location(self):
@@ -280,13 +288,13 @@ class IndentLine(models.Model):
     product_uom =  fields.Many2one('product.uom', 'Unit of Measure', required=True)
 
     product_available_qty =  fields.Float('Available', readonly=True)
-    product_issued_qty =  fields.Float(compute='_compute_product_issued_qty', string='Issued', readonly=True)
+    product_issued_qty =  fields.Float(compute='_compute_product_issued_qty', string='Received', readonly=True)
 
     product_uos_qty =  fields.Float('Quantity (UoS)' ,digits_compute=dp.get_precision('Product UoS'))
     product_uos =  fields.Many2one('product.uom', 'Product UoS')
 
     price_unit =  fields.Float('Price', required=True, digits_compute=dp.get_precision('Product Price'))
-    price_subtotal =  fields.Float(compute='_compute_price_subtotal')
+    price_subtotal =  fields.Float(string='Subtotal', compute='_compute_price_subtotal')
     qty_available =  fields.Float('In Stock')
     virtual_available =  fields.Float('Forecasted Qty')
     delay =  fields.Float('Lead Time', required=True, default=7)

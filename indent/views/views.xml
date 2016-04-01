@@ -119,7 +119,7 @@
                 <group class="oe_subtotal_footer oe_right">
                   <field name="items" />
                   <field name="amount_total" widget="monetary"
-                    class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}" />
+                    class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}" groups="stock.group_stock_manager" />
                 </group>
                 <div class="oe_clear">
                   <label for="description" />

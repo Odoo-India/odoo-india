@@ -100,8 +100,8 @@
 
             <notebook>
               <page string="Products">
-                <field name="line_ids" colspan="4" nolabel="1">
-                  <tree editable="bottom">
+                <field name="line_ids" colspan="4" nolabel="1" attrs="{'readonly': [('state', 'in', ('received','inprogress'))]}">
+                  <tree editable="bottom" decoration-info="state=='received'">
                     <field name="product_id" />
                     <field name="produre_type" />
                     <field name="name" />

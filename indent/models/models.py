@@ -293,10 +293,10 @@ class IndentLine(models.Model):
     specification =  fields.Text('Specification')
     sequence = fields.Integer('Sequence')
     indent_type =  fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], 'Type')
-    
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('partial', 'Partial'), ('received', 'Received'), ('reject', 'Rejected')], string='State', default='draft', compute='_compute_product_issued_qty', store=True)
     move_id = fields.Many2one('stock.move', 'Move')
 
-
+    @api.multi
     def _compute_product_issued_qty(self):
         Move = self.env['stock.move']
         Picking = self.env['stock.picking']

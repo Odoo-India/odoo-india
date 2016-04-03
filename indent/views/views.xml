@@ -113,13 +113,14 @@
                     <field name="product_uom" groups="product.group_uom"/>
                     <field name="price_unit" groups="stock.group_stock_manager"/>
                     <field name="price_subtotal" groups="stock.group_stock_manager"/>
+                    <field name="state" invisible="1"/>
                   </tree>
                 </field>
 
                 <group class="oe_subtotal_footer oe_right">
                   <field name="items" />
                   <field name="amount_total" widget="monetary"
-                    class="oe_subtotal_footer_separator" options="{'currency_field': 'currency_id'}" groups="stock.group_stock_manager" />
+                    options="{'currency_field': 'currency_id'}" groups="stock.group_stock_manager" />
                 </group>
                 <div class="oe_clear">
                   <label for="description" />

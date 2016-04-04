@@ -62,6 +62,7 @@ class StockPickingType(models.Model):
     _inherit = 'stock.picking.type'
 
     usage = fields.Selection(related='default_location_dest_id.usage', store=True)
+    indent_count = fields.Integer(compute='_get_indent_count')
 
     @api.multi
     def get_indents(self):
@@ -72,6 +73,13 @@ class StockPickingType(models.Model):
         action_open = action.browse(action_id)
         action_open = action_open.read()[0]
         return action_open
+
+    def _get_indent_count(self):
+        result = {}
+        obj = self.env['stock.picking']
+        for indent in self:
+            data = obj.search_count([('picking_type_id', '=', indent.id),('indent_id.state', '=', 'inprogress')])
+            indent.indent_count = data
 
 
 class Equipment(models.Model):

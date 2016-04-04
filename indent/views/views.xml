@@ -8,8 +8,10 @@
       <field name="arch" type="xml">
         <xpath expr="//button[@name='get_action_picking_tree_ready']" position="after">
           <field name="usage" invisible="1"/>
+          <field name="indent_count" invisible="1"/>
           <button class="btn btn-primary" name="get_indents" type="object" attrs="{'invisible': [('usage','!=','production')]}">
-            0 Indents
+          <t t-esc="record.indent_count.value"/>
+            Indents
           </button>
         </xpath>
         <xpath expr="//button[@name='get_action_picking_tree_ready']" position="attributes">

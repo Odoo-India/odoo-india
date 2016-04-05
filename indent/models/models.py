@@ -147,7 +147,7 @@ class Indent(models.Model):
     analytic_account_id = fields.Many2one('account.analytic.account', string='Project', copy=False)
 
     indent_type = fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], string='Type', default='new')
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('received', 'Received'), ('reject', 'Rejected')], string='State', default='draft')
+    state = fields.Selection(compute='_compute_state', selection=[('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('received', 'Received'), ('reject', 'Rejected')], string='State', store=True)
 
     warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse', default=_default_warehouse_id)
     move_type = fields.Selection([('direct', 'Partial'), ('one', 'All at once')], string='Receive Method', default='direct')
@@ -161,11 +161,13 @@ class Indent(models.Model):
     amount_total = fields.Float('Estimated Value', compute='compute_total_amount', readonly=True)
     items = fields.Integer('Total Items', compute='compute_total_Items', readonly=True)
 
-    # @api.depends('line_ids.state')
-    # def _compute_state(self):
-    #     for indent in self:
-    #         if all(line.state in ['received'] for line in indent.line_ids):
-    #             indent.state = 'received'
+    @api.depends('line_ids.state')
+    def _compute_state(self):
+        for indent in self:
+            indent.state = 'draft'
+            for line in indent.line_ids:
+                if line.state == 'received':
+                    indent.state = 'received'
 
     @api.multi
     def compute_total_amount(self):
@@ -309,10 +311,10 @@ class IndentLine(models.Model):
     specification =  fields.Text('Specification')
     sequence = fields.Integer('Sequence')
     indent_type =  fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], 'Type')
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('partial', 'Partial'), ('received', 'Received'), ('reject', 'Rejected')], string='State', default='draft', compute='_compute_product_issued_qty', store=True)
+    state = fields.Selection(compute='_compute_product_issued_qty', selection=[('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('partial', 'Partial'), ('received', 'Received'), ('reject', 'Rejected')], string='State', default='draft', store=True)
     move_id = fields.Many2one('stock.move', 'Move')
 
-    @api.multi
+    @api.depends('move_id.picking_id.state')
     def _compute_product_issued_qty(self):
         Move = self.env['stock.move']
         Picking = self.env['stock.picking']

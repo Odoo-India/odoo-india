@@ -5,7 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
-from openerp.exceptions import UserError
+from openerp.exceptions import UserError, ValidationError
 
 from openerp import models, fields, api, _
 import openerp.addons.decimal_precision as dp
@@ -161,6 +161,15 @@ class Indent(models.Model):
     amount_total = fields.Float('Estimated Value', compute='compute_total_amount', readonly=True)
     items = fields.Integer('Total Items', compute='compute_total_Items', readonly=True)
 
+    @api.constrains('line_ids')
+    def _check_Product(self):
+        for indent in self:
+            x = []
+            for line in indent.mapped('line_ids'):
+                if line.product_id in x:
+                    raise ValidationError(_('The product of the indent_line must be unique per Indent!'))
+                x.append(line.product_id)
+
     @api.depends('line_ids.state')
     def _compute_state(self):
         for indent in self:
@@ -168,6 +177,8 @@ class Indent(models.Model):
             for line in indent.line_ids:
                 if line.state == 'received':
                     indent.state = 'received'
+                elif line.state == 'partial':
+                    indent.state = 'inprogress'
 
     @api.multi
     def compute_total_amount(self):

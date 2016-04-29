@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_remote_command_view_tree" model="ir.ui.view">
+        <field name="name">mail.remote.command.tree</field>
+        <field name="model">mail.remote.command</field>
+        <field name="arch" type="xml">
+            <tree string="live">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="mail_remote_command_view_form" model="ir.ui.view">
+        <field name="name">mail.remote.command.form</field>
+        <field name="model">mail.remote.command</field>
+        <field name="arch" type="xml">
+            <form string="Live">
+                <sheet>
+                    <group string="Post to Channel" name="channel">
+                        <label for="id" string="Notifications that come in from will be posted here." />
+                        <div name="live_channel">
+                            <div>
+                                <field name="channel_id" placeholder="Choose channel..."/>
+                            </div>
+                        </div>
+                    </group>
+                    <group string="live" name="live">
+                        <label for="id" string="Display message comes from this word." />
+                        <div name="remote_command">
+                            <div>
+                                <label for="id"/>
+                                <field name="name" placeholder="e.g. /news" class="oe_inline" />
+                            </div>
+                        </div>
+                    </group>
+                    <group string="Remote Setting" name="channel">
+                        <div name="remote_channel">
+                            <div>
+                                <label for="id" string="Remote URL" />
+                                <field name="url" placeholder="set remote url..."  class="oe_inline" />
+                            </div>
+                            <div>
+                                <label for="id" string="Method Type" />
+                                <field name="request_method" widget="radio" />
+                            </div>
+                            <div>
+                                <label for="id" string="Token" />
+                                <field name="token" />
+                                 <button name="generate_new_token" type="object" class="btn btn-primary" string="Regenrate Token" />
+                            </div>
+                            
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="mail_remote_command_action" model="ir.actions.act_window">
+        <field name="name">Remote</field>
+        <field name="res_model">mail.remote.command</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_mail_channel_connector"
+        name="Connect"
+        parent="mail.mail_channel_menu_root_chat"
+        groups="base.group_no_one"/>
+
+    <menuitem id="menu_channel_live_settings" parent="menu_mail_channel_connector"
+        name="Remote" action="mail_remote_command_action" sequence="1" />
+</odoo>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-extend="mail.ChatComposer">
+        <t t-jquery=".o_composer_button_add_attachment" t-operation="after">
+        	<!-- <t t-name="mail.ChatLocation"> -->
+            <button index="6" class="btn btn-sm btn-icon fa fa-location-arrow o_composer_button_location" type="button"/>
+	        <!-- </t> -->
+        </t>
+    </t>
+</templates>

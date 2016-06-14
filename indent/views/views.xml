@@ -8,7 +8,25 @@
       <field name="arch" type="xml">
         <field name="scrap_location" position="before">
           <field name="indent_allowed"/>
+          <field name="user_id" attrs="{'invisible': [('indent_allowed','=',False)]}" required="1"/>
         </field>
+      </field>
+    </record>
+
+    <record id="stock_picking_type_form" model="ir.ui.view">
+      <field name="name">stock.picking.type.form</field>
+      <field name="model">stock.picking.type</field>
+      <field name="inherit_id" ref="stock.view_picking_type_form"/>
+      <field name="arch" type="xml">
+        <field name="warehouse_id" position="after">
+          <field name="manager_id"/>
+        </field>
+        <xpath expr="//sheet" position="after">
+          <div class="oe_chatter">
+            <field name="message_follower_ids" widget="mail_followers" />
+            <field name="message_ids" widget="mail_thread" />
+          </div>
+        </xpath>
       </field>
     </record>
 
@@ -74,28 +92,20 @@
         <form string="Indent" version="9.0">
           <header>
             <button name="action_confirm" string="Confirm" type="object" states="draft" class="oe_highlight"/>
-            <button name="action_approve" string="Approve" type="object" states="waiting_approval" class="oe_highlight"/>
-            <button name="action_reject" string="Reject" type="object" states="waiting_approval"/>
-            <button name="action_cancel" string="Cancel" type="object" states="waiting_approval"/>
-
-         <!--    <button name="indent_inprogress" string="Approve" states="waiting_approval" class="oe_highlight" />
-            <button name="indent_reject" string="Reject" states="waiting_approval" /> -->
-            <!-- <button name="action_deliver_products" string="Transfer for Repair" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('type','=','new'), ('state','in',['draft','confirm', 'waiting_approval','received'])]}"/> -->
-            <button name="action_receive_products" string="Receive Items" states="inprogress" type="object" class="oe_highlight" />
+            <button name="action_approve" string="Approve" type="object" states="waiting_approval" groups="indent.stock_indent_manager" class="oe_highlight"/>
+            <button name="action_reject" string="Reject" type="object" states="waiting_approval" groups="indent.stock_indent_manager"/>
+            <button name="action_cancel" string="Cancel" type="object" states="waiting_approval" groups="indent.stock_indent_manager"/>
+            <button name="action_receive_products" string="Issue Items" states="inprogress" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
             <field name="state" widget="statusbar" statusbar_visible="draft,waiting_approval,inprogress,received" statusbar_colors='{"reject":"red"}' />
           </header>
           <sheet>
             <div class="oe_title">
-                <!-- <label string="Draft Indent" attrs="{'invisible': [('state','&lt;&gt;','draft')]}" />
-                <label string="Indent" attrs="{'invisible': [('state', '=', 'draft')]}" /> -->
               <h1>
                 <field name="name" class="oe_inline" readonly="1"/>
               </h1>
             </div>
-
             <div class="oe_right oe_inline" name="buttons">
             </div>
-
             <group>
               <group>
                 <field name="indent_type" invisible="1"/>
@@ -149,7 +159,7 @@
                   </group>
                   <group>
                     <field name="user_id" readonly="1" />
-                    <!-- <field name="manager_id" /> -->
+                    <field name="manager_id" />
                     <field name="approve_user_id" />
                   </group>
                 </group>
@@ -184,17 +194,28 @@
       <field name="domain">[('picking_type_id','=',active_id)]</field>
     </record>
 
-    <record model="ir.actions.act_window" id="indent.action_window_menu">
-      <field name="name">Indents</field>
+    <record model="ir.actions.act_window" id="my_indent_action_window_menu">
+      <field name="name">My Indents</field>
       <field name="res_model">stock.indent</field>
       <field name="view_mode">tree,form</field>
       <field name="search_view_id" ref="view_stock_indent_indent_search"/>
+      <field name="domain">[('user_id','=',uid)]</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="indent_to_approve_action_window_menu">
+      <field name="name">Indents to Approve</field>
+      <field name="res_model">stock.indent</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_stock_indent_indent_search"/>
+      <field name="domain">[('manager_id','=',uid)]</field>
     </record>
     
     <!-- indent menu -->
     <menuitem name="Indent" id="indent.menu_root" parent="stock.menu_stock_root" sequence="2"/>
 
-    <menuitem name="All Indents" id="indent.all_indents" parent="indent.menu_root"
-              action="indent.action_window_menu"/>
+    <menuitem name="My Indents" id="menu_my_indent" parent="indent.menu_root"
+      action="my_indent_action_window_menu"/>
+    <menuitem name="Indents to Approve" id="menu_my_indent_to_approve" parent="indent.menu_root"
+      action="indent_to_approve_action_window_menu" groups="indent.stock_indent_manager"/>
   </data>
 </openerp>

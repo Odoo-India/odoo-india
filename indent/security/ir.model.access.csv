@@ -1,2 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_indent_indent,indent.indent,model_stock_indent,,1,0,0,0
+access_stock_indent,access_stock_indent,model_stock_indent,,1,0,0,0
+access_stock_indent_line,access_stock_indent_line,model_stock_indent_line,,1,0,0,0
+access_stock_indent_indent,access_stock_indent,model_stock_indent,indent.stock_indent_user,1,1,1,0
+access_stock_indent_line_indent,access_stock_indent_line,model_stock_indent_line,indent.stock_indent_user,1,1,1,0

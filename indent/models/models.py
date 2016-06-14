@@ -14,7 +14,8 @@ import openerp.addons.decimal_precision as dp
 class StockLocation(models.Model):
     _inherit = 'stock.location'
 
-    indent_allowed = fields.Boolean('Indent Allowed')
+    indent_allowed = fields.Boolean('Can ask for material ?')
+    user_id = fields.Many2one('res.users', 'Manager', help='A user who is responsible to approve indent on this location')
 
     @api.model
     def _default_warehouse_id(self):
@@ -69,11 +70,13 @@ class StockLocation(models.Model):
 
 
 class StockPickingType(models.Model):
-    _inherit = 'stock.picking.type'
+    _name = 'stock.picking.type'
+    _inherit = ['stock.picking.type', 'mail.thread', 'ir.needaction_mixin']
 
     usage = fields.Selection(related='default_location_dest_id.usage', store=True)
     indent_count = fields.Integer(compute='_get_indent_count')
     indent_allowed = fields.Boolean(related='default_location_dest_id.indent_allowed', store=True, string='Indent Allowed')
+    manager_id = fields.Many2one(related='default_location_dest_id.user_id', string='Manager')
 
     @api.multi
     def get_indents(self):
@@ -89,7 +92,7 @@ class StockPickingType(models.Model):
         result = {}
         Indent = self.env['stock.indent']
         for line in self:
-            line.indent_count = Indent.search_count([('state', '=', 'inprogress'), ('picking_type_id','=',line.id)])
+            line.indent_count = Indent.search_count([('state', 'in', ('inprogress', 'confirm', 'waiting_approval')), ('picking_type_id','=',line.id)])
 
 
 class Equipment(models.Model):
@@ -165,7 +168,7 @@ class Indent(models.Model):
     amount_total = fields.Float('Estimated Value', compute='compute_total_amount', readonly=True)
     items = fields.Integer('Total Items', compute='compute_total_amount', readonly=True)
     group_id = fields.Many2one('procurement.group')
-
+    manager_id = fields.Many2one(related='picking_type_id.manager_id', string='Manager', readonly=True)
 
     @api.multi
     @api.depends('line_ids.move_ids.state')

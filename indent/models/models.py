@@ -59,6 +59,14 @@ class StockLocation(models.Model):
             location.create_operation_type()
         return location
 
+    @api.multi
+    def write(self, vals):
+        res = super(StockLocation, self).write(vals)
+        for loc in self:
+            if vals.get('indent_allowed', False):
+                location.create_operation_type()
+        return res
+
 
 class StockPickingType(models.Model):
     _inherit = 'stock.picking.type'

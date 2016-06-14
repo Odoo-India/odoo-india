@@ -26,18 +26,18 @@
       <field name="domain_force">[('user_id','=',user.id)]</field>
     </record>
 
-    <record id="stock_indent_user_indent" model="ir.rule">
+    <record id="stock_indent_user_indent_manager" model="ir.rule">
       <field name="name">My Indents - Manager</field>
       <field name="model_id" ref="model_stock_indent"/>
       <field name="groups" eval="[(4, ref('stock_indent_manager'))]"/>
-      <field name="domain_force">['|', ('user_id','=',user.id), ('manager_id','=',user.id)]</field>
+      <field name="domain_force">[]</field>
     </record>
 
-    <record id="stock_indent_user_indent" model="ir.rule">
+    <record id="stock_operation_type_indent_" model="ir.rule">
       <field name="name">Operation Type Filter</field>
       <field name="model_id" ref="model_stock_picking_type"/>
       <field name="groups" eval="[(4, ref('stock_indent_user'))]"/>
-      <field name="domain_force">['|', ('message_partner_ids','in',[user.partner_id.id]), ('manager_id','=',user.id)]</field>
+      <field name="domain_force">[('message_partner_ids','in',[user.partner_id.id])]</field>
     </record>
 
   </data>

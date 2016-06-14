@@ -1,22 +1,33 @@
 <openerp>
   <data>
 
+    <record id="view_location_form_inherit" model="ir.ui.view">
+      <field name="name">stock.location.form</field>
+      <field name="model">stock.location</field>
+      <field name="inherit_id" ref="stock.view_location_form"/>
+      <field name="arch" type="xml">
+        <field name="scrap_location" position="before">
+          <field name="indent_allowed"/>
+        </field>
+      </field>
+    </record>
+
     <record id="stock_picking_type_kanban" model="ir.ui.view">
       <field name="name">stock.picking.type.kanban</field>
       <field name="model">stock.picking.type</field>
       <field name="inherit_id" ref="stock.stock_picking_type_kanban"/>
       <field name="arch" type="xml">
         <xpath expr="//button[@name='get_action_picking_tree_ready']" position="after">
-          <field name="usage" invisible="1"/>
+          <field name="indent_allowed" invisible="1"/>
           <field name="indent_count" invisible="1"/>
-          <button class="btn btn-primary" name="get_indents" type="object" attrs="{'invisible': [('usage','!=','production')]}">
+          <button class="btn btn-primary" name="get_indents" type="object" attrs="{'invisible': [('indent_allowed','!=',True)]}">
           <t t-esc="record.indent_count.value"/>
             Indents
           </button>
         </xpath>
         <xpath expr="//button[@name='get_action_picking_tree_ready']" position="attributes">
           <attribute name="attrs">
-            {'invisible': [('usage','=','production')]}
+            {'invisible': [('indent_allowed','=',True)]}
           </attribute>
         </xpath>
       </field>
@@ -63,7 +74,6 @@
         <form string="Indent" version="9.0">
           <header>
             <button name="action_confirm" string="Confirm" type="object" states="draft" class="oe_highlight"/>
-
             <button name="action_approve" string="Approve" type="object" states="waiting_approval" class="oe_highlight"/>
             <button name="action_reject" string="Reject" type="object" states="waiting_approval"/>
             <button name="action_cancel" string="Cancel" type="object" states="waiting_approval"/>
@@ -88,10 +98,10 @@
 
             <group>
               <group>
-                <field name="indent_type" />
-                <field name="picking_type_id" domain="[('usage','=','production')]"/>
+                <field name="indent_type" invisible="1"/>
+                <field name="picking_type_id" domain="[('indent_allowed','=',True)]" required="1"/>
                 <field name="location_id" domain="[('usage', '=', 'production')]" invisible="1"/>
-                <field name="analytic_account_id" />
+                <field name="analytic_account_id" domain="[('indent_close','=',False)]" groups="purchase.group_analytic_accounting"/>
               </group>
               <group>
                 <field name="date_indent" />
@@ -105,25 +115,26 @@
                 <field name="line_ids" colspan="4" nolabel="1" attrs="{'readonly': [('state', 'in', ('received','inprogress'))]}">
                   <tree editable="bottom" decoration-info="state=='received'">
                     <field name="product_id" />
-                    <field name="produre_type" />
+                    <field name="produre_type" invisible="1"/>
                     <field name="name" />
 
                     <field name="product_qty" />
+                     <field name="product_uom" groups="product.group_uom"/>
                     <field name="product_available_qty" />
                     <field name="product_issued_qty" />
 
-                    <field name="product_uom" groups="product.group_uom"/>
                     <field name="price_unit" groups="stock.group_stock_manager"/>
                     <field name="price_subtotal" groups="stock.group_stock_manager"/>
                     <field name="state" invisible="1"/>
                   </tree>
                 </field>
 
-                <group class="oe_subtotal_footer oe_right">
+                <group class="oe_subtotal_footer oe_right" groups="stock.group_stock_manager">
                   <field name="items" />
                   <field name="amount_total" widget="monetary"
-                    options="{'currency_field': 'currency_id'}" groups="stock.group_stock_manager" />
+                    options="{'currency_field': 'currency_id'}" groups="stock.group_stock_manager"/>
                 </group>
+
                 <div class="oe_clear">
                   <label for="description" />
                 </div>

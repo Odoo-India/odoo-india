@@ -14,6 +14,8 @@ import openerp.addons.decimal_precision as dp
 class StockLocation(models.Model):
     _inherit = 'stock.location'
 
+    indent_allowed = fields.Boolean('Indent Allowed')
+
     @api.model
     def _default_warehouse_id(self):
         company = self.env.user.company_id.id
@@ -46,14 +48,14 @@ class StockLocation(models.Model):
                 'active': True,
                 'use_existing_lots': True,
                 'use_create_lots': True,
-                'sequence_id': seq.id
+                'sequence_id': seq.id,
             }
             picking_type.create(res)
 
     @api.model
     def create(self, vals):
         location = super(StockLocation, self).create(vals)
-        if location.usage == 'production':
+        if location.indent_allowed == True:
             location.create_operation_type()
         return location
 
@@ -63,6 +65,7 @@ class StockPickingType(models.Model):
 
     usage = fields.Selection(related='default_location_dest_id.usage', store=True)
     indent_count = fields.Integer(compute='_get_indent_count')
+    indent_allowed = fields.Boolean(related='default_location_dest_id.indent_allowed', store=True, string='Indent Allowed')
 
     @api.multi
     def get_indents(self):
@@ -76,10 +79,9 @@ class StockPickingType(models.Model):
 
     def _get_indent_count(self):
         result = {}
-        obj = self.env['stock.picking']
-        for indent in self:
-            data = obj.search_count([('picking_type_id', '=', indent.id),('indent_id.state', '=', 'inprogress')])
-            indent.indent_count = data
+        Indent = self.env['stock.indent']
+        for line in self:
+            line.indent_count = Indent.search_count([('state', '=', 'inprogress'), ('picking_type_id','=',line.id)])
 
 
 class Equipment(models.Model):
@@ -120,85 +122,73 @@ class Indent(models.Model):
     _inherit = ['mail.thread', 'ir.needaction_mixin']
     _order = 'name desc'
 
-
     @api.model
     def _default_warehouse_id(self):
         company = self.env.user.company_id.id
         warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
         return warehouse_ids
 
+    @api.onchange('picking_type_id')
+    def _get_default_location(self):
+        for indent in self:
+            indent.location_id = indent.picking_type_id.default_location_dest_id
 
     name = fields.Char('Indent', default='Draft Indent / ', copy=False)
-
     date_indent = fields.Datetime('Indent Date', default=fields.Datetime.now)
     date_approve = fields.Datetime('Approve Date', copy=False)
     date_required = fields.Datetime('Required Date')
-
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
-
     picking_type_id = fields.Many2one('stock.picking.type', string='Department')
     picking_id = fields.Many2one('stock.picking','Picking', copy=False)
-
-    location_id = fields.Many2one('stock.location', string='Location', default='_get_default_location')
+    location_id = fields.Many2one('stock.location', string='Location', default=_get_default_location)
     user_id = fields.Many2one('res.users', string='Indentor', default=lambda self: self.env.user)
-    #manager_id = fields.Many2one('res.users', string='Manager', related="department_id.manager_id", store=True)
     approve_user_id = fields.Many2one('res.users', string='Approved By', copy=False)
-
     analytic_account_id = fields.Many2one('account.analytic.account', string='Project', copy=False)
-
     indent_type = fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], string='Type', default='new')
-    state = fields.Selection(compute='_compute_state', selection=[('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('received', 'Received'), ('reject', 'Rejected')], string='State', store=True)
-
+    state = fields.Selection(compute='_compute_state', selection=[('draft', 'Draft'), ('confirm', 'Confirm'), 
+        ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), 
+        ('received', 'Received'), ('reject', 'Rejected')], string='State', store=True, default='draft')
     warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse', default=_default_warehouse_id)
     move_type = fields.Selection([('direct', 'Partial'), ('one', 'All at once')], string='Receive Method', default='direct')
-
     equipment_id = fields.Many2one('indent.equipment', string='Equipment', copy=False)
     equipment_section_id = fields.Many2one('indent.equipment.section', string='Section', copy=False)
-
     line_ids = fields.One2many('stock.indent.line', 'indent_id', string='Lines', copy=False)
     description = fields.Text('Additional Note')
-
     amount_total = fields.Float('Estimated Value', compute='compute_total_amount', readonly=True)
-    items = fields.Integer('Total Items', compute='compute_total_Items', readonly=True)
+    items = fields.Integer('Total Items', compute='compute_total_amount', readonly=True)
+    group_id = fields.Many2one('procurement.group')
 
-    @api.constrains('line_ids')
-    def _check_Product(self):
-        for indent in self:
-            x = []
-            for line in indent.mapped('line_ids'):
-                if line.product_id in x:
-                    raise ValidationError(_('The product of the indent_line must be unique per Indent!'))
-                x.append(line.product_id)
-
-    @api.depends('line_ids.state')
-    def _compute_state(self):
-        for indent in self:
-            indent.state = 'draft'
-            for line in indent.line_ids:
-                if line.state == 'received':
-                    indent.state = 'received'
-                elif line.state == 'partial':
-                    indent.state = 'inprogress'
 
     @api.multi
+    @api.depends('line_ids.move_ids.state')
+    def _compute_state(self):
+        Picking = self.env['stock.picking']
+        Move = self.env['stock.move']
+
+        for indent in self:
+            state = indent.state or 'draft'
+            for line in indent.line_ids:
+                moves = Move.read_group([('indent_line_id','=',line.id), ('state','=','done')], ['product_id', 'product_qty'], ['product_id'])
+                if moves:
+                    product_issued_qty = moves[0]['product_qty']
+                    if line.product_qty == product_issued_qty:
+                        state = 'received'
+                    else:
+                        state = 'inprogress'
+                        break
+            indent.state = state
+
+    @api.multi
+    @api.onchange('line_ids')
     def compute_total_amount(self):
         for indent in self:
             total = 0.0
-            for line in indent.line_ids:
-                total += line.price_subtotal
-        indent.amount_total = total
-
-    @api.multi
-    def compute_total_Items(self):
-        for indent in self:
             items = 0.0
             for line in indent.line_ids:
+                total += line.price_subtotal
                 items += line.product_qty
+        indent.amount_total = total
         indent.items = items
-
-    @api.onchange('picking_type_id')
-    def _get_default_location(self):
-        self.location_id = self.picking_type_id.default_location_dest_id
 
     @api.onchange('date_indent')
     def _compute_date_required(self):
@@ -217,9 +207,14 @@ class Indent(models.Model):
     def action_approve(self):
         Move = self.env['stock.move']
         Picking = self.env['stock.picking']
+        Group = self.env['procurement.group']
 
         for indent in self:
             warehouse = indent._default_warehouse_id()
+            group = Group.create({
+                'name':indent.name,
+                'move_type':'direct'
+            })
             res = {
                 'location_id':warehouse.lot_stock_id.id,
                 'location_dest_id':indent.location_id.id,
@@ -242,6 +237,8 @@ class Indent(models.Model):
                     'date': indent.date_indent,
                     'date_expected': indent.date_indent,
                     'product_uom': line.product_uom.id,
+                    'group_id':group.id,
+                    'indent_line_id':line.id
                 }
                 line.move_id = Move.create(vals)
             picking_id.action_confirm()
@@ -286,7 +283,6 @@ class Indent(models.Model):
                 'domain': [('id', 'in', active_ids)],
                 'context': {'active_id': active_id, 'active_ids': active_ids}
             })
-
         return action
 
 
@@ -304,16 +300,12 @@ class IndentLine(models.Model):
     product_id =  fields.Many2one('product.product', 'Product', required=True)
     original_product_id =  fields.Many2one('product.product', 'Product to be Repaired')
     produre_type =  fields.Selection([('make_to_stock', 'Stock'), ('make_to_order', 'Purchase')], string='Procure', required=True)
-    
     product_qty =  fields.Float('Quantity', digits_compute=dp.get_precision('Product UoS'), required=True, default=1)
     product_uom =  fields.Many2one('product.uom', 'Unit of Measure', required=True)
-
     product_available_qty =  fields.Float(compute='_compute_product_available_qty', store=True, string='Available')
-    product_issued_qty =  fields.Float(compute='_compute_product_issued_qty', string='Received', readonly=True)
-
+    product_issued_qty =  fields.Float(compute='_compute_product_issued_qty', string='Received', readonly=True, store=True)
     product_uos_qty =  fields.Float('Quantity (UoS)' ,digits_compute=dp.get_precision('Product UoS'))
     product_uos =  fields.Many2one('product.uom', 'Product UoS')
-
     price_unit =  fields.Float('Price', required=True, digits_compute=dp.get_precision('Product Price'))
     price_subtotal =  fields.Float(string='Subtotal', compute='_compute_price_subtotal')
     qty_available =  fields.Float('In Stock')
@@ -322,36 +314,31 @@ class IndentLine(models.Model):
     specification =  fields.Text('Specification')
     sequence = fields.Integer('Sequence')
     indent_type =  fields.Selection([('new', 'Purchase Indent'), ('existing', 'Repairing Indent')], 'Type')
-    state = fields.Selection(compute='_compute_product_issued_qty', selection=[('draft', 'Draft'), ('confirm', 'Confirm'), ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), ('partial', 'Partial'), ('received', 'Received'), ('reject', 'Rejected')], string='State', default='draft', store=True)
-    move_id = fields.Many2one('stock.move', 'Move')
+    state = fields.Selection(selection=[('draft', 'Draft'), ('confirm', 'Confirm'), 
+        ('waiting_approval', 'Waiting for Approval'), ('inprogress', 'In Progress'), 
+        ('partial', 'Partial'), ('received', 'Received'), ('reject', 'Rejected')], string='State', default='draft', index=True)
+    move_ids = fields.One2many('stock.move', 'indent_line_id', 'Move')
 
-    @api.depends('move_id.picking_id.state')
+
+    @api.depends('move_ids.state')
     def _compute_product_issued_qty(self):
         Move = self.env['stock.move']
         Picking = self.env['stock.picking']
 
         for line in self:
-            line.product_issued_qty = 0
-            picking_ids = Picking.search([('indent_id','=',line.indent_id.id), ('state','=','done')])
-            moves = Move.read_group([('picking_id','in', picking_ids.ids), ('product_id', '=', line.product_id.id)], ['product_id', 'product_qty'], ['product_id'])
-            if moves:
-                line.product_issued_qty = moves[0].get('product_qty', 0)
-                if line.product_qty == line.product_issued_qty:
-                    line.state = 'received'
-                else:
-                    line.state = 'partial'
+            moves = Move.read_group([('indent_line_id','=',line.id), ('state','=','done')], ['product_id', 'product_qty'], ['product_id'])
+            if moves: line.product_issued_qty = moves[0]['product_qty']
 
     @api.depends('product_id')
     def _compute_product_available_qty(self):
         for line in self:
             line.product_available_qty = line.product_id.qty_available
 
-    @api.onchange('product_id')
+    @api.onchange('product_id', 'product_available_qty')
     def _compute_line_based_on_product_id(self):
         self.product_uom = self.product_id.uom_id
         self.name = self.product_id.description_purchase or self.product_id.name
         self.produre_type = 'make_to_stock'
-        
         self.price_unit = self.product_id.standard_price
 
         if self.product_available_qty > 0:
@@ -360,7 +347,13 @@ class IndentLine(models.Model):
             self['produre_type'] = 'make_to_order'
 
     @api.multi
+    @api.onchange('product_qty', 'price_unit')
     def _compute_price_subtotal(self):
         for line in self:
             line.price_subtotal = line.price_unit * line.product_qty
 
+
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+    
+    indent_line_id = fields.Many2one('stock.indent.line')

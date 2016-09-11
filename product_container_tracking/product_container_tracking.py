@@ -42,11 +42,11 @@ class stock_picking(osv.Model):
         warehouse_pool = self.pool.get('stock.warehouse')
         serial_pool = self.pool.get('stock.production.lot')
         
-        res = super(stock_picking, self).do_partial(cr, uid, ids, partial_datas, context=context)
+        finalres = super(stock_picking, self).do_partial(cr, uid, ids, partial_datas, context=context)
         
         package_serial_entry = {}
         
-        for picking_id in res:
+        for picking_id in finalres:
             picking = self.browse(cr, uid, picking_id)
             for move in picking.move_lines:
                 
@@ -124,6 +124,6 @@ class stock_picking(osv.Model):
                             'state':'done'
                         }
                         package_serial_entry[serial_id] = move_pool.create(cr, uid, res)
-        return res
+        return finalres
     
 stock_picking()

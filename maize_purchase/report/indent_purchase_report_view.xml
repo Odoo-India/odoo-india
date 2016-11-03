@@ -10,6 +10,7 @@
             <field name="arch" type="xml">
                 <tree string="Maize Purchase Analysis" create="false" delete="false">
                     <field name="purchase_id" invisible="context.get('purchase_id_view',False)"/>
+                    <field name="purchase_date" invisible="context.get('purchase_id_view',False)"/>
                     <field name="purchase_maize_id" invisible="context.get('purchase_maize_id',True)"/>
                     <field name="indentor_id" invisible="context.get('indentor_id_view',False)"/>
                     <field name="id" string="Indent No" invisible="context.get('indentor_id_view',False)"/>
@@ -79,6 +80,7 @@
                     <filter icon="terp-personal" string="My Indents" help="My Indents" domain="[('indentor_id', '=', uid)]"/>
                     <field name="indentor_id"/>
                     <field name="purchase_id"/>
+                    <field name="purchase_date"/>
                     <group string="Display">
                         <filter name="group_department" string="Department" icon="terp-stock_symbol-selection" context="{'department_id': False}"/>
                         <filter name="group_analytic_accounting" string="Project" context="{'analytic_account_id': False}" groups="analytic.group_analytic_accounting"/>
@@ -97,6 +99,7 @@
                         <filter string="Indent" name="Indent" context="{'group_by':'indent_id', 'indent_id_view':True}"/>
                         <filter string="Indentor" name="Indentor" context="{'group_by':'indentor_id','indentor_id_view': True}"/>
                         <filter string="Purchase Order" name="Purchase" context="{'group_by':'purchase_id','purchase_id_view': True}"/>
+                        <filter string="Order Date" name="Purchase" context="{'group_by':'purchase_date','purchase_id_view': True}"/>
                         <filter string="Purchase Order (maize)" name="Purchase" context="{'group_by':'purchase_maize_id','purchase_maize_id_view': True}"/>
                         <filter string="Department" context="{'group_by':'department_id','department_id_view': True}"/>
                         <filter string="Unit" context="{'group_by':'product_uom','product_uom_view': True}"/>

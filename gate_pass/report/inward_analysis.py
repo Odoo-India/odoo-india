@@ -46,7 +46,7 @@ class report_stock_move(osv.osv):
         'state': fields.selection([('draft', 'Draft'), ('waiting', 'Waiting'), ('confirmed', 'Confirmed'), ('assigned', 'Available'), ('done', 'Done'), ('cancel', 'Cancelled')], 'Status', readonly=True, select=True),
         'product_qty':fields.integer('Quantity',readonly=True),
         'categ_id': fields.many2one('product.category', 'Product Category', ),
-        'product_qty_in':fields.integer('Challan',readonly=True),
+        'product_qty_in':fields.integer('Challan Qty',readonly=True),
         'product_qty_out':fields.integer('Out Qty',readonly=True),
         'value' : fields.float('Total Value', required=True),
         'day_diff2':fields.float('Lag (Days)',readonly=True,  digits_compute=dp.get_precision('Shipping Delay'), group_operator="avg"),

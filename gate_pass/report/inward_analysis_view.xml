@@ -97,7 +97,7 @@
                 <filter icon="terp-go-home" name="internal" string="Issue" domain="[('type','=','internal')]" context="{'issue_view':False,'issue_new':True}"/>
                 <filter icon="terp-go-home" name="out" string="Outgoing" domain="[('type','=','out')]" context="{'out_view': False}"/>
                 <filter icon="terp-go-home" name="receipt" string="Receipt" domain="[('type','=','receipt')]" context="{'receipt_view': False}"/>
-                <filter icon="terp-go-home" name="Cash Code" string="Cash Only" domain="[('case_code','=', True)]"/>
+                <filter icon="terp-go-home" name="Cash Code" string="Cash Code" domain="[('case_code','=', True)]"/>
                 <field name="product_id" default_focus="1"/>
                 <field name="partner_id" context="{'contact_display':'partner'}"/>
                 <group expand="0" string="Extended Filters...">
